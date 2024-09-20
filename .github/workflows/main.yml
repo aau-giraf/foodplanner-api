@@ -24,13 +24,13 @@ jobs:
       # Step 3: Build Docker image (specifying the working directory)
       - name: Build Docker image
         run: |
-          docker build -t your-username/foodplanner-api:staging .
+          docker build -t dressi123/foodplanner-api:staging .
         working-directory: ./foodplanner-api
 
       # Step 4: Push Docker image
       - name: Push Docker image
         run: |
-          docker push your-username/foodplanner-api:staging
+          docker push dressi123/foodplanner-api:staging
         working-directory: ./foodplanner-api
 
       # Step 5: Deploy to Ubuntu Server via SSH
@@ -41,6 +41,6 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            docker pull your-username/foodplanner-api:staging
+            docker pull dressi123/foodplanner-api:staging
             docker rm -f foodplanner-api || true
-            docker run -d -p 5091:5091 --name foodplanner-api your-username/foodplanner-api:staging
+            docker run -d -p 5091:5091 --name foodplanner-api dressi123/foodplanner-api:staging
