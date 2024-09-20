@@ -1,0 +1,41 @@
+name: Build, Push, and Deploy
+
+on:
+  push:
+    branches:
+      - staging
+# Trigger the workflow when a merge to staging happens
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+      # Step 2: Log in to Docker Hub (or your registry)
+      - name: Log in to Docker Hub (or GHCR)
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      # Step 3: Build the Docker image  
+      - name: Build Docker image
+        run: |
+          docker build -t dressi123/foodplanner-api:staging .
+      # Step 4: Push the Docker image to Docker Hub
+      - name: Push Docker image
+        run: |
+          docker push dressi123/foodplanner-api:staging
+
+      # Deploy on the remote Ubuntu server using SSH
+      - name: Deploy to Ubuntu Server
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker pull dressi123/foodplanner-api:staging
+            docker rm -f foodplanner-api || true
+            docker run -d -p 5091:5091 --name foodplanner-api dressi123/foodplanner-api:staging
