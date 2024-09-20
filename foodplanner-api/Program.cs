@@ -33,8 +33,17 @@ app.MapGet("/weatherforecast", () =>
         .ToArray();
     return forecast;
 })
+
+
 .WithName("GetWeatherForecast")
 .WithOpenApi();
+
+app.MapGet("/test", () => "Hello World!")
+.WithName("GetTest")
+.WithOpenApi();
+
+// Configure the application to listen on all network interfaces
+app.Urls.Add("http://0.0.0.0:80");
 
 app.Run();
 
