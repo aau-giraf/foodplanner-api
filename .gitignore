@@ -1,0 +1,57 @@
+# Ignore Visual Studio temporary files, build results, and
+# user-specific files
+.vscode/
+.vscode/*
+
+# Ignore build output directories
+bin/
+obj/
+
+# Ignore user-specific files
+*.user
+*.userosscache
+*.sln.docstates
+
+# Ignore build results
+*.exe
+*.dll
+*.pdb
+*.cache
+*.ilk
+*.log
+*.vspscc
+*.vssscc
+*.nupkg
+*.snupkg
+*.map
+*.dylib
+*.so
+*.a
+*.lib
+
+# Ignore NuGet packages
+*.nupkg
+*.snupkg
+.nuget/
+
+# Ignore Rider files
+.idea/
+
+# Ignore JetBrains Rider project files
+.idea/
+*.sln.iml
+
+# Ignore macOS system files
+.DS_Store
+
+# Ignore Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Ignore build directories
+foodplanner-api/bin/
+foodplanner-api/obj/
+
+# Ignore private files
+private.txt
