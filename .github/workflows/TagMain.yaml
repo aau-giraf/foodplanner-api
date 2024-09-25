@@ -1,0 +1,34 @@
+name: Build, Push, and Deploy To Prod
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Log in to Docker Hub (or GHCR)
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Step 3: Build Docker image (specifying the working directory)
+      - name: Build Docker image
+        run: |
+          docker build -t dressi123/foodplanner-api:prod .
+        working-directory: ./foodplanner-api
+
+      # Step 4: Push Docker image
+      - name: Push Docker image
+        run: |
+          docker push dressi123/foodplanner-api:prod
+        working-directory: ./foodplanner-api
