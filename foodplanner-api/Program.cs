@@ -38,7 +38,7 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast")
 .WithOpenApi();
 
-app.MapGet("/test", () => "Testing wuhuu!")
+app.MapGet("/test", () => "Testing sdhashaSCVHK!")
 .WithName("GetTest")
 .WithOpenApi();
 
