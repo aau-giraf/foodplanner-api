@@ -4,7 +4,7 @@
 using System.Reflection.Metadata.Ecma335;
 using Dapper;
 using foodplanner_api.Models;
-using foodplanner_api.Services;
+using foodplanner_api.Data;
 using Npgsql;
 
 namespace foodplanner_api.Controller;
