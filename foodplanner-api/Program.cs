@@ -17,7 +17,7 @@ builder.Services.AddSingleton(serviceProvider => {
     var connectionString = configuration.GetConnectionString("DefaultConnection") ?? 
         throw new ApplicationException("the connection string is null");
 
-    return new PostgreConnectionFactory(connectionString);
+    return new PostgreSQLConnectionFactory(connectionString);
 });
 
 var app = builder.Build();

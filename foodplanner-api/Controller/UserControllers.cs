@@ -11,9 +11,9 @@ namespace foodplanner_api.Controller;
 
 public static class UserControllers {
     public static void MapUserControllers(this IEndpointRouteBuilder builder) {
-        builder.MapGet("users", async (PostgreConnectionFactory postgreConnectionFactory) => {
+        builder.MapGet("users", async (PostgreSQLConnectionFactory postgreSQLConnectionFactory) => {
 
-            using var connection = postgreConnectionFactory.Create();
+            using var connection = postgreSQLConnectionFactory.Create();
 
             const string sql = "SELECT * FROM users";
 
@@ -22,8 +22,8 @@ public static class UserControllers {
             return Results.Ok(users);
         });
 
-        builder.MapGet("users/{id}", async (int id, PostgreConnectionFactory postgreConnectionFactory) => {
-            using var connection = postgreConnectionFactory.Create();
+        builder.MapGet("users/{id}", async (int id, PostgreSQLConnectionFactory postgreSQLConnectionFactory) => {
+            using var connection = postgreSQLConnectionFactory.Create();
 
             const string sql = """
             SELECT * 
