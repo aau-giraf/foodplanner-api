@@ -3,6 +3,8 @@ using foodplanner_api.Controller;
 using foodplanner_api.Models;
 using foodplanner_api.Data;
 using Npgsql;
+using foodplanner_api.Data.Repositories;
+using foodplanner_api.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +22,15 @@ builder.Services.AddSingleton(serviceProvider => {
     return new PostgreSQLConnectionFactory(connectionString);
 });
 
+builder.Services.AddScoped(typeof(IRepository<>), typeof(RepositoryImpl<>));
+
+builder.Services.AddScoped<UserService>();
+
+builder.Services.AddControllers();
+
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -31,7 +41,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapUserControllers();
+
 
 app.MapGet("/test", () => "Testing sdhashaSCVHK!")
 .WithName("GetTest")
