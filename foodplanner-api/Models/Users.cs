@@ -1,4 +1,4 @@
-namespace foodplannerApi.Models;
+namespace foodplanner_api.Models;
 
 public class Users {
 

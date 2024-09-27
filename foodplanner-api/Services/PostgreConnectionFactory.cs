@@ -1,6 +1,6 @@
 using Npgsql;
 
-namespace foodplannerApi.Services;
+namespace foodplanner_api.Services;
 
 public class PostgreConnectionFactory{
 

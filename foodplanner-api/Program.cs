@@ -1,7 +1,7 @@
 using Dapper;
-using foodplannerApi.Controller;
-using foodplannerApi.Models;
-using foodplannerApi.Services;
+using foodplanner_api.Controller;
+using foodplanner_api.Models;
+using foodplanner_api.Services;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);

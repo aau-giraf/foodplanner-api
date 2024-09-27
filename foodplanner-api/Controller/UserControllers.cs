@@ -3,11 +3,11 @@
 
 using System.Reflection.Metadata.Ecma335;
 using Dapper;
-using foodplannerApi.Models;
-using foodplannerApi.Services;
+using foodplanner_api.Models;
+using foodplanner_api.Services;
 using Npgsql;
 
-namespace foodplannerApi.Controller;
+namespace foodplanner_api.Controller;
 
 public static class UserControllers {
     public static void MapUserControllers(this IEndpointRouteBuilder builder) {
