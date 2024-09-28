@@ -53,6 +53,4 @@ app.MapGet("/test", () => "Testing sdhashaSCVHK!")
 // Configure the application to listen on all network interfaces
 app.Urls.Add("http://0.0.0.0:80");
 
-Console.WriteLine(SecretsLoader.GetSecret("DB_NAME"));
-
 app.Run();
