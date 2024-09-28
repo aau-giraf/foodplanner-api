@@ -1,4 +1,5 @@
 using Dapper;
+using foodplanner_api;
 using foodplanner_api.Controller;
 using foodplanner_api.Models;
 using foodplanner_api.Data;
@@ -12,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+SecretsLoader.Configure(builder.Configuration, builder.Environment.EnvironmentName);
 
 builder.Services.AddSingleton(serviceProvider => {
     var configuration = serviceProvider.GetRequiredService<IConfiguration>();
@@ -49,5 +52,7 @@ app.MapGet("/test", () => "Testing sdhashaSCVHK!")
 
 // Configure the application to listen on all network interfaces
 app.Urls.Add("http://0.0.0.0:80");
+
+Console.WriteLine(SecretsLoader.GetSecret("DB_NAME"));
 
 app.Run();
