@@ -4,24 +4,23 @@ namespace foodplanner_api;
 
 public static class SecretsLoader
 {
-    private static string? _environment;
-    private static string? _workspaceId;
-    private static InfisicalClient? _infisicalClient;
+    private record Configuration(string environmentSlug, string workspaceId, InfisicalClient Client);
+    private static Configuration _configuration = null!;
 
+    /// Method <c>Configure</c> initialises the SecretsLoader. It reads from appsettings.{environment}.json,
+    /// but will fall back to environment variables. <br />
+    /// Run this before reading secrets.
     public static void Configure(IConfiguration config, string environment)
     {
-        var clientId = config.GetValue<string>("Infisical:ClientId");
-        var clientSecret = config.GetValue<string>("Infisical:ClientSecret");
-        var workspaceId = config.GetValue<string>("Infisical:Workspace");
+        var clientId = config.GetValue<string>("Infisical:ClientId") ?? Environment.GetEnvironmentVariable("CLIENT_ID");
+        var clientSecret = config.GetValue<string>("Infisical:ClientSecret") ?? Environment.GetEnvironmentVariable("CLIENT_SECRET");
+        var workspaceId = config.GetValue<string>("Infisical:Workspace") ?? Environment.GetEnvironmentVariable("WORKSPACE");
         if (string.IsNullOrWhiteSpace(clientId) || 
             string.IsNullOrWhiteSpace(clientSecret) || 
             string.IsNullOrWhiteSpace(workspaceId))
         {
             throw new ApplicationException("Missing environment variables");
         }
-
-        _environment = MapEnvironment(environment);
-        _workspaceId = workspaceId;
         
         var settings = new ClientSettings
         {
@@ -35,26 +34,26 @@ public static class SecretsLoader
             }
         };
         
-        _infisicalClient = new InfisicalClient(settings);
+        _configuration = new Configuration(MapEnvironmentToSlug(environment), workspaceId, new InfisicalClient(settings));
     }
 
     public static string GetSecret(string secretName)
     {
-        if (_environment == null || _workspaceId == null || _infisicalClient == null)
+        if (_configuration == null)
         {
             throw new ApplicationException($"Unable to load secret: {secretName}. SecretsLoader must be configured before usage");
         }
         var getSecretOptions = new GetSecretOptions
         {
             SecretName = secretName,
-            ProjectId = _workspaceId,
-            Environment = _environment,
+            ProjectId = _configuration.workspaceId,
+            Environment = _configuration.environmentSlug,
         };
         
-        return _infisicalClient.GetSecret(getSecretOptions).SecretValue;
+        return _configuration.Client.GetSecret(getSecretOptions).SecretValue;
     }
 
-    private static string MapEnvironment(string environment) => environment switch
+    private static string MapEnvironmentToSlug(string environment) => environment switch
     {
         "Development" => "dev",
         "Staging" => "staging",
