@@ -55,3 +55,6 @@ foodplanner-api/obj/
 
 # Ignore private files
 private.txt
+
+#Secrets
+foodplanner-api/appsettings.Development.json

@@ -1,4 +1,5 @@
 using Dapper;
+using foodplanner_api;
 using foodplanner_api.Controller;
 using foodplanner_api.Models;
 using foodplanner_api.Data;
@@ -8,10 +9,16 @@ using foodplanner_api.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//Add environment variables for Infisical and configure SecretsLoader
+builder.Configuration.AddEnvironmentVariables(prefix: "INFISICAL_");
+SecretsLoader.Configure(builder.Configuration, builder.Environment.EnvironmentName);
+
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
 
 builder.Services.AddSingleton(serviceProvider => {
     var configuration = serviceProvider.GetRequiredService<IConfiguration>();
