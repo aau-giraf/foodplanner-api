@@ -20,7 +20,5 @@ COPY --from=build /app/out ./
 # Expose the port your application will run on
 EXPOSE 80
 
-ENV ASPNETCORE_ENVIRONMENT=Development
-
 # Start the application
 ENTRYPOINT ["dotnet", "foodplanner-api.dll"]
