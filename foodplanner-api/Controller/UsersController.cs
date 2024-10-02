@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace foodplanner_api.Controller;
 
-[ApiController]
 [Route("api/[controller]")]
+[ApiController]
 public class UsersController : ControllerBase {
     private readonly UserService _userService;
 
