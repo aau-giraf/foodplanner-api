@@ -51,7 +51,7 @@ app.UseHttpsRedirection();
 app.MapControllers();
 
 app.MapGet("/test", () => {
-    var connectionString = SecretsLoader.GetSecret("DB_CONNECTION_STRING");
+    var connectionString = SecretsLoader.GetSecret("TEST", "/SW-5-02/");
     return Results.Text($"Connection string: {connectionString}");
 })
 .WithName("GetTest")

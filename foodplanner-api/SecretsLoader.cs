@@ -39,7 +39,7 @@ public static class SecretsLoader
         _configuration = new Configuration(MapEnvironmentToSlug(environment), workspaceId, new InfisicalClient(settings));
     }
 
-    public static string GetSecret(string secretName)
+    public static string GetSecret(string secretName, string path = "/")
     {
         if (_configuration == null)
         {
@@ -47,11 +47,13 @@ public static class SecretsLoader
         }
         var getSecretOptions = new GetSecretOptions
         {
+            Path = path,
             SecretName = secretName,
             ProjectId = _configuration.workspaceId,
             Environment = _configuration.environmentSlug,
         };
-        
+    
+
         return _configuration.Client.GetSecret(getSecretOptions).SecretValue;
     }
 
