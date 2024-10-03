@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace foodplanner_models.Account
+{
+    public interface IUserService
+    {
+        Task<IEnumerable<UserDTO>> GetAllUsersAsync();
+        Task<User> GetUserByIdAsync(int id);
+        Task<int> CreateUserAsync(User user);
+        Task<int> UpdateUserAsync(User user);
+        Task<int> DeleteUserAsync(int id);
+    }
+}

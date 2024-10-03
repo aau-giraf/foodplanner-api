@@ -3,20 +3,52 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "foodplanner-api", "foodplanner-api\foodplanner-api.csproj", "{0589CD33-64D7-4667-8982-A814713AB3FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "foodplanner-api", "foodplanner-api\foodplanner-api.csproj", "{0589CD33-64D7-4667-8982-A814713AB3FC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{00AFC285-6A5D-4132-BF63-110E677CB895} = {00AFC285-6A5D-4132-BF63-110E677CB895}
+		{307434F3-44ED-49E1-A61D-ABF24DE8C740} = {307434F3-44ED-49E1-A61D-ABF24DE8C740}
+		{7ECB521A-627A-45FD-A564-6AE176DAB8AA} = {7ECB521A-627A-45FD-A564-6AE176DAB8AA}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "foodplanner-models", "foodplanner-models\foodplanner-models.csproj", "{307434F3-44ED-49E1-A61D-ABF24DE8C740}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "foodplanner-data-access-sql", "foodplanner-data-access-sql\foodplanner-data-access-sql.csproj", "{7ECB521A-627A-45FD-A564-6AE176DAB8AA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{307434F3-44ED-49E1-A61D-ABF24DE8C740} = {307434F3-44ED-49E1-A61D-ABF24DE8C740}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "foodplanner-services", "foodplanner-services\foodplanner-services.csproj", "{00AFC285-6A5D-4132-BF63-110E677CB895}"
+	ProjectSection(ProjectDependencies) = postProject
+		{307434F3-44ED-49E1-A61D-ABF24DE8C740} = {307434F3-44ED-49E1-A61D-ABF24DE8C740}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0589CD33-64D7-4667-8982-A814713AB3FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0589CD33-64D7-4667-8982-A814713AB3FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0589CD33-64D7-4667-8982-A814713AB3FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0589CD33-64D7-4667-8982-A814713AB3FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{307434F3-44ED-49E1-A61D-ABF24DE8C740}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{307434F3-44ED-49E1-A61D-ABF24DE8C740}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{307434F3-44ED-49E1-A61D-ABF24DE8C740}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{307434F3-44ED-49E1-A61D-ABF24DE8C740}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7ECB521A-627A-45FD-A564-6AE176DAB8AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7ECB521A-627A-45FD-A564-6AE176DAB8AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7ECB521A-627A-45FD-A564-6AE176DAB8AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7ECB521A-627A-45FD-A564-6AE176DAB8AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00AFC285-6A5D-4132-BF63-110E677CB895}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00AFC285-6A5D-4132-BF63-110E677CB895}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00AFC285-6A5D-4132-BF63-110E677CB895}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00AFC285-6A5D-4132-BF63-110E677CB895}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {11759A54-2013-4A27-B5B5-B12E88F08A47}
 	EndGlobalSection
 EndGlobal

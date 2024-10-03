@@ -1,10 +1,13 @@
 using Dapper;
 using foodplanner_api.Controller;
 using foodplanner_api.Models;
-using foodplanner_api.Data;
+
 using Npgsql;
-using foodplanner_api.Data.Repositories;
-using foodplanner_api.Service;
+using foodplanner_data_access_sql;
+using foodplanner_services;
+using foodplanner_models;
+using foodplanner_models.Account;
+using foodplanner_data_access_sql.Account;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,9 +25,11 @@ builder.Services.AddSingleton(serviceProvider => {
     return new PostgreSQLConnectionFactory(connectionString);
 });
 
-builder.Services.AddScoped(typeof(IRepository<>), typeof(RepositoryImpl<>));
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
 
 builder.Services.AddScoped<UserService>();
+builder.Services.AddAutoMapper(typeof(UserProfile));
 
 builder.Services.AddControllers();
 
