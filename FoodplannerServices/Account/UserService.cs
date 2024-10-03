@@ -36,6 +36,16 @@ public class UserService : IUserService {
     public async Task<int> DeleteUserAsync(int id){
         return await _userRepository.DeleteAsync(id);
     }
+
+   public async Task<UserDTO> GetUserByEmailAndPasswordAsync(string email, string password)
+{
+    var user = await _userRepository.GetByEmailAndPasswordAsync(email, password);
+    if (user == null)
+    {
+        return null;
+    }
+    return _mapper.Map<UserDTO>(user);
+}
 }
 
 

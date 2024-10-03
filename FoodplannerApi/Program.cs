@@ -21,7 +21,7 @@ builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddSingleton(serviceProvider => {
-    var connectionString = SecretsLoader.GetSecret("DB_CONNECTION_STRING");
+    var connectionString = SecretsLoader.GetSecret("DB_CONNECTION_STRING", "/SW-5-02/");
 
     return new PostgreSQLConnectionFactory(connectionString);
 });
