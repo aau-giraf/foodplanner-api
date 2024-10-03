@@ -1,6 +1,6 @@
 using Infisical.Sdk;
 
-namespace foodplanner_api;
+namespace FoodplannerApi;
 
 public static class SecretsLoader
 {

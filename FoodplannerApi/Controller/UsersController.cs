@@ -2,7 +2,7 @@ using foodplanner_models.Account;
 using foodplanner_services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace foodplanner_api.Controller;
+namespace FoodplannerApi.Controller;
 
 public class UsersController : BaseController {
     private readonly UserService _userService;

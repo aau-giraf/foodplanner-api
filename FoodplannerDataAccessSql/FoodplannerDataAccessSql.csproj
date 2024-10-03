@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>foodplanner_data_access_sql</RootNamespace>
+    <RootNamespace>FoodplannerFataAccessSql</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\foodplanner-models\foodplanner-models.csproj" />
+    <ProjectReference Include="..\FoodplannerModels\FoodplannerModels.csproj" />
   </ItemGroup>
 
   <ItemGroup>

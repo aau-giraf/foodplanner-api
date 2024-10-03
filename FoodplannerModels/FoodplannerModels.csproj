@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>foodplanner_services</RootNamespace>
+    <RootNamespace>FoodplannerModels</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\foodplanner-models\foodplanner-models.csproj" />
+    <PackageReference Include="AutoMapper" Version="13.0.1"/>
   </ItemGroup>
-
+  
 </Project>

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace foodplanner_api.Controller
+namespace FoodplannerApi.Controller
 {
     [Route("api/[controller]/[action]")]
     public abstract class BaseController : ControllerBase
