@@ -57,5 +57,5 @@ foodplanner-api/obj/
 private.txt
 
 #Secrets
-foodplanner-api/appsettings.Development.json
+FoodplannerApi/appsettings.Development.json
 /.vs
