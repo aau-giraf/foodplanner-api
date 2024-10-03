@@ -1,10 +1,10 @@
 using FoodplannerApi;
 using Npgsql;
-using foodplanner_data_access_sql;
-using foodplanner_services;
-using foodplanner_models;
 using foodplanner_models.Account;
-using foodplanner_data_access_sql.Account;
+using FoodplannerDataAccessSql.Account;
+using FoodplannerDataAccessSql;
+using FoodplannerModels;
+using FoodplannerServices;
 
 var builder = WebApplication.CreateBuilder(args);
 

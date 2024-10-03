@@ -1,5 +1,5 @@
 using foodplanner_models.Account;
-using foodplanner_services;
+using FoodplannerServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodplannerApi.Controller;

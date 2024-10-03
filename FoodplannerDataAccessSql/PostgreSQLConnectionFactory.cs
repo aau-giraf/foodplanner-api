@@ -1,6 +1,6 @@
 using Npgsql;
 
-namespace foodplanner_data_access_sql;
+namespace FoodplannerDataAccessSql;
 
 public class PostgreSQLConnectionFactory{
 

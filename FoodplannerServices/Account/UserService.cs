@@ -4,7 +4,7 @@ using AutoMapper;
 using foodplanner_models;
 using foodplanner_models.Account;
 
-namespace foodplanner_services;
+namespace FoodplannerServices;
 
 public class UserService : IUserService {
     private readonly IUserRepository _userRepository;

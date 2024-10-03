@@ -1,13 +1,7 @@
 ﻿using Dapper;
 using foodplanner_models.Account;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace foodplanner_data_access_sql.Account
+namespace FoodplannerDataAccessSql.Account
 {
     public class UserRepository : IUserRepository
     {

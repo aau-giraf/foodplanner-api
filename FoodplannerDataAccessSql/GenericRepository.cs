@@ -1,8 +1,7 @@
 using Dapper;
-using System.Data;
-using Npgsql;
-using foodplanner_models;
-namespace foodplanner_data_access_sql;
+using FoodplannerModels;
+
+namespace FoodplannerDataAccessSql;
 
 
 // UserRepositoryImpl.cs

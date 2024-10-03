@@ -1,4 +1,4 @@
-namespace foodplanner_models;
+namespace FoodplannerModels;
 
 public interface IGenericRepository<T> where T : class{
     Task<IEnumerable<T>> GetAllAsync();
