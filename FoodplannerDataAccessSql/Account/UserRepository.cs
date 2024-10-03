@@ -1,5 +1,5 @@
 ﻿using Dapper;
-using foodplanner_models.Account;
+using FoodplannerModels.Account;
 
 namespace FoodplannerDataAccessSql.Account
 {

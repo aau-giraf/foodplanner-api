@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace foodplanner_models.Account
+namespace FoodplannerModels.Account
 {
     public class UserDTO
     {

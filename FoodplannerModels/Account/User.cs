@@ -1,4 +1,4 @@
-namespace foodplanner_models.Account;
+namespace FoodplannerModels.Account;
 
 public class User {
 
