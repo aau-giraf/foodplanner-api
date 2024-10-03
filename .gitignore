@@ -58,3 +58,4 @@ private.txt
 
 #Secrets
 foodplanner-api/appsettings.Development.json
+/.vs
