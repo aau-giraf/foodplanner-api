@@ -26,7 +26,7 @@ namespace foodplanner_data_access_sql.Account
 
         public async Task<IEnumerable<User>> GetAllAsync()
         {
-            var sql = "SELECT Name,Email FROM users";
+            var sql = "SELECT first_name, last_name, email FROM users";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();

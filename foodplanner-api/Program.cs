@@ -1,8 +1,6 @@
 using Dapper;
 using foodplanner_api;
 using foodplanner_api.Controller;
-using foodplanner_api.Models;
-
 using Npgsql;
 using foodplanner_data_access_sql;
 using foodplanner_services;
