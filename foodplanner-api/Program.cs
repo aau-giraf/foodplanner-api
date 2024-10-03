@@ -22,10 +22,7 @@ builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddSingleton(serviceProvider => {
-    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-
-    var connectionString = configuration.GetConnectionString("DefaultConnection") ?? 
-        throw new ApplicationException("the connection string is null");
+    var connectionString = SecretsLoader.GetSecret("DB_CONNECTION_STRING");
 
     return new PostgreSQLConnectionFactory(connectionString);
 });
@@ -50,11 +47,32 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.MapControllers();
 
-
-
-app.MapGet("/test", () => "Testing sdhashaSCVHK!")
+app.MapGet("/test", () => {
+    var connectionString = SecretsLoader.GetSecret("DB_CONNECTION_STRING");
+    return Results.Text($"Connection string: {connectionString}");
+})
 .WithName("GetTest")
+.WithOpenApi();
+
+
+// New endpoint to test database connection
+app.MapGet("/test-db-connection", async (PostgreSQLConnectionFactory connectionFactory) => {
+    try
+    {
+        using (var connection = connectionFactory.Create())
+        {
+            await connection.OpenAsync();
+            return Results.Ok("Database connection successful.");
+        }
+    }
+    catch (NpgsqlException ex)
+    {
+        return Results.Problem($"Database connection failed: {ex.Message}");
+    }
+})
+.WithName("TestDbConnection")
 .WithOpenApi();
 
 // Configure the application to listen on all network interfaces
