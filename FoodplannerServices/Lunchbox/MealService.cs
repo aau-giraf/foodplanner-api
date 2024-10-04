@@ -3,6 +3,9 @@ using FoodplannerModels.Lunchbox;
 
 namespace FoodplannerServices.Lunchbox;
 
+/**
+* The service for the Meal class.
+*/
 public class MealService (IMealRepository mealRepository, IMapper mapper) : IMealService
 {
     private readonly IMealRepository _mealRepository = mealRepository;

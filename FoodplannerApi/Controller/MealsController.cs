@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FoodplannerApi.Controller;
 
+/**
+* The controller for the Meal class.
+*/
 public class MealsController (MealService mealService) : BaseController
 {
     private readonly MealService _mealService = mealService;
