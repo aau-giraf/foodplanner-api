@@ -19,6 +19,11 @@ public class MealRepository (PostgreSQLConnectionFactory connectionFactory) : IM
         return result.ToList();
     }
 
+    public Task<Meal> GetByIdAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<int> InsertAsync(Meal entity)
     {
         throw new NotImplementedException();

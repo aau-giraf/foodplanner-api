@@ -3,7 +3,8 @@ using FoodplannerModels.Lunchbox;
 
 namespace FoodplannerServices.Lunchbox;
 
-public class MealService (IMealRepository mealRepository, IMapper mapper) : IMealService {
+public class MealService (IMealRepository mealRepository, IMapper mapper) : IMealService
+{
     private readonly IMealRepository _mealRepository = mealRepository;
     private readonly IMapper _mapper = mapper;
 
@@ -12,6 +13,10 @@ public class MealService (IMealRepository mealRepository, IMapper mapper) : IMea
         var meal = await _mealRepository.GetAllAsync();
         var mealDTO = _mapper.Map<IEnumerable<MealDTO>>(meal);
         return mealDTO;
+    }
+
+    public async Task<Meal> GetMealByIdAsync(int id){
+        return await _mealRepository.GetByIdAsync(id);
     }
     
     public async Task<int> CreateMealAsync(Meal meal){
