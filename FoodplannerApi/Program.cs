@@ -1,11 +1,13 @@
 using FoodplannerApi;
 using Npgsql;
-using FoodplannerDataAccessSql.Account;
 using FoodplannerDataAccessSql;
+using FoodplannerDataAccessSql.Account;
+using FoodplannerDataAccessSql.Lunchbox;
 using FoodplannerModels;
 using FoodplannerModels.Account;
-using FoodplannerServices;
 using FoodplannerServices.Account;
+using FoodplannerModels.Lunchbox;
+using FoodplannerServices.Lunchbox;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,8 +30,10 @@ builder.Services.AddSingleton(serviceProvider => {
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
+builder.Services.AddScoped(typeof(IMealRepository), typeof(MealRepository));
 
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<MealService>();
 builder.Services.AddAutoMapper(typeof(UserProfile));
 
 builder.Services.AddControllers();
