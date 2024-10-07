@@ -53,14 +53,14 @@ namespace FoodplannerDataAccessSql.Account
         }
 
        
-        public  Task<int> InsertAsync(User entity)
+        public async Task<int> InsertAsync(User entity)
         {
             var sql = "INSERT INTO users (first_name, last_name, email, password) VALUES (@First_Name, @Last_Name, @Email, @Password) RETURNING id";
             
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = connection.ExecuteAsync(sql, new 
+                var result = await connection.QuerySingleAsync<int>(sql, new 
                 {   
                     First_Name = entity.First_name, 
                     Last_Name = entity.Last_name, 

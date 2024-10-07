@@ -32,9 +32,10 @@ public class UsersController : BaseController {
         if (!ModelState.IsValid){
             return BadRequest(ModelState);
         }
-        var result = await _userService.CreateUserAsync(user);
-        if (result > 0){
-            return CreatedAtAction(nameof(Get), new { id = result}, user);
+        var id = await _userService.CreateUserAsync(user);
+        if (id > 0){
+            user.Id = id;
+            return CreatedAtAction(nameof(Get), new { id = id}, user);
         }
         return BadRequest();
     }
