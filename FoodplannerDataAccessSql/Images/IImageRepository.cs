@@ -5,12 +5,13 @@ namespace FoodplannerDataAccessSql.Images;
 
 public interface IImageRepository
 {
-    public ImageRepository ImageRepository();
+
+
+    Task<IEnumerable<FoodImageDTO>> GetAllImagesAsync();
+    Task<FoodImageDTO> GetImageByIdAsync(int imageId);
+    Task<int> SaveImageAsync(int imageId);
+    Task<int> UpdateImageAsync(FoodImageDTO image);
+    Task<int> DeleteImageAsync(int imageId);
     
     
-    
-   //Idk this may need to go to the shadow realm - LeUnio
-    public int SetImage(int ImageId) { return ImageId; }
-    public int GetImage(int ImageID) { return ImageID; }
-    public int DeleteImage(int ImageID) { return ImageID; }
 }

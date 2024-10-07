@@ -26,6 +26,8 @@ builder.Services.AddSingleton(serviceProvider => {
     return new PostgreSQLConnectionFactory(connectionString);
 });
 
+Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
 

@@ -1,38 +1,35 @@
 ﻿
+using Dapper;
 using FoodplannerModels.Images;
+using Microsoft.AspNetCore.Connections;
 
 namespace FoodplannerDataAccessSql.Images;
 
-public class ImageRepository : IImageRepository {
+public class ImageRepository(PostgreSQLConnectionFactory connectionFactor) : IImageRepository
+{
+    private readonly PostgreSQLConnectionFactory _connectionFactory;
 
-    public FoodplannerImage (FoodplannerImage Image)
+    public ImagesRepository(PostgreSQLConnectionFactory connectionFactory)
     {
-        try
+        _connectionFactory = connectionFactory;
+    }
+
+
+    public async Task<IEnumerable<FoodImageDTO>> GetAllAsync()
+    {
+        var sql = "Select * from food_images";
+        using (var connection = _connectionFactory.Create())
         {
-            return Image;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
+            connection.Open();
+            var result = await connection.QueryAsync(<FoodImageDTO>(sql));
+            return result.ToList();
         }
     }
     
-    /*
-    public GetImages(int ImageID)
-    {
-        try {
-            var Image = new FoodplannerImage();
-            // tilføje billede til image fra database
-        }
-        
-        catch (Exception ex) {
-            Console.WriteLine(ex.Message);
-        }
-    }
-    */
+    public async Task<int> SaveImageAync(int )
     
     
     
     
+
 }

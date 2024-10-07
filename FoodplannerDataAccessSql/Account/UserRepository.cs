@@ -14,7 +14,7 @@ namespace FoodplannerDataAccessSql.Account
         }
 
         public Task<int> DeleteAsync(int id)
-        {
+        {§
             throw new NotImplementedException();
         }
 

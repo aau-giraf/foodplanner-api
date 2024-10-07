@@ -1,7 +1,6 @@
 namespace FoodplannerModels.Account;
 
 public class User {
-
     public int Id { get; set; }
 
     public required string First_name { get; set; }
