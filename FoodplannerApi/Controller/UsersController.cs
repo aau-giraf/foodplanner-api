@@ -29,9 +29,12 @@ public class UsersController : BaseController {
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] User user){
+        if (!ModelState.IsValid){
+            return BadRequest(ModelState);
+        }
         var result = await _userService.CreateUserAsync(user);
         if (result > 0){
-            return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
+            return CreatedAtAction(nameof(Get), new { id = result}, user);
         }
         return BadRequest();
     }

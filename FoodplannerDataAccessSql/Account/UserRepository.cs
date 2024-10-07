@@ -41,7 +41,7 @@ namespace FoodplannerDataAccessSql.Account
         }
 
         public async Task<User> GetByIdAsync(int id)
-        {/// SELECT first_name, last_name, email FROM users WHERE email = @Email, password = @Password
+        {
             var sql = "SELECT first_name, last_name, email FROM users WHERE id = @Id";
             using (var connection = _connectionFactory.Create())
             {
@@ -52,14 +52,23 @@ namespace FoodplannerDataAccessSql.Account
             
         }
 
-        public Task<int> InsertAsync(User entity)
+       
+        public  Task<int> InsertAsync(User entity)
         {
-            var sql = "INSERT INTO users (first_name, last_name, email, password) VALUES (@First_Name, @Last_Name, @Email, @Password)";
+            var sql = "INSERT INTO users (first_name, last_name, email, password) VALUES (@First_Name, @Last_Name, @Email, @Password) RETURNING id";
+            
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                return connection.ExecuteAsync(sql, entity);
-            }
+                var result = connection.ExecuteAsync(sql, new 
+                {   
+                    First_Name = entity.First_name, 
+                    Last_Name = entity.Last_name, 
+                    Email = entity.Email, 
+                    Password = entity.Password 
+                });
+                return result;
+            }     
         }
 
         public Task<int> UpdateAsync(User entity)
