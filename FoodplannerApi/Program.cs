@@ -69,11 +69,6 @@ app.MapControllers();
 // New endpoint to test database connection
 app.MapGet("/test-db-connection", async (PostgreSQLConnectionFactory connectionFactory) =>
     {
-        
-        var s = app.Services.GetRequiredService < IImageService>();
-        var stream = new MemoryStream();
-        await s.LoadImage(0, Guid.Parse("1a3462b5-de19-4fba-b17e-b93a0191e96b"), stream);
-        Console.WriteLine(stream.Length);
         try
         {
             using (var connection = connectionFactory.Create())
