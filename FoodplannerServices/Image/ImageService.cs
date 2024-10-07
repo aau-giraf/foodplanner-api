@@ -75,4 +75,16 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
     {
         return $"{userId.ToString()}/{imageId.ToString()}";
     }
+    
+    public async Task<bool> GetImage(int userId, Guid imageId)
+    {
+        //TODO: Implement this method
+        return true;
+    }
+    
+    public async Task<bool> GetImages(int userId, IEnumerable<Guid> imageIds)
+    {
+        //TODO: Implement this method
+        return true;
+    }
 }
