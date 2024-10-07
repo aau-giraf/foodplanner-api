@@ -29,13 +29,13 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<User> GetByEmailAndPasswordAsync(string email, string password)
+        public async Task<User?> GetByEmailAndPasswordAsync(string email, string password)
         {
-            var sql = "SELECT first_name, last_name, email FROM users WHERE email = @Email, password = @Password";
+            var sql = "SELECT * FROM users WHERE email = @Email AND password = @Password";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = connection.QueryFirstOrDefault<User>(sql, new { Email = email, Password = password });
+                var result = await connection.QueryFirstOrDefaultAsync<User>(sql, new { Email = email, Password = password });
                 return result;
             }
         }

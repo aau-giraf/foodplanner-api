@@ -56,18 +56,14 @@ public class UsersController : BaseController {
         }
         return NotFound();
     }
-
-   [HttpPost("login")] 
-public async Task<IActionResult> Login([FromBody] User user){
-    if (user == null || string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password)) {
-        return BadRequest("Invalid user data.");
+    
+   [HttpGet("{email}/{password}")] 
+    public async Task<IActionResult> Login(string email, string password){
+        var result = await _userService.GetUserByEmailAndPasswordAsync(email, password);
+        if (result != null){
+            return Ok(result);
+        }
+        return NotFound();
     }
-
-    var result = await _userService.GetUserByEmailAndPasswordAsync(user.Email, user.Password);
-    if (result != null){
-        return Ok(result);
-    }
-    return NotFound();
-}
 
 }

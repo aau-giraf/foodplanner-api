@@ -37,15 +37,10 @@ public class UserService : IUserService {
         return await _userRepository.DeleteAsync(id);
     }
 
-   public async Task<UserDTO> GetUserByEmailAndPasswordAsync(string email, string password)
-{
-    var user = await _userRepository.GetByEmailAndPasswordAsync(email, password);
-    if (user == null)
+    public async Task<User> GetUserByEmailAndPasswordAsync(string email, string password)
     {
-        return null;
+        return await _userRepository.GetByEmailAndPasswordAsync(email, password);
     }
-    return _mapper.Map<UserDTO>(user);
-}
 }
 
 
