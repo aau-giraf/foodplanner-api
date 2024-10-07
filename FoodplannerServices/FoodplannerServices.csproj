@@ -11,4 +11,8 @@
     <ProjectReference Include="..\FoodplannerModels\FoodplannerModels.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Minio" Version="6.0.3" />
+  </ItemGroup>
+
 </Project>
