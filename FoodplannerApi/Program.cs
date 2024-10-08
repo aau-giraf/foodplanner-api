@@ -4,8 +4,11 @@ using FoodplannerDataAccessSql.Account;
 using FoodplannerDataAccessSql;
 using FoodplannerModels;
 using FoodplannerModels.Account;
-using FoodplannerServices;
+using FoodplannerModels.Images;
 using FoodplannerServices.Account;
+using FoodplannerServices.Image;
+using Minio;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,18 +21,33 @@ SecretsLoader.Configure(builder.Configuration, builder.Environment.EnvironmentNa
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
+//Configre and add MinIO service
+var endpoint = SecretsLoader.GetSecret("MINIO_ENDPOINT");
+var accessKey = SecretsLoader.GetSecret("MINIO_ACCESS");
+var secretKey = SecretsLoader.GetSecret("MINIO_SECRET");
+builder.Services.AddMinio(configureClient => 
+    configureClient
+        .WithEndpoint(endpoint)
+        .WithCredentials(accessKey, secretKey)
+        .WithTimeout(10000).WithSSL(false)
+        .Build()
+);
 
 builder.Services.AddSingleton(serviceProvider => {
-    var connectionString = SecretsLoader.GetSecret("DB_CONNECTION_STRING");
+    var host = SecretsLoader.GetSecret("DB_HOST");
+    var port = SecretsLoader.GetSecret("DB_PORT");
+    var username = SecretsLoader.GetSecret("DB_USER");
+    var password = SecretsLoader.GetSecret("DB_PASS");
+    var database = SecretsLoader.GetSecret("DB_NAME");
 
-    return new PostgreSQLConnectionFactory(connectionString);
+    return new PostgreSQLConnectionFactory($"Host={host};Port={port};Username={username};Password={password};Database={database}");
 });
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
 
 builder.Services.AddScoped<UserService>();
+builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddAutoMapper(typeof(UserProfile));
 
 builder.Services.AddControllers();
@@ -48,31 +66,24 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.MapControllers();
 
-app.MapGet("/test", () => {
-    var connectionString = SecretsLoader.GetSecret("DB_CONNECTION_STRING");
-    return Results.Text($"Connection string: {connectionString}");
-})
-.WithName("GetTest")
-.WithOpenApi();
-
-
 // New endpoint to test database connection
-app.MapGet("/test-db-connection", async (PostgreSQLConnectionFactory connectionFactory) => {
-    try
+app.MapGet("/test-db-connection", async (PostgreSQLConnectionFactory connectionFactory) =>
     {
-        using (var connection = connectionFactory.Create())
+        try
         {
-            await connection.OpenAsync();
-            return Results.Ok("Database connection successful.");
+            using (var connection = connectionFactory.Create())
+            {
+                await connection.OpenAsync();
+                return Results.Ok("Database connection successful.");
+            }
         }
-    }
-    catch (NpgsqlException ex)
-    {
-        return Results.Problem($"Database connection failed: {ex.Message}");
-    }
-})
-.WithName("TestDbConnection")
-.WithOpenApi();
+        catch (NpgsqlException ex)
+        {
+            return Results.Problem($"Database connection failed: {ex.Message}");
+        }
+    })
+    .WithName("TestDbConnection")
+    .WithOpenApi();
 
 // Configure the application to listen on all network interfaces
 app.Urls.Add("http://0.0.0.0:80");

@@ -29,6 +29,17 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         return imageId;
     }
 
+    public async Task<Stream> LoadImage(int userId, Guid imageId, Stream outStream)
+    {
+        string objectName = ObjectName(userId, imageId);
+        var getObjectArgs = new GetObjectArgs()
+            .WithBucket(UserImageBucket)
+            .WithObject(objectName).WithCallbackStream(stream => stream.CopyTo(outStream));
+        var imageObject = await minioClient.GetObjectAsync(getObjectArgs);
+        logger.LogInformation($"{imageObject.Size} bytes read from bucket [{UserImageBucket}].");
+        return outStream;
+    }
+
     public async Task<bool> DeleteImage(int userId, Guid imageId)
     {
         if (!await EnsureInitializedAsync()) return false;
