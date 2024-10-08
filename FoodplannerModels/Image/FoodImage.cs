@@ -7,5 +7,5 @@ public class FoodImage
     public int UserId { get; set; }
     public string ImageName { get; set; }
     public string ImageFileType { get; set; }
-    public long ImageSize { get; set; }
+    public long Size { get; set; }
 }

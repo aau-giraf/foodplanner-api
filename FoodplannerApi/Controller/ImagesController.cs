@@ -1,4 +1,4 @@
-using FoodplannerModels.Images;
+using FoodplannerServices.Image;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodplannerApi.Controller;
@@ -9,7 +9,7 @@ public class ImagesController(IImageService imageService) : BaseController
     public async Task<IActionResult> UploadImage(IFormFile imageFile)
     {
         if (imageFile is null) return BadRequest();
-        await imageService.SaveImage(0, imageFile.OpenReadStream());
+        await imageService.SaveImageAsync(0, imageFile.OpenReadStream());
         
         return Ok("Uploaded image");
     }
@@ -19,7 +19,7 @@ public class ImagesController(IImageService imageService) : BaseController
     {
         var formFiles = imageFiles.ToList();
         if (!formFiles.Any()) return BadRequest();
-        var results = await Task.WhenAll(formFiles.Select(file => imageService.SaveImage(0, file.OpenReadStream())));
+        var results = await Task.WhenAll(formFiles.Select(file => imageService.SaveImageAsync(0, file.OpenReadStream())));
         return Ok($"Uploaded image: {results}");
     }
 }

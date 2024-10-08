@@ -4,7 +4,6 @@ using FoodplannerDataAccessSql.Account;
 using FoodplannerDataAccessSql;
 using FoodplannerModels;
 using FoodplannerModels.Account;
-using FoodplannerModels.Images;
 using FoodplannerServices.Account;
 using FoodplannerServices.Image;
 using Minio;

@@ -8,18 +8,18 @@ public class FoodImageRepository(PostgreSQLConnectionFactory connectionFactory) 
 {
     public async Task<IEnumerable<FoodImage>> GetAllImagesAsync()
     {
-        var sql = "SELECT * FROM food_images";
+        const string sql = "SELECT * FROM food_images";
         using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            var result = await connection.QueryAsync<FoodplannerModels.Image.FoodImage>(sql);
+            var result = await connection.QueryAsync<FoodImage>(sql);
             return result.ToList();
         }
     }
 
-    public async Task<FoodImage> GetImageByIdAsync(string id)
+    public async Task<FoodImage> GetImageByIdAsync(int userId, string id)
     {
-        var sql = "SELECT * FROM food_images WHERE id = @id";
+        const string sql = "SELECT * FROM food_images WHERE id = @id";
         try
         {
             using (var connection = connectionFactory.Create())
@@ -28,8 +28,7 @@ public class FoodImageRepository(PostgreSQLConnectionFactory connectionFactory) 
                 var result = connection.QuerySingleOrDefault<FoodImage>(sql, new { id });
                 if (result is null)
                 {
-                    throw new NullReferenceException("Foodimage not found");
-                    
+                    throw new NullReferenceException("FoodImage not found");
                 }
 
                 return result;
@@ -42,64 +41,28 @@ public class FoodImageRepository(PostgreSQLConnectionFactory connectionFactory) 
         }
     }
 
-    public async Task<string> InsertImageAsync(FoodImage foodImage)
+    public async Task<int> InsertImageAsync(string imageId, int userId, string imageName, string imageFileType, long fileSize)
     {
-        
-        var sql = "INSERT INTO food_images (ImageID, UserId, ImageName, ImageFileType, ImageSize)" + "VALUES (@ImageID, @UserId, @ImageName, @ImageFileType, @ImageSize, @ImageId)";
-        
-        try
+        int result;
+        var sql = "INSERT INTO food_images (image_id, user_id, image_name, image_file_type, size)" + 
+                  $"VALUES ({imageId}, {userId}, {imageName}, {imageFileType}, {fileSize})";
+
+        await using (var connection = connectionFactory.Create())
         {
-            using (var connection = connectionFactory.Create())
-            {
-                connection.Open();
-                
-                await using var cmd = new NpgsqlCommand(sql, connection);
-                 
-                cmd.Parameters.AddWithValue("@ImageId", foodImage.ImageId);
-                cmd.Parameters.AddWithValue("@ImageName", foodImage.ImageName);
-                cmd.Parameters.AddWithValue("@ImageFileType", foodImage.ImageFileType);
-                cmd.Parameters.AddWithValue("@ImageSize", foodImage.ImageSize);
-                
-                await cmd.ExecuteNonQueryAsync();
-            }
-            return foodImage.ImageId;
+            connection.Open();
+            result = await connection.ExecuteScalarAsync<int>(sql);
         }
-        catch (NpgsqlException e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-        
+        return result;
     }
 
     public async Task<int> DeleteImageAsync(int id)
     {
-        var sql = "DELETE FROM food_images WHERE id = @id";
-
-        try
+        var sql = $"DELETE FROM food_images WHERE id = {id}";
+        using (var connection = connectionFactory.Create())
         {
-            using (var connection = connectionFactory.Create())
-            {
-                connection.Open();
-
-                NpgsqlCommand sqlDeleteCommand = new NpgsqlCommand(sql, connection);
-
-                sqlDeleteCommand.Parameters.AddWithValue("@id", id);
-                sqlDeleteCommand.Prepare();
-
-                sqlDeleteCommand.ExecuteNonQuery();
-            }
-
-            return id;
+            connection.Open();
+            connection.Execute(sql);
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-
+        return id;
     }
-
-
-
 }
