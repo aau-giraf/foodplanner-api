@@ -5,28 +5,45 @@ using Microsoft.AspNetCore.Connections;
 
 namespace FoodplannerDataAccessSql.Images;
 
-public class ImageRepository(PostgreSQLConnectionFactory connectionFactor) : IImageRepository
+public class ImageRepository(PostgreSQLConnectionFactory connectionFactory) : IImageRepository
 {
-    private readonly PostgreSQLConnectionFactory _connectionFactory;
 
-    public ImagesRepository(PostgreSQLConnectionFactory connectionFactory)
+ 
+
+
+    public async Task<IEnumerable<FoodImageDTO>> GetAllImagesAsync()
     {
-        _connectionFactory = connectionFactory;
-    }
-
-
-    public async Task<IEnumerable<FoodImageDTO>> GetAllAsync()
-    {
-        var sql = "Select * from food_images";
-        using (var connection = _connectionFactory.Create())
+        var sql = "SELECT * FROM food_images";
+        using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            var result = await connection.QueryAsync(<FoodImageDTO>(sql));
+            var result = await connection.QueryAsync<FoodImageDTO>(sql);
             return result.ToList();
         }
     }
-    
-    public async Task<int> SaveImageAync(int )
+
+    public async Task<FoodImageDTO?> GetImageByIdAsync(int id)
+    {
+        throw new NotImplementedException();
+        
+    }
+
+    public async Task<FoodImageDTO> SaveImageAsync(FoodImageDTO foodImage)
+    {
+        var sql = ''
+
+        throw new NotImplementedException();
+    }
+
+    public async Task<int> UpdateImageAsync(FoodImageDTO image)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<int> DeleteImageAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
     
     
     
