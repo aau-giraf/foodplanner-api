@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FoodplannerApi.Controller
 {
+    [Authorize]
     [Route("api/[controller]/[action]")]
     public abstract class BaseController : ControllerBase
     {

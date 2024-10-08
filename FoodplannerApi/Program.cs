@@ -8,15 +8,23 @@ using FoodplannerModels.Account;
 using FoodplannerServices;
 using FoodplannerServices.Account;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using FoodplannerApi.Helpers;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 //Add environment variables for Infisical and configure SecretsLoader
 builder.Configuration.AddEnvironmentVariables(prefix: "INFISICAL_");
 SecretsLoader.Configure(builder.Configuration, builder.Environment.EnvironmentName);
 
-// Add services to the container.
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -35,29 +43,33 @@ builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
 builder.Services.AddScoped<UserService>();
 builder.Services.AddAutoMapper(typeof(UserProfile));
 
+// Add services to the container.
 builder.Services.AddControllers();
 
-var app = builder.Build();
+// Configure JWT authentication
+var configuration = builder.Configuration;
+
 
 builder.Services.AddAuthentication(cfg => {
     cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(x => {
-    x.RequireHttpsMetadata = false;
-    x.SaveToken = false;
     x.TokenValidationParameters = new TokenValidationParameters {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
+        ValidIssuer = configuration["ApplicationSettings:JWT_Issuer"],
+        ValidAudience = configuration["ApplicationSettings:JWT_Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8
-                .GetBytes(configuration["ApplicationSettings:JWT_Secret"])
+            Encoding.UTF8.GetBytes(configuration["ApplicationSettings:JWT_Secret"])
         ),
-        ValidateIssuer = false,
-        ValidateAudience = false,
         ClockSkew = TimeSpan.Zero
     };
 });
-
+builder.Services.AddSingleton<AuthHelpers>();
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -67,6 +79,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.MapGet("/test", () => {
