@@ -22,6 +22,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodplannerServices", "Food
 		{307434F3-44ED-49E1-A61D-ABF24DE8C740} = {307434F3-44ED-49E1-A61D-ABF24DE8C740}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{3DA0D7F1-9D7A-49C2-938B-DF5A0FC9005A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestFoodplannerApi", "Test\TestFoodplannerApi\TestFoodplannerApi.csproj", "{C578BDB1-7448-45C7-8BE6-18AA65752110}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestFoodplannerDataAccessSql", "Test\TestFoodplannerDataAccessSql\TestFoodplannerDataAccessSql.csproj", "{B6A2CCCE-38C6-4DF0-9640-016381A30A77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestFoodplannerModels", "Test\TestFoodplannerModels\TestFoodplannerModels.csproj", "{FB0865EC-F1A4-4636-B6D6-B175A60A0FCE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestFoodplannerServices", "Test\TestFoodplannerServices\TestFoodplannerServices.csproj", "{9797BBC0-D4F0-4AD5-9046-053F36FFEF9F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,11 +54,33 @@ Global
 		{00AFC285-6A5D-4132-BF63-110E677CB895}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00AFC285-6A5D-4132-BF63-110E677CB895}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00AFC285-6A5D-4132-BF63-110E677CB895}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C578BDB1-7448-45C7-8BE6-18AA65752110}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C578BDB1-7448-45C7-8BE6-18AA65752110}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C578BDB1-7448-45C7-8BE6-18AA65752110}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C578BDB1-7448-45C7-8BE6-18AA65752110}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6A2CCCE-38C6-4DF0-9640-016381A30A77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6A2CCCE-38C6-4DF0-9640-016381A30A77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6A2CCCE-38C6-4DF0-9640-016381A30A77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6A2CCCE-38C6-4DF0-9640-016381A30A77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB0865EC-F1A4-4636-B6D6-B175A60A0FCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB0865EC-F1A4-4636-B6D6-B175A60A0FCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB0865EC-F1A4-4636-B6D6-B175A60A0FCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB0865EC-F1A4-4636-B6D6-B175A60A0FCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9797BBC0-D4F0-4AD5-9046-053F36FFEF9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9797BBC0-D4F0-4AD5-9046-053F36FFEF9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9797BBC0-D4F0-4AD5-9046-053F36FFEF9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9797BBC0-D4F0-4AD5-9046-053F36FFEF9F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {11759A54-2013-4A27-B5B5-B12E88F08A47}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C578BDB1-7448-45C7-8BE6-18AA65752110} = {3DA0D7F1-9D7A-49C2-938B-DF5A0FC9005A}
+		{B6A2CCCE-38C6-4DF0-9640-016381A30A77} = {3DA0D7F1-9D7A-49C2-938B-DF5A0FC9005A}
+		{FB0865EC-F1A4-4636-B6D6-B175A60A0FCE} = {3DA0D7F1-9D7A-49C2-938B-DF5A0FC9005A}
+		{9797BBC0-D4F0-4AD5-9046-053F36FFEF9F} = {3DA0D7F1-9D7A-49C2-938B-DF5A0FC9005A}
 	EndGlobalSection
 EndGlobal
