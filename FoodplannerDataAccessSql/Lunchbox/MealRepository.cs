@@ -24,9 +24,20 @@ public class MealRepository (PostgreSQLConnectionFactory connectionFactory) : IM
         throw new NotImplementedException();
     }
 
-    public Task<int> InsertAsync(Meal entity)
+    public async Task<int> InsertAsync(Meal entity)
     {
-        throw new NotImplementedException();
+        var sql = $"INSERT INTO meals (id, name, description, altText)\nVALUES ('{entity.Id}', '{entity.Name}', '{entity.Description}', '{entity.AltText}')";
+        using var connection = _connectionFactory.Create();
+        connection.Open();
+        var result = await connection.QueryAsync<Meal>(sql);
+        if(result != null)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
     }
 
     public Task<int> UpdateAsync(Meal entity)
