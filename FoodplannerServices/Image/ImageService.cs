@@ -1,5 +1,4 @@
-﻿using FoodplannerModels.Images;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Minio;
 using Minio.DataModel.Args;
 
@@ -10,7 +9,7 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
     private bool _initialized;
     private const string UserImageBucket = "user-images";
 
-    public async Task<Guid> SaveImage(int userId, Stream imageStream)
+    public async Task<Guid> SaveImageAsync(int userId, Stream imageStream)
     {
         var imageId = Guid.NewGuid();
         string objectName = ObjectName(userId, imageId);
@@ -29,7 +28,7 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         return imageId;
     }
 
-    public async Task<bool> DeleteImage(int userId, Guid imageId)
+    public async Task<bool> DeleteImageAsync(int userId, Guid imageId)
     {
         if (!await EnsureInitializedAsync()) return false;
         
@@ -41,7 +40,7 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         return true;
     }
 
-    public async Task<bool> DeleteImages(int userId, IEnumerable<Guid> imageIds)
+    public async Task<bool> DeleteImagesAsync(int userId, IEnumerable<Guid> imageIds)
     {
         if (!await EnsureInitializedAsync()) return false;
 
