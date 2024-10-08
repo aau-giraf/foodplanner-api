@@ -6,8 +6,8 @@ namespace FoodplannerDataAccessSql.Images;
 public interface IImageRepository
 {
     Task<IEnumerable<FoodImageDTO>> GetAllImagesAsync();
-    Task<FoodImageDTO> GetImageByIdAsync(int imageId);
-    Task<FoodImageDTO> SaveImageAsync(FoodImageDTO foodImage);
+    Task<FoodImageDTO> GetImageByIdAsync(String imageId);
+    Task<string> SaveImageAsync(FoodImageDTO foodImage);
     Task<int> UpdateImageAsync(FoodImageDTO image);
     Task<int> DeleteImageAsync(int imageId);
 }

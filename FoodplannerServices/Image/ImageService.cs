@@ -58,6 +58,7 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         }
         return false;
     }
+    
 
     private async Task<bool> EnsureInitializedAsync()
     {

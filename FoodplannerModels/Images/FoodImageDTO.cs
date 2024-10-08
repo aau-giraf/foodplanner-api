@@ -4,12 +4,20 @@ namespace FoodplannerModels.Images;
 
 public class FoodImageDTO
 {
-    public required int Id { get; set; }
-    public required string ImageId { get; set; }
-    public required int UserId { get; set; }
+    public int Id;
+    public string ImageId { get; set; }
+    public int UserId { get; set; }
     public string ImageName { get; set; }
-    public required string ImageFileType { get; set; }
-    public required long ImageSize { get; set; }
-    
-    
+    public string ImageFileType { get; set; }
+    public long ImageSize { get; set; }
+
+    public FoodImageDTO(String imageId, int UserId , String imageName, String imageFileType, long imageSize)
+    {
+        this.ImageId = imageId;
+        this.UserId = UserId;
+        this.ImageName = imageName;
+        this.ImageFileType = imageFileType;
+        this.ImageSize = imageSize;
+    }
+   
 }
