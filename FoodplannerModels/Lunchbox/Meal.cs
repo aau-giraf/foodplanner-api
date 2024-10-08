@@ -9,7 +9,7 @@ public class Meal {
     public int Id{get; set;}
     public string Name {get; set;}
     public string? Description {get; set;} // A description or comment on how the meal should be eaten/prepared.
-    public LinkedList<Ingredient> Ingredients {get; set;}
+    //public LinkedList<Ingredient> Ingredients {get; set;}
     //private Image parameter
     public string AltText {get; set;} // Alternate text in case the image is not shown
 
