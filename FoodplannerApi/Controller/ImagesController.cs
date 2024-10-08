@@ -47,22 +47,29 @@ public class ImagesController : BaseController
     [HttpDelete]
     public async Task<IActionResult> DeleteImages(IEnumerable<Guid> imageIds, int userId)
     {
-        if (imageIds is null || !imageIds.Any()) return BadRequest("No imageIds provided");
-        await _imagesService.DeleteImages(userId, imageIds);
+        if (userId < 0)
+            return BadRequest("Invalid userId provided");
+
+        var imageIdList = imageIds?.ToList(); // Materialize the IEnumerable to avoid multiple enumeration.
+        if (imageIdList == null || imageIdList.Count == 0)
+            return BadRequest("No imageIds provided");
+        
+        await _imagesService.DeleteImages(userId, imageIdList);
         return Ok("Images deleted successfully");
     }
+    
 
-    [HttpGet("{user}")]
-    public async Task<IActionResult> GetAllImagesByUser(User user, IEnumerable<Guid> imageIds)
+    [HttpGet]
+    public async Task<IActionResult> GetImages(int userid, Guid imageId, Stream outStream)
     {
-        //TODO: Implement this method
-        return Ok();
-    }
+        if (userid <= 0)
+            return BadRequest("Invalid userId provided");
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetImage(int userid, Guid imageId)
-    {
-        //TODO: Implement this method
-        return Ok();
+        if (imageId == Guid.Empty)
+            return BadRequest("No imageId provided");
+        
+        await _imagesService.LoadImage(userid, imageId, outStream);
+        
+        return Ok("images loaded successfully");
     }
 }
