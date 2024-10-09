@@ -21,7 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\FoodplannerModels\FoodplannerModels.csproj" />
+    <ProjectReference Include="..\FoodplannerApi\FoodplannerApi.csproj" />
+    <ProjectReference Include="..\FoodplannerDataAccessSql\FoodplannerDataAccessSql.csproj" />
+    <ProjectReference Include="..\FoodplannerModels\FoodplannerModels.csproj" />
+    <ProjectReference Include="..\FoodplannerServices\FoodplannerServices.csproj" />
   </ItemGroup>
 
 </Project>

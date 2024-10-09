@@ -22,17 +22,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodplannerServices", "Food
 		{307434F3-44ED-49E1-A61D-ABF24DE8C740} = {307434F3-44ED-49E1-A61D-ABF24DE8C740}
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{3DA0D7F1-9D7A-49C2-938B-DF5A0FC9005A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestFoodplannerApi", "Test\TestFoodplannerApi\TestFoodplannerApi.csproj", "{C578BDB1-7448-45C7-8BE6-18AA65752110}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestFoodplannerDataAccessSql", "Test\TestFoodplannerDataAccessSql\TestFoodplannerDataAccessSql.csproj", "{B6A2CCCE-38C6-4DF0-9640-016381A30A77}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestFoodplannerModels", "Test\TestFoodplannerModels\TestFoodplannerModels.csproj", "{FB0865EC-F1A4-4636-B6D6-B175A60A0FCE}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestFoodplannerServices", "Test\TestFoodplannerServices\TestFoodplannerServices.csproj", "{9797BBC0-D4F0-4AD5-9046-053F36FFEF9F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestExample", "Test\TestExample\TestExample.csproj", "{312AB42B-93D9-4BBA-90CC-70899DDC5044}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{3BA45EE8-1CE1-4966-9371-D552AA74E884}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -76,6 +66,10 @@ Global
 		{312AB42B-93D9-4BBA-90CC-70899DDC5044}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{312AB42B-93D9-4BBA-90CC-70899DDC5044}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{312AB42B-93D9-4BBA-90CC-70899DDC5044}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BA45EE8-1CE1-4966-9371-D552AA74E884}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BA45EE8-1CE1-4966-9371-D552AA74E884}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BA45EE8-1CE1-4966-9371-D552AA74E884}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BA45EE8-1CE1-4966-9371-D552AA74E884}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -89,5 +83,6 @@ Global
 		{FB0865EC-F1A4-4636-B6D6-B175A60A0FCE} = {3DA0D7F1-9D7A-49C2-938B-DF5A0FC9005A}
 		{9797BBC0-D4F0-4AD5-9046-053F36FFEF9F} = {3DA0D7F1-9D7A-49C2-938B-DF5A0FC9005A}
 		{312AB42B-93D9-4BBA-90CC-70899DDC5044} = {3DA0D7F1-9D7A-49C2-938B-DF5A0FC9005A}
+		{3BA45EE8-1CE1-4966-9371-D552AA74E884} = {3DA0D7F1-9D7A-49C2-938B-DF5A0FC9005A}
 	EndGlobalSection
 EndGlobal
