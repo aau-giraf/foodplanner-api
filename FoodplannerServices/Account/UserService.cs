@@ -41,17 +41,6 @@ public class UserService : IUserService {
     {
         return await _userRepository.GetByEmailAndPasswordAsync(email, password);
     }
-
-    public async Task<IEnumerable<UserDTO>> GetAllUsersNotApprovedAsync()
-    {
-        var user = await _userRepository.GetAllNotApprovedAsync();
-        var userDTO = _mapper.Map<IEnumerable<UserDTO>>(user);
-        return userDTO;
-    }
-
-    public async Task<int> ApproveUserRoleAsync(int id){
-        return await _userRepository.ApproveRoleAsync(id);
-    }
 }
 
 

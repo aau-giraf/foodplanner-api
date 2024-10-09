@@ -14,8 +14,5 @@ namespace FoodplannerModels.Account
         Task<int> UpdateAsync(User entity);
         Task<int> DeleteAsync(int id);
         Task<User?> GetByEmailAndPasswordAsync(string email, string password);
-        Task<IEnumerable<User>> GetAllNotApprovedAsync();
-        Task<int> ApproveRoleAsync(int id);
-
     }
 }
