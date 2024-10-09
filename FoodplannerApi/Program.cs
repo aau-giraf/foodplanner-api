@@ -86,6 +86,7 @@ app.MapGet("/test-db-connection", async (PostgreSQLConnectionFactory connectionF
     .WithOpenApi();
 
 // Configure the application to listen on all network interfaces
-app.Urls.Add("http://0.0.0.0:80");
+var backendPort = SecretsLoader.GetSecret("BACKEND_PORT");
+app.Urls.Add($"http://0.0.0.0:{backendPort}");
 
 app.Run();
