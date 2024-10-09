@@ -17,7 +17,7 @@ public class FoodImageRepository(PostgreSQLConnectionFactory connectionFactory) 
         }
     }
 
-    public async Task<FoodImage> GetImageByIdAsync(int userId, string id)
+    public async Task<FoodImage> GetImageByIdAsync(int foodImageId)
     {
         const string sql = "SELECT * FROM food_images WHERE id = @id";
         try
@@ -25,7 +25,7 @@ public class FoodImageRepository(PostgreSQLConnectionFactory connectionFactory) 
             using (var connection = connectionFactory.Create())
             {
                 connection.Open();
-                var result = connection.QuerySingleOrDefault<FoodImage>(sql, new { id });
+                var result = connection.QuerySingleOrDefault<FoodImage>(sql, new { foodImageId });
                 if (result is null)
                 {
                     throw new NullReferenceException("FoodImage not found");

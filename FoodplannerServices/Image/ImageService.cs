@@ -8,7 +8,7 @@ namespace FoodplannerServices.Image;
 public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger) : IImageService
 {
     private bool _initialized;
-    private const string UserImageBucket = "user-images";
+    private static readonly string UserImageBucket = "user-images";
 
     public async Task<Guid> SaveImageAsync(int userId, Stream imageStream)
     {
@@ -25,11 +25,11 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         var statObjectArgs = new StatObjectArgs().WithBucket(UserImageBucket).WithObject(objectName);
         var objectStat = await minioClient.StatObjectAsync(statObjectArgs);
         logger.LogInformation($"{objectStat.Size} bytes saved to bucket [{UserImageBucket}].");
-
+        imageStream.Close();
         return imageId;
     }
 
-    public async Task<Stream> LoadImageAsync(int userId, Guid imageId, Stream outStream)
+    public async Task LoadImageAsync(int userId, Guid imageId, Stream outStream)
     {
         string objectName = ObjectName(userId, imageId);
         var getObjectArgs = new GetObjectArgs()
@@ -37,7 +37,6 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
             .WithObject(objectName).WithCallbackStream(stream => stream.CopyTo(outStream));
         var imageObject = await minioClient.GetObjectAsync(getObjectArgs);
         logger.LogInformation($"{imageObject.Size} bytes read from bucket [{UserImageBucket}].");
-        return outStream;
     }
     
     public async Task<bool> DeleteImageAsync(int userId, Guid imageId)
@@ -57,7 +56,7 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         if (!await EnsureInitializedAsync()) return false;
 
         var removeObjectsArgsArgs = new RemoveObjectsArgs()
-            .WithObjects(imageIds.Select(id => id.ToString()).ToList())
+            .WithObjects(imageIds.Select(id => ObjectName(userId, id)).ToList())
             .WithBucket(UserImageBucket);
 
         var errors = await minioClient.RemoveObjectsAsync(removeObjectsArgsArgs);
@@ -85,17 +84,5 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
     private string ObjectName(int userId, Guid imageId)
     {
         return $"{userId.ToString()}/{imageId.ToString()}";
-    }
-    
-    public async Task<bool> GetImage(int userId, Guid imageId)
-    {
-        //TODO: Implement this method
-        return true;
-    }
-    
-    public async Task<bool> GetImages(int userId, IEnumerable<Guid> imageIds)
-    {
-        //TODO: Implement this method
-        return true;
     }
 }

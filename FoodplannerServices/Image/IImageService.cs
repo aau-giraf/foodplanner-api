@@ -17,7 +17,7 @@ public interface IImageService
     /// <param name="imageId">ID of the image object to load.</param>
     /// <param name="outStream"></param>
     /// <returns>A Stream containing the image data.</returns>
-    public Task<Stream> LoadImageAsync(int userId, Guid imageId, Stream outStream);
+    public Task LoadImageAsync(int userId, Guid imageId, Stream outStream);
     /// <summary>
     /// DeleteImageAsync deletes an image from storage.
     /// </summary>
