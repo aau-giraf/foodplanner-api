@@ -50,8 +50,12 @@ ehthumbs.db
 Desktop.ini
 
 # Ignore build directories
-foodplanner-api/bin/
-foodplanner-api/obj/
+FoodplannerApi/bin/
+FoodplannerApi/obj/
 
 # Ignore private files
 private.txt
+
+#Secrets
+FoodplannerApi/appsettings.Development.json
+/.vs

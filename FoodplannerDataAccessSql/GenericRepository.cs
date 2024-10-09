@@ -1,16 +1,15 @@
 using Dapper;
-using System.Data;
-using Npgsql;
+using FoodplannerModels;
 
-namespace foodplanner_api.Data.Repositories;
+namespace FoodplannerDataAccessSql;
 
 
 // UserRepositoryImpl.cs
-public class RepositoryImpl<T> : IRepository<T> where T : class
+public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
     private readonly PostgreSQLConnectionFactory _connectionFactory;
 
-    public RepositoryImpl(PostgreSQLConnectionFactory connectionFactory){
+    public GenericRepository(PostgreSQLConnectionFactory connectionFactory){
         _connectionFactory = connectionFactory;
     }
 
@@ -24,12 +23,17 @@ public class RepositoryImpl<T> : IRepository<T> where T : class
         }
     }
 
-    public async Task<T> GetByIdAsync(int id)
+    public async Task<T?> GetByIdAsync(int id)
     {
         using (var connection = _connectionFactory.Create()){
             connection.Open();
             var sql = $"SELECT * FROM {typeof(T).Name}s WHERE Id = @Id";
-            return await connection.QuerySingleOrDefaultAsync<T>(sql, new { Id = id });
+            var result = await connection.QuerySingleOrDefaultAsync<T>(sql, new { Id = id });
+            if (result == null)
+            {
+                return null;
+            }
+            return result;
         }
     }
 

@@ -1,12 +1,11 @@
-using foodplanner_api.Models;
-using foodplanner_api.Service;
+using FoodplannerModels.Account;
+using FoodplannerServices;
+using FoodplannerServices.Account;
 using Microsoft.AspNetCore.Mvc;
 
-namespace foodplanner_api.Controller;
+namespace FoodplannerApi.Controller;
 
-[ApiController]
-[Route("api/[controller]")]
-public class UsersController : ControllerBase {
+public class UsersController : BaseController {
     private readonly UserService _userService;
 
     public UsersController(UserService userService){
@@ -14,14 +13,14 @@ public class UsersController : ControllerBase {
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllUsers(){
+    public async Task<IActionResult> GetAll(){
         var users = await _userService.GetAllUsersAsync();
         return Ok(users);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetUsersById(int id){
-        var users = await _userService.GetAllUsersByIdAsync(id);
+    public async Task<IActionResult> Get(int id){
+        var users = await _userService.GetUserByIdAsync(id);
         if (User == null){
             return NotFound();
         }
@@ -29,16 +28,16 @@ public class UsersController : ControllerBase {
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateUser([FromBody] User user){
+    public async Task<IActionResult> Create([FromBody] User user){
         var result = await _userService.CreateUserAsync(user);
         if (result > 0){
-            return CreatedAtAction(nameof(GetUsersById), new { id = user.Id }, user);
+            return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
         }
         return BadRequest();
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUser(int id, [FromBody] User user){
+    public async Task<IActionResult> Update(int id, [FromBody] User user){
         if (id != user.Id){
             return BadRequest();
         }
@@ -50,7 +49,7 @@ public class UsersController : ControllerBase {
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUser(int id){
+    public async Task<IActionResult> Delete(int id){
         var result = await _userService.DeleteUserAsync(id);
         if (result > 0){
             return NoContent();
