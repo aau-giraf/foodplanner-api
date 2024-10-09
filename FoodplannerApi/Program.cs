@@ -21,9 +21,13 @@ builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddSingleton(serviceProvider => {
-    var connectionString = SecretsLoader.GetSecret("DB_CONNECTION_STRING","/SW-5-02/");
+    var host = SecretsLoader.GetSecret("DB_HOST");
+    var port = SecretsLoader.GetSecret("DB_PORT");
+    var database = SecretsLoader.GetSecret("DB_NAME");
+    var username = SecretsLoader.GetSecret("DB_USER");
+    var password = SecretsLoader.GetSecret("DB_PASS");
 
-    return new PostgreSQLConnectionFactory(connectionString);
+    return new PostgreSQLConnectionFactory(host, port, database, username, password);
 });
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
