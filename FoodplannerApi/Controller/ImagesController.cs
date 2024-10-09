@@ -50,7 +50,7 @@ public class ImagesController : BaseController
         if (userId < 0)
             return BadRequest("Invalid userId provided");
 
-        var imageIdList = imageIds?.ToList(); // Materialize the IEnumerable to avoid multiple enumeration.
+        var imageIdList = imageIds?.ToList();
         if (imageIdList == null || imageIdList.Count == 0)
             return BadRequest("No imageIds provided");
         
