@@ -73,4 +73,18 @@ public class UsersController : BaseController {
         return NotFound();
     }
 
+    [HttpGet]
+    public async Task<IActionResult> RoleRequests(){
+        var users = await _userService.GetAllUsersNotApprovedAsync();
+        return Ok(users);
+    }
+    
+    [HttpPut("{id}")]
+    public async Task<IActionResult> ApproveRole(int id){
+        var result = await _userService.ApproveUserRoleAsync(id);
+        if (result > 0){
+            return NoContent();
+        }
+        return NotFound();
+    }
 }

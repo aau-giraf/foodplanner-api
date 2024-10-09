@@ -52,10 +52,21 @@ namespace FoodplannerDataAccessSql.Account
             
         }
 
+        public async Task<IEnumerable<User>> GetAllNotApprovedAsync()
+        {
+            var sql = "SELECT first_name, last_name, email FROM users WHERE role_approved = false";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QueryAsync<User>(sql);
+                return result.ToList();
+            }
+        }
+
        
         public async Task<int> InsertAsync(User entity)
         {
-            var sql = "INSERT INTO users (first_name, last_name, email, password) VALUES (@First_Name, @Last_Name, @Email, @Password) RETURNING id";
+            var sql = "INSERT INTO users (first_name, last_name, email, password, role, role_approved) VALUES (@First_Name, @Last_Name, @Email, @Password, @Role, @Role_approved) RETURNING id";
             
             using (var connection = _connectionFactory.Create())
             {
@@ -65,10 +76,23 @@ namespace FoodplannerDataAccessSql.Account
                     First_Name = entity.First_name, 
                     Last_Name = entity.Last_name, 
                     Email = entity.Email, 
-                    Password = entity.Password 
+                    Password = entity.Password, 
+                    Role = entity.Role,
+                    Role_approved = false
                 });
                 return result;
             }     
+        }
+
+        public async Task<int> ApproveRoleAsync(int id)
+        {
+            var sql = "UPDATE users SET role_approved = true WHERE id = @Id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.ExecuteAsync(sql, new { Id = id });
+                return result;
+            }
         }
 
         public Task<int> UpdateAsync(User entity)

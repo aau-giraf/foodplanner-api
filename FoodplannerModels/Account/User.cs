@@ -20,6 +20,12 @@ public class User {
     [StringLength(100, ErrorMessage = "Email er for langt")]
     public required string Email { get; set; }
 
+    [Required(ErrorMessage = "Rolle er påkrævet")]
+    [StringLength(100, ErrorMessage = "Rolle er for langt")]
+    public required string Role { get; set; }
+
+    public bool Role_approved { get; set; }
+
     [Required(ErrorMessage = "Adgangskode er påkrævet")]
     [StringLength(100, ErrorMessage = "Adgangskode er for langt")]
     public required string Password { get; set; }
