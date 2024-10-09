@@ -35,11 +35,11 @@ builder.Services.AddMinio(configureClient =>
 builder.Services.AddSingleton(serviceProvider => {
     var host = SecretsLoader.GetSecret("DB_HOST");
     var port = SecretsLoader.GetSecret("DB_PORT");
+    var database = SecretsLoader.GetSecret("DB_NAME");
     var username = SecretsLoader.GetSecret("DB_USER");
     var password = SecretsLoader.GetSecret("DB_PASS");
-    var database = SecretsLoader.GetSecret("DB_NAME");
 
-    return new PostgreSQLConnectionFactory($"Host={host};Port={port};Username={username};Password={password};Database={database}");
+    return new PostgreSQLConnectionFactory(host, port, database, username, password);
 });
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
