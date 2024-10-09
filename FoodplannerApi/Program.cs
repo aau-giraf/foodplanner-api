@@ -55,8 +55,6 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -87,6 +85,6 @@ app.MapGet("/test-db-connection", async (PostgreSQLConnectionFactory connectionF
     .WithOpenApi();
 
 // Configure the application to listen on all network interfaces
-app.Urls.Add("http://0.0.0.0:80");
+app.Urls.Add("http://0.0.0.0:8080");
 
 app.Run();
