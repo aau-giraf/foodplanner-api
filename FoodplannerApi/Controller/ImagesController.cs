@@ -58,16 +58,25 @@ public class ImagesController(IImageService imageService, IFoodImageRepository f
     }
     
     [HttpGet]
-    public async Task<IActionResult> GetImage(int foodImageId)
+    public async Task<IActionResult> GetFoodImage(int foodImageId)
     {
         if (foodImageId < 0)
             return BadRequest("Invalid userId provided");
-
-        var outStream = new MemoryStream();
-        var foodImage = await foodImageRepository.GetImageByIdAsync(foodImageId);
-        await imageService.LoadImageAsync(foodImage.UserId, Guid.Parse(foodImage.ImageId), outStream);
-        string base64 = Convert.ToBase64String(outStream.ToArray());
         
-        return Ok(new { foodImage, data = base64});
+        var foodImage = await foodImageRepository.GetImageByIdAsync(foodImageId);
+        return Ok(new { foodImage });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetPresignedImageLink(int foodImageId)
+    {
+        var foodImage = await foodImageRepository.GetImageByIdAsync(foodImageId);
+        var presignedImageLink = await imageService.LoadImagePresignedAsync(foodImage.UserId, Guid.Parse(foodImage.ImageId));
+        if (presignedImageLink == null)
+        {
+            return NotFound("Image does not exist");
+        }
+
+        return Ok(presignedImageLink);
     }
 }

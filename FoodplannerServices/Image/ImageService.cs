@@ -9,6 +9,8 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
 {
     private bool _initialized;
     private static readonly string UserImageBucket = "user-images";
+    private static readonly int PresignedExpiry = 604800;
+    
 
     public async Task<Guid> SaveImageAsync(int userId, Stream imageStream)
     {
@@ -29,7 +31,7 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         return imageId;
     }
 
-    public async Task LoadImageAsync(int userId, Guid imageId, Stream outStream)
+    public async Task LoadImageStreamAsync(int userId, Guid imageId, Stream outStream)
     {
         string objectName = ObjectName(userId, imageId);
         var getObjectArgs = new GetObjectArgs()
@@ -38,7 +40,20 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         var imageObject = await minioClient.GetObjectAsync(getObjectArgs);
         logger.LogInformation($"{imageObject.Size} bytes read from bucket [{UserImageBucket}].");
     }
-    
+
+    public async Task<string?> LoadImagePresignedAsync(int userId, Guid imageId)
+    {
+        var presignedGetArgs = new PresignedGetObjectArgs()
+            .WithBucket(UserImageBucket)
+            .WithObject(ObjectName(userId, imageId)).WithExpiry(PresignedExpiry);
+        var imageUrl = await minioClient.PresignedGetObjectAsync(presignedGetArgs);
+        if (imageUrl == null)
+        {
+            logger.LogError($"{imageUrl} was not found in bucket [{UserImageBucket}].");
+        }
+        return imageUrl;
+    }
+
     public async Task<bool> DeleteImageAsync(int userId, Guid imageId)
     {
         if (!await EnsureInitializedAsync()) return false;

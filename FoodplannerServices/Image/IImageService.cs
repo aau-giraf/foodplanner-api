@@ -17,13 +17,15 @@ public interface IImageService
     /// <param name="imageId">ID of the image object to load.</param>
     /// <param name="outStream"></param>
     /// <returns>A Stream containing the image data.</returns>
-    public Task LoadImageAsync(int userId, Guid imageId, Stream outStream);
+    public Task LoadImageStreamAsync(int userId, Guid imageId, Stream outStream);
+
     /// <summary>
     /// DeleteImageAsync deletes an image from storage.
     /// </summary>
     /// <param name="userId">ID of the user, who owns the image.</param>
     /// <param name="imageId">ID of the image to delete.</param>
     /// <returns>A boolean result, true if successful and otherwise false.</returns>
+    public Task<string?> LoadImagePresignedAsync(int userId, Guid imageId);
     public Task<bool> DeleteImageAsync(int userId, Guid imageId);
     /// <summary>
     /// DeleteImagesAsync deletes multiple images from store.
