@@ -9,7 +9,6 @@ using FoodplannerServices.Account;
 using FoodplannerServices.Image;
 using Minio;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 //Add environment variables for Infisical and configure SecretsLoader
@@ -20,6 +19,7 @@ SecretsLoader.Configure(builder.Configuration, builder.Environment.EnvironmentNa
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
 //Configre and add MinIO service
 var endpoint = SecretsLoader.GetSecret("MINIO_ENDPOINT");
@@ -56,8 +56,6 @@ builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddControllers();
 
 var app = builder.Build();
-
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

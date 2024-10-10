@@ -19,7 +19,7 @@ public class FoodImageRepository(PostgreSQLConnectionFactory connectionFactory) 
 
     public async Task<FoodImage> GetImageByIdAsync(int foodImageId)
     {
-        const string sql = "SELECT * FROM food_image WHERE id = '@id'";
+        const string sql = "SELECT * FROM food_image WHERE id = @id";
         try
         {
             using (var connection = connectionFactory.Create())

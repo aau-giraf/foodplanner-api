@@ -19,7 +19,7 @@ public class ImagesController(IImageService imageService, IFoodImageRepository f
         var foodImageId = await foodImageRepository.InsertImageAsync(
             imageId.ToString(), 
             userId, 
-            imageFile.Name, 
+            imageFile.Name,
             imageFile.ContentType, 
             imageFile.Length);
         return Ok($"FoodImage [{foodImageId}] uploaded successfully");
@@ -58,18 +58,16 @@ public class ImagesController(IImageService imageService, IFoodImageRepository f
     }
     
     [HttpGet]
-    public async Task<IActionResult> GetImage(int userid, Guid imageId)
+    public async Task<IActionResult> GetImage(int foodImageId)
     {
-        if (userid < 0)
+        if (foodImageId < 0)
             return BadRequest("Invalid userId provided");
 
-        if (imageId == Guid.Empty)
-            return BadRequest("No imageId provided");
-
         var outStream = new MemoryStream();
-        await imageService.LoadImageAsync(userid, imageId, outStream);
+        var foodImage = await foodImageRepository.GetImageByIdAsync(foodImageId);
+        await imageService.LoadImageAsync(foodImage.UserId, Guid.Parse(foodImage.ImageId), outStream);
         string base64 = Convert.ToBase64String(outStream.ToArray());
         
-        return Ok(base64);
+        return Ok(new { foodImage, data = base64});
     }
 }
