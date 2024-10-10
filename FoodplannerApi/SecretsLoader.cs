@@ -15,7 +15,6 @@ public static class SecretsLoader
         var clientId = config.GetValue<string>("Infisical:ClientId") ?? Environment.GetEnvironmentVariable("CLIENT_ID");
         var clientSecret = config.GetValue<string>("Infisical:ClientSecret") ?? Environment.GetEnvironmentVariable("CLIENT_SECRET");
         var workspaceId = config.GetValue<string>("Infisical:Workspace") ?? Environment.GetEnvironmentVariable("WORKSPACE");
-        var siteUrl = config.GetValue<string>("Infisical:SiteUrl") ?? Environment.GetEnvironmentVariable("SITE_URL");
         if (string.IsNullOrWhiteSpace(clientId) || 
             string.IsNullOrWhiteSpace(clientSecret) || 
             string.IsNullOrWhiteSpace(workspaceId))
@@ -25,7 +24,6 @@ public static class SecretsLoader
         
         var settings = new ClientSettings
         {
-            SiteUrl = siteUrl,
             Auth = new AuthenticationOptions
             {
                 UniversalAuth = new UniversalAuthMethod
@@ -39,7 +37,7 @@ public static class SecretsLoader
         _configuration = new Configuration(MapEnvironmentToSlug(environment), workspaceId, new InfisicalClient(settings));
     }
 
-    public static string GetSecret(string secretName)
+    public static string GetSecret(string secretName, string path = "/")
     {
         if (_configuration == null)
         {
@@ -50,6 +48,7 @@ public static class SecretsLoader
             SecretName = secretName,
             ProjectId = _configuration.workspaceId,
             Environment = _configuration.environmentSlug,
+            Path = path,
         };
         
         return _configuration.Client.GetSecret(getSecretOptions).SecretValue;
