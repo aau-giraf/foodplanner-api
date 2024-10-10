@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodplannerServices", "Food
 		{307434F3-44ED-49E1-A61D-ABF24DE8C740} = {307434F3-44ED-49E1-A61D-ABF24DE8C740}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{E731ACC7-DFA1-4D7F-A5F4-3291462E16B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{00AFC285-6A5D-4132-BF63-110E677CB895}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00AFC285-6A5D-4132-BF63-110E677CB895}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00AFC285-6A5D-4132-BF63-110E677CB895}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E731ACC7-DFA1-4D7F-A5F4-3291462E16B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E731ACC7-DFA1-4D7F-A5F4-3291462E16B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E731ACC7-DFA1-4D7F-A5F4-3291462E16B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E731ACC7-DFA1-4D7F-A5F4-3291462E16B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
