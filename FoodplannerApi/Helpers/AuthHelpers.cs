@@ -25,6 +25,7 @@ namespace FoodplannerApi.Helpers
                 new Claim(JwtRegisteredClaimNames.Sub, $"{user.First_name} {user.Last_name}"),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim("DateOfJoining", DateTime.UtcNow.ToString("yyyy-MM-dd")),
+                new Claim(ClaimTypes.Role, user.Role),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

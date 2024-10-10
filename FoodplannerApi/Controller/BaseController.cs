@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FoodplannerApi.Controller
 {
-    [Authorize]
+    [Authorize(Roles = "Teacher")]
     [Route("api/[controller]/[action]")]
     public abstract class BaseController : ControllerBase
     {

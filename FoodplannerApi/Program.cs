@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using FoodplannerApi;
 using Npgsql;
@@ -62,6 +63,7 @@ builder.Services.AddAuthentication(cfg => {
         ValidateIssuerSigningKey = true,
         ValidIssuer = configuration["ApplicationSettings:JWT_Issuer"],
         ValidAudience = configuration["ApplicationSettings:JWT_Audience"],
+        RoleClaimType = ClaimTypes.Role,
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(configuration["ApplicationSettings:JWT_Secret"])
         ),
