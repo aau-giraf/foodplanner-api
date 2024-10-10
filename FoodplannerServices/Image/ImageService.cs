@@ -12,10 +12,10 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
     private static readonly int PresignedExpiry = 604800;
     
 
-    public async Task<Guid> SaveImageAsync(int userId, Stream imageStream)
+    public async Task<Guid> SaveImageAsync(int userId, Stream imageStream, string contentType)
     {
         var imageId = Guid.NewGuid();
-        string objectName = ObjectName(userId, imageId);
+        string objectName = ObjectName(userId, imageId, contentType);
         await EnsureInitializedAsync();
         var putObjectArgs = new PutObjectArgs()
             .WithBucket(UserImageBucket)
@@ -24,7 +24,9 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
             .WithStreamData(imageStream)
             .WithContentType("application/octet-stream");
         await minioClient.PutObjectAsync(putObjectArgs);
-        var statObjectArgs = new StatObjectArgs().WithBucket(UserImageBucket).WithObject(objectName);
+        var statObjectArgs = new StatObjectArgs()
+            .WithBucket(UserImageBucket)
+            .WithObject(objectName);
         var objectStat = await minioClient.StatObjectAsync(statObjectArgs);
         logger.LogInformation($"{objectStat.Size} bytes saved to bucket [{UserImageBucket}].");
         imageStream.Close();
@@ -33,19 +35,21 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
 
     public async Task LoadImageStreamAsync(int userId, Guid imageId, Stream outStream)
     {
-        string objectName = ObjectName(userId, imageId);
+        string objectName = ObjectName(userId, imageId, "");
         var getObjectArgs = new GetObjectArgs()
             .WithBucket(UserImageBucket)
-            .WithObject(objectName).WithCallbackStream(stream => stream.CopyTo(outStream));
+            .WithObject(objectName)
+            .WithCallbackStream(stream => stream.CopyTo(outStream));
         var imageObject = await minioClient.GetObjectAsync(getObjectArgs);
         logger.LogInformation($"{imageObject.Size} bytes read from bucket [{UserImageBucket}].");
     }
 
-    public async Task<string?> LoadImagePresignedAsync(int userId, Guid imageId)
+    public async Task<string?> LoadImagePresignedAsync(int userId, Guid imageId, string contentType)
     {
         var presignedGetArgs = new PresignedGetObjectArgs()
             .WithBucket(UserImageBucket)
-            .WithObject(ObjectName(userId, imageId)).WithExpiry(PresignedExpiry);
+            .WithObject(ObjectName(userId, imageId, contentType))
+            .WithExpiry(PresignedExpiry);
         var imageUrl = await minioClient.PresignedGetObjectAsync(presignedGetArgs);
         if (imageUrl == null)
         {
@@ -54,12 +58,12 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         return imageUrl;
     }
 
-    public async Task<bool> DeleteImageAsync(int userId, Guid imageId)
+    public async Task<bool> DeleteImageAsync(int userId, Guid imageId, string contentType)
     {
         if (!await EnsureInitializedAsync()) return false;
         
         var removeObjectArgs = new RemoveObjectArgs()
-            .WithObject(ObjectName(userId, imageId))
+            .WithObject(ObjectName(userId, imageId, ""))
             .WithBucket(UserImageBucket);
         await minioClient.RemoveObjectAsync(removeObjectArgs);
         
@@ -71,7 +75,7 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         if (!await EnsureInitializedAsync()) return false;
 
         var removeObjectsArgsArgs = new RemoveObjectsArgs()
-            .WithObjects(imageIds.Select(id => ObjectName(userId, id)).ToList())
+            .WithObjects(imageIds.Select(id => ObjectName(userId, id, "")).ToList())
             .WithBucket(UserImageBucket);
 
         var errors = await minioClient.RemoveObjectsAsync(removeObjectsArgsArgs);
@@ -96,8 +100,9 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         return _initialized = true;
     }
 
-    private string ObjectName(int userId, Guid imageId)
+    private string ObjectName(int userId, Guid imageId, string? extension)
     {
-        return $"{userId.ToString()}/{imageId.ToString()}";
+        var ext = (extension != null) ? $".{extension.Split("/").Last()}" : string.Empty;
+        return $"{userId.ToString()}/{imageId.ToString()}" + ext;
     }
 }

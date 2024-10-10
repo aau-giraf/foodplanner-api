@@ -9,7 +9,7 @@ public class FoodImageService(IImageService imageService, IFoodImageRepository f
 {
     public async Task<int> CreateFoodImage(int userid, Stream imageStream, string imageName, string imageType)
     {
-        var imageId = await imageService.SaveImageAsync(userid, imageStream);
+        var imageId = await imageService.SaveImageAsync(userid, imageStream, imageType);
         int foodImageId = await foodImageRepository.InsertImageAsync(imageId.ToString(), userid, imageName, imageType, imageStream.Length);
         
         return foodImageId;

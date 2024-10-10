@@ -15,11 +15,12 @@ public class ImagesController(IImageService imageService, IFoodImageRepository f
     {
         if (imageFile.Length == 0) return BadRequest("File is empty");
         if (imageFile.Length >= _maxFileSize) return BadRequest("File too big");
-        var imageId = await imageService.SaveImageAsync(userId, imageFile.OpenReadStream());
+        var imageId = await imageService.SaveImageAsync(
+            userId, imageFile.OpenReadStream(), imageFile.ContentType);
         var foodImageId = await foodImageRepository.InsertImageAsync(
             imageId.ToString(), 
             userId, 
-            imageFile.Name,
+            imageFile.FileName,
             imageFile.ContentType, 
             imageFile.Length);
         return Ok($"FoodImage [{foodImageId}] uploaded successfully");
@@ -29,17 +30,17 @@ public class ImagesController(IImageService imageService, IFoodImageRepository f
     public async Task<IActionResult> UploadImages(IFormFileCollection imageFiles, int userId)
     {
         var ids = imageFiles
-            .Select(async file => await imageService.SaveImageAsync(userId, file.OpenReadStream()))
+            .Select(async file => await imageService.SaveImageAsync(userId, file.OpenReadStream(), file.ContentType))
             .Select(task => task.Result.ToString());
         
         return Ok(ids);
     }
 
     [HttpDelete]
-    public async Task<IActionResult> DeleteImage(Guid imageId, int userId)
+    public async Task<IActionResult> DeleteImage(int foodImageId, int userId)
     {
-        if (imageId == Guid.Empty) return BadRequest("No imageId provided");
-        await imageService.DeleteImageAsync(userId, imageId);
+        var foodImage = await foodImageRepository.GetImageByIdAsync(foodImageId);
+        await imageService.DeleteImageAsync(userId, Guid.Parse(foodImage.ImageId), foodImage.ImageFileType);
         return Ok("Image deleted successfully");
     }
 
@@ -71,7 +72,7 @@ public class ImagesController(IImageService imageService, IFoodImageRepository f
     public async Task<IActionResult> GetPresignedImageLink(int foodImageId)
     {
         var foodImage = await foodImageRepository.GetImageByIdAsync(foodImageId);
-        var presignedImageLink = await imageService.LoadImagePresignedAsync(foodImage.UserId, Guid.Parse(foodImage.ImageId));
+        var presignedImageLink = await imageService.LoadImagePresignedAsync(foodImage.UserId, Guid.Parse(foodImage.ImageId), foodImage.ImageFileType);
         if (presignedImageLink == null)
         {
             return NotFound("Image does not exist");
