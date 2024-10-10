@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using System.Diagnostics;
+using Dapper;
 using FoodplannerModels.Lunchbox;
 
 namespace FoodplannerDataAccessSql.Lunchbox;
@@ -26,7 +27,7 @@ public class MealRepository (PostgreSQLConnectionFactory connectionFactory) : IM
 
     public async Task<int> InsertAsync(Meal entity)
     {
-        var sql = $"INSERT INTO meals (id, name, description, altText)\nVALUES ('{entity.Id}', '{entity.Name}', '{entity.Description}', '{entity.AltText}')";
+        var sql = $"INSERT INTO meals (meal_name, description, alttext)\nVALUES ('{entity.Meal_name}', '{entity.Description}', '{entity.AltText}')";
         using var connection = _connectionFactory.Create();
         connection.Open();
         var result = await connection.QueryAsync<Meal>(sql);

@@ -39,6 +39,7 @@ builder.Services.AddScoped(typeof(IMealRepository), typeof(MealRepository));
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<MealService>();
 builder.Services.AddAutoMapper(typeof(UserProfile));
+builder.Services.AddAutoMapper(typeof(MealProfile));
 
 builder.Services.AddControllers();
 
