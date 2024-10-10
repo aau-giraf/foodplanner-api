@@ -36,6 +36,11 @@ public class UserService : IUserService {
     public async Task<int> DeleteUserAsync(int id){
         return await _userRepository.DeleteAsync(id);
     }
+
+    public async Task<User> GetUserByEmailAndPasswordAsync(string email, string password)
+    {
+        return await _userRepository.GetByEmailAndPasswordAsync(email, password);
+    }
 }
 
 
