@@ -76,7 +76,7 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         var exists = await minioClient.BucketExistsAsync(bucketExistsArgs);
         if (exists) return _initialized = true;
         logger.LogInformation($"Bucket [{UserImageBucket}] not found. Creating this bucket");
-        var makeBucketArgs = new MakeBucketArgs().WithBucket(UserImageBucket);
+        var makeBucketArgs = new MakeBucketArgs().WithBucket(UserImageBucket);  
         await minioClient.MakeBucketAsync(makeBucketArgs);
         return _initialized = true;
     }

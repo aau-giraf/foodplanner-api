@@ -8,7 +8,7 @@ public class FoodImageRepository(PostgreSQLConnectionFactory connectionFactory) 
 {
     public async Task<IEnumerable<FoodImage>> GetAllImagesAsync()
     {
-        const string sql = "SELECT * FROM food_images";
+        const string sql = "SELECT * FROM food_image";
         using (var connection = connectionFactory.Create())
         {
             connection.Open();
@@ -19,7 +19,7 @@ public class FoodImageRepository(PostgreSQLConnectionFactory connectionFactory) 
 
     public async Task<FoodImage> GetImageByIdAsync(int foodImageId)
     {
-        const string sql = "SELECT * FROM food_images WHERE id = @id";
+        const string sql = "SELECT * FROM food_image WHERE id = '@id'";
         try
         {
             using (var connection = connectionFactory.Create())
@@ -44,8 +44,8 @@ public class FoodImageRepository(PostgreSQLConnectionFactory connectionFactory) 
     public async Task<int> InsertImageAsync(string imageId, int userId, string imageName, string imageFileType, long fileSize)
     {
         int result;
-        var sql = "INSERT INTO food_images (image_id, user_id, image_name, image_file_type, size)" + 
-                  $"VALUES ({imageId}, {userId}, {imageName}, {imageFileType}, {fileSize})";
+        var sql = "INSERT INTO food_image (image_id, user_id, image_name, image_file_type, size)" + 
+                  $"VALUES ('{imageId}', {userId}, '{imageName}', '{imageFileType}', {fileSize})";
 
         await using (var connection = connectionFactory.Create())
         {
@@ -57,7 +57,7 @@ public class FoodImageRepository(PostgreSQLConnectionFactory connectionFactory) 
 
     public async Task<int> DeleteImageAsync(int id)
     {
-        var sql = $"DELETE FROM food_images WHERE id = {id}";
+        var sql = $"DELETE FROM food_image WHERE id = '{id}'";
         using (var connection = connectionFactory.Create())
         {
             connection.Open();

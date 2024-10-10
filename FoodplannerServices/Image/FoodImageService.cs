@@ -5,7 +5,7 @@ using FoodplannerModels.Image;
 
 namespace FoodplannerServices.Image;
 
-public class FoodImageService(IImageService imageService, IFoodImageRepository foodImageRepository) 
+public class FoodImageService(IImageService imageService, IFoodImageRepository foodImageRepository) : IFoodImageService
 {
     public async Task<int> CreateFoodImage(int userid, Stream imageStream, string imageName, string imageType)
     {

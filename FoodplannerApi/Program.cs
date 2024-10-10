@@ -2,6 +2,7 @@ using FoodplannerApi;
 using Npgsql;
 using FoodplannerDataAccessSql.Account;
 using FoodplannerDataAccessSql;
+using FoodplannerDataAccessSql.Image;
 using FoodplannerModels;
 using FoodplannerModels.Account;
 using FoodplannerServices.Account;
@@ -44,9 +45,12 @@ builder.Services.AddSingleton(serviceProvider => {
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
+builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
+
 
 builder.Services.AddScoped<UserService>();
 builder.Services.AddSingleton<IImageService, ImageService>();
+builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddAutoMapper(typeof(UserProfile));
 
 builder.Services.AddControllers();

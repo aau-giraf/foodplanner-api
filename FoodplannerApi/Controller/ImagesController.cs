@@ -1,3 +1,4 @@
+using FoodplannerDataAccessSql.Image;
 using FoodplannerModels.Account;
 using FoodplannerServices;
 using FoodplannerServices.Account;
@@ -6,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FoodplannerApi.Controller;
 
-public class ImagesController(IImageService imageService) : BaseController
+public class ImagesController(IImageService imageService, IFoodImageRepository foodImageRepository) : BaseController
 {
     private readonly long _maxFileSize = 2000000000;
     [HttpPost]
@@ -14,8 +15,14 @@ public class ImagesController(IImageService imageService) : BaseController
     {
         if (imageFile.Length == 0) return BadRequest("File is empty");
         if (imageFile.Length >= _maxFileSize) return BadRequest("File too big");
-        await imageService.SaveImageAsync(userId, imageFile.OpenReadStream());
-        return Ok("Image uploaded successfully");
+        var imageId = await imageService.SaveImageAsync(userId, imageFile.OpenReadStream());
+        var foodImageId = await foodImageRepository.InsertImageAsync(
+            imageId.ToString(), 
+            userId, 
+            imageFile.Name, 
+            imageFile.ContentType, 
+            imageFile.Length);
+        return Ok($"FoodImage [{foodImageId}] uploaded successfully");
     }
 
     [HttpPost]
