@@ -57,4 +57,16 @@ public class UsersController : BaseController {
         return NotFound();
     }
 
+    
+    //Checking if a user email exist, if true then send reset mail
+    [HttpPost("{id}")]
+    public async Task<IActionResult> ForgotPassword(int id) {
+        var checkUser = Get(id);
+        if (checkUser == null) {
+            return BadRequest();
+        }
+    return Ok(checkUser);
+         //TODO: SEND EMAIL
+    }
+
 }
