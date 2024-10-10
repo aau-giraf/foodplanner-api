@@ -19,7 +19,7 @@ Make sure to have a JSON file called `appsettings.Development.json` in the same 
 }
 ```
 
-Overwriting environment variables is possible, this is done by add to the `"Infisical"` group.
+Overwriting environment variables is possible, this is done by adding to the `"Infisical"` group.
 Example
 ```json
 ...
