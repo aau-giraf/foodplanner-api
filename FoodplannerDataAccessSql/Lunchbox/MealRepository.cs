@@ -20,7 +20,7 @@ public class MealRepository (PostgreSQLConnectionFactory connectionFactory) : IM
         return result.ToList();
     }
 
-    public Task<Meal> GetByIdAsync(int id)
+    public Task<Meal> GetByNameAsync(string name)
     {
         throw new NotImplementedException();
     }
@@ -31,14 +31,8 @@ public class MealRepository (PostgreSQLConnectionFactory connectionFactory) : IM
         using var connection = _connectionFactory.Create();
         connection.Open();
         var result = await connection.QueryAsync<Meal>(sql);
-        if(result != null)
-        {
-            return 1;
-        }
-        else
-        {
-            return 0;
-        }
+        if(result != null) return 1;
+        else return 0;
     }
 
     public Task<int> UpdateAsync(Meal entity)
@@ -46,8 +40,13 @@ public class MealRepository (PostgreSQLConnectionFactory connectionFactory) : IM
         throw new NotImplementedException();
     }
 
-    public Task<int> DeleteAsync(string name)
+    public async Task<int> DeleteAsync(string name)
     {
-        throw new NotImplementedException();
+        var sql = $"DELETE FROM meals WHERE meal_name = '{name}'";
+        using var connection = _connectionFactory.Create();
+        connection.Open();
+        var result = await connection.QueryAsync<Meal>(sql);
+        if(result != null) return 1;
+        else return 0;
     }
 }
