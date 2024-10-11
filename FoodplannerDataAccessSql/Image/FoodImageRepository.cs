@@ -47,7 +47,7 @@ public class FoodImageRepository(PostgreSQLConnectionFactory connectionFactory) 
         return result;
     }
 
-    public async Task<int> DeleteImageAsync(int id)
+    public async Task DeleteImageAsync(int id)
     {
         var sql = $"DELETE FROM food_image WHERE id = '{id}'";
         using (var connection = connectionFactory.Create())
@@ -55,6 +55,5 @@ public class FoodImageRepository(PostgreSQLConnectionFactory connectionFactory) 
             connection.Open();
             connection.Execute(sql);
         }
-        return id;
     }
 }

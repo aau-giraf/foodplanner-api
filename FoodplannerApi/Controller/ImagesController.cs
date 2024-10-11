@@ -1,13 +1,10 @@
 using FoodplannerDataAccessSql.Image;
-using FoodplannerModels.Account;
-using FoodplannerServices;
-using FoodplannerServices.Account;
 using FoodplannerServices.Image;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodplannerApi.Controller;
 
-public class ImagesController(IImageService imageService, IFoodImageRepository foodImageRepository) : BaseController
+public class ImagesController(IFoodImageService foodImageService) : BaseController
 {
     private readonly long _maxFileSize = 2000000000;
     [HttpPost]
@@ -15,14 +12,14 @@ public class ImagesController(IImageService imageService, IFoodImageRepository f
     {
         if (imageFile.Length == 0) return BadRequest("File is empty");
         if (imageFile.Length >= _maxFileSize) return BadRequest("File too big");
-        var imageId = await imageService.SaveImageAsync(
-            userId, imageFile.OpenReadStream(), imageFile.ContentType);
-        var foodImageId = await foodImageRepository.InsertImageAsync(
-            imageId.ToString(), 
-            userId, 
+        
+        var foodImageId = foodImageService.CreateFoodImage(
+            userId,
+            imageFile.OpenReadStream(),
             imageFile.FileName,
-            imageFile.ContentType, 
+            imageFile.ContentType,
             imageFile.Length);
+        
         return Ok($"FoodImage [{foodImageId}] uploaded successfully");
     }
 
@@ -30,54 +27,51 @@ public class ImagesController(IImageService imageService, IFoodImageRepository f
     public async Task<IActionResult> UploadImages(IFormFileCollection imageFiles, int userId)
     {
         var ids = imageFiles
-            .Select(async file => await imageService.SaveImageAsync(userId, file.OpenReadStream(), file.ContentType))
+            .Select(async file => await foodImageService.CreateFoodImage(
+                userId,
+                file.OpenReadStream(),
+                file.FileName,
+                file.ContentType,
+                file.Length))
             .Select(task => task.Result.ToString());
         
         return Ok(ids);
     }
 
     [HttpDelete]
-    public async Task<IActionResult> DeleteImage(int foodImageId, int userId)
+    public async Task<IActionResult> DeleteImage(int foodImageId)
     {
-        var foodImage = await foodImageRepository.GetImageByIdAsync(foodImageId);
-        await imageService.DeleteImageAsync(userId, Guid.Parse(foodImage.ImageId), foodImage.ImageFileType);
+        var deleted = await foodImageService.DeleteImage(foodImageId);
+        if (!deleted) return NotFound("Not found");
         return Ok("Image deleted successfully");
     }
 
     [HttpDelete]
-    public async Task<IActionResult> DeleteImages(IEnumerable<Guid> imageIds, int userId)
+    public async Task<IActionResult> DeleteImages(IEnumerable<int> foodImageIds)
     {
-        if (userId < 0)
-            return BadRequest("Invalid userId provided");
 
-        var imageIdList = imageIds?.ToList();
+        var imageIdList = foodImageIds.ToList();
         if (imageIdList == null || !imageIdList.Any())
             return BadRequest("No imageIds provided");
         
-        await imageService.DeleteImagesAsync(userId, imageIdList);
+        foodImageIds.ToList().ForEach(id => foodImageService.DeleteImage(id));
+        
         return Ok("Images deleted successfully");
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> GetFoodImage(int foodImageId)
     {
         if (foodImageId < 0)
             return BadRequest("Invalid userId provided");
-        
-        var foodImage = await foodImageRepository.GetImageByIdAsync(foodImageId);
+        var foodImage = await foodImageService.GetFoodImage(foodImageId);
         return Ok(new { foodImage });
     }
 
     [HttpGet]
     public async Task<IActionResult> GetPresignedImageLink(int foodImageId)
     {
-        var foodImage = await foodImageRepository.GetImageByIdAsync(foodImageId);
-        var presignedImageLink = await imageService.LoadImagePresignedAsync(foodImage.UserId, Guid.Parse(foodImage.ImageId), foodImage.ImageFileType);
-        if (presignedImageLink == null)
-        {
-            return NotFound("Image does not exist");
-        }
-
+        var presignedImageLink = await foodImageService.GetFoodImageLink(foodImageId);
         return Ok(presignedImageLink);
     }
 }
