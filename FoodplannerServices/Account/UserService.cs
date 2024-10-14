@@ -28,7 +28,7 @@ public class UserService : IUserService {
     public async Task<int> CreateUserAsync(User user){
         
         if (await _userRepository.EmailExistsAsync(user.Email.ToString())){
-            throw new InvalidOperationException("Email already exists");
+            throw new InvalidOperationException("Email eksisterer allerede");
         }
         return await _userRepository.InsertAsync(user);
         
