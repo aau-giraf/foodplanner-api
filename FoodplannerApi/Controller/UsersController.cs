@@ -47,7 +47,7 @@ public class UsersController : BaseController {
         return BadRequest();    
     }
     
-    [HttpGet]
+    [HttpPost]
     public async Task<IActionResult> Login([FromBody] Login user){
         if (!ModelState.IsValid){
             return BadRequest(ModelState);
