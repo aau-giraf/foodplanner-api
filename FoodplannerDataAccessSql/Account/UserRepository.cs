@@ -29,15 +29,48 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public Task<User> GetByIdAsync(int id)
+        public async Task<User?> GetByEmailAndPasswordAsync(string email, string password)
         {
-            throw new NotImplementedException();
+            var sql = "SELECT * FROM users WHERE email = @Email AND password = @Password";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QueryFirstOrDefaultAsync<User>(sql, new { Email = email, Password = password });
+                return result;
+            }
         }
 
-        public Task<int> InsertAsync(User entity)
+        public async Task<User> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var sql = "SELECT first_name, last_name, email FROM users WHERE id = @Id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QueryFirstOrDefaultAsync<User>(sql, new { Id = id });
+                return result;
+            }
+            
         }
+
+       
+        public async Task<int> InsertAsync(User entity)
+        {
+            var sql = "INSERT INTO users (first_name, last_name, email, password) VALUES (@First_Name, @Last_Name, @Email, @Password) RETURNING id";
+            
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QuerySingleAsync<int>(sql, new 
+                {   
+                    First_Name = entity.First_name, 
+                    Last_Name = entity.Last_name, 
+                    Email = entity.Email, 
+                    Password = entity.Password
+                });
+                return result;
+            }     
+        }
+
 
         public Task<int> UpdateAsync(User entity)
         {
