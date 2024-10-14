@@ -35,10 +35,6 @@ public class UsersController : BaseController {
         return Ok(token);
     }
 
-   
-
-  
-
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] User user){
         if (!ModelState.IsValid){
@@ -50,7 +46,6 @@ public class UsersController : BaseController {
         }
         return BadRequest();    
     }
-
     
     [HttpPost]
     public async Task<IActionResult> Login([FromBody] Login user){

@@ -13,6 +13,6 @@ namespace FoodplannerModels.Account
         Task<int> InsertAsync(User entity);
         Task<int> UpdateAsync(User entity);
         Task<int> DeleteAsync(int id);
-        Task<User?> GetPasswordByEmailAsync(string email);
+        Task<User?> GetUserByEmailAsync(string email);
     }
 }

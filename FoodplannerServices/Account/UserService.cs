@@ -29,6 +29,10 @@ public class UserService : IUserService {
     }
     
     public async Task<int> CreateUserAsync(User user){
+        var existingUser = await _userRepository.GetUserByEmailAsync(user.Email);
+        if (existingUser != null){
+            return -1;
+        }
         user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
         user.Status = "inactive";
         return await _userRepository.InsertAsync(user);
@@ -44,7 +48,7 @@ public class UserService : IUserService {
 
     public async Task<string?> GetJWTByEmailAndPasswordAsync(string email, string password)
     {
-        var user = await _userRepository.GetPasswordByEmailAsync(email);
+        var user = await _userRepository.GetUserByEmailAsync(email);
         bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user?.Password);
 
         if (!isPasswordValid)

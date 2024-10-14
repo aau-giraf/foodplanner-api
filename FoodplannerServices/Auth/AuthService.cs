@@ -34,7 +34,7 @@ namespace FoodplannerApi.Helpers
                 issuer: _configuration["ApplicationSettings:JWT_Issuer"],
                 audience: _configuration["ApplicationSettings:JWT_Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(30),
+                expires: DateTime.Now.AddDays(Convert.ToDouble(_configuration["ApplicationSettings:JwtExpireDays"])),
                 signingCredentials: creds
             );
 

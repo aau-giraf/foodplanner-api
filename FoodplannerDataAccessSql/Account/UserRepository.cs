@@ -29,7 +29,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<User?> GetPasswordByEmailAsync(string email)
+        public async Task<User?> GetUserByEmailAsync(string email)
         {
             var sql = "SELECT * FROM users WHERE email = @Email";
             using (var connection = _connectionFactory.Create())
