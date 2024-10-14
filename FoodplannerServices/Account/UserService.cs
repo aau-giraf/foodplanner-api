@@ -28,7 +28,8 @@ public class UserService : IUserService {
         return await _userRepository.GetByIdAsync(id);
     }
     
-    public async Task<int> CreateUserAsync(User user){
+    public async Task<int> CreateUserAsync(UserDTO userDto){
+        var user = _mapper.Map<User>(userDto);
         var existingUser = await _userRepository.GetUserByEmailAsync(user.Email);
         if (existingUser != null){
             return -1;

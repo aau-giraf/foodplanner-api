@@ -36,7 +36,7 @@ public class UsersController : BaseController {
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] User user){
+    public async Task<IActionResult> Create([FromBody] UserDTO user){
         if (!ModelState.IsValid){
             return BadRequest(ModelState);
         }
