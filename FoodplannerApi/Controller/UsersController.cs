@@ -51,9 +51,13 @@ public class UsersController : BaseController {
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] User user){
-        var result = await _userService.CreateUserAsync(user);
-        if (result > 0){
-            return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
+        if (!ModelState.IsValid){
+            return BadRequest(ModelState);
+        }
+        var id = await _userService.CreateUserAsync(user);
+        if (id > 0){
+            user.Id = id;
+            return CreatedAtAction(nameof(Get), new { id = id}, user);
         }
         return BadRequest();
     }
@@ -79,4 +83,15 @@ public class UsersController : BaseController {
         return NotFound();
     }
 
+    [HttpPost]
+    public async Task<IActionResult> Login([FromBody] Login user){
+        if (!ModelState.IsValid){
+            return BadRequest(ModelState);
+        }
+        var result = await _userService.GetUserByEmailAndPasswordAsync(user.Email, user.Password);
+        if (result != null){
+            return Ok(result);
+        }
+        return NotFound();
+    }
 }
