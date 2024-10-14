@@ -17,7 +17,8 @@ public class UsersController : BaseController {
     [HttpGet]
     public async Task<IActionResult> GetBearerTest()
     {
-
+        //Generates a token for development purposes, Status must be Active.
+        //Roles can be: Admin, Child, Teacher, Parent
         var user = new User
         {
             Id = 1,
@@ -25,8 +26,8 @@ public class UsersController : BaseController {
             LastName = "test",
             Email = "user@test.com",
             Password = "test",
-            Role = "Admin",
-            Status = "Inactive"
+            Role = "",
+            Status = "Active"
         };
 
         var token = _authService.GenerateJWTToken(user);
@@ -34,20 +35,9 @@ public class UsersController : BaseController {
         return Ok(token);
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll(){
-        var users = await _userService.GetAllUsersAsync();
-        return Ok(users);
-    }
+   
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get(int id){
-        var users = await _userService.GetUserByIdAsync(id);
-        if (User == null){
-            return NotFound();
-        }
-        return Ok(users);
-    }
+  
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] User user){
@@ -56,39 +46,18 @@ public class UsersController : BaseController {
         }
         var id = await _userService.CreateUserAsync(user);
         if (id > 0){
-            user.Id = id;
-            return CreatedAtAction(nameof(Get), new { id = id}, user);
+            return Ok(id);
         }
-        return BadRequest();
+        return BadRequest();    
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] User user){
-        if (id != user.Id){
-            return BadRequest();
-        }
-        var result = await _userService.UpdateUserAsync(user);
-        if (result > 0){
-            return NoContent();
-        }
-        return NotFound();
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id){
-        var result = await _userService.DeleteUserAsync(id);
-        if (result > 0){
-            return NoContent();
-        }
-        return NotFound();
-    }
-
+    
     [HttpPost]
     public async Task<IActionResult> Login([FromBody] Login user){
         if (!ModelState.IsValid){
             return BadRequest(ModelState);
         }
-        var result = await _userService.GetUserByEmailAndPasswordAsync(user.Email, user.Password);
+        var result = await _userService.GetJWTByEmailAndPasswordAsync(user.Email, user.Password);
         if (result != null){
             return Ok(result);
         }

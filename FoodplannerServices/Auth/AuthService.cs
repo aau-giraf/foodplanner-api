@@ -22,8 +22,6 @@ namespace FoodplannerApi.Helpers
         {
             var claims = new List<Claim> {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Sub, $"{user.FirstName} {user.LastName}"),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(ClaimTypes.Role, user.Role),
                 new Claim("Status", user.Status),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
@@ -36,7 +34,7 @@ namespace FoodplannerApi.Helpers
                 issuer: _configuration["ApplicationSettings:JWT_Issuer"],
                 audience: _configuration["ApplicationSettings:JWT_Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(120),
+                expires: DateTime.UtcNow.AddMinutes(30),
                 signingCredentials: creds
             );
 

@@ -29,13 +29,13 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<User?> GetByEmailAndPasswordAsync(string email, string password)
+        public async Task<User?> GetPasswordByEmailAsync(string email)
         {
-            var sql = "SELECT * FROM users WHERE email = @Email AND password = @Password";
+            var sql = "SELECT * FROM users WHERE email = @Email";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.QueryFirstOrDefaultAsync<User>(sql, new { Email = email, Password = password });
+                var result = await connection.QueryFirstOrDefaultAsync<User>(sql, new { Email = email });
                 return result;
             }
         }
@@ -55,17 +55,19 @@ namespace FoodplannerDataAccessSql.Account
        
         public async Task<int> InsertAsync(User entity)
         {
-            var sql = "INSERT INTO users (first_name, last_name, email, password) VALUES (@First_Name, @Last_Name, @Email, @Password) RETURNING id";
+            var sql = "INSERT INTO users (first_name, last_name, email, password, role, status) VALUES (@First_Name, @Last_Name, @Email, @Password, @role, @status) RETURNING id";
             
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
                 var result = await connection.QuerySingleAsync<int>(sql, new 
                 {   
-                    First_Name = entity.First_name, 
-                    Last_Name = entity.Last_name, 
+                    First_Name = entity.FirstName, 
+                    Last_Name = entity.LastName, 
                     Email = entity.Email, 
-                    Password = entity.Password
+                    Password = entity.Password,
+                    role = entity.Role,
+                    status = entity.Status
                 });
                 return result;
             }     
