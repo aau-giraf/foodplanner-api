@@ -9,11 +9,11 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace FoodplannerApi.Helpers
 {
-    public class AuthHelpers
+    public class AuthService
     {
         private readonly IConfiguration _configuration;
 
-        public AuthHelpers(IConfiguration configuration)
+        public AuthService(IConfiguration configuration)
         {
             _configuration = configuration;
         }
@@ -22,10 +22,10 @@ namespace FoodplannerApi.Helpers
         {
             var claims = new List<Claim> {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Sub, $"{user.First_name} {user.Last_name}"),
+                new Claim(JwtRegisteredClaimNames.Sub, $"{user.FirstName} {user.LastName}"),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("DateOfJoining", DateTime.UtcNow.ToString("yyyy-MM-dd")),
                 new Claim(ClaimTypes.Role, user.Role),
+                new Claim("Status", user.Status),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

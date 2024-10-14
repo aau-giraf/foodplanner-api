@@ -1,3 +1,4 @@
+using FoodplannerApi.Helpers;
 using FoodplannerModels.Account;
 using FoodplannerServices;
 using FoodplannerServices.Account;
@@ -7,9 +8,30 @@ namespace FoodplannerApi.Controller;
 
 public class UsersController : BaseController {
     private readonly UserService _userService;
+    private readonly AuthService _authService;
 
-    public UsersController(UserService userService){
+    public UsersController(UserService userService,AuthService authService){
         _userService = userService;
+        _authService = authService;
+    }
+    [HttpGet]
+    public async Task<IActionResult> GetBearerTest()
+    {
+
+        var user = new User
+        {
+            Id = 1,
+            FirstName = "test",
+            LastName = "test",
+            Email = "user@test.com",
+            Password = "test",
+            Role = "Admin",
+            Status = "Inactive"
+        };
+
+        var token = _authService.GenerateJWTToken(user);
+        
+        return Ok(token);
     }
 
     [HttpGet]

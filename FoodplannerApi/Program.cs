@@ -76,11 +76,7 @@ builder.Services.AddSingleton(serviceProvider => {
     return new PostgreSQLConnectionFactory(host, port, database, username, password);
 });
 
-builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
 
-builder.Services.AddScoped<UserService>();
-builder.Services.AddAutoMapper(typeof(UserProfile));
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -107,8 +103,42 @@ builder.Services.AddAuthentication(cfg => {
         ),
         ClockSkew = TimeSpan.Zero
     };
+    x.Events = new JwtBearerEvents
+    {
+        OnTokenValidated = context =>
+        {
+            var claimsIdentity = context.Principal.Identity as ClaimsIdentity;
+
+            // Get the Status claim
+            var statusClaim = claimsIdentity?.FindFirst("Status")?.Value;
+
+            if (statusClaim != "Active")
+            {
+                // If status is not active, fail the authentication
+                context.Fail("Inactive user status");
+            }
+
+            return Task.CompletedTask;
+        }
+    };
 });
-builder.Services.AddSingleton<AuthHelpers>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ChildPolicy", policy => policy.RequireRole("Child"));
+    options.AddPolicy("ParentPolicy", policy => policy.RequireRole("Parent"));
+    options.AddPolicy("TeacherPolicy", policy => policy.RequireRole("Teacher"));
+    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+});
+
+//Dependency Injection Starts Here !
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
+
+builder.Services.AddScoped<UserService>();
+builder.Services.AddAutoMapper(typeof(UserProfile));
+
+builder.Services.AddSingleton<AuthService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
