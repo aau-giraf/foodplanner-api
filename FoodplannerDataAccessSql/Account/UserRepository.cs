@@ -1,6 +1,7 @@
 ﻿
 using Dapper;
 using FoodplannerModels.Account;
+using Npgsql;
 
 namespace FoodplannerDataAccessSql.Account
 {
@@ -72,25 +73,21 @@ namespace FoodplannerDataAccessSql.Account
 
         public async Task<bool> EmailExistsAsync(string email)
         {
-            var sql = "SELECT COUNT(*) FROM users WHERE email = @Email";
-            using (var connection = _connectionFactory.Create())
-            {
+            var sql = "SELECT COUNT(1) FROM users WHERE email = @Email";
+            using (var connection = _connectionFactory.Create()){
                 connection.Open();
-                var result = await connection.ExecuteScalarAsync<int>(sql, new { Email = email });
-                return result > 0;
+                var count = await connection.ExecuteScalarAsync<int>(sql, new { Email = email });
+                return count > 0;
             }
         }
 
-       
         public async Task<int> InsertAsync(User entity)
         {
-            if (await EmailExistsAsync(entity.Email)){
-                return -1;
-            }
             var sql = "INSERT INTO users (first_name, last_name, email, password, role, role_approved) VALUES (@First_Name, @Last_Name, @Email, @Password, @Role, @Role_approved) RETURNING id";
             
             using (var connection = _connectionFactory.Create())
             {
+            
                 connection.Open();
                 var result = await connection.QuerySingleAsync<int>(sql, new 
                 {   
@@ -102,6 +99,7 @@ namespace FoodplannerDataAccessSql.Account
                     Role_approved = false
                 });
                 return result;
+            
             }     
         }
 

@@ -32,15 +32,16 @@ public class UsersController : BaseController {
         if (!ModelState.IsValid){
             return BadRequest(ModelState);
         }
-        var id = await _userService.CreateUserAsync(user);
-        if (id == -1){
-            return BadRequest("Email eksistere allerede");
+        try{
+            var id = await _userService.CreateUserAsync(user);
+            if (id > 0){
+                user.Id = id;
+                return CreatedAtAction(nameof(Get), new { id = id}, user);
+            }
+            return BadRequest();
+        } catch (InvalidOperationException e){
+            return BadRequest(e.Message);
         }
-        if (id > 0){
-            user.Id = id;
-            return CreatedAtAction(nameof(Get), new { id = id}, user);
-        }
-        return BadRequest();
     }
 
     [HttpPut("{id}")]
