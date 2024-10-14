@@ -35,9 +35,11 @@ builder.Services.AddSingleton(serviceProvider => {
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
 builder.Services.AddScoped(typeof(IMealRepository), typeof(MealRepository));
+builder.Services.AddScoped(typeof(IIngredientRepository), typeof(IngredientRepository));
 
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<MealService>();
+builder.Services.AddScoped<IngredientService>();
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(MealProfile));
 
