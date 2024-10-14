@@ -16,7 +16,13 @@ namespace FoodplannerDataAccessSql.Account
 
         public Task<int> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var sql = "DELETE FROM users WHERE id = @Id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = connection.Execute(sql, new { Id = id });
+                return Task.FromResult(result);
+            }
         }
 
         public async Task<IEnumerable<User>> GetAllAsync()
@@ -55,7 +61,7 @@ namespace FoodplannerDataAccessSql.Account
 
         public async Task<IEnumerable<User>> GetAllNotApprovedAsync()
         {
-            var sql = "SELECT first_name, last_name, email FROM users WHERE role_approved = false";
+            var sql = "SELECT id, first_name, last_name, email, role FROM users WHERE role_approved = false";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
