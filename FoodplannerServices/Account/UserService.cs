@@ -17,10 +17,10 @@ public class UserService : IUserService {
         _authService = authService;
     }
 
-    public async Task<IEnumerable<UserDTO>> GetAllUsersAsync(){
+    public async Task<IEnumerable<UserCreateDTO>> GetAllUsersAsync(){
 
         var user = await _userRepository.GetAllAsync();
-        var userDTO = _mapper.Map<IEnumerable<UserDTO>>(user);
+        var userDTO = _mapper.Map<IEnumerable<UserCreateDTO>>(user);
         return userDTO;
     }
 
@@ -28,8 +28,8 @@ public class UserService : IUserService {
         return await _userRepository.GetByIdAsync(id);
     }
     
-    public async Task<int> CreateUserAsync(UserDTO userDto){
-        var user = _mapper.Map<User>(userDto);
+    public async Task<int> CreateUserAsync(UserCreateDTO userCreateDto){
+        var user = _mapper.Map<User>(userCreateDto);
         var existingUser = await _userRepository.GetUserByEmailAsync(user.Email);
         if (existingUser != null){
             return -1;
@@ -47,7 +47,7 @@ public class UserService : IUserService {
         return await _userRepository.DeleteAsync(id);
     }
 
-    public async Task<string?> GetJWTByEmailAndPasswordAsync(string email, string password)
+    public async Task<UserCredsDTO?> GetJWTByEmailAndPasswordAsync(string email, string password)
     {
         var user = await _userRepository.GetUserByEmailAsync(email);
         bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user?.Password);
@@ -57,7 +57,14 @@ public class UserService : IUserService {
             return null;
         }
         var jwt = _authService.GenerateJWTToken(user);
-        return jwt;
+        var userCreds = new UserCredsDTO
+        {
+            JWT = jwt,
+            Role = user.Role,
+            Status = user.Status
+        };
+        
+        return userCreds;
     }
 }
 

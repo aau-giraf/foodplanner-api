@@ -36,11 +36,11 @@ public class UsersController : BaseController {
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] UserDTO user){
+    public async Task<IActionResult> Create([FromBody] UserCreateDTO userCreate){
         if (!ModelState.IsValid){
             return BadRequest(ModelState);
         }
-        var id = await _userService.CreateUserAsync(user);
+        var id = await _userService.CreateUserAsync(userCreate);
         if (id > 0){
             return Ok(id);
         }

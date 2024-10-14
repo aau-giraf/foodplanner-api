@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FoodplannerModels.Account
 {
-    public class UserDTO
+    public class UserCreateDTO
     {
         [Required(ErrorMessage = "Fornavn er påkrævet")]
         [StringLength(100, ErrorMessage = "Fornavn er for langt")]
