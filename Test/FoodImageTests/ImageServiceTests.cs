@@ -66,14 +66,5 @@ public class ImageServiceFixture : IDisposable
         {
             Assert.Fail("Bucket doesn't exist");
         }
-    }    
-    
-    private Task FailureOnNoBucket()
-    {
-        if (!_bucketExists)
-        {
-            Assert.Fail("Bucket was not created");
-        }
-        return Task.CompletedTask;
     }
 }
