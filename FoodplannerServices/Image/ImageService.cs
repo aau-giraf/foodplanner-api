@@ -63,7 +63,7 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         if (!await EnsureInitializedAsync()) return false;
         
         var removeObjectArgs = new RemoveObjectArgs()
-            .WithObject(ObjectName(userId, imageId, ""))
+            .WithObject(ObjectName(userId, imageId, contentType))
             .WithBucket(UserImageBucket);
         await minioClient.RemoveObjectAsync(removeObjectArgs);
         
