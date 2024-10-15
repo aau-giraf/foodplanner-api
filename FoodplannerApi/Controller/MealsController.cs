@@ -17,20 +17,20 @@ public class MealsController (MealService mealService) : BaseController
         return Ok(meals);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get(int id){
-        var users = await _mealService.GetMealByIdAsync(id);
+    [HttpGet("{name}")]
+    public async Task<IActionResult> Get(string name){
+        var meal = await _mealService.GetMealByNameAsync(name);
         if (User == null){
             return NotFound();
         }
-        return Ok(users);
+        return Ok(meal);
     }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Meal meal){
         var result = await _mealService.CreateMealAsync(meal);
         if (result > 0){
-            return CreatedAtAction(nameof(Get), new { id = meal.Id }, meal);
+            return CreatedAtAction(nameof(Get), new { meal_name = meal.Meal_name }, meal);
         }
         return BadRequest();
     }

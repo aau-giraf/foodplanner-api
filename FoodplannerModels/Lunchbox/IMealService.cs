@@ -6,7 +6,7 @@
 public interface IMealService
 {
     Task<IEnumerable<MealDTO>> GetAllMealsAsync();
-    Task<Meal> GetMealByIdAsync(int id);
+    Task<Meal> GetMealByNameAsync(string name);
     Task<int> CreateMealAsync(Meal meal);
     Task<int> UpdateMealAsync(Meal meal);
     Task<int> DeleteMealAsync(string name);

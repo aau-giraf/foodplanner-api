@@ -18,8 +18,8 @@ public class MealService (IMealRepository mealRepository, IMapper mapper) : IMea
         return mealDTO;
     }
 
-    public async Task<Meal> GetMealByIdAsync(int id){
-        return await _mealRepository.GetByIdAsync(id);
+    public async Task<Meal> GetMealByNameAsync(string name){
+        return await _mealRepository.GetByNameAsync(name);
     }
     
     public async Task<int> CreateMealAsync(Meal meal){

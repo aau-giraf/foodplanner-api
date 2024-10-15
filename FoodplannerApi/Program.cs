@@ -23,18 +23,25 @@ builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddSingleton(serviceProvider => {
-    var connectionString = SecretsLoader.GetSecret("DB_CONNECTION_STRING");
+    var host = SecretsLoader.GetSecret("DB_HOST", "/SW-5-10/");
+    var port = SecretsLoader.GetSecret("DB_PORT", "/SW-5-10/");
+    var database = SecretsLoader.GetSecret("DB_NAME", "/SW-5-10/");
+    var username = SecretsLoader.GetSecret("DB_USER", "/SW-5-10/");
+    var password = SecretsLoader.GetSecret("DB_PASS", "/SW-5-10/");
 
-    return new PostgreSQLConnectionFactory(connectionString);
+    return new PostgreSQLConnectionFactory(host, port, database, username, password);
 });
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
 builder.Services.AddScoped(typeof(IMealRepository), typeof(MealRepository));
+builder.Services.AddScoped(typeof(IIngredientRepository), typeof(IngredientRepository));
 
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<MealService>();
+builder.Services.AddScoped<IngredientService>();
 builder.Services.AddAutoMapper(typeof(UserProfile));
+builder.Services.AddAutoMapper(typeof(MealProfile));
 
 builder.Services.AddControllers();
 
@@ -51,14 +58,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapControllers();
-
-app.MapGet("/test", () => {
-    var connectionString = SecretsLoader.GetSecret("DB_CONNECTION_STRING");
-    return Results.Text($"Connection string: {connectionString}");
-})
-.WithName("GetTest")
-.WithOpenApi();
-
 
 // New endpoint to test database connection
 app.MapGet("/test-db-connection", async (PostgreSQLConnectionFactory connectionFactory) => {

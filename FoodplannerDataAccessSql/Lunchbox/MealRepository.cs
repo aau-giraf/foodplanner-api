@@ -12,32 +12,28 @@ public class MealRepository (PostgreSQLConnectionFactory connectionFactory) : IM
 
     public async Task<IEnumerable<Meal>> GetAllAsync()
     {
-        var sql = "SELECT meal_name FROM meals";
+        var sql = "SELECT * FROM meals";
+        using var connection = _connectionFactory.Create();
+        connection.Open();
+        return await connection.QueryAsync<Meal>(sql);
+    }
+
+    public async Task<Meal> GetByNameAsync(string name)
+    {
+        var sql = $"SELECT * FROM meals WHERE meal_name = '{name}'";
         using var connection = _connectionFactory.Create();
         connection.Open();
         var result = await connection.QueryAsync<Meal>(sql);
-        return result.ToList();
-    }
-
-    public Task<Meal> GetByIdAsync(int id)
-    {
-        throw new NotImplementedException();
+        return result.FirstOrDefault();
     }
 
     public async Task<int> InsertAsync(Meal entity)
     {
-        var sql = $"INSERT INTO meals (id, name, description, altText)\nVALUES ('{entity.Id}', '{entity.Name}', '{entity.Description}', '{entity.AltText}')";
         using var connection = _connectionFactory.Create();
         connection.Open();
-        var result = await connection.QueryAsync<Meal>(sql);
-        if(result != null)
-        {
-            return 1;
-        }
-        else
-        {
-            return 0;
-        }
+        var sql = $"INSERT INTO {typeof(Meal).Name}s ({string.Join(", ", GetContent(entity))})\n";
+        sql += $"VALUES ({string.Join(", ", GetContent(entity, false))})";
+        return await connection.ExecuteAsync(sql, entity);
     }
 
     public Task<int> UpdateAsync(Meal entity)
@@ -45,8 +41,17 @@ public class MealRepository (PostgreSQLConnectionFactory connectionFactory) : IM
         throw new NotImplementedException();
     }
 
-    public Task<int> DeleteAsync(string name)
+    public async Task<int> DeleteAsync(string name)
     {
-        throw new NotImplementedException();
+        var sql = $"DELETE FROM meals WHERE meal_name = '{name}'";
+        using var connection = _connectionFactory.Create();
+        connection.Open();
+        return await connection.ExecuteAsync(sql, new { Name = name });
+    }
+
+    private IEnumerable<string> GetContent(Meal entity, bool properties = true)
+    {
+        if(properties) return typeof(Meal).GetProperties().Select(p => p.Name);
+        else return typeof(Meal).GetProperties().Select(p => "'" + p.GetValue(entity) + "'");
     }
 }
