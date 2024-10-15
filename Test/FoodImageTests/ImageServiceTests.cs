@@ -5,12 +5,6 @@ using Minio.DataModel.Args;
 using Moq;
 namespace testing;
 
-<<<<<<< HEAD:Test/FoodImageTests/ImageServiceTests.cs
-public class ImageServiceTests
-{
-
-}
-=======
 public class ImageServiceTests {
     [Fact]
     public async Task DoesImageBelongToUser()

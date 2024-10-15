@@ -37,7 +37,7 @@ public class FoodImageServiceFixture : IDisposable
             .Returns(() => Task.FromResult(Guid.NewGuid()));
         
         mockedImageService.Setup(service => service.LoadImagePresignedAsync(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<string>()))
-            .Returns(() => Task.FromResult("https://localhost:0000/foodplanner/images/food.jpg"));
+            .Returns(() => Task.FromResult("https://localhost:0000/someBucket/images/food.jpg"));
         
         mockedFoodImageRepository.Setup(repo => repo.InsertImageAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>()))
             .Returns((string _, int id, string _, string _, long _) => Task.FromResult(id));
