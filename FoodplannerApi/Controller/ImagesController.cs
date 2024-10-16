@@ -26,6 +26,8 @@ public class ImagesController(IFoodImageService foodImageService) : BaseControll
     [HttpPost]
     public async Task<IActionResult> UploadImages(IFormFileCollection imageFiles, int userId)
     {
+        if (imageFiles.Any(file => file.Length == 0)) return BadRequest("A file is empty");
+        if (imageFiles.Any(file => file.Length >= _maxFileSize)) return BadRequest("a file too big");
         var ids = imageFiles
             .Select(async file => await foodImageService.CreateFoodImage(
                 userId,
