@@ -38,13 +38,6 @@ public class ImagesController(IFoodImageService foodImageService) : BaseControll
         return Ok(ids);
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> DeleteImage(int foodImageId)
-    {
-        var deleted = await foodImageService.DeleteImage(foodImageId);
-        if (!deleted) return NotFound("Not found");
-        return Ok("Image deleted successfully");
-    }
 
     [HttpDelete]
     public async Task<IActionResult> DeleteImages(IEnumerable<int> foodImageIds)
