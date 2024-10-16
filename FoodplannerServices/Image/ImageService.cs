@@ -16,7 +16,8 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
     {
         var imageId = Guid.NewGuid();
         string objectName = ObjectName(userId, imageId, contentType);
-        await EnsureInitializedAsync();
+        EnsureInitializedAsync().Wait();
+            Console.WriteLine("We here !");
         var putObjectArgs = new PutObjectArgs()
             .WithBucket(UserImageBucket)
             .WithObject(objectName)
@@ -60,7 +61,7 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
 
     public async Task<bool> DeleteImageAsync(int userId, Guid imageId, string contentType)
     {
-        if (!await EnsureInitializedAsync()) return false;
+        EnsureInitializedAsync().Wait();
         
         var removeObjectArgs = new RemoveObjectArgs()
             .WithObject(ObjectName(userId, imageId, contentType))
@@ -72,7 +73,7 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
 
     public async Task<bool> DeleteImagesAsync(int userId, IEnumerable<Guid> imageIds)
     {
-        if (!await EnsureInitializedAsync()) return false;
+        EnsureInitializedAsync().Wait();
 
         var removeObjectsArgsArgs = new RemoveObjectsArgs()
             .WithObjects(imageIds.Select(id => ObjectName(userId, id, "")).ToList())
@@ -88,16 +89,14 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         return false;
     }
 
-    private async Task<bool> EnsureInitializedAsync()
+    private async Task EnsureInitializedAsync()
     {
-        if (_initialized) return true;
         var bucketExistsArgs = new BucketExistsArgs().WithBucket(UserImageBucket);
         var exists = await minioClient.BucketExistsAsync(bucketExistsArgs);
-        if (exists) return _initialized = true;
+        if (exists) return ;
         logger.LogInformation($"Bucket [{UserImageBucket}] not found. Creating this bucket");
         var makeBucketArgs = new MakeBucketArgs().WithBucket(UserImageBucket);  
         await minioClient.MakeBucketAsync(makeBucketArgs);
-        return _initialized = true;
     }
 
     private string ObjectName(int userId, Guid imageId, string? extension)
