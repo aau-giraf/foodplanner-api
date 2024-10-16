@@ -1,6 +1,5 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace FoodplannerModels.Account;
+using System.ComponentModel.DataAnnotations;
 
 public class User {
     [Key]
@@ -8,11 +7,11 @@ public class User {
 
     [Required(ErrorMessage = "Fornavn er påkrævet")]
     [StringLength(100, ErrorMessage = "Fornavn er for langt")]
-    public required string First_name { get; set; }
+    public required string FirstName { get; set; }
 
     [Required(ErrorMessage = "Efternavn er påkrævet")]
     [StringLength(100, ErrorMessage = "Efternavn er for langt")]
-    public required string Last_name { get; set; }
+    public required string LastName { get; set; }
 
     [Required(ErrorMessage = "Email er påkrævet")]
     [EmailAddress(ErrorMessage = "Email er ikke gyldig")]
@@ -22,4 +21,8 @@ public class User {
     [Required(ErrorMessage = "Adgangskode er påkrævet")]
     [StringLength(100, ErrorMessage = "Adgangskode er for langt")]
     public required string Password { get; set; }
+
+    [Required(ErrorMessage = "Role er påkrævet")]
+    public required string Role { get; set; }
+    public required string Status { get; set; }
 }
