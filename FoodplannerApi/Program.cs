@@ -6,18 +6,11 @@ using FoodplannerDataAccessSql.Account;
 using FoodplannerDataAccessSql;
 using FoodplannerModels;
 using FoodplannerModels.Account;
-using FoodplannerServices;
 using FoodplannerServices.Account;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using FoodplannerApi.Helpers;
-using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
+
 
 
 var builder = WebApplication.CreateBuilder(args);

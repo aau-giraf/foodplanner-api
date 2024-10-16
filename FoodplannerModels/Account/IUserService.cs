@@ -9,7 +9,7 @@ namespace FoodplannerModels.Account
     public interface IUserService
     {
         Task<IEnumerable<UserCreateDTO>> GetAllUsersAsync();
-        Task<User> GetUserByIdAsync(int id);
+        Task<User?> GetUserByIdAsync(int id);
         Task<int> CreateUserAsync(UserCreateDTO userCreate);
         Task<int> UpdateUserAsync(User user);
         Task<int> DeleteUserAsync(int id);

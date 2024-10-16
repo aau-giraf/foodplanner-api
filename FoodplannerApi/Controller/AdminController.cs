@@ -14,14 +14,7 @@ public class AdminController : BaseController
         _userService = userService;
     }
     
-    [HttpGet]
-    public async Task<IActionResult> GetAdminTest()
-    {
-        
-        return Ok();
-    }
-    
-    
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id){
         var result = await _userService.DeleteUserAsync(id);
@@ -38,7 +31,7 @@ public class AdminController : BaseController
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id){
         var users = await _userService.GetUserByIdAsync(id);
-        if (User == null){
+        if (users == null){
             return NotFound();
         }
         return Ok(users);
