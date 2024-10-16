@@ -37,18 +37,18 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<User?> GetByEmailAndPasswordAsync(string email, string password)
+        public async Task<User?> GetUserByEmailAsync(string email)
         {
-            var sql = "SELECT * FROM users WHERE email = @Email AND password = @Password";
+            var sql = "SELECT * FROM users WHERE email = @Email";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.QueryFirstOrDefaultAsync<User>(sql, new { Email = email, Password = password });
+                var result = await connection.QueryFirstOrDefaultAsync<User>(sql, new { Email = email });
                 return result;
             }
         }
 
-        public async Task<User> GetByIdAsync(int id)
+        public async Task<User?> GetByIdAsync(int id)
         {
             var sql = "SELECT first_name, last_name, email FROM users WHERE id = @Id";
             using (var connection = _connectionFactory.Create())
@@ -83,7 +83,7 @@ namespace FoodplannerDataAccessSql.Account
 
         public async Task<int> InsertAsync(User entity)
         {
-            var sql = "INSERT INTO users (first_name, last_name, email, password, role, role_approved) VALUES (@First_Name, @Last_Name, @Email, @Password, @Role, @Role_approved) RETURNING id";
+            var sql = "INSERT INTO users (first_name, last_name, email, password, role, role_approved) VALUES (@FirstName, @LastName, @Email, @Password, @role, @RoleApproved) RETURNING id";
             
             using (var connection = _connectionFactory.Create())
             {
@@ -91,28 +91,18 @@ namespace FoodplannerDataAccessSql.Account
                 connection.Open();
                 var result = await connection.QuerySingleAsync<int>(sql, new 
                 {   
-                    First_Name = entity.First_name, 
-                    Last_Name = entity.Last_name, 
+                    FirstName = entity.FirstName, 
+                    LastName = entity.LastName, 
                     Email = entity.Email, 
-                    Password = entity.Password, 
-                    Role = entity.Role,
-                    Role_approved = false
+                    Password = entity.Password,
+                    role = entity.Role,
+                    RoleApproved = entity.RoleApproved
                 });
                 return result;
             
             }     
         }
 
-        public async Task<int> ApproveRoleAsync(int id)
-        {
-            var sql = "UPDATE users SET role_approved = true WHERE id = @Id";
-            using (var connection = _connectionFactory.Create())
-            {
-                connection.Open();
-                var result = await connection.ExecuteAsync(sql, new { Id = id });
-                return result;
-            }
-        }
 
         public Task<int> UpdateAsync(User entity)
         {
