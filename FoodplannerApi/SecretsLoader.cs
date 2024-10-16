@@ -4,6 +4,7 @@ namespace FoodplannerApi;
 
 public static class SecretsLoader
 {
+    private static IConfiguration _localConfiguration = null!;
     private record Configuration(string environmentSlug, string workspaceId, InfisicalClient Client);
     private static Configuration _configuration = null!;
 
@@ -12,6 +13,7 @@ public static class SecretsLoader
     /// Run this before reading secrets.
     public static void Configure(IConfiguration config, string environment)
     {
+        _localConfiguration = config;
         var clientId = config.GetValue<string>("Infisical:ClientId") ?? Environment.GetEnvironmentVariable("CLIENT_ID");
         var clientSecret = config.GetValue<string>("Infisical:ClientSecret") ?? Environment.GetEnvironmentVariable("CLIENT_SECRET");
         var workspaceId = config.GetValue<string>("Infisical:Workspace") ?? Environment.GetEnvironmentVariable("WORKSPACE");
@@ -43,6 +45,13 @@ public static class SecretsLoader
         {
             throw new ApplicationException($"Unable to load secret: {secretName}. SecretsLoader must be configured before usage");
         }
+
+        var overwriteValue = _localConfiguration.GetValue<string>($"Infisical:{secretName}");
+        if (overwriteValue != null)
+        {
+            return overwriteValue;
+        }
+        
         var getSecretOptions = new GetSecretOptions
         {
             Path = path,
