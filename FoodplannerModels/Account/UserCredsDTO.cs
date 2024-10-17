@@ -6,5 +6,5 @@ public class UserCredsDTO
 {
     public required string JWT { get; set; }
     public required string Role { get; set; }
-    public required string Status { get; set; }
+    public required bool RoleApproved { get; set; }
 }

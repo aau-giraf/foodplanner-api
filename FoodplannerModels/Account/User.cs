@@ -24,5 +24,5 @@ public class User {
 
     [Required(ErrorMessage = "Role er påkrævet")]
     public required string Role { get; set; }
-    public required string Status { get; set; }
+    public required bool RoleApproved { get; set; }
 }

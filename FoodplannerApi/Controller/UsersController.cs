@@ -27,7 +27,7 @@ public class UsersController : BaseController {
             Email = "user@test.com",
             Password = "test",
             Role = "",
-            Status = "Active"
+            RoleApproved = true
         };
 
         var token = _authService.GenerateJWTToken(user);
@@ -40,11 +40,15 @@ public class UsersController : BaseController {
         if (!ModelState.IsValid){
             return BadRequest(ModelState);
         }
-        var id = await _userService.CreateUserAsync(userCreate);
-        if (id > 0){
-            return Ok(id);
+        try{
+            var id = await _userService.CreateUserAsync(userCreate);
+            if (id > 0){
+                return Ok(id);
+            }
+            return BadRequest();
+        } catch (InvalidOperationException e){
+            return BadRequest(e.Message);
         }
-        return BadRequest();    
     }
     
     [HttpPost]

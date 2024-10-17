@@ -23,7 +23,7 @@ namespace FoodplannerApi.Helpers
             var claims = new List<Claim> {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Role, user.Role),
-                new Claim("Status", user.Status),
+                new Claim("RoleApproved", user.RoleApproved.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

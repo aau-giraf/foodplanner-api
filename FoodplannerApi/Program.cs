@@ -119,9 +119,9 @@ builder.Services.AddAuthentication(cfg => {
             var claimsIdentity = context.Principal.Identity as ClaimsIdentity;
 
             // Get the Status claim
-            var statusClaim = claimsIdentity?.FindFirst("Status")?.Value;
+            var statusClaim = claimsIdentity?.FindFirst("RoleApproved")?.Value;
 
-            if (statusClaim != "Active")
+            if (statusClaim != true.ToString())
             {
                 // If status is not active, fail the authentication
                 context.Fail("Inactive user status");

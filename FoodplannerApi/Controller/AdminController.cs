@@ -13,8 +13,7 @@ public class AdminController : BaseController
     public AdminController(UserService userService){
         _userService = userService;
     }
-    
-
+   
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id){
         var result = await _userService.DeleteUserAsync(id);
