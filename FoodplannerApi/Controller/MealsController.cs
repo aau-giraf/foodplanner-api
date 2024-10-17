@@ -17,9 +17,9 @@ public class MealsController (MealService mealService) : BaseController
         return Ok(meals);
     }
 
-    [HttpGet("{name}")]
-    public async Task<IActionResult> Get(string name){
-        var meal = await _mealService.GetMealByNameAsync(name);
+    [HttpGet("{title}")]
+    public async Task<IActionResult> Get(string title){
+        var meal = await _mealService.GetMealByNameAsync(title);
         if (User == null){
             return NotFound();
         }
@@ -30,14 +30,14 @@ public class MealsController (MealService mealService) : BaseController
     public async Task<IActionResult> Create([FromBody] Meal meal){
         var result = await _mealService.CreateMealAsync(meal);
         if (result > 0){
-            return CreatedAtAction(nameof(Get), new { meal_name = meal.Meal_name }, meal);
+            return CreatedAtAction(nameof(Get), new { id = meal.Id }, meal);
         }
         return BadRequest();
     }
 
-    [HttpDelete("{name}")]
-    public async Task<IActionResult> Delete(string name){
-        var result = await _mealService.DeleteMealAsync(name);
+    [HttpDelete("{title}")]
+    public async Task<IActionResult> Delete(string title){
+        var result = await _mealService.DeleteMealAsync(title);
         if (result > 0){
             return NoContent();
         }
