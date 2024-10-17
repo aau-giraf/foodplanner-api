@@ -143,10 +143,12 @@ builder.Services.AddAuthorization(options =>
 //Dependency Injection Starts Here !
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
+builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepository));
 builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
 
-
+builder.Services.AddScoped<IChildrenService, ChildrenService>();
 builder.Services.AddScoped<UserService>();
+//builder.Services.AddScoped<ChildrenService>();
 builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddAutoMapper(typeof(UserProfile));

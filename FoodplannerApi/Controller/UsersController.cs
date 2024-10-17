@@ -21,12 +21,12 @@ public class UsersController : BaseController {
         //Roles can be: Admin, Child, Teacher, Parent
         var user = new User
         {
-            Id = 1,
+            Id = 27,
             FirstName = "test",
             LastName = "test",
             Email = "user@test.com",
             Password = "test",
-            Role = "",
+            Role = "admin",
             RoleApproved = true
         };
 
