@@ -25,7 +25,7 @@ namespace FoodplannerDataAccessSql.Account
                     child.user = user;
                     child.Classroom = classroom;
                     return child;
-                }, splitOn: "id, class_id");
+                }, splitOn: "parent_id, class_id");
                 return children;
 
             }
@@ -34,14 +34,14 @@ namespace FoodplannerDataAccessSql.Account
 
         public async Task<int> InsertAsync(Children entity)
         {
-            var sql = "INSERT INTO children (first_name, last_name, id, class_id) VALUES (@FirstName, @LastName, @Id, @ClassId) RETURNING id";
+            var sql = "INSERT INTO children (first_name, last_name, parent_id, class_id) VALUES (@FirstName, @LastName, @ParentId, @ClassId) RETURNING child_id";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
                 var result = await connection.QuerySingleAsync<int>(sql, new {
                     FirstName = entity.FirstName,
                     LastName = entity.LastName,
-                    Id = entity.id,
+                    ParentId = entity.parentId,
                     ClassId = entity.classId
                 });
                 return result;

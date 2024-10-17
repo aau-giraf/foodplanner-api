@@ -15,7 +15,7 @@ public class Children {
     public required string LastName { get; set; }
 
     [ForeignKey("User")]
-    public int id { get; set; }
+    public int parentId { get; set; }
     public User user { get; set; }
 
     [ForeignKey("Classroom")]

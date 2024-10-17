@@ -18,7 +18,7 @@ namespace FoodplannerModels.Account
         public required string LastName { get; set; }
         
         [Required(ErrorMessage = "ForældreId er påkrævet")]
-        public int id { get; set; }
+        public int parentId { get; set; }
         
         [Required(ErrorMessage = "KlasseId er påkrævet")]
         public int classId { get; set; }

@@ -144,11 +144,13 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
 builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepository));
+builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));
 builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
 
+
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
+builder.Services.AddScoped<IClassroomService, ClassroomService>();
 builder.Services.AddScoped<UserService>();
-//builder.Services.AddScoped<ChildrenService>();
 builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddAutoMapper(typeof(UserProfile));
