@@ -56,10 +56,14 @@ public class UsersController : BaseController {
         if (!ModelState.IsValid){
             return BadRequest(ModelState);
         }
-        var result = await _userService.GetJWTByEmailAndPasswordAsync(user.Email, user.Password);
-        if (result != null){
-            return Ok(result);
+        try{
+            var result = await _userService.GetJWTByEmailAndPasswordAsync(user.Email, user.Password);
+            if (result != null){
+                return Ok(result);
+            }
+            return BadRequest("Email eller password er forkert");
+        } catch (InvalidOperationException e){
+            return BadRequest("Email eller password er forkert");
         }
-        return NotFound();
     }
 }

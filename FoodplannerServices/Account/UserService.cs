@@ -53,11 +53,11 @@ public class UserService : IUserService {
     {
         var user = await _userRepository.GetUserByEmailAsync(email);
         
-        bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user?.Password);
+        //bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user?.Password);
 
-        if (!isPasswordValid)
+        if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.Password))
         {
-            return null;
+            throw new InvalidOperationException("Forkert brugernavn eller adgangskode");
         }
         
         var jwt = _authService.GenerateJWTToken(user);
