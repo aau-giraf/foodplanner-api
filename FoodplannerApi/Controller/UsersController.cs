@@ -43,7 +43,8 @@ public class UsersController : BaseController {
         try{
             var id = await _userService.CreateUserAsync(userCreate);
             if (id > 0){
-                return Ok(id);
+                //return Ok(id);
+                return Created(string.Empty, id);
             }
             return BadRequest();
         } catch (InvalidOperationException e){
