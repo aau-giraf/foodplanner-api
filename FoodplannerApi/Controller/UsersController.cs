@@ -61,9 +61,9 @@ public class UsersController : BaseController {
             if (result != null){
                 return Ok(result);
             }
-            return BadRequest(new ErrorResponse {Email = ["Email eller password er forkert"]});
+            return BadRequest(new ErrorResponse {Message = ["Email eller password er forkert"]});
         } catch (InvalidOperationException e){
-            return BadRequest(new ErrorResponse {Email = ["Email eller password er forkert"]});
+            return BadRequest(new ErrorResponse {Message = ["Email eller password er forkert"]});
         }
     }
 }

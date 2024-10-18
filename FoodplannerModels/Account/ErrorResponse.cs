@@ -6,7 +6,7 @@ namespace FoodplannerModels.Account
    
    {
         [JsonPropertyName("Message")]
-        public string Message { get; set; }
+        public String[] Message { get; set; }
 
         [JsonPropertyName("Email")]
         public String[] Email { get; set; }
