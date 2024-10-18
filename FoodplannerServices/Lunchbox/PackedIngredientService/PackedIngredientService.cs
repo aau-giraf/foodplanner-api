@@ -6,15 +6,14 @@ namespace FoodplannerServices.Lunchbox
     /**
     * Service for the PackedIngredient class.
     */
-    public class PackedIngredientService (IPackedIngredientRepository packedIngredientRepository, IMapper mapper) : IPackedIngredientService
+    public class PackedIngredientService (IPackedIngredientRepository packedIngredientRepository) : IPackedIngredientService
     {
         private readonly IPackedIngredientRepository _packedIngredientRepository = packedIngredientRepository;
-        private readonly IMapper _mapper = mapper;
 
         // Get all packed ingredients and maps them to DTO
         public async Task<IEnumerable<PackedIngredient>> GetAllPackedIngredientsAsync() {
             var packedIngredients = await _packedIngredientRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<PackedIngredient>>(packedIngredients);
+            return packedIngredients;
         }
 
         // Get a packed ingredient based on the ID
