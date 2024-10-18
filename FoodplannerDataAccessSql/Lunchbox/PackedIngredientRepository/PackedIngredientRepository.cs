@@ -29,16 +29,13 @@ namespace FoodplannerDataAccessSql.Lunchbox
 
         // Inserts a new packed ingredient into the database
         public async Task<int> InsertAsync(PackedIngredient entity) {
-            const string sql = "INSERT INTO packed_ingredients (IngredientRef, MealRef) VALUES (@IngredientRef, @MealRef) RETURNING Id";
-
             using var connection = _connectionFactory.Create();
-            await connection.OpenAsync();
+            connection.Open();
 
-            // Execute the insert and return the generated Id
-            return await connection.ExecuteScalarAsync<int>(sql, new {
-                entity.IngredientRef,
-                entity.MealRef
-            });
+            var sql = $"INSERT INTO packed_ingredients (meal_ref, ingredient_ref)\n";
+            sql += $"VALUES ('{entity.Meal_ref}', '{entity.Ingredient_ref}')";
+
+            return await connection.ExecuteAsync(sql, entity);
         }
 
 
@@ -56,17 +53,6 @@ namespace FoodplannerDataAccessSql.Lunchbox
 
             // Executes the delete query and returns the number of affected rows
             return await connection.ExecuteAsync(sql, new { Id = id });
-        }
-
-        // Helper method to generate SQL content dynamically based on the entity's properties
-        // If 'properties' is true, it returns the property names, otherwise it returns the values
-        private IEnumerable<string> GetContent(PackedIngredient entity, bool properties = true) {
-            if (properties) 
-                return typeof(PackedIngredient).GetProperties().Select(p => p.Name); 
-                // Returns property names for SQL columns
-            else 
-                return typeof(PackedIngredient).GetProperties().Select(p => "'" + p.GetValue(entity) + "'"); 
-                // Returns property values for SQL values
         }
     }
 }
