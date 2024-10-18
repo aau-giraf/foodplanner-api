@@ -27,7 +27,7 @@ public class ChildrensController : BaseController
         try{
             var id = await _childrenService.CreateChildrenAsync(childrenCreate);
             if (id > 0){
-                return Ok(id);
+                return Created(string.Empty, id);
             }
             return BadRequest();
         } catch (InvalidOperationException e){
