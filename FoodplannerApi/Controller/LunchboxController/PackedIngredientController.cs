@@ -20,7 +20,7 @@ namespace FoodplannerApi.Controller
         }
 
         // Get a specific packed ingredient by id
-        [HttpGet("{id:int}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id) {
             // Calls the service to get the packed ingredient by ID
             var packedIngredient = await _packedIngredientService.GetPackedIngredientByIdAsync(id); 
@@ -44,7 +44,7 @@ namespace FoodplannerApi.Controller
         }
 
         // Delete a packed ingredient by id
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id) {
             // Calls the service to delete the packed ingredient by ID
             var result = await _packedIngredientService.DeletePackedIngredientAsync(id);
