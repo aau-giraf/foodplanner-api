@@ -8,7 +8,7 @@ namespace FoodplannerModels.Lunchbox;
 public class Meal {
     public required int Id {get; set;}
     public required string Title {get; set;}
-    public required string UserRef {get; set;}
-    public required string IngredientRef {get; set;}
-    public required DateOnly Date {get; set;}
+    public required string User_ref {get; set;}
+    public required string Image_ref {get; set;}
+    public required string Date {get; set;}
 }

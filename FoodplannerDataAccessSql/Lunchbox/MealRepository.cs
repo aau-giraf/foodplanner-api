@@ -18,21 +18,22 @@ public class MealRepository (PostgreSQLConnectionFactory connectionFactory) : IM
         return await connection.QueryAsync<Meal>(sql);
     }
 
-    public async Task<Meal> GetByNameAsync(string name)
+    public async Task<Meal> GetByIdAsync(int id)
     {
-        var sql = $"SELECT * FROM meals WHERE meal_name = '{name}'";
+        var sql = $"SELECT * FROM meals WHERE id = '{id}'";
         using var connection = _connectionFactory.Create();
         connection.Open();
-        var result = await connection.QueryAsync<Meal>(sql);
-        return result.FirstOrDefault();
+        var result = await connection.QuerySingleOrDefaultAsync<Meal>(sql, new { Id = id });
+        if (result == null) return null;
+        else return result;
     }
 
     public async Task<int> InsertAsync(Meal entity)
     {
         using var connection = _connectionFactory.Create();
         connection.Open();
-        var sql = $"INSERT INTO {typeof(Meal).Name}s ({string.Join(", ", GetContent(entity))})\n";
-        sql += $"VALUES ({string.Join(", ", GetContent(entity, false))})";
+        var sql = $"INSERT INTO meals (title, user_ref, image_ref, date)\n";
+        sql += $"VALUES ('{entity.Title}', '{entity.User_ref}', '{entity.Image_ref}', '{entity.Date}')";
         return await connection.ExecuteAsync(sql, entity);
     }
 
@@ -41,17 +42,11 @@ public class MealRepository (PostgreSQLConnectionFactory connectionFactory) : IM
         throw new NotImplementedException();
     }
 
-    public async Task<int> DeleteAsync(string name)
+    public async Task<int> DeleteAsync(int id)
     {
-        var sql = $"DELETE FROM meals WHERE meal_name = '{name}'";
+        var sql = $"DELETE FROM meals WHERE id = '{id}'";
         using var connection = _connectionFactory.Create();
         connection.Open();
-        return await connection.ExecuteAsync(sql, new { Name = name });
-    }
-
-    private IEnumerable<string> GetContent(Meal entity, bool properties = true)
-    {
-        if(properties) return typeof(Meal).GetProperties().Select(p => p.Name);
-        else return typeof(Meal).GetProperties().Select(p => "'" + p.GetValue(entity) + "'");
+        return await connection.ExecuteAsync(sql, new { Id = id });
     }
 }

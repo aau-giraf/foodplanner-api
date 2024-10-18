@@ -12,30 +12,47 @@ public class IngredientRepository (PostgreSQLConnectionFactory connectionFactory
 
     public async Task<IEnumerable<Ingredient>> GetAllAsync()
     {
-        var sql = "SELECT name FROM ingredients";
+        var sql = "SELECT * FROM ingredients";
         using var connection = _connectionFactory.Create();
         connection.Open();
-        var result = await connection.QueryAsync<Ingredient>(sql);
-        return result.ToList();
+        return await connection.QueryAsync<Ingredient>(sql);
     }
 
-    public async Task<Ingredient> GetByNameAsync(string name)
+    public async Task<Ingredient> GetByNameAsync(string name, string user)
     {
-        var sql = $"SELECT name FROM ingredients WHERE name = '{name}' GROUP BY name";
+        var sql = $"SELECT * FROM ingredients WHERE name = '{name}' AND user_ref = '{user}'";
         using var connection = _connectionFactory.Create();
         connection.Open();
-        var result = await connection.QueryAsync<Meal>(sql);
-        return (Ingredient)result;
+        var result = await connection.QuerySingleOrDefaultAsync<Ingredient>(sql, new { Name = name });
+        if (result == null) return null;
+        else return result;
     }
 
     public async Task<int> InsertAsync(Ingredient entity)
     {
-        var sql = "INSERT INTO ingredients (name)\n";
-        sql += $"VALUES ('{entity.Name}')";
         using var connection = _connectionFactory.Create();
         connection.Open();
-        var result = await connection.QueryAsync<Ingredient>(sql);
-        if(result != null) return 1;
-        else return 0;
+        var sql = $"INSERT INTO {typeof(Ingredient).Name}s ({string.Join(", ", GetContent(entity))})\n";
+        sql += $"VALUES ({string.Join(", ", GetContent(entity, false))})";
+        return await connection.ExecuteAsync(sql, entity);
+    }
+
+    public Task<int> UpdateAsync(Ingredient entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<int> DeleteAsync(string name, string user)
+    {
+        var sql = $"DELETE FROM ingredients WHERE name = '{name}' AND user_ref = '{user}'";
+        using var connection = _connectionFactory.Create();
+        connection.Open();
+        return await connection.ExecuteAsync(sql, new { Name = name });
+    }
+
+    private IEnumerable<string> GetContent<T>(T entity, bool properties = true)
+    {
+        if(properties) return typeof(T).GetProperties().Select(p => p.Name);
+        else return typeof(T).GetProperties().Select(p => "'" + p.GetValue(entity) + "'");
     }
 }

@@ -6,20 +6,18 @@ namespace FoodplannerServices.Lunchbox;
 /**
 * The service for the Meal class.
 */
-public class MealService (IMealRepository mealRepository, IMapper mapper) : IMealService
+public class MealService (IMealRepository mealRepository) : IMealService
 {
     private readonly IMealRepository _mealRepository = mealRepository;
-    private readonly IMapper _mapper = mapper;
 
-    public async Task<IEnumerable<MealDTO>> GetAllMealsAsync(){
+    public async Task<IEnumerable<Meal>> GetAllMealsAsync(){
 
         var meal = await _mealRepository.GetAllAsync();
-        var mealDTO = _mapper.Map<IEnumerable<MealDTO>>(meal);
-        return mealDTO;
+        return meal;
     }
 
-    public async Task<Meal> GetMealByNameAsync(string name){
-        return await _mealRepository.GetByNameAsync(name);
+    public async Task<Meal> GetMealByIdAsync(int id){
+        return await _mealRepository.GetByIdAsync(id);
     }
     
     public async Task<int> CreateMealAsync(Meal meal){
@@ -30,7 +28,7 @@ public class MealService (IMealRepository mealRepository, IMapper mapper) : IMea
         return await _mealRepository.UpdateAsync(meal);
     }
 
-    public async Task<int> DeleteMealAsync(string name){
-        return await _mealRepository.DeleteAsync(name);
+    public async Task<int> DeleteMealAsync(int id){
+        return await _mealRepository.DeleteAsync(id);
     }
 }

@@ -17,9 +17,9 @@ public class IngredientsController (IngredientService ingredientService) : BaseC
         return Ok(ingredients);
     }
 
-    [HttpGet("{name}")]
-    public async Task<IActionResult> Get(string name){
-        var ingredient = await _ingredientService.GetIngredientByNameAsync(name);
+    [HttpGet("{name}/{user}")]
+    public async Task<IActionResult> Get(string name, string user){
+        var ingredient = await _ingredientService.GetIngredientByNameAsync(name, user);
         if (User == null){
             return NotFound();
         }
@@ -30,8 +30,18 @@ public class IngredientsController (IngredientService ingredientService) : BaseC
     public async Task<IActionResult> Create([FromBody] Ingredient ingredient){
         var result = await _ingredientService.CreateIngredientAsync(ingredient);
         if (result > 0){
-            return CreatedAtAction(nameof(Get), new { name = ingredient.Name }, ingredient);
+            return CreatedAtAction(nameof(Get), new { name = ingredient.Name, user = ingredient.User_ref}, ingredient);
         }
         return BadRequest();
+    }
+
+    [HttpDelete("{name}/{user}")]
+    public async Task<IActionResult> Delete(string name, string user){
+        var ingredient = await _ingredientService.GetIngredientByNameAsync(name, user);
+        var result = await _ingredientService.DeleteIngredientAsync(name, user);
+        if (result > 0){
+            return Ok(ingredient);
+        }
+        return NotFound();
     }
 }
