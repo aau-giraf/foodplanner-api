@@ -47,7 +47,7 @@ public class UsersController : BaseController {
             }
             return BadRequest();
         } catch (InvalidOperationException e){
-            return BadRequest(new {EMAIL = e.Message});
+            return BadRequest(new ErrorResponse {Email = [e.Message]});
         }
     }
     
