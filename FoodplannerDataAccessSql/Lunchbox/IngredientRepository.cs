@@ -37,9 +37,14 @@ public class IngredientRepository (PostgreSQLConnectionFactory connectionFactory
         return await connection.ExecuteAsync(sql, entity);
     }
 
-    public Task<int> UpdateAsync(Ingredient entity)
+    public async Task<int> UpdateAsync(Ingredient entity, string name, string user)
     {
-        throw new NotImplementedException();
+        using var connection = _connectionFactory.Create();
+        connection.Open();
+        var sql = $"UPDATE ingredients\n";
+        sql += $"SET name = '{entity.Name}', user_ref = '{entity.User_ref}', image_ref = '{entity.Image_ref}'";
+        sql += $"WHERE name = '{name}' AND user_ref = '{user}'";
+        return await connection.ExecuteAsync(sql, entity);
     }
 
     public async Task<int> DeleteAsync(string name, string user)

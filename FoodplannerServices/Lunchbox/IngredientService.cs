@@ -24,8 +24,8 @@ public class IngredientService (IIngredientRepository ingredientRepository) : II
         return await _ingredientRepository.InsertAsync(meal);
     }
     
-    public async Task<int> UpdateIngredientAsync(Ingredient meal){
-        return await _ingredientRepository.UpdateAsync(meal);
+    public async Task<int> UpdateIngredientAsync(Ingredient meal, string name, string user){
+        return await _ingredientRepository.UpdateAsync(meal, name, user);
     }
 
     public async Task<int> DeleteIngredientAsync(string name, string user){
