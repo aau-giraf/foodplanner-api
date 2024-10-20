@@ -37,9 +37,14 @@ public class MealRepository (PostgreSQLConnectionFactory connectionFactory) : IM
         return await connection.ExecuteAsync(sql, entity);
     }
 
-    public Task<int> UpdateAsync(Meal entity)
+    public async Task<int> UpdateAsync(Meal entity, int id)
     {
-        throw new NotImplementedException();
+        using var connection = _connectionFactory.Create();
+        connection.Open();
+        var sql = $"UPDATE meals\n";
+        sql += $"SET title = '{entity.Title}', user_ref = '{entity.User_ref}', image_ref = '{entity.Image_ref}', date = '{entity.Date}'";
+        sql += $"WHERE id = '{id}'";
+        return await connection.ExecuteAsync(sql, entity);
     }
 
     public async Task<int> DeleteAsync(int id)

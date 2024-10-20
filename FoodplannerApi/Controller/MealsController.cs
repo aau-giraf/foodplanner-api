@@ -35,6 +35,16 @@ public class MealsController (MealService mealService) : BaseController
         return BadRequest();
     }
 
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update([FromBody] Meal meal, int id){
+        var result = await _mealService.UpdateMealAsync(meal, id);
+        if (result > 0){
+            var changedMeal = await _mealService.GetMealByIdAsync(id);
+            return Ok(changedMeal);
+        }
+        return BadRequest();
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id){
         var meal = await _mealService.GetMealByIdAsync(id);

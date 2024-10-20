@@ -24,8 +24,8 @@ public class MealService (IMealRepository mealRepository) : IMealService
         return await _mealRepository.InsertAsync(meal);
     }
     
-    public async Task<int> UpdateMealAsync(Meal meal){
-        return await _mealRepository.UpdateAsync(meal);
+    public async Task<int> UpdateMealAsync(Meal meal, int id){
+        return await _mealRepository.UpdateAsync(meal, id);
     }
 
     public async Task<int> DeleteMealAsync(int id){
