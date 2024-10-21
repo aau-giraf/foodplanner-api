@@ -81,9 +81,9 @@ public class UsersController : BaseController {
     }
     
     [HttpPost]
-    public async Task<IActionResult> CheckPinCode([FromBody] string pinCode, int id){
+    public async Task<IActionResult> CheckPinCode([FromBody] Pincode pincode){
         try{
-            var result = await _userService.GetUserByIdAndPinCodeAsync(id, pinCode);
+            var result = await _userService.GetUserByIdAndPinCodeAsync(pincode.Id, pincode.PinCode);
             if (result.Length > 0){
                 return Ok();
             }
