@@ -27,8 +27,8 @@ namespace FoodplannerServices.Lunchbox
         }
 
         // Updates an existing packed ingredient (not implemented)
-        public async Task<int> UpdatePackedIngredientAsync(PackedIngredient packedIngredient) {
-            return await _packedIngredientRepository.UpdateAsync(packedIngredient);
+        public async Task<int> UpdatePackedIngredientAsync(PackedIngredient packedIngredient, int id) {
+            return await _packedIngredientRepository.UpdateAsync(packedIngredient, id);
         }
 
         // Deletes a packed ingredient based on the ID

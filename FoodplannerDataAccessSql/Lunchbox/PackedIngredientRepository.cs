@@ -39,9 +39,14 @@ namespace FoodplannerDataAccessSql.Lunchbox
         }
 
 
-        // Updates an existing packed ingredient (currently not implemented)
-        public Task<int> UpdateAsync(PackedIngredient entity) {
-            throw new NotImplementedException(); // Placeholder for update functionality
+        // Updates an existing packed ingredient
+        public async Task<int> UpdateAsync(PackedIngredient entity, int id) {
+            using var connection = _connectionFactory.Create();
+            connection.Open();
+            var sql = $"UPDATE packed_ingredients\n";
+            sql += $"SET meal_ref = '{entity.Meal_ref}', ingredient_ref = '{entity.Ingredient_ref}'";
+            sql += $"WHERE id = '{id}'";
+            return await connection.ExecuteAsync(sql, entity);
         }
 
         // Deletes a packed ingredient from the database by its ID

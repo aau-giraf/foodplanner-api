@@ -43,6 +43,17 @@ namespace FoodplannerApi.Controller
             return BadRequest();
         }
 
+        // Update an existing packed ingredient
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update([FromBody] PackedIngredient packedIngredient, int id){
+            var result = await _packedIngredientService.UpdatePackedIngredientAsync(packedIngredient, id);
+            if (result > 0){
+                var changedPackedIngredient = await _packedIngredientService.GetPackedIngredientByIdAsync(id);
+                return Ok(changedPackedIngredient);
+            }
+            return BadRequest();
+        }
+
         // Delete a packed ingredient by id
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id) {
