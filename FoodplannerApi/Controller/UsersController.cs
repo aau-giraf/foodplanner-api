@@ -43,7 +43,6 @@ public class UsersController : BaseController {
         try{
             var id = await _userService.CreateUserAsync(userCreate);
             if (id > 0){
-                //return Ok(id);
                 return Created(string.Empty, id);
             }
             return BadRequest();
@@ -65,6 +64,33 @@ public class UsersController : BaseController {
             return BadRequest(new ErrorResponse {Message = ["Email eller password er forkert"]});
         } catch (InvalidOperationException e){
             return BadRequest(new ErrorResponse {Message = ["Email eller password er forkert"]});
+        }
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> UpdatePinCode([FromBody] int pinCode, int id){
+        try{
+            var result = await _userService.UpdateUserPinCodeAsync(pinCode, id);
+            if (result > 0){
+                return Ok();
+            }
+            return BadRequest();
+        }catch (InvalidOperationException e){
+            return BadRequest(e.Message);
+        }
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> CheckPinCode([FromBody] int pinCode, int id){
+        try{
+            var result = await _userService.GetUserByIdAndPinCodeAsync(id, pinCode);
+            if (result > 0){
+                return Ok();
+            }
+            return BadRequest();
+            //return BadRequest(new ErrorResponse {Message = ["Forkert pinkode"]});
+        } catch (InvalidOperationException e){
+            return BadRequest(e.Message);
         }
     }
 }

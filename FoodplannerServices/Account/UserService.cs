@@ -70,6 +70,27 @@ public class UserService : IUserService {
         
         return userCreds;
     }
+
+    public async Task<int> UpdateUserPinCodeAsync(int pinCode, int id){
+        if (pinCode.ToString().Length != 4){
+            throw new InvalidOperationException("Pinkode skal være 4 cifre");
+        }
+
+        var pincode = await _userRepository.UpdatePinCodeAsync(pinCode, id);
+
+        return pincode;
+    } 
+
+    public async Task<int> GetUserByIdAndPinCodeAsync(int id, int pinCode){
+        var pincode = await _userRepository.GetPinCodeByIdAsync(id);
+
+        if (pincode.ToString().Length != 4){
+            throw new InvalidOperationException("Pinkode skal være 4 cifre");
+        } else if (pincode != pinCode) {
+            throw new InvalidOperationException("Forkert pinkode");
+        }
+        return pincode;
+    }
 }
 
 
