@@ -6,6 +6,6 @@ namespace FoodplannerModels.Lunchbox;
 */
 public class PackedIngredient {
     public required int Id {get; set;}
-    public required string IngredientRef {get; set;}
-    public required int MealRef {get; set;}
+    public required string Ingredient_ref {get; set;}
+    public required int Meal_ref {get; set;}
 }

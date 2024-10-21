@@ -5,7 +5,7 @@ namespace FoodplannerModels.Lunchbox;
 */
 public interface IPackedIngredientService
 {
-    Task<IEnumerable<PackedIngredient>> GetAllIngredientsAsync();
+    Task<IEnumerable<PackedIngredient>> GetAllPackedIngredientsAsync();
     Task<PackedIngredient> GetPackedIngredientByIdAsync(int Id);
-    Task<int> CreateIngredientAsync(PackedIngredient packedIngredient);
+    Task<int> CreatePackedIngredientAsync(PackedIngredient packedIngredient);
 }
