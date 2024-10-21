@@ -109,24 +109,24 @@ namespace FoodplannerDataAccessSql.Account
             throw new NotImplementedException();
         }
 
-        public async Task<int> UpdatePinCodeAsync(string pinCode, int id)
+        public async Task<string> UpdatePinCodeAsync(string pinCode, int id)
         {
             var sql = "UPDATE users SET pincode = @PinCode WHERE id = @Id RETURNING pincode";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.ExecuteAsync(sql, new { PinCode = pinCode, Id = id });
+                var result = await connection.ExecuteScalarAsync<string>(sql, new { PinCode = pinCode, Id = id });
                 return result;
             }
         }
 
-        public async Task<int> GetPinCodeByIdAsync(int id)
+        public async Task<string> GetPinCodeByIdAsync(int id)
         {
             var sql = "SELECT pincode FROM users WHERE id = @Id";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.ExecuteScalarAsync<int>(sql, new { Id = id });
+                var result = await connection.ExecuteScalarAsync<string>(sql, new { Id = id });
                 return result;
             }
         }

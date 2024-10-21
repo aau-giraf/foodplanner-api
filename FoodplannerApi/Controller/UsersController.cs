@@ -71,7 +71,7 @@ public class UsersController : BaseController {
     public async Task<IActionResult> UpdatePinCode([FromBody] string pinCode, int id){
         try{
             var result = await _userService.UpdateUserPinCodeAsync(pinCode, id);
-            if (result > 0){
+            if (result.Length > 0){
                 return Created();
             }
             return BadRequest();
@@ -84,7 +84,7 @@ public class UsersController : BaseController {
     public async Task<IActionResult> CheckPinCode([FromBody] string pinCode, int id){
         try{
             var result = await _userService.GetUserByIdAndPinCodeAsync(id, pinCode);
-            if (result > 0){
+            if (result.Length > 0){
                 return Ok();
             }
             return BadRequest();
