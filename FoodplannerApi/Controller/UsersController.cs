@@ -68,11 +68,11 @@ public class UsersController : BaseController {
     }
 
     [HttpPut]
-    public async Task<IActionResult> UpdatePinCode([FromBody] int pinCode, int id){
+    public async Task<IActionResult> UpdatePinCode([FromBody] string pinCode, int id){
         try{
             var result = await _userService.UpdateUserPinCodeAsync(pinCode, id);
             if (result > 0){
-                return Ok();
+                return Created();
             }
             return BadRequest();
         }catch (InvalidOperationException e){
@@ -81,7 +81,7 @@ public class UsersController : BaseController {
     }
     
     [HttpPost]
-    public async Task<IActionResult> CheckPinCode([FromBody] int pinCode, int id){
+    public async Task<IActionResult> CheckPinCode([FromBody] string pinCode, int id){
         try{
             var result = await _userService.GetUserByIdAndPinCodeAsync(id, pinCode);
             if (result > 0){

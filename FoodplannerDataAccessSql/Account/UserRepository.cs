@@ -109,7 +109,7 @@ namespace FoodplannerDataAccessSql.Account
             throw new NotImplementedException();
         }
 
-        public async Task<int> UpdatePinCodeAsync(int pinCode, int id)
+        public async Task<int> UpdatePinCodeAsync(string pinCode, int id)
         {
             var sql = "UPDATE users SET pincode = @PinCode WHERE id = @Id RETURNING pincode";
             using (var connection = _connectionFactory.Create())

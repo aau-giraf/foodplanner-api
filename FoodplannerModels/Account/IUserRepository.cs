@@ -16,6 +16,6 @@ namespace FoodplannerModels.Account
         Task<int> UpdateAsync(User entity);
         Task<int> DeleteAsync(int id);
         Task<User?> GetUserByEmailAsync(string email);
-        Task<int> UpdatePinCodeAsync(int pinCode, int id);
+        Task<int> UpdatePinCodeAsync(string pinCode, int id);
     }
 }

@@ -25,5 +25,5 @@ public class User {
     [Required(ErrorMessage = "Role er påkrævet")]
     public required string Role { get; set; }
     public required bool RoleApproved { get; set; }
-    public int PinCode { get; set; }
+    public string PinCode { get; set; }
 }
