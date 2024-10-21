@@ -68,9 +68,9 @@ public class UsersController : BaseController {
     }
 
     [HttpPut]
-    public async Task<IActionResult> UpdatePinCode([FromBody] string pinCode, int id){
+    public async Task<IActionResult> UpdatePinCode([FromBody] Pincode pincode){
         try{
-            var result = await _userService.UpdateUserPinCodeAsync(pinCode, id);
+            var result = await _userService.UpdateUserPinCodeAsync(pincode.PinCode, pincode.Id);
             if (result.Length > 0){
                 return Created();
             }
@@ -90,7 +90,7 @@ public class UsersController : BaseController {
             return BadRequest();
             //return BadRequest(new ErrorResponse {Message = ["Forkert pinkode"]});
         } catch (InvalidOperationException e){
-            return BadRequest(e.Message);
+            return BadRequest(new ErrorResponse {Message = [e.Message]});
         }
     }
 }
