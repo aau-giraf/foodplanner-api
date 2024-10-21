@@ -76,7 +76,7 @@ public class UsersController : BaseController {
             }
             return BadRequest();
         }catch (InvalidOperationException e){
-            return BadRequest(e.Message);
+            return BadRequest(new ErrorResponse {Message = [e.Message]});
         }
     }
     
