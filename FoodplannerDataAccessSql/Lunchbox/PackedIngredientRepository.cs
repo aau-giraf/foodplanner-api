@@ -23,8 +23,9 @@ namespace FoodplannerDataAccessSql.Lunchbox
             var sql = $"SELECT * FROM packed_ingredients WHERE id = {id}"; // SQL query to select a packed ingredient by ID
             using var connection = _connectionFactory.Create(); 
             connection.Open(); 
-            var result = await connection.QueryAsync<PackedIngredient>(sql); 
-            return result.FirstOrDefault(); 
+            var result = await connection.QuerySingleOrDefaultAsync<PackedIngredient>(sql, new { Id = id });
+            if (result == null) return null;
+            else return result;
         }
 
         // Inserts a new packed ingredient into the database

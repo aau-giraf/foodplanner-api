@@ -17,9 +17,9 @@ public class IngredientsController (IngredientService ingredientService) : BaseC
         return Ok(ingredients);
     }
 
-    [HttpGet("{name}/{user}")]
-    public async Task<IActionResult> Get(string name, string user){
-        var ingredient = await _ingredientService.GetIngredientByNameAsync(name, user);
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(int id){
+        var ingredient = await _ingredientService.GetIngredientByIdAsync(id);
         if (User == null){
             return NotFound();
         }
@@ -30,25 +30,25 @@ public class IngredientsController (IngredientService ingredientService) : BaseC
     public async Task<IActionResult> Create([FromBody] Ingredient ingredient){
         var result = await _ingredientService.CreateIngredientAsync(ingredient);
         if (result > 0){
-            return CreatedAtAction(nameof(Get), new { name = ingredient.Name, user = ingredient.User_ref}, ingredient);
+            return CreatedAtAction(nameof(Get), new { id = ingredient.Id}, ingredient);
         }
         return BadRequest();
     }
 
-    [HttpPut("{name}/{user}")]
-    public async Task<IActionResult> Update([FromBody] Ingredient ingredient, string name, string user){
-        var result = await _ingredientService.UpdateIngredientAsync(ingredient, name, user);
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update([FromBody] Ingredient ingredient, int id){
+        var result = await _ingredientService.UpdateIngredientAsync(ingredient, id);
         if (result > 0){
-            var changedIngredient = await _ingredientService.GetIngredientByNameAsync(ingredient.Name, ingredient.User_ref);
+            var changedIngredient = await _ingredientService.GetIngredientByIdAsync(id);
             return Ok(changedIngredient);
         }
         return BadRequest();
     }
 
-    [HttpDelete("{name}/{user}")]
-    public async Task<IActionResult> Delete(string name, string user){
-        var ingredient = await _ingredientService.GetIngredientByNameAsync(name, user);
-        var result = await _ingredientService.DeleteIngredientAsync(name, user);
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id){
+        var ingredient = await _ingredientService.GetIngredientByIdAsync(id);
+        var result = await _ingredientService.DeleteIngredientAsync(id);
         if (result > 0){
             return Ok(ingredient);
         }

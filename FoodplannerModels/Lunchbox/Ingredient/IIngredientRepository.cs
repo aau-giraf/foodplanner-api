@@ -6,8 +6,8 @@
 public interface IIngredientRepository
 {
     Task<IEnumerable<Ingredient>> GetAllAsync();
-    Task<Ingredient> GetByNameAsync(string name, string user);
+    Task<Ingredient> GetByIdAsync(int id);
     Task<int> InsertAsync(Ingredient entity);
-    Task<int> UpdateAsync(Ingredient entity, string name, string user);
-    Task<int> DeleteAsync(string name, string user);
+    Task<int> UpdateAsync(Ingredient entity, int id);
+    Task<int> DeleteAsync(int id);
 }
