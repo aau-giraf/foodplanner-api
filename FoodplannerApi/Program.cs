@@ -41,7 +41,6 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<MealService>();
 builder.Services.AddScoped<IngredientService>();
 builder.Services.AddAutoMapper(typeof(UserProfile));
-builder.Services.AddAutoMapper(typeof(MealProfile));
 
 builder.Services.AddControllers();
 

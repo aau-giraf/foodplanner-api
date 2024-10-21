@@ -12,15 +12,23 @@ public class IngredientService (IIngredientRepository ingredientRepository) : II
 
     public async Task<IEnumerable<Ingredient>> GetAllIngredientsAsync(){
 
-        var ingredient = await _ingredientRepository.GetAllAsync();
-        return ingredient;
+        var ingredients = await _ingredientRepository.GetAllAsync();
+        return ingredients;
     }
 
-    public async Task<Ingredient> GetIngredientByNameAsync(string name){
-        return await _ingredientRepository.GetByNameAsync(name);
+    public async Task<Ingredient> GetIngredientByNameAsync(string name, string user){
+        return await _ingredientRepository.GetByNameAsync(name, user);
     }
     
-    public async Task<int> CreateIngredientAsync(Ingredient ingredient){
-        return await _ingredientRepository.InsertAsync(ingredient);
+    public async Task<int> CreateIngredientAsync(Ingredient meal){
+        return await _ingredientRepository.InsertAsync(meal);
+    }
+    
+    public async Task<int> UpdateIngredientAsync(Ingredient meal, string name, string user){
+        return await _ingredientRepository.UpdateAsync(meal, name, user);
+    }
+
+    public async Task<int> DeleteIngredientAsync(string name, string user){
+        return await _ingredientRepository.DeleteAsync(name, user);
     }
 }

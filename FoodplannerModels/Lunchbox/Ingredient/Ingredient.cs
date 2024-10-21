@@ -6,6 +6,6 @@ namespace FoodplannerModels.Lunchbox;
 */
 public class Ingredient {
     public required string Name {get; set;}
-    public required string UserRef {get; set;}
-    public required string ImageRef {get; set;}
+    public required string User_ref {get; set;}
+    public required string Image_ref {get; set;}
 }

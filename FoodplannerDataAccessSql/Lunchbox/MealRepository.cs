@@ -18,40 +18,40 @@ public class MealRepository (PostgreSQLConnectionFactory connectionFactory) : IM
         return await connection.QueryAsync<Meal>(sql);
     }
 
-    public async Task<Meal> GetByNameAsync(string name)
+    public async Task<Meal> GetByIdAsync(int id)
     {
-        var sql = $"SELECT * FROM meals WHERE meal_name = '{name}'";
+        var sql = $"SELECT * FROM meals WHERE id = '{id}'";
         using var connection = _connectionFactory.Create();
         connection.Open();
-        var result = await connection.QueryAsync<Meal>(sql);
-        return result.FirstOrDefault();
+        var result = await connection.QuerySingleOrDefaultAsync<Meal>(sql, new { Id = id });
+        if (result == null) return null;
+        else return result;
     }
 
     public async Task<int> InsertAsync(Meal entity)
     {
         using var connection = _connectionFactory.Create();
         connection.Open();
-        var sql = $"INSERT INTO {typeof(Meal).Name}s ({string.Join(", ", GetContent(entity))})\n";
-        sql += $"VALUES ({string.Join(", ", GetContent(entity, false))})";
+        var sql = $"INSERT INTO meals (title, user_ref, image_ref, date)\n";
+        sql += $"VALUES ('{entity.Title}', '{entity.User_ref}', '{entity.Image_ref}', '{entity.Date}')";
         return await connection.ExecuteAsync(sql, entity);
     }
 
-    public Task<int> UpdateAsync(Meal entity)
+    public async Task<int> UpdateAsync(Meal entity, int id)
     {
-        throw new NotImplementedException();
-    }
-
-    public async Task<int> DeleteAsync(string name)
-    {
-        var sql = $"DELETE FROM meals WHERE meal_name = '{name}'";
         using var connection = _connectionFactory.Create();
         connection.Open();
-        return await connection.ExecuteAsync(sql, new { Name = name });
+        var sql = $"UPDATE meals\n";
+        sql += $"SET title = '{entity.Title}', user_ref = '{entity.User_ref}', image_ref = '{entity.Image_ref}', date = '{entity.Date}'";
+        sql += $"WHERE id = '{id}'";
+        return await connection.ExecuteAsync(sql, entity);
     }
 
-    private IEnumerable<string> GetContent(Meal entity, bool properties = true)
+    public async Task<int> DeleteAsync(int id)
     {
-        if(properties) return typeof(Meal).GetProperties().Select(p => p.Name);
-        else return typeof(Meal).GetProperties().Select(p => "'" + p.GetValue(entity) + "'");
+        var sql = $"DELETE FROM meals WHERE id = '{id}'";
+        using var connection = _connectionFactory.Create();
+        connection.Open();
+        return await connection.ExecuteAsync(sql, new { Id = id });
     }
 }
