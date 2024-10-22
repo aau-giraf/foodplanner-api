@@ -4,7 +4,7 @@ namespace FoodplannerModels.Lunchbox;
 // Contains the name of the ingredient and references to a user and an image.
 
 public class Ingredient {
-    // Unique identifier for the ingredient.
+    // Gets an ingredient by ID asynchronously.
     public required int Id {get; set;}
     // Name of the ingredient.
     public required string Name {get; set;}
