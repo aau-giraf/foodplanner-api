@@ -1,4 +1,5 @@
 using FoodplannerDataAccessSql;
+using Dapper;
 
 namespace testing;
 
@@ -13,5 +14,14 @@ static class DatabaseConnection
     public static PostgreSQLConnectionFactory GetConnection()
     {
         return new PostgreSQLConnectionFactory(host, port, database, username, password);
+    }
+
+    public static async void EmptyDatabase(string name)
+    {
+        PostgreSQLConnectionFactory connectionFactory = new PostgreSQLConnectionFactory(host, port, database, username, password);
+        var sql = $"DELETE FROM {name}";
+        using var connection = connectionFactory.Create();
+        connection.Open();
+        await connection.ExecuteAsync(sql);
     }
 }
