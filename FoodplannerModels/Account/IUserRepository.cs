@@ -9,9 +9,11 @@ namespace FoodplannerModels.Account
     public interface IUserRepository
     {
         Task<IEnumerable<User>> GetAllAsync();
-        Task<User> GetByIdAsync(int id);
+        Task<User?> GetByIdAsync(int id);
+        Task<bool> EmailExistsAsync(string email);
         Task<int> InsertAsync(User entity);
         Task<int> UpdateAsync(User entity);
         Task<int> DeleteAsync(int id);
+        Task<User?> GetUserByEmailAsync(string email);
     }
 }
