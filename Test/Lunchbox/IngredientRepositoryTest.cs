@@ -1,142 +1,105 @@
-using Moq;
-using Npgsql;
+using Dapper;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using FoodplannerDataAccessSql;
-using FoodplannerDataAccessSql.Lunchbox;
 using FoodplannerModels.Lunchbox;
+using FoodplannerDataAccessSql.Lunchbox;
+using Xunit;
 
-namespace testing 
+namespace testing
 {
     public class IngredientRepositoryTests
     {
-        // private readonly Mock<PostgreSQLConnectionFactory> _mockConnectionFactory;
-        // private readonly Mock<NpgsqlConnection> _mockDbConnection;
         // private readonly IngredientRepository _repository;
 
-        // public IngredientRepositoryTests() {
-        //     // set up the mocks
-        //     _mockConnectionFactory = new Mock<PostgreSQLConnectionFactory>();
-        //     _mockDbConnection = new Mock<NpgsqlConnection>();
-
-        //     // configure the connection factory mock to return the mocked connection
-        //     _mockConnectionFactory.Setup(f => f.Create()).Returns(_mockDbConnection.Object);
-            
-        //     // Create the repository instance with the mock connection factory
-        //     _repository = new IngredientRepository(_mockConnectionFactory.Object);
+        // public IngredientRepositoryTests()
+        // {
+        //     // Initialize the connection factory using DatabaseConnection
+        //     var connectionFactory = DatabaseConnection.GetConnection();
+        //     _repository = new IngredientRepository(connectionFactory);
         // }
-        
+
         // [Fact]
         // public async Task GetAllAsync_ReturnsAllIngredients()
         // {
         //     // Arrange
-        //     var expectedIngredients = new List<Ingredient> 
-        //     {
-        //         new Ingredient { Id = 1, Name = "Tomato", User_ref = "user1", Image_ref = "image1" },
-        //         new Ingredient { Id = 2, Name = "Cheese", User_ref = "user2", Image_ref = "image2" }
-        //     };
-        //     // Setup mock Dapper Query
-        //     _mockDbConnection.Setup(db => await db.QueryAsync<Ingredient>(
-        //         It.IsAny<string>(),
-        //         null,
-        //         null,
-        //         null,
-        //         null))
-        //         .ReturnsAsync(expectedIngredients);
+        //     var sql = "SELECT * FROM ingredients";
 
         //     // Act
-        //     var actual = await _repository.GetAllAsync();
+        //     using var connection = DatabaseConnection.GetConnection().Create();
+        //     connection.Open();
+        //     IEnumerable<Ingredient> result = await connection.QueryAsync<Ingredient>(sql);
 
         //     // Assert
-        //     Assert.Equal(expectedIngredients.Count, actual.Count());
-        //     Assert.Equal(expectedIngredients, actual);
-        // }
-
-        // [Theory]
-        // [InlineData(1, "Tomato")]
-        // [InlineData(2, "Cheese")]
-        // public async Task GetByIdAsync_ReturnsCorrectIngredient(int id, string expectedName) {
-        //     // Arrange
-        //     var expectedIngredient = new Ingredient { Id = id, Name = expectedName, User_ref = "user_ref", Image_ref = "image_ref" };
-
-        //     _mockDbConnection.Setup(db => await db.QuerySingleOrDefaultAsync<Ingredient>(
-        //         It.IsAny<string>(),
-        //         It.IsAny<object>(),
-        //         null,
-        //         null,
-        //         null))
-        //         .ReturnsAsync(expectedIngredient);
-
-            
-        //     // Act
-        //     var actual = await _repository.GetByIdAsync(id);
-
-        //     // Assert
-        //     Assert.NotNull(actual);
-        //     Assert.Equal(expectedName, actual.Name);
+        //     Assert.NotNull(result);
+        //     Assert.True(result.Any());
         // }
 
         // [Fact]
-        // public async Task InsertAsync_InsertsNewIngredient()
+        // public async Task GetByIdAsync_ReturnsIngredient_WhenExists()
         // {
         //     // Arrange
-        //     var newIngredient = new Ingredient { Name = "Lettuce", User_ref = "user3", Image_ref = "image3" };
-
-        //      _mockDbConnection.Setup(db => await db.ExecuteAsync(
-        //         It.IsAny<string>(),
-        //         It.IsAny<object>(),
-        //         null,
-        //         null,
-        //         null))
-        //         .ReturnsAsync(1);
+        //     var id = 1;  // Assuming there is an ingredient with this ID
+        //     var sql = "SELECT * FROM ingredients WHERE id = @Id";
 
         //     // Act
-        //     var result = await _repository.InsertAsync(newIngredient);
+        //     using var connection = DatabaseConnection.GetConnection().Create();
+        //     connection.Open();
+        //     var result = await connection.QuerySingleOrDefaultAsync<Ingredient>(sql, new { Id = id });
 
         //     // Assert
-        //     Assert.Equal(1, result);
+        //     Assert.NotNull(result);
+        //     Assert.Equal(id, result.Id);
         // }
 
         // [Fact]
-        // public async Task UpdateAsync_UpdatesExistingIngredient()
+        // public async Task InsertAsync_InsertsIngredient()
         // {
         //     // Arrange
-        //     var updatedIngredient = new Ingredient { Name = "Lettuce", User_ref = "user3", Image_ref = "image3" };
-        //     int id = 1;
-
-        //     _mockDbConnection.Setup(db => await db.ExecuteAsync(
-        //         It.IsAny<string>(),
-        //         It.IsAny<object>(),
-        //         null,
-        //         null,
-        //         null))
-        //         .ReturnsAsync(1); // Assume 1 row was affected
+        //     var ingredient = new Ingredient { Id = 4, Name = "Carrot", User_ref = "user1", Image_ref = "image1" };
+        //     var sql = "INSERT INTO ingredients (name, user_ref, image_ref) VALUES (@Name, @User_ref, @Image_ref)";
 
         //     // Act
-        //     var result = await _repository.UpdateAsync(updatedIngredient, id);
+        //     using var connection = DatabaseConnection.GetConnection().Create();
+        //     connection.Open();
+        //     var result = await connection.ExecuteAsync(sql, ingredient);
 
         //     // Assert
-        //     Assert.Equal(1, result);
+        //     Assert.Equal(1, result);  // Should return 1 affected row
+        // }
+
+        // [Fact]
+        // public async Task UpdateAsync_UpdatesIngredient()
+        // {
+        //     // Arrange
+        //     var ingredient = new Ingredient { Id = 2, Name = "UpdatedName", User_ref = "user1", Image_ref = "image1" };
+        //     var id = 2;  // Use a valid existing ID
+        //     var sql = "UPDATE ingredients SET name = @Name, user_ref = @User_ref, image_ref = @Image_ref WHERE id = @Id";
+
+        //     // Act
+        //     using var connection = DatabaseConnection.GetConnection().Create();
+        //     connection.Open();
+        //     var result = await connection.ExecuteAsync(sql, new { ingredient.Name, ingredient.User_ref, ingredient.Image_ref, Id = id });
+
+        //     // Assert
+        //     Assert.Equal(1, result);  // Should return 1 affected row
         // }
 
         // [Fact]
         // public async Task DeleteAsync_DeletesIngredient()
         // {
         //     // Arrange
-        //     int id = 1;
-
-        //     _mockDbConnection.Setup(db => await db.ExecuteAsync(
-        //         It.IsAny<string>(),
-        //         It.IsAny<object>(),
-        //         null,
-        //         null,
-        //         null))
-        //         .ReturnsAsync(1); // Assume 1 row was affected
+        //     var id = 2;  // Use a valid existing ID
+        //     var sql = "DELETE FROM ingredients WHERE id = @Id";
 
         //     // Act
-        //     var result = await _repository.DeleteAsync(id);
+        //     using var connection = DatabaseConnection.GetConnection().Create();
+        //     connection.Open();
+        //     var result = await connection.ExecuteAsync(sql, new { Id = id });
 
         //     // Assert
-        //     Assert.Equal(1, result);
+        //     Assert.Equal(1, result);  // Should return 1 affected row
         // }
-    
     }
 }
