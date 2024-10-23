@@ -3,6 +3,7 @@ using FoodplannerModels.Lunchbox;
 
 namespace testing;
 
+[Collection("Sequential")]
 public class MealRepositoryTest
 {
     [Fact]
@@ -90,6 +91,7 @@ public class MealRepositoryTest
         int mealId = allMeals.FirstOrDefault().Id;
         await mealRep.UpdateAsync(updatedMeal, mealId);
         Meal actual = await mealRep.GetByIdAsync(mealId);
+        await mealRep.DeleteAsync(mealId);
         
         //Verify
         Assert.Equal(expected, actual.Title);
