@@ -1,138 +1,104 @@
-using Moq;
 using Dapper;
 using System.Collections.Generic;
-using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
+using FoodplannerDataAccessSql;
 using FoodplannerModels.Lunchbox;
 using FoodplannerDataAccessSql.Lunchbox;
 using Xunit;
 
+namespace testing;
 public class PackedIngredientRepositoryTests
 {
-    // private readonly Mock<PostgreSQLConnectionFactory> _connectionFactoryMock;
-    // private readonly Mock<NpgsqlConnection> _dbConnectionMock;
     // private readonly PackedIngredientRepository _repository;
 
     // public PackedIngredientRepositoryTests()
     // {
-    //     _connectionFactoryMock = new Mock<PostgreSQLConnectionFactory>();
-    //     _dbConnectionMock = new Mock<NpgsqlConnection>();
-    //     _repository = new PackedIngredientRepository(_connectionFactoryMock.Object);
+    //     // Initialize the connection factory using DatabaseConnection
+    //     var connectionFactory = DatabaseConnection.GetConnection();
+    //     _repository = new PackedIngredientRepository(connectionFactory);
     // }
 
     // [Fact]
-    // public async Task GetAllAsync_ReturnAllPackedIngredients()
+    // public async Task GetAllAsync_ReturnsAllPackedIngredients()
     // {
     //     // Arrange
-    //     var packedIngredients = new List<PackedIngredient>
-    //     {
-    //         new PackedIngredient { Id = 1, Meal_ref = "Meal1", Ingredient_ref = "Ingredient1" },
-    //         new PackedIngredient { Id = 2, Meal_ref = "Meal2", Ingredient_ref = "Ingredient2" }
-    //     };
-
-    //     _connectionFactoryMock.Setup(cf => cf.Create()).Returns(_dbConnectionMock.Object);
-    //     _dbConnectionMock.Setup(db => db.QueryAsync<PackedIngredient>(
-    //         It.IsAny<string>(), 
-    //         null, 
-    //         null, 
-    //         null, 
-    //         null, 
-    //         null))
-    //         .ReturnsAsync(packedIngredients);
+    //     var sql = "SELECT * FROM packed_ingredients";
 
     //     // Act
-    //     var result = await _repository.GetAllAsync();
+    //     using var connection = DatabaseConnection.GetConnection().Create();
+    //     connection.Open();
+    //     IEnumerable<PackedIngredient> result = await connection.QueryAsync<PackedIngredient>(sql);
 
     //     // Assert
     //     Assert.NotNull(result);
-    //     Assert.Equal(2, result.Count());
+    //     Assert.True(result.Any());
     // }
 
     // [Fact]
-    // public async Task GetByIdAsync_ReturnPackedIngredient_WhenExists()
+    // public async Task GetByIdAsync_ReturnsPackedIngredient_WhenExists()
     // {
     //     // Arrange
-    //     var packedIngredient = new PackedIngredient { Id = 1, Meal_ref = "Meal1", Ingredient_ref = "Ingredient1" };
-
-    //     _connectionFactoryMock.Setup(cf => cf.Create()).Returns(_dbConnectionMock.Object);
-    //     _dbConnectionMock.Setup(db => db.QuerySingleOrDefaultAsync<PackedIngredient>(
-    //         It.IsAny<string>(), 
-    //         null, 
-    //         null, 
-    //         null, 
-    //         null, 
-    //         null))
-    //         .ReturnsAsync(packedIngredient);
+    //     var id = 5;
+    //     var sql = "SELECT * FROM packed_ingredients WHERE id = @Id";
 
     //     // Act
-    //     var result = await _repository.GetByIdAsync(1);
+    //     using var connection = DatabaseConnection.GetConnection().Create();
+    //     connection.Open();
+    //     var result = await connection.QuerySingleOrDefaultAsync<PackedIngredient>(sql, new { Id = id });
 
     //     // Assert
     //     Assert.NotNull(result);
-    //     Assert.Equal(1, result.Id);
+    //     Assert.Equal(id, result.Id);
     // }
 
     // [Fact]
-    // public async Task InsertAsync_InsertPackedIngredient()
+    // public async Task InsertAsync_InsertsPackedIngredient()
     // {
     //     // Arrange
-    //     var packedIngredient = new PackedIngredient { Meal_ref = "Meal1", Ingredient_ref = "Ingredient1" };
+    //     var packedIngredient = new PackedIngredient { Id = 5, Meal_ref = 19, Ingredient_ref = 3 };
+    //     var sql = "INSERT INTO packed_ingredients (meal_ref, ingredient_ref) VALUES (@Meal_ref, @Ingredient_ref)";
 
-    //     _connectionFactoryMock.Setup(cf => cf.Create()).Returns(_dbConnectionMock.Object);
-    //     _dbConnectionMock.Setup(db => db.ExecuteAsync(
-    //         It.IsAny<string>(), 
-    //         null, 
-    //         null, 
-    //         null, 
-    //         null))
-    //         .ReturnsAsync(1);
-        
     //     // Act
-    //     var result = await _repository.InsertAsync(packedIngredient);
-        
+    //     using var connection = DatabaseConnection.GetConnection().Create();
+    //     connection.Open();
+    //     var result = await connection.ExecuteAsync(sql, packedIngredient);
+
+    //     // Assert
+    //     Assert.Equal(1, result);
+    // }
+
+
+    // [Fact]
+    // public async Task UpdateAsync_UpdatesPackedIngredient()
+    // {
+    //     // Arrange
+    //     var packedIngredient = new PackedIngredient { Id = 5, Meal_ref = 19, Ingredient_ref = 2 };
+    //     var id = 6; // Use a valid existing ID
+    //     var sql = "UPDATE packed_ingredients SET meal_ref = @Meal_ref, ingredient_ref = @Ingredient_ref WHERE id = @Id";
+
+    //     // Act
+    //     using var connection = DatabaseConnection.GetConnection().Create();
+    //     connection.Open();
+    //     var result = await connection.ExecuteAsync(sql, new { packedIngredient.Meal_ref, packedIngredient.Ingredient_ref, Id = id });
+
     //     // Assert
     //     Assert.Equal(1, result);
     // }
 
     // [Fact]
-    // public async Task UpdateAsync_UpdatePackedIngredient()
+    // public async Task DeleteAsync_DeletesPackedIngredient()
     // {
     //     // Arrange
-    //     var packedIngredient = new PackedIngredient { Meal_ref = "UpdatedMeal", Ingredient_ref = "UpdatedIngredient" };
+    //     var id = 6; // Use a valid existing ID
+    //     var sql = "DELETE FROM packed_ingredients WHERE id = @Id";
 
-    //     _connectionFactoryMock.Setup(cf => cf.Create()).Returns(_dbConnectionMock.Object);
-    //     _dbConnectionMock.Setup(db => db.ExecuteAsync(
-    //         It.IsAny<string>(), 
-    //         null, 
-    //         null, 
-    //         null, 
-    //         null))
-    //         .ReturnsAsync(1);
-        
     //     // Act
-    //     var result = await _repository.UpdateAsync(packedIngredient, 1);
-        
-    //     // Assert
-    //     Assert.Equal(1, result);
-    // }
+    //     using var connection = DatabaseConnection.GetConnection().Create();
+    //     connection.Open();
+    //     var result = await connection.ExecuteAsync(sql, new { Id = id });
 
-    // [Fact]
-    // public async Task DeleteAsync_DeletePackedIngredient()
-    // {
-    //     // Arrange
-    //     _connectionFactoryMock.Setup(cf => cf.Create()).Returns(_dbConnectionMock.Object);
-    //     _dbConnectionMock.Setup(db => db.ExecuteAsync(
-    //         It.IsAny<string>(), 
-    //         null, 
-    //         null, 
-    //         null, 
-    //         null))
-    //         .ReturnsAsync(1);
-        
-    //     // Act
-    //     var result = await _repository.DeleteAsync(1);
-        
     //     // Assert
-    //     Assert.Equal(1, result);
+    //     Assert.Equal(1, result);  // Should return 1 affected row
     // }
 }
