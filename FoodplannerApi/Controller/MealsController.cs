@@ -20,7 +20,7 @@ public class MealsController (MealService mealService) : BaseController
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id){
         var meal = await _mealService.GetMealByIdAsync(id);
-        if (User == null){
+        if (meal == null){
             return NotFound();
         }
         return Ok(meal);
