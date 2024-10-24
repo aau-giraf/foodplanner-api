@@ -1,11 +1,6 @@
 using Dapper;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FoodplannerDataAccessSql;
 using FoodplannerModels.Lunchbox;
 using FoodplannerDataAccessSql.Lunchbox;
-using Xunit;
 
 namespace testing;
 [Collection("Sequential")] // Indicates that the tests in this collection should run sequentially to avoid issues with shared state.
@@ -15,9 +10,9 @@ public class PackedIngredientRepositoryTests
     public async void GetAllAsync_EmptyDatabase_ReturnsEmptyList()
     {
         // Setup
-        DatabaseConnection.EmptyDatabase("packed_ingredients"); // Clears the database to ensure it is empty.
-        PackedIngredientRepository packedIngredientRepo = new PackedIngredientRepository(DatabaseConnection.GetConnection()); // Creates an instance of the repository.
-        IEnumerable<PackedIngredient> expected = Enumerable.Empty<PackedIngredient>(); // The expected result is an empty list.
+        await DatabaseConnection.EmptyDatabase("packed_ingredients"); // Clears the database to ensure it is empty.
+        PackedIngredientRepository packedIngredientRepo = new(DatabaseConnection.GetConnection()); // Creates an instance of the repository.
+        IEnumerable<PackedIngredient> expected = []; // The expected result is an empty list.
         
         // Attempt
         IEnumerable<PackedIngredient> actual = await packedIngredientRepo.GetAllAsync(); // Returns all PackedIngredients from the database.
@@ -31,15 +26,16 @@ public class PackedIngredientRepositoryTests
     public async void GetAllAsync_OnePackedIngredientInDatabase_ReturnsOnePackedIngredient()
     {
         // Setup
-        DatabaseConnection.EmptyDatabase("packed_ingredients"); // Clears the database.
-        PackedIngredientRepository packedIngredientRepo = new PackedIngredientRepository(DatabaseConnection.GetConnection()); // Creates the repository instance.
+        await DatabaseConnection.SetupTempUserAndImage();
+        await DatabaseConnection.EmptyDatabase("packed_ingredients"); // Clears the database.
+        PackedIngredientRepository packedIngredientRepo = new(DatabaseConnection.GetConnection()); // Creates the repository instance.
         
-        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection()); // Creates ingredient repository.
-        MealRepository mealRep = new MealRepository(DatabaseConnection.GetConnection()); // Creates meal repository.
+        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection()); // Creates ingredient repository.
+        MealRepository mealRep = new(DatabaseConnection.GetConnection()); // Creates meal repository.
         
         // Creates a test meal and ingredient.
-        Meal meal = new Meal { Id = 0, Title = "test", User_ref = "test", Image_ref = "test", Date = "test" };
-        Ingredient ingredient = new Ingredient { Id = 1, Name = "test", User_ref = "alex", Image_ref = "test" };
+        Meal meal = new() { Id = 0, Title = "test", User_ref = 1, Image_ref = 1, Date = "test" };
+        Ingredient ingredient = new() { Id = 1, Name = "test", User_ref = 1, Image_ref = 1 };
         
         // Inserts the meal and ingredient into the database.
         await mealRep.InsertAsync(meal);
@@ -54,7 +50,7 @@ public class PackedIngredientRepositoryTests
         int ingredientId = allIngredients.FirstOrDefault().Id;
 
         // Creates a PackedIngredient to insert into the database.
-        PackedIngredient packedIngredient = new PackedIngredient { Id = 3, Meal_ref = mealId, Ingredient_ref = ingredientId };
+        PackedIngredient packedIngredient = new() { Id = 3, Meal_ref = mealId, Ingredient_ref = ingredientId };
         
         // Attempt
         await packedIngredientRepo.InsertAsync(packedIngredient); // Inserts the packed ingredient into the database.
@@ -68,8 +64,8 @@ public class PackedIngredientRepositoryTests
     public async void GetByIdAsync_EmptyDatabase_ReturnsNull()
     {
         // Setup
-        DatabaseConnection.EmptyDatabase("packed_ingredients"); // Clears the database.
-        PackedIngredientRepository packedIngredientRepo = new PackedIngredientRepository(DatabaseConnection.GetConnection()); // Creates the repository instance.
+        await DatabaseConnection.EmptyDatabase("packed_ingredients"); // Clears the database.
+        PackedIngredientRepository packedIngredientRepo = new(DatabaseConnection.GetConnection()); // Creates the repository instance.
         
         // Attempt
         PackedIngredient actual = await packedIngredientRepo.GetByIdAsync(0); // Attempts to retrieve a packed ingredient by ID.
@@ -82,14 +78,16 @@ public class PackedIngredientRepositoryTests
     public async void GetByIdAsync_OnePackedIngredientInDatabase_ReturnsTheSamePackedIngredient()
     {
         // Setup
-        PackedIngredientRepository packedIngredientRepo = new PackedIngredientRepository(DatabaseConnection.GetConnection()); // Creates the repository instance.
+        await DatabaseConnection.SetupTempUserAndImage();
+        await DatabaseConnection.EmptyDatabase("packed_ingredients"); // Clears the database.
+        PackedIngredientRepository packedIngredientRepo = new(DatabaseConnection.GetConnection()); // Creates the repository instance.
         
-        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection()); // Creates ingredient repository.
-        MealRepository mealRep = new MealRepository(DatabaseConnection.GetConnection()); // Creates meal repository.
+        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection()); // Creates ingredient repository.
+        MealRepository mealRep = new(DatabaseConnection.GetConnection()); // Creates meal repository.
         
         // Creates a test meal and ingredient.
-        Meal meal = new Meal { Id = 0, Title = "test", User_ref = "test", Image_ref = "test", Date = "test" };
-        Ingredient ingredient = new Ingredient { Id = 1, Name = "test", User_ref = "alex", Image_ref = "test" };
+        Meal meal = new() { Id = 0, Title = "test", User_ref = 1, Image_ref = 1, Date = "test" };
+        Ingredient ingredient = new() { Id = 1, Name = "test", User_ref = 1, Image_ref = 1 };
         
         // Inserts the meal and ingredient into the database.
         await mealRep.InsertAsync(meal);
@@ -104,7 +102,7 @@ public class PackedIngredientRepositoryTests
         int ingredientId = allIngredients.FirstOrDefault().Id;
 
         // Creates a PackedIngredient to insert into the database.
-        PackedIngredient packedIngredient = new PackedIngredient { Id = 3, Meal_ref = mealId, Ingredient_ref = ingredientId };
+        PackedIngredient packedIngredient = new() { Id = 3, Meal_ref = mealId, Ingredient_ref = ingredientId };
         
         // Attempt
         await packedIngredientRepo.InsertAsync(packedIngredient); // Inserts the packed ingredient into the database.
@@ -121,17 +119,18 @@ public class PackedIngredientRepositoryTests
     public async void UpdateAsync_OneMealInDatabase_ReturnsTheUpdatedMeal()
     {
         // Setup
-        DatabaseConnection.EmptyDatabase("packed_ingredients"); // Clears the database.
-        PackedIngredientRepository packedIngredientRep = new PackedIngredientRepository(DatabaseConnection.GetConnection()); // Creates the repository instance.
+        await DatabaseConnection.SetupTempUserAndImage();
+        await DatabaseConnection.EmptyDatabase("packed_ingredients"); // Clears the database.
+        PackedIngredientRepository packedIngredientRep = new(DatabaseConnection.GetConnection()); // Creates the repository instance.
 
         // Setup meal and ingredient
-        MealRepository mealRep = new MealRepository(DatabaseConnection.GetConnection()); // Creates meal repository.
-        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection()); // Creates ingredient repository.
+        MealRepository mealRep = new(DatabaseConnection.GetConnection()); // Creates meal repository.
+        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection()); // Creates ingredient repository.
 
         // Creates two test meals and one ingredient.
-        Meal meal = new Meal { Id = 1, Title = "test", User_ref = "old", Image_ref = "test", Date = "test" };
-        Meal mealnew = new Meal { Id = 2, Title = "test", User_ref = "new", Image_ref = "test", Date = "test" };               
-        Ingredient ingredient = new Ingredient { Id = 1, Name = "test", User_ref = "alex", Image_ref = "test" };
+        Meal meal = new() { Id = 1, Title = "old test", User_ref = 1, Image_ref = 1, Date = "test" };
+        Meal mealnew = new() { Id = 2, Title = "new test", User_ref = 1, Image_ref = 1, Date = "test" };               
+        Ingredient ingredient = new() { Id = 1, Name = "test", User_ref = 1, Image_ref = 1 };
         
         // Inserts the meals and ingredient into the database.
         await mealRep.InsertAsync(meal);
@@ -148,8 +147,8 @@ public class PackedIngredientRepositoryTests
         int ingredientId = allIngredients.FirstOrDefault().Id;
         
         // Creates a PackedIngredient to insert into the database.
-        PackedIngredient packedIngredient = new PackedIngredient { Id = 2, Meal_ref = mealId, Ingredient_ref = ingredientId };
-        PackedIngredient updatedPackedIngredient = new PackedIngredient { Id = 2, Meal_ref = mealNewID, Ingredient_ref = ingredientId }; // Updates the meal reference.
+        PackedIngredient packedIngredient = new() { Id = 2, Meal_ref = mealId, Ingredient_ref = ingredientId };
+        PackedIngredient updatedPackedIngredient = new() { Id = 2, Meal_ref = mealNewID, Ingredient_ref = ingredientId }; // Updates the meal reference.
         int expected = updatedPackedIngredient.Meal_ref; // Sets the expected value for the meal reference.
         
         // Attempt
@@ -168,15 +167,16 @@ public class PackedIngredientRepositoryTests
     public async void DeleteAsync_OneMealInDatabase_ReturnsNull()
     {
         // Setup
-        DatabaseConnection.EmptyDatabase("packed_ingredients"); // Clears the database.
-        PackedIngredientRepository packedIngredientRep = new PackedIngredientRepository(DatabaseConnection.GetConnection()); // Creates the repository instance.
+        await DatabaseConnection.SetupTempUserAndImage();
+        await DatabaseConnection.EmptyDatabase("packed_ingredients"); // Clears the database.
+        PackedIngredientRepository packedIngredientRep = new(DatabaseConnection.GetConnection()); // Creates the repository instance.
 
-        MealRepository mealRep = new MealRepository(DatabaseConnection.GetConnection()); // Creates meal repository.
-        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection()); // Creates ingredient repository.
+        MealRepository mealRep = new(DatabaseConnection.GetConnection()); // Creates meal repository.
+        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection()); // Creates ingredient repository.
 
         // Creates a test meal and ingredient.
-        Meal meal = new Meal { Id = 1, Title = "test", User_ref = "old", Image_ref = "test", Date = "test" };        
-        Ingredient ingredient = new Ingredient { Id = 1, Name = "test", User_ref = "alex", Image_ref = "test" };
+        Meal meal = new() { Id = 1, Title = "test", User_ref = 1, Image_ref = 1, Date = "test" };        
+        Ingredient ingredient = new() { Id = 1, Name = "test", User_ref = 1, Image_ref = 1 };
         
         // Inserts the meal and ingredient into the database.
         await mealRep.InsertAsync(meal);
@@ -191,7 +191,7 @@ public class PackedIngredientRepositoryTests
         int ingredientId = allIngredients.FirstOrDefault().Id;
         
         // Creates a PackedIngredient to insert into the database.
-        PackedIngredient packedIngredient = new PackedIngredient { Id = 2, Meal_ref = mealId, Ingredient_ref = ingredientId };
+        PackedIngredient packedIngredient = new() { Id = 2, Meal_ref = mealId, Ingredient_ref = ingredientId };
         
         // Attempt
         await packedIngredientRep.InsertAsync(packedIngredient); // Inserts the packed ingredient into the database.
@@ -202,5 +202,16 @@ public class PackedIngredientRepositoryTests
         
         // Verify
         Assert.Null(actual); // Asserts that the actual result is null (the packed ingredient has been deleted).
+    }
+
+    [Fact]
+    public async void Z() //The tests are called alphabeticly, so this is called Z to force it to be last
+    {
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("meals");
+        await DatabaseConnection.EmptyDatabase("food_image");
+        await DatabaseConnection.EmptyDatabase("users");
+
+        Assert.True(true);
     }
 }

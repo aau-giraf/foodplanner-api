@@ -3,6 +3,7 @@ using FoodplannerServices.Lunchbox;
 using FoodplannerDataAccessSql.Lunchbox;
 using FoodplannerApi.Controller;
 using Microsoft.AspNetCore.Mvc;
+using Dapper;
 
 namespace testing;
 
@@ -13,11 +14,11 @@ public class IngredientsControllerTest
     public async void GetAll_NoInput_ReturnsOkObjectResult()
     {
         //Setup
-        DatabaseConnection.EmptyDatabase("packed_ingredients");
-        DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
-        IngredientService ingredientServ = new IngredientService(ingredientRep);
-        IngredientsController ingredientCon = new IngredientsController(ingredientServ);
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
+        IngredientService ingredientServ = new(ingredientRep);
+        IngredientsController ingredientCon = new(ingredientServ);
 
         //Attempt
         IActionResult actual = await ingredientCon.GetAll();
@@ -31,11 +32,11 @@ public class IngredientsControllerTest
     public async void Get_WrongInput_ReturnsNotFoundResult()
     {
         //Setup
-        DatabaseConnection.EmptyDatabase("packed_ingredients");
-        DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
-        IngredientService ingredientServ = new IngredientService(ingredientRep);
-        IngredientsController ingredientCon = new IngredientsController(ingredientServ);
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
+        IngredientService ingredientServ = new(ingredientRep);
+        IngredientsController ingredientCon = new(ingredientServ);
 
         //Attempt
         IActionResult actual = await ingredientCon.Get(0);
@@ -49,12 +50,13 @@ public class IngredientsControllerTest
     public async void Get_CorrectInput_ReturnsOkObjectResult()
     {
         //Setup
-        DatabaseConnection.EmptyDatabase("packed_ingredients");
-        DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
-        IngredientService ingredientServ = new IngredientService(ingredientRep);
-        IngredientsController ingredientCon = new IngredientsController(ingredientServ);
-        Ingredient ingredient = new Ingredient{Id = 0, Name = "test", User_ref = "test", Image_ref = "test"};
+        await DatabaseConnection.SetupTempUserAndImage();
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
+        IngredientService ingredientServ = new(ingredientRep);
+        IngredientsController ingredientCon = new(ingredientServ);
+        Ingredient ingredient = new() { Id = 0, Name = "test", User_ref = 1, Image_ref = 1};
 
         //Attempt
         await ingredientRep.InsertAsync(ingredient);
@@ -70,12 +72,13 @@ public class IngredientsControllerTest
     public async void Create_CorrectInput_ReturnsCreatedAtActionResult()
     {
         //Setup
-        DatabaseConnection.EmptyDatabase("packed_ingredients");
-        DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
-        IngredientService ingredientServ = new IngredientService(ingredientRep);
-        IngredientsController ingredientCon = new IngredientsController(ingredientServ);
-        Ingredient ingredient = new Ingredient{Id = 0, Name = "test", User_ref = "test", Image_ref = "test"};
+        await DatabaseConnection.SetupTempUserAndImage();
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
+        IngredientService ingredientServ = new(ingredientRep);
+        IngredientsController ingredientCon = new(ingredientServ);
+        Ingredient ingredient = new() { Id = 0, Name = "test", User_ref = 1, Image_ref = 1};
 
         //Attempt
         IActionResult actual = await ingredientCon.Create(ingredient);
@@ -89,13 +92,14 @@ public class IngredientsControllerTest
     public async void Update_CorrectId_ReturnsOkObjectResult()
     {
         //Setup
-        DatabaseConnection.EmptyDatabase("packed_ingredients");
-        DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
-        IngredientService ingredientServ = new IngredientService(ingredientRep);
-        IngredientsController ingredientCon = new IngredientsController(ingredientServ);
-        Ingredient ingredient = new Ingredient{Id = 0, Name = "test", User_ref = "old", Image_ref = "test"};
-        Ingredient updatedIngredient = new Ingredient{Id = 0, Name = "test", User_ref = "new", Image_ref = "test"};
+        await DatabaseConnection.SetupTempUserAndImage();
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
+        IngredientService ingredientServ = new(ingredientRep);
+        IngredientsController ingredientCon = new(ingredientServ);
+        Ingredient ingredient = new() { Id = 0, Name = "old test", User_ref = 1, Image_ref = 1};
+        Ingredient updatedIngredient = new() { Id = 0, Name = "new test", User_ref = 1, Image_ref = 1};
 
         //Attempt
         await ingredientRep.InsertAsync(ingredient);
@@ -112,12 +116,13 @@ public class IngredientsControllerTest
     public async void Update_WrongId_ReturnsBadRequestResult()
     {
         //Setup
-        DatabaseConnection.EmptyDatabase("packed_ingredients");
-        DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
-        IngredientService ingredientServ = new IngredientService(ingredientRep);
-        IngredientsController ingredientCon = new IngredientsController(ingredientServ);
-        Ingredient ingredient = new Ingredient{Id = 0, Name = "test", User_ref = "test", Image_ref = "test"};
+        await DatabaseConnection.SetupTempUserAndImage();
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
+        IngredientService ingredientServ = new(ingredientRep);
+        IngredientsController ingredientCon = new(ingredientServ);
+        Ingredient ingredient = new() { Id = 0, Name = "test", User_ref = 1, Image_ref = 1};
 
         //Attempt
         IActionResult actual = await ingredientCon.Update(ingredient, 0);
@@ -131,12 +136,13 @@ public class IngredientsControllerTest
     public async void Delete_CorrectId_ReturnsOkObjectResult()
     {
         //Setup
-        DatabaseConnection.EmptyDatabase("packed_ingredients");
-        DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
-        IngredientService ingredientServ = new IngredientService(ingredientRep);
-        IngredientsController ingredientCon = new IngredientsController(ingredientServ);
-        Ingredient ingredient = new Ingredient{Id = 0, Name = "test", User_ref = "test", Image_ref = "test"};
+        await DatabaseConnection.SetupTempUserAndImage();
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
+        IngredientService ingredientServ = new(ingredientRep);
+        IngredientsController ingredientCon = new(ingredientServ);
+        Ingredient ingredient = new() { Id = 0, Name = "test", User_ref = 1, Image_ref = 1};
 
         //Attempt
         await ingredientRep.InsertAsync(ingredient);
@@ -153,16 +159,27 @@ public class IngredientsControllerTest
     public async void Delete_WrongId_ReturnsNotFounfResult()
     {
         //Setup
-        DatabaseConnection.EmptyDatabase("packed_ingredients");
-        DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
-        IngredientService ingredientServ = new IngredientService(ingredientRep);
-        IngredientsController ingredientCon = new IngredientsController(ingredientServ);
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
+        IngredientService ingredientServ = new(ingredientRep);
+        IngredientsController ingredientCon = new(ingredientServ);
 
         //Attempt
         IActionResult actual = await ingredientCon.Delete(0);
 
         //Verify
         Assert.IsType<NotFoundResult>(actual);
+    }
+
+    [Fact]
+    public async void Z() //The tests are called alphabeticly, so this is called Z to force it to be last
+    {
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("meals");
+        await DatabaseConnection.EmptyDatabase("food_image");
+        await DatabaseConnection.EmptyDatabase("users");
+
+        Assert.True(true);
     }
 }

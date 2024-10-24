@@ -9,7 +9,7 @@ public class Ingredient {
     // Name of the ingredient.
     public required string Name {get; set;}
     // Reference to the user associated with the ingredient.
-    public required string User_ref {get; set;}
+    public required int User_ref {get; set;}
     // Reference to the ingredient's image.
-    public required string Image_ref {get; set;}
+    public required int Image_ref {get; set;}
 }

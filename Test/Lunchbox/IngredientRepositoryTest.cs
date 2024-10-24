@@ -1,11 +1,6 @@
 using Dapper;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FoodplannerDataAccessSql;
 using FoodplannerModels.Lunchbox;
 using FoodplannerDataAccessSql.Lunchbox;
-using Xunit;
 
 namespace testing
 {
@@ -15,9 +10,9 @@ namespace testing
     public async void GetAllAsync_EmptyDatabase_ReturnsEmptyList()
     {
         //Setup
-        DatabaseConnection.EmptyDatabase("packed_ingredients");
-        DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
         IEnumerable<Ingredient> expected = [];
         
         //Attempt
@@ -31,10 +26,11 @@ namespace testing
     public async void GetAllAsync_OneIngredientInDatabase_ReturnsOneIngredient()
     {
         //Setup
-        DatabaseConnection.EmptyDatabase("packed_ingredients");
-        DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
-        Ingredient ingredient = new Ingredient{Id = 0, Name = "test", User_ref = "test", Image_ref = "test"};
+        await DatabaseConnection.SetupTempUserAndImage();
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
+        Ingredient ingredient = new() { Id = 0, Name = "test", User_ref = 1, Image_ref = 1};
         
         //Attempt
         await ingredientRep.InsertAsync(ingredient);
@@ -48,9 +44,9 @@ namespace testing
     public async void GetByIdAsync_EmptyDatabase_ReturnsNull()
     {
         //Setup
-        DatabaseConnection.EmptyDatabase("packed_ingredients");
-        DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
         
         //Attempt
         Ingredient actual = await ingredientRep.GetByIdAsync(0);
@@ -63,10 +59,11 @@ namespace testing
     public async void GetByIdAsync_OneIngredientInDatabase_ReturnsTheSameIngredient()
     {
         //Setup
-        DatabaseConnection.EmptyDatabase("packed_ingredients");
-        DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
-        Ingredient ingredient = new Ingredient{Id = 0, Name = "test", User_ref = "test", Image_ref = "test"};
+        await DatabaseConnection.SetupTempUserAndImage();
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
+        Ingredient ingredient = new() { Id = 0, Name = "test", User_ref = 1, Image_ref = 1};
         string expected = "test";
         
         //Attempt
@@ -83,12 +80,13 @@ namespace testing
     public async void UpdateAsync_OneIngredientInDatabase_ReturnsTheUpdatedIngredient()
     {
         //Setup
-        DatabaseConnection.EmptyDatabase("packed_ingredients");
-        DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
-        Ingredient ingredient = new Ingredient{Id = 0, Name = "old", User_ref = "test", Image_ref = "test"};
-        Ingredient updatedIngredient = new Ingredient{Id = 0, Name = "new", User_ref = "test", Image_ref = "test"};
-        string expected = "new";
+        await DatabaseConnection.SetupTempUserAndImage();
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
+        Ingredient ingredient = new() { Id = 0, Name = "old test", User_ref = 1, Image_ref = 1};
+        Ingredient updatedIngredient = new() { Id = 0, Name = "new test", User_ref = 1, Image_ref = 1};
+        string expected = "new test";
         
         //Attempt
         await ingredientRep.InsertAsync(ingredient);
@@ -96,7 +94,6 @@ namespace testing
         int ingredientId = allIngredients.FirstOrDefault().Id;
         await ingredientRep.UpdateAsync(updatedIngredient, ingredientId);
         Ingredient actual = await ingredientRep.GetByIdAsync(ingredientId);
-        await ingredientRep.DeleteAsync(ingredientId);
         
         //Verify
         Assert.Equal(expected, actual.Name);
@@ -106,10 +103,11 @@ namespace testing
     public async void DeleteAsync_OneIngredientInDatabase_ReturnsNull()
     {
         //Setup
-        DatabaseConnection.EmptyDatabase("packed_ingredients");
-        DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
-        Ingredient ingredient = new Ingredient{Id = 0, Name = "test", User_ref = "test", Image_ref = "test"};
+        await DatabaseConnection.SetupTempUserAndImage();
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
+        Ingredient ingredient = new() { Id = 0, Name = "test", User_ref = 1, Image_ref = 1};
         
         //Attempt
         await ingredientRep.InsertAsync(ingredient);
@@ -120,6 +118,17 @@ namespace testing
         
         //Verify
         Assert.Null(actual);
+    }
+
+    [Fact]
+    public async void Z() //The tests are called alphabeticly, so this is called Z to force it to be last
+    {
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("meals");
+        await DatabaseConnection.EmptyDatabase("food_image");
+        await DatabaseConnection.EmptyDatabase("users");
+
+        Assert.True(true);
     }
     }
 }
