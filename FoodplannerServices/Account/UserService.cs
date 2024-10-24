@@ -63,6 +63,7 @@ public class UserService : IUserService {
         var jwt = _authService.GenerateJWTToken(user);
         var userCreds = new UserCredsDTO
         {
+            Id = user.Id,
             JWT = jwt,
             Role = user.Role,
             RoleApproved = user.RoleApproved
