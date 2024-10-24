@@ -1,12 +1,19 @@
+using System.Runtime.InteropServices.JavaScript;
+using System.Security.Claims;
+using FoodplannerApi.Helpers;
 using FoodplannerDataAccessSql.Image;
 using FoodplannerServices.Image;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodplannerApi.Controller;
 
-public class ImagesController(IFoodImageService foodImageService) : BaseController
+public class ImagesController(IFoodImageService foodImageService, AuthService authService) : BaseController
 {
     private readonly long _maxFileSize = 2000000000;
+    
+    
+    
     [HttpPost]
     public async Task<IActionResult> UploadImage(IFormFile imageFile, int userId)
     {
@@ -54,12 +61,21 @@ public class ImagesController(IFoodImageService foodImageService) : BaseControll
         return Ok("Images deleted successfully");
     }
 
+    [Authorize(Policy = "ChildrenPolicy, ParentPolicy")]
     [HttpGet]
-    public async Task<IActionResult> GetFoodImage(int foodImageId)
+    public async Task<IActionResult> GetFoodImage(int foodImageId, [FromHeader(Name = "Authorization")] string token)
     {
+        
+        var userid = authService.RetrieveIdFromJWTToken(token);
+        var foodImage = await foodImageService.GetFoodImage(foodImageId);
+
+        if (userid != foodImage.UserId.ToString())
+        {
+            return NotAuthorized("You are not authorized to get this food image");
+        }
+        
         if (foodImageId < 0)
             return BadRequest("Invalid userId provided");
-        var foodImage = await foodImageService.GetFoodImage(foodImageId);
         return Ok(new { foodImage });
     }
 
