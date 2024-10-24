@@ -10,7 +10,7 @@ namespace FoodplannerServices.Lunchbox
     {
         private readonly IPackedIngredientRepository _packedIngredientRepository = packedIngredientRepository;
 
-        // Get all packed ingredients and maps them to DTO
+        // Get all packed ingredients
         public async Task<IEnumerable<PackedIngredient>> GetAllPackedIngredientsAsync() {
             var packedIngredients = await _packedIngredientRepository.GetAllAsync();
             return packedIngredients;
@@ -26,7 +26,7 @@ namespace FoodplannerServices.Lunchbox
             return await _packedIngredientRepository.InsertAsync(packedIngredient);
         }
 
-        // Updates an existing packed ingredient (not implemented)
+        // Updates an existing packed ingredient
         public async Task<int> UpdatePackedIngredientAsync(PackedIngredient packedIngredient, int id) {
             return await _packedIngredientRepository.UpdateAsync(packedIngredient, id);
         }
