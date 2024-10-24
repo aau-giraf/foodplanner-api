@@ -93,4 +93,11 @@ public class UsersController : BaseController {
             return BadRequest(new ErrorResponse {Message = [e.Message]});
         }
     }
+
+    [HttpPost]
+    public async Task<IActionResult> HasPinCode([FromBody] int id) {
+
+        var result = await _userService.UserHasPinCodeAsync(id);
+        return result ? Ok() : BadRequest();
+    }
 }
