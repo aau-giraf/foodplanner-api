@@ -58,6 +58,7 @@ public static class SecretsLoader
             SecretName = secretName,
             ProjectId = _configuration.workspaceId,
             Environment = _configuration.environmentSlug,
+            Path = path,
         };
         
         return _configuration.Client.GetSecret(getSecretOptions).SecretValue;

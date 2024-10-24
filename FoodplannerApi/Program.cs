@@ -2,8 +2,14 @@ using System.Security.Claims;
 using System.Text;
 using FoodplannerApi;
 using Npgsql;
-using FoodplannerDataAccessSql.Account;
 using FoodplannerDataAccessSql;
+using FoodplannerDataAccessSql.Account;
+using FoodplannerDataAccessSql.Lunchbox;
+using FoodplannerModels;
+using FoodplannerModels.Account;
+using FoodplannerServices.Account;
+using FoodplannerModels.Lunchbox;
+using FoodplannerServices.Lunchbox;
 using FoodplannerDataAccessSql.Image;
 using FoodplannerModels;
 using FoodplannerModels.Account;
@@ -13,7 +19,6 @@ using Minio;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using FoodplannerApi.Helpers;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,11 +92,11 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddSingleton(serviceProvider => {
-    var host = SecretsLoader.GetSecret("DB_HOST");
-    var port = SecretsLoader.GetSecret("DB_PORT");
-    var database = SecretsLoader.GetSecret("DB_NAME");
-    var username = SecretsLoader.GetSecret("DB_USER");
-    var password = SecretsLoader.GetSecret("DB_PASS");
+    var host = SecretsLoader.GetSecret("DB_HOST", "/SW-5-10/");
+    var port = SecretsLoader.GetSecret("DB_PORT", "/SW-5-10/");
+    var database = SecretsLoader.GetSecret("DB_NAME", "/SW-5-10/");
+    var username = SecretsLoader.GetSecret("DB_USER", "/SW-5-10/");
+    var password = SecretsLoader.GetSecret("DB_PASS", "/SW-5-10/");
 
     return new PostgreSQLConnectionFactory(host, port, database, username, password);
 });
@@ -154,9 +159,14 @@ builder.Services.AddAuthorization(options =>
 //Dependency Injection Starts Here !
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
+builder.Services.AddScoped(typeof(IMealRepository), typeof(MealRepository));
+builder.Services.AddScoped(typeof(IIngredientRepository), typeof(IngredientRepository));
+builder.Services.AddScoped(typeof(IPackedIngredientRepository), typeof(PackedIngredientRepository));
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<MealService>();
+builder.Services.AddScoped<IngredientService>();
+builder.Services.AddScoped<PackedIngredientService>();
 builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
-
-
 builder.Services.AddScoped<UserService>();
 builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
