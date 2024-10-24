@@ -12,18 +12,18 @@ namespace testing
 {
     public class PackedIngredientControllerIntegrationTests
     {
-        private readonly PackedIngredientRepository _repository;
-        private readonly PackedIngredientService _service;
-        private readonly PackedIngredientController _controller;
+        // private readonly PackedIngredientRepository _repository;
+        // private readonly PackedIngredientService _service;
+        // private readonly PackedIngredientController _controller;
 
-        public PackedIngredientControllerIntegrationTests()
-        {
-            // Brug en reel databaseforbindelse
-            var connectionFactory = DatabaseConnection.GetConnection(); 
-            _repository = new PackedIngredientRepository(connectionFactory);
-            _service = new PackedIngredientService(_repository);
-            _controller = new PackedIngredientController(_service);
-        }
+        // public PackedIngredientControllerIntegrationTests()
+        // {
+        //     // Brug en reel databaseforbindelse
+        //     var connectionFactory = DatabaseConnection.GetConnection(); 
+        //     _repository = new PackedIngredientRepository(connectionFactory);
+        //     _service = new PackedIngredientService(_repository);
+        //     _controller = new PackedIngredientController(_service);
+        // }
 
         // [Fact]
         // public async Task GetAll_ReturnsOkResult_WithListOfPackedIngredients()
