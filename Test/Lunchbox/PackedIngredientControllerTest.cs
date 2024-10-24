@@ -114,7 +114,7 @@ public class PackedIngredientControllerIntegrationTests
         await mealRep.InsertAsync(meal);
         await ingredientRep.InsertAsync(ingredient);
 
-        // Retrieve IDs for meal and ingredient.
+        // Returns IDs for meal and ingredient.
         IEnumerable<Meal> allMeals = await mealRep.GetAllAsync();
         IEnumerable<Ingredient> allIngredients = await ingredientRep.GetAllAsync();
         int mealId = allMeals.FirstOrDefault().Id;
@@ -153,7 +153,7 @@ public class PackedIngredientControllerIntegrationTests
         await mealRep.InsertAsync(mealnew);
         await ingredientRep.InsertAsync(ingredient);
 
-        // Retrieve IDs for meals and ingredients.
+        // Return IDs for meals and ingredients.
         IEnumerable<Meal> allMeals = await mealRep.GetAllAsync();
         IEnumerable<Ingredient> allIngredients = await ingredientRep.GetAllAsync();
         int mealId = allMeals.FirstOrDefault().Id;
@@ -195,7 +195,7 @@ public class PackedIngredientControllerIntegrationTests
         await mealRep.InsertAsync(meal);
         await ingredientRep.InsertAsync(ingredient);
 
-        // Retrieve IDs for meal and ingredient.
+        // Return IDs for meal and ingredient.
         IEnumerable<Meal> allMeals = await mealRep.GetAllAsync();
         IEnumerable<Ingredient> allIngredients = await ingredientRep.GetAllAsync();
         int mealId = allMeals.FirstOrDefault().Id;
@@ -232,7 +232,7 @@ public class PackedIngredientControllerIntegrationTests
         await mealRep.InsertAsync(meal);
         await ingredientRep.InsertAsync(ingredient);
 
-        // Retrieve IDs for meal and ingredient.
+        // Return IDs for meal and ingredient.
         IEnumerable<Meal> allMeals = await mealRep.GetAllAsync();
         IEnumerable<Ingredient> allIngredients = await ingredientRep.GetAllAsync();
         int mealId = allMeals.FirstOrDefault().Id;
@@ -272,7 +272,7 @@ public class PackedIngredientControllerIntegrationTests
         await mealRep.InsertAsync(meal);
         await ingredientRep.InsertAsync(ingredient);
 
-        // Retrieve IDs for meal and ingredient.
+        // Return IDs for meal and ingredient.
         IEnumerable<Meal> allMeals = await mealRep.GetAllAsync();
         IEnumerable<Ingredient> allIngredients = await ingredientRep.GetAllAsync();
         int mealId = allMeals.FirstOrDefault().Id;
