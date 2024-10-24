@@ -2,6 +2,7 @@ using FoodplannerApi.Helpers;
 using FoodplannerModels.Account;
 using FoodplannerServices;
 using FoodplannerServices.Account;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodplannerApi.Controller;
@@ -34,6 +35,17 @@ public class UsersController : BaseController {
         
         return Ok(token);
     }
+
+    /* To retrieve the token from the header, use the following code:
+    [HttpGet]
+    public async Task<IActionResult> GetDecodeString([FromHeader(Name = "Authorization")] string token)
+    {
+        //Decodes a token for development purposes
+        var streng = _authService.RetrieveIdFromJWTToken(token);  // retrives id from token.
+        return Ok(streng);
+    }
+    */
+
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] UserCreateDTO userCreate){

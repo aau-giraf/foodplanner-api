@@ -40,6 +40,35 @@ namespace FoodplannerApi.Helpers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+        public string RetrieveIdFromJWTToken(string token)
+        {
+            // Ensure the token starts with "Bearer "
+            if (string.IsNullOrEmpty(token) || !token.StartsWith("Bearer "))
+            {
+                throw new ArgumentException("The token must be prefixed with 'Bearer '.");
+            }
+
+            // Remove the "Bearer " part from the token
+            token = token.Substring(7);
+
+            var handler = new JwtSecurityTokenHandler();
+    
+            // Validate if the token is in proper JWT format
+            if (!handler.CanReadToken(token))
+            {
+                throw new ArgumentException("The token is not in a valid JWT format.");
+            }
+
+            var jwtToken = handler.ReadJwtToken(token);
+
+            // Retrieve the Id claim
+            var idClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+
+            // Return the Id claim value or a message if not found
+            return idClaim != null ? idClaim.Value : "Id claim not found.";
+        }
+
+
     }
 
    
