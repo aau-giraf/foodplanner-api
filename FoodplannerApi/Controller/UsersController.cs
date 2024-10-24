@@ -41,8 +41,8 @@ public class UsersController : BaseController {
     public async Task<IActionResult> GetDecodeString([FromHeader(Name = "Authorization")] string token)
     {
         //Decodes a token for development purposes
-        var streng = _authService.RetrieveIdFromJWTToken(token);  // retrives id from token.
-        return Ok(streng);
+        var id = _authService.RetrieveIdFromJWTToken(token);  // retrives id from token.
+        return Ok(id);
     }
     */
 
