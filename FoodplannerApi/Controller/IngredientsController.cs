@@ -23,8 +23,8 @@ public class IngredientsController (IngredientService ingredientService) : BaseC
     // Get a specific ingredient by ID
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id){
-        var ingredient = await _ingredientService.GetIngredientByIdAsync(id); / Fetch the ingredient by ID.
-        if (User == null){  // Check if the user exists
+        var ingredient = await _ingredientService.GetIngredientByIdAsync(id); // Fetch the ingredient by ID.
+        if (ingredient == null){  // Check if the ingredient exists
             return NotFound(); // Returns 404 if not found
         }
         return Ok(ingredient); // Returns the found ingredient with a 200 OK status
@@ -36,7 +36,7 @@ public class IngredientsController (IngredientService ingredientService) : BaseC
         // Calls the service to fetch the ingredient by ID
         var result = await _ingredientService.CreateIngredientAsync(ingredient);
         if (result > 0){
-            // Returns 201 Created with the new ingredient's location
+            // Returns 201 with an object of the new ingredient
             return CreatedAtAction(nameof(Get), new { id = ingredient.Id}, ingredient);
         }
         return BadRequest(); // Returns 400 if the creation fails
