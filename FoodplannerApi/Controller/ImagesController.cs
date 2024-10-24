@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using FoodplannerDataAccessSql.Image;
 using FoodplannerServices.Image;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +26,8 @@ public class ImagesController(IFoodImageService foodImageService) : BaseControll
     }
 
     [HttpPost]
-    public async Task<IActionResult> UploadImages(IFormFileCollection imageFiles, int userId)
+    [ApiExplorerSettings(IgnoreApi = true)]
+    public async Task<IActionResult> UploadImages([Required]IFormFileCollection imageFiles, int userId)
     {
         if (imageFiles.Any(file => file.Length == 0)) return BadRequest("A file is empty");
         if (imageFiles.Any(file => file.Length >= _maxFileSize)) return BadRequest("a file too big");
