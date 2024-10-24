@@ -1,142 +1,125 @@
-using Moq;
-using Npgsql;
+using Dapper;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using FoodplannerDataAccessSql;
-using FoodplannerDataAccessSql.Lunchbox;
 using FoodplannerModels.Lunchbox;
+using FoodplannerDataAccessSql.Lunchbox;
+using Xunit;
 
-namespace testing 
+namespace testing
 {
     public class IngredientRepositoryTests
     {
-        private readonly Mock<PostgreSQLConnectionFactory> _mockConnectionFactory;
-        private readonly Mock<NpgsqlConnection> _mockDbConnection;
-        private readonly IngredientRepository _repository;
-
-        public IngredientRepositoryTests() {
-            // set up the mocks
-            _mockConnectionFactory = new Mock<PostgreSQLConnectionFactory>();
-            _mockDbConnection = new Mock<NpgsqlConnection>();
-
-            // configure the connection factory mock to return the mocked connection
-            _mockConnectionFactory.Setup(f => f.Create()).Returns(_mockDbConnection.Object);
-            
-            // Create the repository instance with the mock connection factory
-            _repository = new IngredientRepository(_mockConnectionFactory.Object);
-        }
+    [Fact]
+    public async void GetAllAsync_EmptyDatabase_ReturnsEmptyList()
+    {
+        //Setup
+        DatabaseConnection.EmptyDatabase("packed_ingredients");
+        DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
+        IEnumerable<Ingredient> expected = [];
         
-        [Fact]
-        public async Task GetAllAsync_ReturnsAllIngredients()
-        {
-            // Arrange
-            var expectedIngredients = new List<Ingredient> 
-            {
-                new Ingredient { Id = 1, Name = "Tomato", User_ref = "user1", Image_ref = "image1" },
-                new Ingredient { Id = 2, Name = "Cheese", User_ref = "user2", Image_ref = "image2" }
-            };
-            // Setup mock Dapper Query
-            _mockDbConnection.Setup(db => await db.QueryAsync<Ingredient>(
-                It.IsAny<string>(),
-                null,
-                null,
-                null,
-                null))
-                .ReturnsAsync(expectedIngredients);
+        //Attempt
+        IEnumerable<Ingredient> actual = await ingredientRep.GetAllAsync();
+        
+        //Verify
+        Assert.Equal(expected, actual);
+    }
 
-            // Act
-            var actual = await _repository.GetAllAsync();
+    [Fact]
+    public async void GetAllAsync_OneIngredientInDatabase_ReturnsOneIngredient()
+    {
+        //Setup
+        DatabaseConnection.EmptyDatabase("packed_ingredients");
+        DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
+        Ingredient ingredient = new Ingredient{Id = 0, Name = "test", User_ref = "test", Image_ref = "test"};
+        
+        //Attempt
+        await ingredientRep.InsertAsync(ingredient);
+        IEnumerable<Ingredient> actual = await ingredientRep.GetAllAsync();
+        
+        //Verify
+        Assert.Single(actual);
+    }
 
-            // Assert
-            Assert.Equal(expectedIngredients.Count, actual.Count());
-            Assert.Equal(expectedIngredients, actual);
-        }
+    [Fact]
+    public async void GetByIdAsync_EmptyDatabase_ReturnsNull()
+    {
+        //Setup
+        DatabaseConnection.EmptyDatabase("packed_ingredients");
+        DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
+        
+        //Attempt
+        Ingredient actual = await ingredientRep.GetByIdAsync(0);
+        
+        //Verify
+        Assert.Null(actual);
+    }
 
-        [Theory]
-        [InlineData(1, "Tomato")]
-        [InlineData(2, "Cheese")]
-        public async Task GetByIdAsync_ReturnsCorrectIngredient(int id, string expectedName) {
-            // Arrange
-            var expectedIngredient = new Ingredient { Id = id, Name = expectedName, User_ref = "user_ref", Image_ref = "image_ref" };
+    [Fact]
+    public async void GetByIdAsync_OneIngredientInDatabase_ReturnsTheSameIngredient()
+    {
+        //Setup
+        DatabaseConnection.EmptyDatabase("packed_ingredients");
+        DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
+        Ingredient ingredient = new Ingredient{Id = 0, Name = "test", User_ref = "test", Image_ref = "test"};
+        string expected = "test";
+        
+        //Attempt
+        await ingredientRep.InsertAsync(ingredient);
+        IEnumerable<Ingredient> allIngredients = await ingredientRep.GetAllAsync();
+        int ingredientId = allIngredients.FirstOrDefault().Id;
+        Ingredient actual = await ingredientRep.GetByIdAsync(ingredientId);
+        
+        //Verify
+        Assert.Equal(expected, actual.Name);
+    }
 
-            _mockDbConnection.Setup(db => await db.QuerySingleOrDefaultAsync<Ingredient>(
-                It.IsAny<string>(),
-                It.IsAny<object>(),
-                null,
-                null,
-                null))
-                .ReturnsAsync(expectedIngredient);
+    [Fact]
+    public async void UpdateAsync_OneIngredientInDatabase_ReturnsTheUpdatedIngredient()
+    {
+        //Setup
+        DatabaseConnection.EmptyDatabase("packed_ingredients");
+        DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
+        Ingredient ingredient = new Ingredient{Id = 0, Name = "old", User_ref = "test", Image_ref = "test"};
+        Ingredient updatedIngredient = new Ingredient{Id = 0, Name = "new", User_ref = "test", Image_ref = "test"};
+        string expected = "new";
+        
+        //Attempt
+        await ingredientRep.InsertAsync(ingredient);
+        IEnumerable<Ingredient> allIngredients = await ingredientRep.GetAllAsync();
+        int ingredientId = allIngredients.FirstOrDefault().Id;
+        await ingredientRep.UpdateAsync(updatedIngredient, ingredientId);
+        Ingredient actual = await ingredientRep.GetByIdAsync(ingredientId);
+        await ingredientRep.DeleteAsync(ingredientId);
+        
+        //Verify
+        Assert.Equal(expected, actual.Name);
+    }
 
-            
-            // Act
-            var actual = await _repository.GetByIdAsync(id);
-
-            // Assert
-            Assert.NotNull(actual);
-            Assert.Equal(expectedName, actual.Name);
-        }
-
-        [Fact]
-        public async Task InsertAsync_InsertsNewIngredient()
-        {
-            // Arrange
-            var newIngredient = new Ingredient { Name = "Lettuce", User_ref = "user3", Image_ref = "image3" };
-
-             _mockDbConnection.Setup(db => await db.ExecuteAsync(
-                It.IsAny<string>(),
-                It.IsAny<object>(),
-                null,
-                null,
-                null))
-                .ReturnsAsync(1);
-
-            // Act
-            var result = await _repository.InsertAsync(newIngredient);
-
-            // Assert
-            Assert.Equal(1, result);
-        }
-
-        [Fact]
-        public async Task UpdateAsync_UpdatesExistingIngredient()
-        {
-            // Arrange
-            var updatedIngredient = new Ingredient { Name = "Lettuce", User_ref = "user3", Image_ref = "image3" };
-            int id = 1;
-
-            _mockDbConnection.Setup(db => await db.ExecuteAsync(
-                It.IsAny<string>(),
-                It.IsAny<object>(),
-                null,
-                null,
-                null))
-                .ReturnsAsync(1); // Assume 1 row was affected
-
-            // Act
-            var result = await _repository.UpdateAsync(updatedIngredient, id);
-
-            // Assert
-            Assert.Equal(1, result);
-        }
-
-        [Fact]
-        public async Task DeleteAsync_DeletesIngredient()
-        {
-            // Arrange
-            int id = 1;
-
-            _mockDbConnection.Setup(db => await db.ExecuteAsync(
-                It.IsAny<string>(),
-                It.IsAny<object>(),
-                null,
-                null,
-                null))
-                .ReturnsAsync(1); // Assume 1 row was affected
-
-            // Act
-            var result = await _repository.DeleteAsync(id);
-
-            // Assert
-            Assert.Equal(1, result);
-        }
-    
+    [Fact]
+    public async void DeleteAsync_OneIngredientInDatabase_ReturnsNull()
+    {
+        //Setup
+        DatabaseConnection.EmptyDatabase("packed_ingredients");
+        DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
+        Ingredient ingredient = new Ingredient{Id = 0, Name = "test", User_ref = "test", Image_ref = "test"};
+        
+        //Attempt
+        await ingredientRep.InsertAsync(ingredient);
+        IEnumerable<Ingredient> allIngredients = await ingredientRep.GetAllAsync();
+        int ingredientId = allIngredients.FirstOrDefault().Id;
+        await ingredientRep.DeleteAsync(ingredientId);
+        Ingredient actual = await ingredientRep.GetByIdAsync(ingredientId);
+        
+        //Verify
+        Assert.Null(actual);
+    }
     }
 }
