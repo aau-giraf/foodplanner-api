@@ -11,95 +11,115 @@ namespace testing
 {
     public class IngredientRepositoryTests
     {
-        // private readonly IngredientRepository _repository;
+    [Fact]
+    public async void GetAllAsync_EmptyDatabase_ReturnsEmptyList()
+    {
+        //Setup
+        DatabaseConnection.EmptyDatabase("packed_ingredients");
+        DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
+        IEnumerable<Ingredient> expected = [];
+        
+        //Attempt
+        IEnumerable<Ingredient> actual = await ingredientRep.GetAllAsync();
+        
+        //Verify
+        Assert.Equal(expected, actual);
+    }
 
-        // public IngredientRepositoryTests()
-        // {
-        //     // Initialize the connection factory using DatabaseConnection
-        //     var connectionFactory = DatabaseConnection.GetConnection();
-        //     _repository = new IngredientRepository(connectionFactory);
-        // }
+    [Fact]
+    public async void GetAllAsync_OneIngredientInDatabase_ReturnsOneIngredient()
+    {
+        //Setup
+        DatabaseConnection.EmptyDatabase("packed_ingredients");
+        DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
+        Ingredient ingredient = new Ingredient{Id = 0, Name = "test", User_ref = "test", Image_ref = "test"};
+        
+        //Attempt
+        await ingredientRep.InsertAsync(ingredient);
+        IEnumerable<Ingredient> actual = await ingredientRep.GetAllAsync();
+        
+        //Verify
+        Assert.Single(actual);
+    }
 
-        // [Fact]
-        // public async Task GetAllAsync_ReturnsAllIngredients()
-        // {
-        //     // Arrange
-        //     var sql = "SELECT * FROM ingredients";
+    [Fact]
+    public async void GetByIdAsync_EmptyDatabase_ReturnsNull()
+    {
+        //Setup
+        DatabaseConnection.EmptyDatabase("packed_ingredients");
+        DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
+        
+        //Attempt
+        Ingredient actual = await ingredientRep.GetByIdAsync(0);
+        
+        //Verify
+        Assert.Null(actual);
+    }
 
-        //     // Act
-        //     using var connection = DatabaseConnection.GetConnection().Create();
-        //     connection.Open();
-        //     IEnumerable<Ingredient> result = await connection.QueryAsync<Ingredient>(sql);
+    [Fact]
+    public async void GetByIdAsync_OneIngredientInDatabase_ReturnsTheSameIngredient()
+    {
+        //Setup
+        DatabaseConnection.EmptyDatabase("packed_ingredients");
+        DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
+        Ingredient ingredient = new Ingredient{Id = 0, Name = "test", User_ref = "test", Image_ref = "test"};
+        string expected = "test";
+        
+        //Attempt
+        await ingredientRep.InsertAsync(ingredient);
+        IEnumerable<Ingredient> allIngredients = await ingredientRep.GetAllAsync();
+        int ingredientId = allIngredients.FirstOrDefault().Id;
+        Ingredient actual = await ingredientRep.GetByIdAsync(ingredientId);
+        
+        //Verify
+        Assert.Equal(expected, actual.Name);
+    }
 
-        //     // Assert
-        //     Assert.NotNull(result);
-        //     Assert.True(result.Any());
-        // }
+    [Fact]
+    public async void UpdateAsync_OneIngredientInDatabase_ReturnsTheUpdatedIngredient()
+    {
+        //Setup
+        DatabaseConnection.EmptyDatabase("packed_ingredients");
+        DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
+        Ingredient ingredient = new Ingredient{Id = 0, Name = "old", User_ref = "test", Image_ref = "test"};
+        Ingredient updatedIngredient = new Ingredient{Id = 0, Name = "new", User_ref = "test", Image_ref = "test"};
+        string expected = "new";
+        
+        //Attempt
+        await ingredientRep.InsertAsync(ingredient);
+        IEnumerable<Ingredient> allIngredients = await ingredientRep.GetAllAsync();
+        int ingredientId = allIngredients.FirstOrDefault().Id;
+        await ingredientRep.UpdateAsync(updatedIngredient, ingredientId);
+        Ingredient actual = await ingredientRep.GetByIdAsync(ingredientId);
+        await ingredientRep.DeleteAsync(ingredientId);
+        
+        //Verify
+        Assert.Equal(expected, actual.Name);
+    }
 
-        // [Fact]
-        // public async Task GetByIdAsync_ReturnsIngredient_WhenExists()
-        // {
-        //     // Arrange
-        //     var id = 1;  // Assuming there is an ingredient with this ID
-        //     var sql = "SELECT * FROM ingredients WHERE id = @Id";
-
-        //     // Act
-        //     using var connection = DatabaseConnection.GetConnection().Create();
-        //     connection.Open();
-        //     var result = await connection.QuerySingleOrDefaultAsync<Ingredient>(sql, new { Id = id });
-
-        //     // Assert
-        //     Assert.NotNull(result);
-        //     Assert.Equal(id, result.Id);
-        // }
-
-        // [Fact]
-        // public async Task InsertAsync_InsertsIngredient()
-        // {
-        //     // Arrange
-        //     var ingredient = new Ingredient { Id = 4, Name = "Carrot", User_ref = "user1", Image_ref = "image1" };
-        //     var sql = "INSERT INTO ingredients (name, user_ref, image_ref) VALUES (@Name, @User_ref, @Image_ref)";
-
-        //     // Act
-        //     using var connection = DatabaseConnection.GetConnection().Create();
-        //     connection.Open();
-        //     var result = await connection.ExecuteAsync(sql, ingredient);
-
-        //     // Assert
-        //     Assert.Equal(1, result);  // Should return 1 affected row
-        // }
-
-        // [Fact]
-        // public async Task UpdateAsync_UpdatesIngredient()
-        // {
-        //     // Arrange
-        //     var ingredient = new Ingredient { Id = 2, Name = "UpdatedName", User_ref = "user1", Image_ref = "image1" };
-        //     var id = 2;  // Use a valid existing ID
-        //     var sql = "UPDATE ingredients SET name = @Name, user_ref = @User_ref, image_ref = @Image_ref WHERE id = @Id";
-
-        //     // Act
-        //     using var connection = DatabaseConnection.GetConnection().Create();
-        //     connection.Open();
-        //     var result = await connection.ExecuteAsync(sql, new { ingredient.Name, ingredient.User_ref, ingredient.Image_ref, Id = id });
-
-        //     // Assert
-        //     Assert.Equal(1, result);  // Should return 1 affected row
-        // }
-
-        // [Fact]
-        // public async Task DeleteAsync_DeletesIngredient()
-        // {
-        //     // Arrange
-        //     var id = 2;  // Use a valid existing ID
-        //     var sql = "DELETE FROM ingredients WHERE id = @Id";
-
-        //     // Act
-        //     using var connection = DatabaseConnection.GetConnection().Create();
-        //     connection.Open();
-        //     var result = await connection.ExecuteAsync(sql, new { Id = id });
-
-        //     // Assert
-        //     Assert.Equal(1, result);  // Should return 1 affected row
-        // }
+    [Fact]
+    public async void DeleteAsync_OneIngredientInDatabase_ReturnsNull()
+    {
+        //Setup
+        DatabaseConnection.EmptyDatabase("packed_ingredients");
+        DatabaseConnection.EmptyDatabase("ingredients");
+        IngredientRepository ingredientRep = new IngredientRepository(DatabaseConnection.GetConnection());
+        Ingredient ingredient = new Ingredient{Id = 0, Name = "test", User_ref = "test", Image_ref = "test"};
+        
+        //Attempt
+        await ingredientRep.InsertAsync(ingredient);
+        IEnumerable<Ingredient> allIngredients = await ingredientRep.GetAllAsync();
+        int ingredientId = allIngredients.FirstOrDefault().Id;
+        await ingredientRep.DeleteAsync(ingredientId);
+        Ingredient actual = await ingredientRep.GetByIdAsync(ingredientId);
+        
+        //Verify
+        Assert.Null(actual);
+    }
     }
 }
