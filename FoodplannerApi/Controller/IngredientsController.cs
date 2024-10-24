@@ -20,7 +20,7 @@ public class IngredientsController (IngredientService ingredientService) : BaseC
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id){
         var ingredient = await _ingredientService.GetIngredientByIdAsync(id);
-        if (User == null){
+        if (ingredient == null){
             return NotFound();
         }
         return Ok(ingredient);
