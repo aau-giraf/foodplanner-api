@@ -5,6 +5,7 @@ using FoodplannerDataAccessSql.Image;
 using FoodplannerServices.Image;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace FoodplannerApi.Controller;
 
@@ -49,6 +50,8 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
 
 
     [HttpDelete]
+    [ServiceFilter(typeof(AuthoriseImageOwnerFilter))]
+
     public async Task<IActionResult> DeleteImages(IEnumerable<int> foodImageIds)
     {
 
@@ -61,28 +64,59 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
         return Ok("Images deleted successfully");
     }
 
-    [Authorize(Policy = "ChildrenPolicy, ParentPolicy")]
     [HttpGet]
-    public async Task<IActionResult> GetFoodImage(int foodImageId, [FromHeader(Name = "Authorization")] string token)
+    [Authorize(Roles = "Children, Parent")]
+    [ServiceFilter(typeof(AuthoriseImageOwnerFilter))]
+    public async Task<IActionResult> GetFoodImage(int foodImageId)
     {
-        
-        var userid = authService.RetrieveIdFromJWTToken(token);
-        var foodImage = await foodImageService.GetFoodImage(foodImageId);
-
-        if (userid != foodImage.UserId.ToString())
-        {
-            return NotAuthorized("You are not authorized to get this food image");
-        }
-        
         if (foodImageId < 0)
-            return BadRequest("Invalid userId provided");
-        return Ok(new { foodImage });
+            return BadRequest("Invalid userId");
+        return Ok(foodImageService.GetFoodImage(foodImageId));
     }
 
     [HttpGet]
+    [ServiceFilter(typeof(AuthoriseImageOwnerFilter))]
+
     public async Task<IActionResult> GetPresignedImageLink(int foodImageId)
     {
         var presignedImageLink = await foodImageService.GetFoodImageLink(foodImageId);
         return Ok(presignedImageLink);
+    }
+
+    private class AuthoriseImageOwnerFilter : IAsyncActionFilter
+    {
+        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        {
+            var authService = context.HttpContext.RequestServices.GetService<AuthService>();
+            var foodImageService = context.HttpContext.RequestServices.GetService<IFoodImageService>();
+            var token = context.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+            var foodImageIds = context.HttpContext.Request.Query["foodImageId"];
+            if (token == null)
+            {
+                context.Result = new UnauthorizedResult();
+            } else if (foodImageIds.Any(id => id == null))
+            {
+                context.Result = new BadRequestResult();
+            }
+            else if (authService == null || foodImageService == null)
+            {
+                throw new Exception("Missing services");
+            } else
+            {
+                var userid = authService.RetrieveIdFromJWTToken(token);
+                foreach (var foodImageId in foodImageIds)
+                {
+                    var foodImage = await foodImageService.GetFoodImage(int.Parse(foodImageId));
+                    if (userid == foodImage.UserId.ToString()) continue;
+                    context.Result = new UnauthorizedResult();
+                    break;
+                }
+            }
+        }
+
+        public void OnActionExecuted(ActionExecutedContext context)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
