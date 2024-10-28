@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text;
 using FoodplannerApi;
+using FoodplannerApi.Controller;
 using Npgsql;
 using FoodplannerDataAccessSql.Account;
 using FoodplannerDataAccessSql;
@@ -163,6 +164,8 @@ builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddAutoMapper(typeof(UserProfile));
 
 builder.Services.AddSingleton<AuthService>();
+builder.Services.AddScoped<ImagesController.AuthoriseImageOwnerFilter>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
