@@ -50,11 +50,11 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
 
 
     [HttpDelete]
+    [Authorize(Roles = "Children, Parent")]
     [ServiceFilter(typeof(AuthoriseImageOwnerFilter))]
 
     public async Task<IActionResult> DeleteImages(IEnumerable<int> foodImageIds)
     {
-
         var imageIdList = foodImageIds.ToList();
         if (imageIdList == null || !imageIdList.Any())
             return BadRequest("No imageIds provided");
@@ -75,6 +75,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
     }
 
     [HttpGet]
+    [Authorize(Roles = "Children, Parent")]
     [ServiceFilter(typeof(AuthoriseImageOwnerFilter))]
 
     public async Task<IActionResult> GetPresignedImageLink(int foodImageId)
