@@ -36,7 +36,7 @@ public class UsersController : BaseController {
         return Ok(token);
     }
 
-    /* To retrieve the token from the header, use the following code:
+    // To retrieve the token from the header, use the following code:
     [HttpGet]
     public async Task<IActionResult> GetDecodeString([FromHeader(Name = "Authorization")] string token)
     {
@@ -44,7 +44,7 @@ public class UsersController : BaseController {
         var id = _authService.RetrieveIdFromJWTToken(token);  // retrives id from token.
         return Ok(id);
     }
-    */
+    
 
 
     [HttpPost]
