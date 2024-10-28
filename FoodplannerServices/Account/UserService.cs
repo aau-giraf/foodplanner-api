@@ -93,7 +93,7 @@ public class UserService : IUserService {
         return pincode;
     }
 
-    public async Task<int> UserHasPinCodeAsync(int id){
+    public async Task<bool> UserHasPinCodeAsync(int id){
         return await _userRepository.HasPinCodeAsync(id);
     }
 }

@@ -94,14 +94,11 @@ public class UsersController : BaseController {
         }
     }
 
-    [HttpPost]
-    public async Task<IActionResult> HasPinCode([FromBody] UserIdDTO userIdDTO) {
+    [HttpGet]
+    public async Task<IActionResult> HasPinCode(int id) {
         try {    
-            var result = await _userService.UserHasPinCodeAsync(userIdDTO.Id);
-            if (result > 0){
-                return Ok(result);
-            }
-            return BadRequest(new ErrorResponse {Message = ["Brugeren har ikke en pinkode"]});
+            var result = await _userService.UserHasPinCodeAsync(id);
+            return Ok(new {HasPinCode = result});
         }
         catch (InvalidOperationException e){
             return BadRequest(new ErrorResponse {Message = [e.Message]});

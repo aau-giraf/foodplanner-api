@@ -131,14 +131,15 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<int> HasPinCodeAsync(int id)
+        public async Task<bool> HasPinCodeAsync(int id)
         {
-            var sql = "SELECT id FROM users WHERE id = @Id AND pincode IS NOT NULL";
+            var sql = "SELECT COUNT(1) FROM users WHERE id = @Id AND pincode IS NOT NULL";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var userid = await connection.ExecuteScalarAsync<int>(sql, new { Id = id });
-                return userid;
+                var result = await connection.ExecuteScalarAsync<int>(sql, new { Id = id });
+                
+                return result > 0;
             }
         }
     }

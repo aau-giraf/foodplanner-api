@@ -16,7 +16,7 @@ namespace FoodplannerModels.Account
         Task<UserCredsDTO?> GetJWTByEmailAndPasswordAsync(string email, string password);
         Task<string> GetUserByIdAndPinCodeAsync(int id, string pinCode);
         Task<string> UpdateUserPinCodeAsync(string pinCode, int id);
-        Task<int> UserHasPinCodeAsync(int id);
+        Task<bool> UserHasPinCodeAsync(int id);
         
     }
 }
