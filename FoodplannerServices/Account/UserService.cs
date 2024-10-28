@@ -83,8 +83,9 @@ public class UserService : IUserService {
 
     public async Task<string> GetUserByIdAndPinCodeAsync(int id, string pinCode){
         var pincode = await _userRepository.GetPinCodeByIdAsync(id);
-        
-        if (!BCrypt.Net.BCrypt.Verify(pinCode, pincode)){
+        if (pincode == null){
+            throw new InvalidOperationException("Bruger har ikke en pinkode");
+        } else if (!BCrypt.Net.BCrypt.Verify(pinCode, pincode)){
             throw new InvalidOperationException("Forkert pinkode");
         }
         return pincode;
