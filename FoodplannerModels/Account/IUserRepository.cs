@@ -18,6 +18,6 @@ namespace FoodplannerModels.Account
         Task<User?> GetUserByEmailAsync(string email);
         Task<string> UpdatePinCodeAsync(string pinCode, int id);
 
-        Task<bool> HasPinCodeAsync(int id);
+        Task<int> HasPinCodeAsync(int id);
     }
 }
