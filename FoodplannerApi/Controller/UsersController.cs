@@ -36,7 +36,7 @@ public class UsersController : BaseController {
         return Ok(token);
     }
 
-    // To retrieve the token from the header, use the following code:
+    /* To retrieve the token from the header, use the following code:
     [HttpGet]
     public async Task<IActionResult> GetDecodeString([FromHeader(Name = "Authorization")] string token)
     {
@@ -44,7 +44,7 @@ public class UsersController : BaseController {
         var id = _authService.RetrieveIdFromJWTToken(token);  // retrives id from token.
         return Ok(id);
     }
-    
+    */
 
 
     [HttpPost]
@@ -107,8 +107,12 @@ public class UsersController : BaseController {
     }
 
     [HttpGet]
-    public async Task<IActionResult> HasPinCode(int id) {
+    public async Task<IActionResult> HasPinCode([FromHeader(Name = "Authorization")] string token) {
         try {    
+            var idString = _authService.RetrieveIdFromJWTToken(token);
+            if (!int.TryParse(idString, out int id)) {
+                return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
+            }
             var result = await _userService.UserHasPinCodeAsync(id);
             return Ok(new {HasPinCode = result});
         }
