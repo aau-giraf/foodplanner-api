@@ -15,7 +15,7 @@ public class ChildrenService : IChildrenService {
          _mapper = mapper;
     }
 
-    public async Task<int> CreateChildrenAsync(ChildrenCreateDTO childrenCreateDTO)
+    public async Task<int> CreateChildrenAsync(ChildrenCreateParentDTO childrenCreateDTO)
     {
         var children = _mapper.Map<Children>(childrenCreateDTO);
         return await _childrenRepository.InsertAsync(children);

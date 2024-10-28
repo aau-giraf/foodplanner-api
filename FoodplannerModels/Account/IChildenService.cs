@@ -9,6 +9,6 @@ namespace FoodplannerModels.Account
     public interface IChildrenService
     {
         Task<IEnumerable<Children>> GetAllChildrenAsync();
-        Task<int> CreateChildrenAsync(ChildrenCreateDTO children);
+        Task<int> CreateChildrenAsync(ChildrenCreateParentDTO children);
     }
 }

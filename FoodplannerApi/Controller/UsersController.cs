@@ -80,9 +80,13 @@ public class UsersController : BaseController {
     }
 
     [HttpPut]
-    public async Task<IActionResult> UpdatePinCode([FromBody] Pincode pincode){
+    public async Task<IActionResult> UpdatePinCode([FromHeader(Name = "Authorization")] string token, [FromBody] Pincode pincode){
         try{
-            var result = await _userService.UpdateUserPinCodeAsync(pincode.PinCode, pincode.Id);
+            var idString = _authService.RetrieveIdFromJWTToken(token);
+            if (!int.TryParse(idString, out int id)) {
+                return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
+            }
+            var result = await _userService.UpdateUserPinCodeAsync(pincode.PinCode, id);
             if (result.Length > 0){
                 return Created();
             }
@@ -93,9 +97,13 @@ public class UsersController : BaseController {
     }
     
     [HttpPost]
-    public async Task<IActionResult> CheckPinCode([FromBody] Pincode pincode){
+    public async Task<IActionResult> CheckPinCode([FromHeader(Name = "Authorization")] string token, [FromBody] Pincode pincode){
         try{
-            var result = await _userService.GetUserByIdAndPinCodeAsync(pincode.Id, pincode.PinCode);
+            var idString = _authService.RetrieveIdFromJWTToken(token);
+            if (!int.TryParse(idString, out int id)) {
+                return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
+            }
+            var result = await _userService.GetUserByIdAndPinCodeAsync(id, pincode.PinCode);
             if (result.Length > 0){
                 return Ok();
             }

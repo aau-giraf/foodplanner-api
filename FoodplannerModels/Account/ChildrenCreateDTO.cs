@@ -17,9 +17,6 @@ namespace FoodplannerModels.Account
         [StringLength(100, ErrorMessage = "Efternavn er for langt")]
         public required string LastName { get; set; }
         
-        [Required(ErrorMessage = "ForældreId er påkrævet")]
-        public int parentId { get; set; }
-        
         [Required(ErrorMessage = "KlasseId er påkrævet")]
         public int classId { get; set; }
         
