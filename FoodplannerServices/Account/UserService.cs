@@ -75,7 +75,7 @@ public class UserService : IUserService {
         if (pinCode.ToString().Length != 4){
             throw new InvalidOperationException("Pinkode skal være 4 cifre");
         }
-
+        pinCode = BCrypt.Net.BCrypt.HashPassword(pinCode);
         var pincode = await _userRepository.UpdatePinCodeAsync(pinCode, id);
 
         return pincode;
@@ -83,10 +83,8 @@ public class UserService : IUserService {
 
     public async Task<string> GetUserByIdAndPinCodeAsync(int id, string pinCode){
         var pincode = await _userRepository.GetPinCodeByIdAsync(id);
-
-        if (pincode.Length != 4){
-            throw new InvalidOperationException("Pinkode skal være 4 cifre");
-        } else if (pincode.ToString() != pinCode) {
+        
+        if (!BCrypt.Net.BCrypt.Verify(pinCode, pincode)){
             throw new InvalidOperationException("Forkert pinkode");
         }
         return pincode;

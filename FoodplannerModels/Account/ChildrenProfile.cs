@@ -7,8 +7,8 @@ namespace FoodplannerModels.Account
     {
         public ChildrenProfile()
         {
-            CreateMap<Children, ChildrenCreateDTO>();
-            CreateMap<ChildrenCreateDTO, Children>();
+            CreateMap<Children, ChildrenCreateParentDTO>();
+            CreateMap<ChildrenCreateParentDTO, Children>();
         }
     }
 }
