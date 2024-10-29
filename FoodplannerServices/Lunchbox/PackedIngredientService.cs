@@ -16,6 +16,12 @@ namespace FoodplannerServices.Lunchbox
             return packedIngredients;
         }
 
+        // Get all packed ingredients based on a meal ID
+        public async Task<IEnumerable<PackedIngredient>> GetAllPackedIngredientsByMealIdAsync(int id) {
+            var packedIngredients = await _packedIngredientRepository.GetAllByMealIdAsync(id);
+            return packedIngredients;
+        }
+
         // Get a packed ingredient based on the ID
         public async Task<PackedIngredient> GetPackedIngredientByIdAsync(int id) {
             return await _packedIngredientRepository.GetByIdAsync(id);

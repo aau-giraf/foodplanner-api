@@ -7,6 +7,8 @@ public interface IPackedIngredientService
 {
     // Retrieves all packed ingredients asynchronously,
     Task<IEnumerable<PackedIngredient>> GetAllPackedIngredientsAsync();
+    // Retrieves all packed ingredients by a meal ID asynchronously.
+    Task<IEnumerable<PackedIngredient>> GetAllPackedIngredientsByMealIdAsync(int id);
     // Retrieves a specific packed ingredient by its ID asynchronously.
     Task<PackedIngredient> GetPackedIngredientByIdAsync(int id);
     // Creates a new packed ingredient asynchronously.

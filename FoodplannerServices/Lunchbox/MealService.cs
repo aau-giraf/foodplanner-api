@@ -6,22 +6,51 @@ namespace FoodplannerServices.Lunchbox;
 /**
 * The service for the Meal class.
 */
-public class MealService (IMealRepository mealRepository) : IMealService
+public class MealService (IMealRepository mealRepository, IPackedIngredientRepository packedIngredientRepository, IIngredientRepository ingredientRepository) : IMealService
 {
     // Dependency injection of the meal repository.
     private readonly IMealRepository _mealRepository = mealRepository;
+    private readonly IPackedIngredientRepository _packedIngredientRepository = packedIngredientRepository;
+    private readonly IIngredientRepository _ingredientRepository = ingredientRepository;
+
     // Retrieves all meals from the repository.
+    public async Task<List<MealDTO>> GetAllMealsAsync(){
+        var meals = await _mealRepository.GetAllAsync();
+        List<MealDTO> output = [];
+        foreach(Meal meal in meals)
+        {
+            var packedIngredients = await _packedIngredientRepository.GetAllByMealIdAsync(meal.Id);
 
-    public async Task<IEnumerable<Meal>> GetAllMealsAsync(){
+        List<PackedIngredientDTO> ingredients = [];
+        foreach(PackedIngredient element in packedIngredients)
+        {
+            var ingredient = await _ingredientRepository.GetByIdAsync(element.Ingredient_ref);
+            PackedIngredientDTO packed = new() {Id = element.Id, Meal_ref = element.Meal_ref, Ingredient_ref = ingredient};
+            ingredients.Add(packed);
+        }
+        MealDTO mealDTO = new() {Id = meal.Id, User_ref = meal.User_ref, Image_ref = meal.Image_ref, Title = meal.Title, Date = meal.Date, Ingredients = ingredients};
+        output.Add(mealDTO);
+        }
 
-        var meal = await _mealRepository.GetAllAsync();
-        return meal;
+        return output;
     }
 
-// Retrieves a specific meal by its ID.
-    public async Task<Meal> GetMealByIdAsync(int id){
-        return await _mealRepository.GetByIdAsync(id);
+    // Retrieves a specific meal by its ID.
+    public async Task<MealDTO> GetMealByIdAsync(int id){
+        var meal = await _mealRepository.GetByIdAsync(id);
+        var packedIngredients = await _packedIngredientRepository.GetAllByMealIdAsync(id);
+
+        List<PackedIngredientDTO> ingredients = [];
+        foreach(PackedIngredient element in packedIngredients)
+        {
+            var ingredient = await _ingredientRepository.GetByIdAsync(element.Ingredient_ref);
+            PackedIngredientDTO packed = new() {Id = element.Id, Meal_ref = element.Meal_ref, Ingredient_ref = ingredient};
+            ingredients.Add(packed);
+        }
+        MealDTO output = new() {Id = meal.Id, User_ref = meal.User_ref, Image_ref = meal.Image_ref, Title = meal.Title, Date = meal.Date, Ingredients = ingredients};
+        return output;
     }
+
     // Creates a new meal in the repository.
     public async Task<int> CreateMealAsync(Meal meal){
         return await _mealRepository.InsertAsync(meal);

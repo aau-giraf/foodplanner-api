@@ -6,9 +6,9 @@
 public interface IMealService
 {
     // Gets all meal asynchronously.
-    Task<IEnumerable<Meal>> GetAllMealsAsync();
+    Task<List<MealDTO>> GetAllMealsAsync();
     // Gets an meal by ID asynchronously.
-    Task<Meal> GetMealByIdAsync(int id);
+    Task<MealDTO> GetMealByIdAsync(int id);
     // Creates a new meal asynchronously.
     Task<int> CreateMealAsync(Meal meal);
     // Updates an existing meal asynchronously.

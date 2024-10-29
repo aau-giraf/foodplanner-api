@@ -18,6 +18,16 @@ namespace FoodplannerDataAccessSql.Lunchbox
             return await connection.QueryAsync<PackedIngredient>(sql); // Executes the query and returns the results
         }
 
+        // Get all packed ingredients by a meal ID
+        public async Task<IEnumerable<PackedIngredient>> GetAllByMealIdAsync(int id) {
+            var sql = $"SELECT * FROM packed_ingredients WHERE meal_ref = {id}"; // SQL query to select all packed ingredients by meal ID
+            using var connection = _connectionFactory.Create(); 
+            connection.Open(); 
+            var result = await connection.QueryAsync<PackedIngredient>(sql);
+            if (result == null) return null;
+            else return result;
+        }
+
         // Get a specific packed ingredient by its ID
         public async Task<PackedIngredient> GetByIdAsync(int id) {
             var sql = $"SELECT * FROM packed_ingredients WHERE id = {id}"; // SQL query to select a packed ingredient by ID
