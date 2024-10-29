@@ -92,11 +92,17 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddSingleton(serviceProvider => {
-    var host = SecretsLoader.GetSecret("DB_HOST", "/SW-5-10/");
-    var port = SecretsLoader.GetSecret("DB_PORT", "/SW-5-10/");
-    var database = SecretsLoader.GetSecret("DB_NAME", "/SW-5-10/");
-    var username = SecretsLoader.GetSecret("DB_USER", "/SW-5-10/");
-    var password = SecretsLoader.GetSecret("DB_PASS", "/SW-5-10/");
+    var host = SecretsLoader.GetSecret("DB_HOST");
+    var port = SecretsLoader.GetSecret("DB_PORT");
+    var database = SecretsLoader.GetSecret("DB_NAME");
+    var username = SecretsLoader.GetSecret("DB_USER");
+    var password = SecretsLoader.GetSecret("DB_PASS");
+    //The database nescesary for running Meal, Ingredient, and PackedIngredient tests.
+    // var host = SecretsLoader.GetSecret("DB_HOST", "/SW-5-10/");
+    // var port = SecretsLoader.GetSecret("DB_PORT", "/SW-5-10/");
+    // var database = SecretsLoader.GetSecret("DB_NAME", "/SW-5-10/");
+    // var username = SecretsLoader.GetSecret("DB_USER", "/SW-5-10/");
+    // var password = SecretsLoader.GetSecret("DB_PASS", "/SW-5-10/");
 
     return new PostgreSQLConnectionFactory(host, port, database, username, password);
 });
