@@ -1,3 +1,4 @@
+using FoodplannerModels.Account;
 using FoodplannerModels.Lunchbox;
 using FoodplannerServices.Lunchbox;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,15 @@ public class IngredientsController (IngredientService ingredientService) : BaseC
         var ingredients = await _ingredientService.GetAllIngredientsAsync(); // Fetch all ingredients.
         return Ok(ingredients); // Returns the list of ingredients with a 200 OK status
     }
+
+    // Get all ingredients by user
+    [HttpGet("{user}")] //Program.cs seem to add the method name to the path. If frontend doesn't do this, we would need to do that.
+    public async Task<IActionResult> GetAllByUser(int user){
+        // Calls the service to fetch all ingredients
+        var ingredients = await _ingredientService.GetAllIngredientsByUserAsync(user); // Fetch all ingredients by user.
+        return Ok(ingredients); // Returns the list of ingredients with a 200 OK status
+    }
+
     // Get a specific ingredient by ID
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id){

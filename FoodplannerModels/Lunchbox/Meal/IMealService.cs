@@ -5,8 +5,10 @@
 */
 public interface IMealService
 {
-    // Gets all meal asynchronously.
+    // Gets all meals asynchronously.
     Task<List<MealDTO>> GetAllMealsAsync();
+    // Gets all meals by user id asynchronously.
+    Task<List<MealDTO>> GetAllMealsByUserAsync(int user_ref, string date);
     // Gets an meal by ID asynchronously.
     Task<MealDTO> GetMealByIdAsync(int id);
     // Creates a new meal asynchronously.

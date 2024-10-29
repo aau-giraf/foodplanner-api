@@ -11,10 +11,19 @@ public class MealRepository (PostgreSQLConnectionFactory connectionFactory) : IM
     // Repository for managing meal data in the database.
     private readonly PostgreSQLConnectionFactory _connectionFactory = connectionFactory;
 
-    // Asynchronously retrieves all meals from the database.
+    // Asynchronously retrieves all meals from the database. Used in testing.
     public async Task<IEnumerable<Meal>> GetAllAsync()
     {
         var sql = "SELECT * FROM meals"; // SQL query to select all meals.
+        using var connection = _connectionFactory.Create(); // Create a new database connection.
+        connection.Open(); // Open the connection to the database.
+        return await connection.QueryAsync<Meal>(sql); // Execute the query and return all meals.
+    }
+
+    // Asynchronously retrieves all meals from the database that share the same user.
+    public async Task<IEnumerable<Meal>> GetAllByUserAsync(int user_ref, string date)
+    {
+        var sql = $"SELECT * FROM meals WHERE user_ref = '{user_ref}' AND date = '{date}'"; // SQL query to select all meals by user.
         using var connection = _connectionFactory.Create(); // Create a new database connection.
         connection.Open(); // Open the connection to the database.
         return await connection.QueryAsync<Meal>(sql); // Execute the query and return all meals.

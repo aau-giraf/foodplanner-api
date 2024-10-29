@@ -10,7 +10,7 @@ namespace FoodplannerDataAccessSql.Lunchbox
     {
         private readonly PostgreSQLConnectionFactory _connectionFactory = connectionFactory;
 
-        // Get all packed ingredients from the database
+        // Get all packed ingredients from the database. Used in testing.
         public async Task<IEnumerable<PackedIngredient>> GetAllAsync() {
             var sql = "SELECT * FROM packed_ingredients"; // SQL query to select all packed ingredients
             using var connection = _connectionFactory.Create(); // Creates a new database connection

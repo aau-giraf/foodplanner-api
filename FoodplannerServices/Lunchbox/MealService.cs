@@ -35,6 +35,28 @@ public class MealService (IMealRepository mealRepository, IPackedIngredientRepos
         return output;
     }
 
+    // Retrieves all meals by user id.
+    public async Task<List<MealDTO>> GetAllMealsByUserAsync(int user_ref, string date){
+        var meals = await _mealRepository.GetAllByUserAsync(user_ref, date);
+        List<MealDTO> output = [];
+        foreach(Meal meal in meals)
+        {
+            var packedIngredients = await _packedIngredientRepository.GetAllByMealIdAsync(meal.Id);
+
+        List<PackedIngredientDTO> ingredients = [];
+        foreach(PackedIngredient element in packedIngredients)
+        {
+            var ingredient = await _ingredientRepository.GetByIdAsync(element.Ingredient_ref);
+            PackedIngredientDTO packed = new() {Id = element.Id, Meal_ref = element.Meal_ref, Ingredient_ref = ingredient};
+            ingredients.Add(packed);
+        }
+        MealDTO mealDTO = new() {Id = meal.Id, User_ref = meal.User_ref, Image_ref = meal.Image_ref, Title = meal.Title, Date = meal.Date, Ingredients = ingredients};
+        output.Add(mealDTO);
+        }
+
+        return output;
+    }
+
     // Retrieves a specific meal by its ID.
     public async Task<MealDTO> GetMealByIdAsync(int id){
         var meal = await _mealRepository.GetByIdAsync(id);

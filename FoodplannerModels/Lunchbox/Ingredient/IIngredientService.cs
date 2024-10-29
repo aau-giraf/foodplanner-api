@@ -1,10 +1,14 @@
-﻿namespace FoodplannerModels.Lunchbox;
+﻿using FoodplannerModels.Account;
+
+namespace FoodplannerModels.Lunchbox;
 
 // Temperary interface for the ingredient.
 public interface IIngredientService
 {
     // Gets all ingredients asynchronously.
     Task<IEnumerable<Ingredient>> GetAllIngredientsAsync();
+    // Gets all ingredients by userasynchronously.
+    Task<IEnumerable<Ingredient>> GetAllIngredientsByUserAsync(int user);
     // Gets an ingredient by ID asynchronously.
     Task<Ingredient> GetIngredientByIdAsync(int id);
     // Creates a new ingredient asynchronously.

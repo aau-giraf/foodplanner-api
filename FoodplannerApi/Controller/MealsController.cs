@@ -20,6 +20,13 @@ public class MealsController (MealService mealService) : BaseController
         return Ok(meals);
     }
 
+    // Get all meals by user id
+    [HttpGet("{user}/{date}")]
+    public async Task<IActionResult> GetAllByUser(int user, string date){
+        var meals = await _mealService.GetAllMealsByUserAsync(user, date);
+        return Ok(meals);
+    }
+
     // Get a specific meal by ID
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(int id){

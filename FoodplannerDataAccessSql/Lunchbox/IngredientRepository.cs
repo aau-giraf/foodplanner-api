@@ -11,10 +11,19 @@ public class IngredientRepository (PostgreSQLConnectionFactory connectionFactory
     // Repository for managing ingredient data in the database.
     private readonly PostgreSQLConnectionFactory _connectionFactory = connectionFactory;
 
-    // Asynchronously retrieves all ingredients from the database.
+    // Asynchronously retrieves all ingredients from the database. Used in testing.
     public async Task<IEnumerable<Ingredient>> GetAllAsync()
     {
         var sql = "SELECT * FROM ingredients"; // SQL query to select all ingredients.
+        using var connection = _connectionFactory.Create(); // Create a new database connection.
+        connection.Open();  // Open the connection to the database.
+        return await connection.QueryAsync<Ingredient>(sql); // Execute the query and return all ingredients.
+    }
+
+    // Asynchronously retrieves all ingredients by user.
+    public async Task<IEnumerable<Ingredient>> GetAllByUserAsync(int user_ref)
+    {
+        var sql = $"SELECT * FROM ingredients WHERE user_ref = {user_ref}"; // SQL query to select all ingredients.
         using var connection = _connectionFactory.Create(); // Create a new database connection.
         connection.Open();  // Open the connection to the database.
         return await connection.QueryAsync<Ingredient>(sql); // Execute the query and return all ingredients.
