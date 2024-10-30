@@ -53,11 +53,11 @@ public class UserService : IUserService {
     {
         var user = await _userRepository.GetUserByEmailAsync(email);
         
-        bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user?.Password);
+        //bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user?.Password);
 
-        if (!isPasswordValid)
+        if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.Password))
         {
-            return null;
+            throw new InvalidOperationException("Forkert brugernavn eller adgangskode");
         }
         
         var jwt = _authService.GenerateJWTToken(user);
@@ -69,6 +69,30 @@ public class UserService : IUserService {
         };
         
         return userCreds;
+    }
+
+    public async Task<string> UpdateUserPinCodeAsync(string pinCode, int id){
+        if (pinCode.ToString().Length != 4){
+            throw new InvalidOperationException("Pinkode skal være 4 cifre");
+        }
+        pinCode = BCrypt.Net.BCrypt.HashPassword(pinCode);
+        var pincode = await _userRepository.UpdatePinCodeAsync(pinCode, id);
+
+        return pincode;
+    } 
+
+    public async Task<string> GetUserByIdAndPinCodeAsync(int id, string pinCode){
+        var pincode = await _userRepository.GetPinCodeByIdAsync(id);
+        if (pincode == null){
+            throw new InvalidOperationException("Bruger har ikke en pinkode");
+        } else if (!BCrypt.Net.BCrypt.Verify(pinCode, pincode)){
+            throw new InvalidOperationException("Forkert pinkode");
+        }
+        return pincode;
+    }
+
+    public async Task<bool> UserHasPinCodeAsync(int id){
+        return await _userRepository.HasPinCodeAsync(id);
     }
 }
 
