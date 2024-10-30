@@ -69,7 +69,7 @@ public class UsersController : BaseController {
     
     [HttpPost]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ModelStateDictionary), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
 
     public async Task<IActionResult> Login([FromBody] Login user){
