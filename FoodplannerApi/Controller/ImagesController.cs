@@ -58,7 +58,6 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
 
     public async Task<IActionResult> DeleteImages(IEnumerable<int> foodImageIds)
     {
-
         var imageIdList = foodImageIds.ToList();
         if (imageIdList == null || !imageIdList.Any())
             return BadRequest("No imageIds provided");
@@ -88,7 +87,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
         return Ok(presignedImageLink);
     }
 
-    public class AuthoriseImageOwnerFilter : IAsyncActionFilter
+    private class AuthoriseImageOwnerFilter : IAsyncActionFilter
     {
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {

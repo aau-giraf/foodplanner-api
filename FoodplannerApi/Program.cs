@@ -44,12 +44,20 @@ builder.Services.AddMinio(configureClient =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins",
-        builder =>
+        policy =>
         {
-            builder.WithOrigins("http://localhost:8081") // Replace with your client's URL
+            policy.WithOrigins("http://localhost:8081") // Replace with your client's URL
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
+    
+    options.AddPolicy("Develompmen", 
+        policy =>
+    {
+        policy.WithOrigins("*")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
 });
 
 builder.Services.AddSwaggerGen(options =>
@@ -174,8 +182,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 // Apply CORS policy
-app.UseCors("AllowSpecificOrigins");
+if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development") 
+    app.UseCors("Development");
+else app.UseCors("AllowSpecificOrigins");
+
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
