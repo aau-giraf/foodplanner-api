@@ -6,6 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Dapper;
 
 namespace testing;
+
+/**
+* These are technicly integration tests, since the database has not been mocked using Xunits Fixture.
+* It is therefor important to check that the database SW5-10 is empty before running the tests.
+*/
 [Collection("Sequential")]  // Indicates that the tests in this collection should run sequentially to avoid issues with shared state.
 public class PackedIngredientControllerIntegrationTests
 {
@@ -86,6 +91,13 @@ public class PackedIngredientControllerIntegrationTests
         int packedIngredientId = allPackedIngredients.FirstOrDefault().Id;
         IActionResult actual = await packedIngredientCon.Get(packedIngredientId);
 
+        //Clean Up: Empty the database so the test does not affect other tests.
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("meals");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        await DatabaseConnection.EmptyDatabase("food_image");
+        await DatabaseConnection.EmptyDatabase("users");
+
         // Verify: Assert that the result is of type OkObjectResult, confirming the item was found.
         Assert.IsType<OkObjectResult>(actual);
     }
@@ -123,6 +135,13 @@ public class PackedIngredientControllerIntegrationTests
 
         // Attempt: Call the Create method with the PackedIngredient.
         IActionResult actual = await packedIngredientCon.Create(packedIngredient);
+
+        //Clean Up: Empty the database so the test does not affect other tests.
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("meals");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        await DatabaseConnection.EmptyDatabase("food_image");
+        await DatabaseConnection.EmptyDatabase("users");
 
         // Verify: Assert that the result is of type CreatedAtActionResult, confirming the item was created.
         Assert.IsType<CreatedAtActionResult>(actual);
@@ -169,6 +188,13 @@ public class PackedIngredientControllerIntegrationTests
         int packedIngredientId = allPackedIngredients.FirstOrDefault().Id;
         IActionResult actual = await packedIngredientCon.Update(updatedPackedIngredient, packedIngredientId);
 
+        //Clean Up: Empty the database so the test does not affect other tests.
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("meals");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        await DatabaseConnection.EmptyDatabase("food_image");
+        await DatabaseConnection.EmptyDatabase("users");
+
         // Verify: Assert that the result is of type OkObjectResult, confirming the item was updated.
         Assert.IsType<OkObjectResult>(actual);
     }
@@ -206,6 +232,13 @@ public class PackedIngredientControllerIntegrationTests
 
         // Attempt: Call the Update method with an invalid ID (0).
         IActionResult actual = await packedIngredientCon.Update(packedIngredient, 0);
+
+        //Clean Up: Empty the database so the test does not affect other tests.
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("meals");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        await DatabaseConnection.EmptyDatabase("food_image");
+        await DatabaseConnection.EmptyDatabase("users");
 
         // Verify: Assert that the result is of type BadRequestResult, indicating the request was not valid.
         Assert.IsType<BadRequestResult>(actual);
@@ -248,6 +281,13 @@ public class PackedIngredientControllerIntegrationTests
         int packedIngredientId = allPackedIngredients.FirstOrDefault().Id;
         IActionResult actual = await packedIngredientCon.Delete(packedIngredientId);
 
+        //Clean Up: Empty the database so the test does not affect other tests.
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("meals");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        await DatabaseConnection.EmptyDatabase("food_image");
+        await DatabaseConnection.EmptyDatabase("users");
+
         // Verify: Assert that the result is of type NoContentResult, indicating successful deletion.
         Assert.IsType<NoContentResult>(actual);
     }
@@ -286,18 +326,14 @@ public class PackedIngredientControllerIntegrationTests
         // Attempt: Call the Delete method with an invalid ID (0).
         IActionResult actual = await packedIngredientCon.Delete(0);
 
-        // Verify: Assert that the result is of type NotFoundResult, indicating the item was not found.
-        Assert.IsType<NotFoundResult>(actual);
-    }
-
-    [Fact]
-    public async void Z() //The tests are called alphabeticly, so this is called Z to force it to be last
-    {
+        //Clean Up: Empty the database so the test does not affect other tests.
         await DatabaseConnection.EmptyDatabase("packed_ingredients");
         await DatabaseConnection.EmptyDatabase("meals");
+        await DatabaseConnection.EmptyDatabase("ingredients");
         await DatabaseConnection.EmptyDatabase("food_image");
         await DatabaseConnection.EmptyDatabase("users");
 
-        Assert.True(true);
+        // Verify: Assert that the result is of type NotFoundResult, indicating the item was not found.
+        Assert.IsType<NotFoundResult>(actual);
     }
 }

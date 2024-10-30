@@ -2,15 +2,19 @@ using Dapper;
 using FoodplannerModels.Lunchbox;
 using FoodplannerDataAccessSql.Lunchbox;
 
+/**
+* These are technicly integration tests, since the database has not been mocked using Xunits Fixture.
+* It is therefor important to check that the database SW5-10 is empty before running the tests.
+*/
 namespace testing
 {
+    [Collection("Sequential")]
     public class IngredientRepositoryTests
     {
     [Fact]
     public async void GetAllAsync_EmptyDatabase_ReturnsEmptyList()
     {
         //Setup
-        await DatabaseConnection.EmptyDatabase("packed_ingredients");
         await DatabaseConnection.EmptyDatabase("ingredients");
         IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
         IEnumerable<Ingredient> expected = [];
@@ -27,7 +31,6 @@ namespace testing
     {
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
-        await DatabaseConnection.EmptyDatabase("packed_ingredients");
         await DatabaseConnection.EmptyDatabase("ingredients");
         IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
         Ingredient ingredient = new() { Id = 0, Name = "test", User_ref = 1, Image_ref = 1};
@@ -35,7 +38,12 @@ namespace testing
         //Attempt
         await ingredientRep.InsertAsync(ingredient);
         IEnumerable<Ingredient> actual = await ingredientRep.GetAllAsync();
-        
+
+        //Clean Up
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        await DatabaseConnection.EmptyDatabase("food_image");
+        await DatabaseConnection.EmptyDatabase("users");
+
         //Verify
         Assert.Single(actual);
     }
@@ -44,7 +52,6 @@ namespace testing
     public async void GetByIdAsync_EmptyDatabase_ReturnsNull()
     {
         //Setup
-        await DatabaseConnection.EmptyDatabase("packed_ingredients");
         await DatabaseConnection.EmptyDatabase("ingredients");
         IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
         
@@ -60,7 +67,6 @@ namespace testing
     {
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
-        await DatabaseConnection.EmptyDatabase("packed_ingredients");
         await DatabaseConnection.EmptyDatabase("ingredients");
         IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
         Ingredient ingredient = new() { Id = 0, Name = "test", User_ref = 1, Image_ref = 1};
@@ -71,7 +77,12 @@ namespace testing
         IEnumerable<Ingredient> allIngredients = await ingredientRep.GetAllAsync();
         int ingredientId = allIngredients.FirstOrDefault().Id;
         Ingredient actual = await ingredientRep.GetByIdAsync(ingredientId);
-        
+
+        //Clean Up
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        await DatabaseConnection.EmptyDatabase("food_image");
+        await DatabaseConnection.EmptyDatabase("users");
+
         //Verify
         Assert.Equal(expected, actual.Name);
     }
@@ -81,7 +92,6 @@ namespace testing
     {
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
-        await DatabaseConnection.EmptyDatabase("packed_ingredients");
         await DatabaseConnection.EmptyDatabase("ingredients");
         IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
         Ingredient ingredient = new() { Id = 0, Name = "old test", User_ref = 1, Image_ref = 1};
@@ -94,7 +104,12 @@ namespace testing
         int ingredientId = allIngredients.FirstOrDefault().Id;
         await ingredientRep.UpdateAsync(updatedIngredient, ingredientId);
         Ingredient actual = await ingredientRep.GetByIdAsync(ingredientId);
-        
+
+        //Clean Up
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        await DatabaseConnection.EmptyDatabase("food_image");
+        await DatabaseConnection.EmptyDatabase("users");
+
         //Verify
         Assert.Equal(expected, actual.Name);
     }
@@ -104,7 +119,6 @@ namespace testing
     {
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
-        await DatabaseConnection.EmptyDatabase("packed_ingredients");
         await DatabaseConnection.EmptyDatabase("ingredients");
         IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
         Ingredient ingredient = new() { Id = 0, Name = "test", User_ref = 1, Image_ref = 1};
@@ -115,20 +129,14 @@ namespace testing
         int ingredientId = allIngredients.FirstOrDefault().Id;
         await ingredientRep.DeleteAsync(ingredientId);
         Ingredient actual = await ingredientRep.GetByIdAsync(ingredientId);
-        
-        //Verify
-        Assert.Null(actual);
-    }
 
-    [Fact]
-    public async void Z() //The tests are called alphabeticly, so this is called Z to force it to be last
-    {
-        await DatabaseConnection.EmptyDatabase("packed_ingredients");
-        await DatabaseConnection.EmptyDatabase("meals");
+        //Clean Up
+        await DatabaseConnection.EmptyDatabase("ingredients");
         await DatabaseConnection.EmptyDatabase("food_image");
         await DatabaseConnection.EmptyDatabase("users");
 
-        Assert.True(true);
+        //Verify
+        Assert.Null(actual);
     }
     }
 }

@@ -17,10 +17,15 @@ public class IngredientService (IIngredientRepository ingredientRepository) : II
         return ingredients;
     }
     // Retrieves all ingredients by user.
-    public async Task<IEnumerable<Ingredient>> GetAllIngredientsByUserAsync(int user_ref){
+    public async Task<List<Ingredient>> GetAllIngredientsByUserAsync(int user_ref){
 
         var ingredients = await _ingredientRepository.GetAllByUserAsync(user_ref);
-        return ingredients;
+        List<Ingredient> output = [];
+        foreach(Ingredient element in ingredients)
+        {
+            output.Add(element);
+        }
+        return output;
     }
     // Retrieves a specific ingredient by its ID.
     public async Task<Ingredient> GetIngredientByIdAsync(int id){

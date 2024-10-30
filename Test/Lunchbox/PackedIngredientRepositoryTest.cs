@@ -3,6 +3,11 @@ using FoodplannerModels.Lunchbox;
 using FoodplannerDataAccessSql.Lunchbox;
 
 namespace testing;
+
+/**
+* These are technicly integration tests, since the database has not been mocked using Xunits Fixture.
+* It is therefor important to check that the database SW5-10 is empty before running the tests.
+*/
 [Collection("Sequential")] // Indicates that the tests in this collection should run sequentially to avoid issues with shared state.
 public class PackedIngredientRepositoryTests 
 {
@@ -55,9 +60,73 @@ public class PackedIngredientRepositoryTests
         // Attempt
         await packedIngredientRepo.InsertAsync(packedIngredient); // Inserts the packed ingredient into the database.
         IEnumerable<PackedIngredient> actual = await packedIngredientRepo.GetAllAsync(); // Returns all packed ingredients from the database.
-        
+
+        //Clean Up: Empty the database so the test does not affect other tests.
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("meals");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        await DatabaseConnection.EmptyDatabase("food_image");
+        await DatabaseConnection.EmptyDatabase("users");
+
         // Verify
         Assert.Single(actual); // Asserts that there is exactly one packed ingredient in the database.
+    }
+
+    [Fact] // Marks the method as a test method.
+    public async void GetAllByMealIdAsync_EmptyDatabase_ReturnsEmptyList()
+    {
+        // Setup
+        await DatabaseConnection.EmptyDatabase("packed_ingredients"); // Clears the database to ensure it is empty.
+        PackedIngredientRepository packedIngredientRepo = new(DatabaseConnection.GetConnection()); // Creates an instance of the repository.
+        IEnumerable<PackedIngredient> expected = []; // The expected result is an empty list.
+        
+        // Attempt
+        IEnumerable<PackedIngredient> actual = await packedIngredientRepo.GetAllByMealIdAsync(0); // Returns all PackedIngredients by meal id from the database.
+        
+        // Verify
+        Assert.Empty(actual); // Asserts that the actual list is empty.
+        Assert.Equal(expected, actual); // Asserts that the expected result matches the actual result.
+    }
+
+    [Fact]
+    public async void GetAllByMealIdAsync_TwoPackedIngredientInDatabase_ReturnsOnePackedIngredient()
+    {
+        // Setup
+        await DatabaseConnection.SetupTempUserAndImage();
+        await DatabaseConnection.EmptyDatabase("packed_ingredients"); // Clears the database.
+        PackedIngredientRepository packedIngredientRepo = new(DatabaseConnection.GetConnection()); // Creates the repository instance.
+        
+        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection()); // Creates ingredient repository.
+        MealRepository mealRep = new(DatabaseConnection.GetConnection()); // Creates meal repository.
+        
+        // Creates test meals and ingredient.
+        Meal meal1 = new() { Id = 1, Title = "test1", User_ref = 1, Image_ref = 1, Date = "test" };
+        Meal meal2 = new() { Id = 2, Title = "test2", User_ref = 1, Image_ref = 1, Date = "test" };
+        Ingredient ingredient = new() { Id = 1, Name = "test", User_ref = 1, Image_ref = 1 };
+        
+        // Inserts the meals and ingredient into the database.
+        await mealRep.InsertAsync(meal1);
+        await mealRep.InsertAsync(meal2);
+        await ingredientRep.InsertAsync(ingredient);
+
+        // Creates the PackedIngredients to insert into the database.
+        PackedIngredient packedIngredient1 = new() { Id = 1, Meal_ref = 1, Ingredient_ref = 1 };
+        PackedIngredient packedIngredient2 = new() { Id = 2, Meal_ref = 2, Ingredient_ref = 1 };
+        
+        // Attempt
+        await packedIngredientRepo.InsertAsync(packedIngredient1); // Inserts the first packed ingredient into the database.
+        await packedIngredientRepo.InsertAsync(packedIngredient2); // Inserts the second packed ingredient into the database.
+        IEnumerable<PackedIngredient> actual = await packedIngredientRepo.GetAllByMealIdAsync(1); // Returns all packed ingredients with meal id 1 from the database.
+
+        //Clean Up: Empty the database so the test does not affect other tests.
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("meals");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        await DatabaseConnection.EmptyDatabase("food_image");
+        await DatabaseConnection.EmptyDatabase("users");
+
+        // Verify
+        Assert.Single(actual); // Asserts that only one packed ingredient was returned.
     }
 
     [Fact]
@@ -111,6 +180,13 @@ public class PackedIngredientRepositoryTests
         PackedIngredient actual = await packedIngredientRepo.GetByIdAsync(packedIngredientId); // Returns the packed ingredient by ID.
         int expected = packedIngredientId; // Sets the expected value to the packed ingredient ID.
 
+        //Clean Up: Empty the database so the test does not affect other tests.
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("meals");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        await DatabaseConnection.EmptyDatabase("food_image");
+        await DatabaseConnection.EmptyDatabase("users");
+
         // Verify
         Assert.Equal(expected, actual.Id); // Asserts that the actual ID matches the expected ID.
     }
@@ -159,6 +235,13 @@ public class PackedIngredientRepositoryTests
         PackedIngredient actual = await packedIngredientRep.GetByIdAsync(packedIngredientId); // Returns the updated packed ingredient.
         await packedIngredientRep.DeleteAsync(packedIngredientId); // Cleans up by deleting the packed ingredient.
 
+        //Clean Up: Empty the database so the test does not affect other tests.
+        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        await DatabaseConnection.EmptyDatabase("meals");
+        await DatabaseConnection.EmptyDatabase("ingredients");
+        await DatabaseConnection.EmptyDatabase("food_image");
+        await DatabaseConnection.EmptyDatabase("users");
+
         // Verify
         Assert.Equal(expected, actual.Meal_ref); // Asserts that the updated meal reference matches the expected value.
     }
@@ -199,19 +282,15 @@ public class PackedIngredientRepositoryTests
         int packedIngredientId = allPackedIngredients.FirstOrDefault().Id; // Gets the ID of the inserted packed ingredient.
         await packedIngredientRep.DeleteAsync(packedIngredientId); // Deletes the packed ingredient from the database.
         PackedIngredient actual = await packedIngredientRep.GetByIdAsync(packedIngredientId); // Attempts to retrieve the deleted packed ingredient.
-        
-        // Verify
-        Assert.Null(actual); // Asserts that the actual result is null (the packed ingredient has been deleted).
-    }
 
-    [Fact]
-    public async void Z() //The tests are called alphabeticly, so this is called Z to force it to be last
-    {
+        //Clean Up: Empty the database so the test does not affect other tests.
         await DatabaseConnection.EmptyDatabase("packed_ingredients");
         await DatabaseConnection.EmptyDatabase("meals");
+        await DatabaseConnection.EmptyDatabase("ingredients");
         await DatabaseConnection.EmptyDatabase("food_image");
         await DatabaseConnection.EmptyDatabase("users");
 
-        Assert.True(true);
+        // Verify
+        Assert.Null(actual); // Asserts that the actual result is null (the packed ingredient has been deleted).
     }
 }

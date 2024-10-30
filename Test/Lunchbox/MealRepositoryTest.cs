@@ -13,7 +13,6 @@ public class MealRepositoryTest
     public async void GetAllAsync_EmptyDatabase_ReturnsEmptyList()
     {
         //Setup
-        await DatabaseConnection.EmptyDatabase("packed_ingredients");
         await DatabaseConnection.EmptyDatabase("meals");
         MealRepository mealRep = new(DatabaseConnection.GetConnection());
         IEnumerable<Meal> expected = [];
@@ -30,7 +29,6 @@ public class MealRepositoryTest
     {
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
-        await DatabaseConnection.EmptyDatabase("packed_ingredients");
         await DatabaseConnection.EmptyDatabase("meals");
         MealRepository mealRep = new(DatabaseConnection.GetConnection());
         Meal meal = new() { Id = 0, Title = "test", User_ref = 1, Image_ref = 1, Date = "test"};
@@ -38,7 +36,49 @@ public class MealRepositoryTest
         //Attempt
         await mealRep.InsertAsync(meal);
         IEnumerable<Meal> actual = await mealRep.GetAllAsync();
+
+        //Clean Up
+        await DatabaseConnection.EmptyDatabase("meals");
+        await DatabaseConnection.EmptyDatabase("food_image");
+        await DatabaseConnection.EmptyDatabase("users");
+
+        //Verify
+        Assert.Single(actual);
+    }
+
+    [Fact]
+    public async void GetAllByUserAsync_EmptyDatabase_ReturnsEmptyList()
+    {
+        //Setup
+        await DatabaseConnection.EmptyDatabase("meals");
+        MealRepository mealRep = new(DatabaseConnection.GetConnection());
+        IEnumerable<Meal> expected = [];
         
+        //Attempt
+        IEnumerable<Meal> actual = await mealRep.GetAllByUserAsync(1, "test");
+        
+        //Verify
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public async void GetByUserAllAsync_OneMealInDatabase_ReturnsOneMeal()
+    {
+        //Setup
+        await DatabaseConnection.SetupTempUserAndImage();
+        await DatabaseConnection.EmptyDatabase("meals");
+        MealRepository mealRep = new(DatabaseConnection.GetConnection());
+        Meal meal = new() { Id = 0, Title = "test", User_ref = 1, Image_ref = 1, Date = "test"};
+        
+        //Attempt
+        await mealRep.InsertAsync(meal);
+        IEnumerable<Meal> actual = await mealRep.GetAllByUserAsync(1, "test");
+
+        //Clean Up
+        await DatabaseConnection.EmptyDatabase("meals");
+        await DatabaseConnection.EmptyDatabase("food_image");
+        await DatabaseConnection.EmptyDatabase("users");
+
         //Verify
         Assert.Single(actual);
     }
@@ -47,7 +87,6 @@ public class MealRepositoryTest
     public async void GetByIdAsync_EmptyDatabase_ReturnsNull()
     {
         //Setup
-        await DatabaseConnection.EmptyDatabase("packed_ingredients");
         await DatabaseConnection.EmptyDatabase("meals");
         MealRepository mealRep = new(DatabaseConnection.GetConnection());
         
@@ -63,7 +102,6 @@ public class MealRepositoryTest
     {
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
-        await DatabaseConnection.EmptyDatabase("packed_ingredients");
         await DatabaseConnection.EmptyDatabase("meals");
         MealRepository mealRep = new(DatabaseConnection.GetConnection());
         Meal meal = new() { Id = 0, Title = "test", User_ref = 1, Image_ref = 1, Date = "test"};
@@ -74,7 +112,12 @@ public class MealRepositoryTest
         IEnumerable<Meal> allMeals = await mealRep.GetAllAsync();
         int mealId = allMeals.FirstOrDefault().Id;
         Meal actual = await mealRep.GetByIdAsync(mealId);
-        
+
+        //Clean Up
+        await DatabaseConnection.EmptyDatabase("meals");
+        await DatabaseConnection.EmptyDatabase("food_image");
+        await DatabaseConnection.EmptyDatabase("users");
+
         //Verify
         Assert.Equal(expected, actual.Title);
     }
@@ -84,7 +127,6 @@ public class MealRepositoryTest
     {
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
-        await DatabaseConnection.EmptyDatabase("packed_ingredients");
         await DatabaseConnection.EmptyDatabase("meals");
         MealRepository mealRep = new(DatabaseConnection.GetConnection());
         Meal meal = new() { Id = 0, Title = "old test", User_ref = 1, Image_ref = 1, Date = "test"};
@@ -98,7 +140,12 @@ public class MealRepositoryTest
         await mealRep.UpdateAsync(updatedMeal, mealId);
         Meal actual = await mealRep.GetByIdAsync(mealId);
         await mealRep.DeleteAsync(mealId);
-        
+
+        //Clean Up
+        await DatabaseConnection.EmptyDatabase("meals");
+        await DatabaseConnection.EmptyDatabase("food_image");
+        await DatabaseConnection.EmptyDatabase("users");
+
         //Verify
         Assert.Equal(expected, actual.Title);
     }
@@ -108,7 +155,6 @@ public class MealRepositoryTest
     {
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
-        await DatabaseConnection.EmptyDatabase("packed_ingredients");
         await DatabaseConnection.EmptyDatabase("meals");
         MealRepository mealRep = new(DatabaseConnection.GetConnection());
         Meal meal = new() { Id = 0, Title = "test", User_ref = 1, Image_ref = 1, Date = "test"};
@@ -119,19 +165,13 @@ public class MealRepositoryTest
         int mealId = allMeals.FirstOrDefault().Id;
         await mealRep.DeleteAsync(mealId);
         Meal actual = await mealRep.GetByIdAsync(mealId);
-        
-        //Verify
-        Assert.Null(actual);
-    }
 
-    [Fact]
-    public async void Z() //The tests are called alphabeticly, so this is called Z to force it to be last
-    {
-        await DatabaseConnection.EmptyDatabase("packed_ingredients");
+        //Clean Up
         await DatabaseConnection.EmptyDatabase("meals");
         await DatabaseConnection.EmptyDatabase("food_image");
         await DatabaseConnection.EmptyDatabase("users");
 
-        Assert.True(true);
+        //Verify
+        Assert.Null(actual);
     }
 }
