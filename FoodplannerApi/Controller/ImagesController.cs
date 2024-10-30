@@ -87,7 +87,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
         return Ok(presignedImageLink);
     }
 
-    public class AuthoriseImageOwnerFilter : IAsyncActionFilter
+    private class AuthoriseImageOwnerFilter : IAsyncActionFilter
     {
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
@@ -116,11 +116,6 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
                     break;
                 }
             }
-        }
-
-        public void OnActionExecuted(ActionExecutedContext context)
-        {
-            throw new NotImplementedException();
         }
     }
 }

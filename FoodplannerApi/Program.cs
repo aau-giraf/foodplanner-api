@@ -176,7 +176,6 @@ builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddAutoMapper(typeof(UserProfile));
 
 builder.Services.AddSingleton<AuthService>();
-builder.Services.AddScoped<ImagesController.AuthoriseImageOwnerFilter>();
 
 var app = builder.Build();
 
