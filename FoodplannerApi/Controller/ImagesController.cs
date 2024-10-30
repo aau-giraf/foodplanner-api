@@ -1,6 +1,8 @@
 using System.Runtime.InteropServices.JavaScript;
 using System.Security.Claims;
 using FoodplannerApi.Helpers;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using FoodplannerDataAccessSql.Image;
 using FoodplannerServices.Image;
 using Microsoft.AspNetCore.Authorization;
@@ -32,7 +34,8 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
     }
 
     [HttpPost]
-    public async Task<IActionResult> UploadImages(IFormFileCollection imageFiles, int userId)
+    [ApiExplorerSettings(IgnoreApi = true)]
+    public async Task<IActionResult> UploadImages([Required]IFormFileCollection imageFiles, int userId)
     {
         if (imageFiles.Any(file => file.Length == 0)) return BadRequest("A file is empty");
         if (imageFiles.Any(file => file.Length >= _maxFileSize)) return BadRequest("a file too big");
@@ -55,6 +58,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
 
     public async Task<IActionResult> DeleteImages(IEnumerable<int> foodImageIds)
     {
+
         var imageIdList = foodImageIds.ToList();
         if (imageIdList == null || !imageIdList.Any())
             return BadRequest("No imageIds provided");
