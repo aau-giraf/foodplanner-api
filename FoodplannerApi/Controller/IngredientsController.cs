@@ -1,7 +1,9 @@
 using FoodplannerModels.Account;
 using FoodplannerModels.Lunchbox;
 using FoodplannerServices.Lunchbox;
+using FoodplannerApi.Helpers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FoodplannerApi.Controller;
 
@@ -9,13 +11,15 @@ namespace FoodplannerApi.Controller;
 * The IngredientsController class handles CRUD (Create, Read, Update, Delete) operations for the Ingredient entity.
 * It uses the IngredientService to interact with the database and process ingredient-related requests.
 */
-public class IngredientsController (IngredientService ingredientService) : BaseController
+public class IngredientsController (IngredientService ingredientService, AuthService authService) : BaseController
 {
     // Private field to hold the injected IngredientService.
     private readonly IngredientService _ingredientService = ingredientService;
+    private readonly AuthService _authService = authService;
 
     // Get all ingredients
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAll(){
         // Calls the service to fetch all ingredients
         var ingredients = await _ingredientService.GetAllIngredientsAsync(); // Fetch all ingredients.
@@ -23,15 +27,26 @@ public class IngredientsController (IngredientService ingredientService) : BaseC
     }
 
     // Get all ingredients by user
-    [HttpGet("{user}")] //Program.cs seem to add the method name to the path. If frontend doesn't do this, we would need to do that.
-    public async Task<IActionResult> GetAllByUser(int user){
-        // Calls the service to fetch all ingredients
-        var ingredients = await _ingredientService.GetAllIngredientsByUserAsync(user); // Fetch all ingredients by user.
-        return Ok(ingredients); // Returns the list of ingredients with a 200 OK status
+    [HttpGet]
+    [Authorize(Roles = "Parent")]
+    public async Task<IActionResult> GetAllByUser([FromHeader(Name = "Authorization")] string token){
+        try {    
+            var idString = _authService.RetrieveIdFromJWTToken(token);
+            if (!int.TryParse(idString, out int id)) {
+                return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
+            }
+            // Calls the service to fetch all ingredients
+            var ingredients = await _ingredientService.GetAllIngredientsByUserAsync(id); // Fetch all ingredients by user.
+            return Ok(ingredients); // Returns the list of ingredients with a 200 OK status
+        }
+        catch (InvalidOperationException e){
+            return BadRequest(new ErrorResponse {Message = [e.Message]});
+        }
     }
 
     // Get a specific ingredient by ID
     [HttpGet("{id}")]
+    [Authorize(Roles = "Parent")]
     public async Task<IActionResult> Get(int id){
         var ingredient = await _ingredientService.GetIngredientByIdAsync(id); // Fetch the ingredient by ID.
         if (ingredient == null){  // Check if the ingredient exists
@@ -42,6 +57,7 @@ public class IngredientsController (IngredientService ingredientService) : BaseC
 
     // Create a new ingredient
     [HttpPost]
+    [Authorize(Roles = "Parent")]
     public async Task<IActionResult> Create([FromBody] Ingredient ingredient){
         // Calls the service to fetch the ingredient by ID
         var result = await _ingredientService.CreateIngredientAsync(ingredient);
@@ -54,6 +70,7 @@ public class IngredientsController (IngredientService ingredientService) : BaseC
 
     // Update an existing ingredient
     [HttpPut("{id}")]
+    [Authorize(Roles = "Parent")]
     public async Task<IActionResult> Update([FromBody] Ingredient ingredient, int id){
         var result = await _ingredientService.UpdateIngredientAsync(ingredient, id); // Calls the service to update the ingredient by ID
         if (result > 0){
@@ -65,6 +82,7 @@ public class IngredientsController (IngredientService ingredientService) : BaseC
 
     // Delete an ingredient by ID
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Parent")]
     public async Task<IActionResult> Delete(int id){
          // Calls the service to delete the ingredient by ID
         var ingredient = await _ingredientService.GetIngredientByIdAsync(id);

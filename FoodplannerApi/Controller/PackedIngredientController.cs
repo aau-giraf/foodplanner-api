@@ -1,5 +1,7 @@
+using FoodplannerApi.Helpers;
 using FoodplannerModels.Lunchbox;
 using FoodplannerServices.Lunchbox;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodplannerApi.Controller
@@ -7,12 +9,14 @@ namespace FoodplannerApi.Controller
     /**
     * The controller for the PackedIngredient class.
     */
-    public class PackedIngredientController (PackedIngredientService packedIngredientService) : BaseController
+    public class PackedIngredientController (PackedIngredientService packedIngredientService, AuthService authService) : BaseController
     {
         private readonly PackedIngredientService _packedIngredientService = packedIngredientService;
+        private readonly AuthService _authService = authService;
 
         // Get all packed ingredients
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll() {
             // Calls the service to get all packed ingredients
             var packedIngredients = await _packedIngredientService.GetAllPackedIngredientsAsync(); 
@@ -21,6 +25,7 @@ namespace FoodplannerApi.Controller
 
         // Get a specific packed ingredient by id
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Get(int id) {
             // Calls the service to get the packed ingredient by ID
             var packedIngredient = await _packedIngredientService.GetPackedIngredientByIdAsync(id); 
@@ -33,6 +38,7 @@ namespace FoodplannerApi.Controller
 
         // Create a new packed ingredient
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] PackedIngredient packedIngredient) {
             // Calls the service to create a new packed ingredient
             var result = await _packedIngredientService.CreatePackedIngredientAsync(packedIngredient); 
@@ -45,6 +51,7 @@ namespace FoodplannerApi.Controller
 
         // Update an existing packed ingredient
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update([FromBody] PackedIngredient packedIngredient, int id){
             var result = await _packedIngredientService.UpdatePackedIngredientAsync(packedIngredient, id);
             if (result > 0){
@@ -56,6 +63,7 @@ namespace FoodplannerApi.Controller
 
         // Delete a packed ingredient by id
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id) {
             // Calls the service to delete the packed ingredient by ID
             var result = await _packedIngredientService.DeletePackedIngredientAsync(id);
