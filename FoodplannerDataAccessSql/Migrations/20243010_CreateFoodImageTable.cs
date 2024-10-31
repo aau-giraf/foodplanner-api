@@ -4,9 +4,10 @@ namespace FoodplannerDataAccessSql.Migrations;
 
 
 [Migration(20243010)]
-public class create_food_image_table : Migration {
+public class CreateFoodImageTable : Migration {
     
-    public override void Up() {
+    public override void Up() 
+    {
         Create.Table("food_image")
             .WithColumn("id").AsInt32().PrimaryKey().Identity()
             .WithColumn("image_id").AsString().NotNullable()
@@ -16,7 +17,8 @@ public class create_food_image_table : Migration {
             .WithColumn("size").AsInt64().NotNullable();
     }
 
-    public override void Down() {
+    public override void Down()
+    {
         Delete.Table("food_image");
     }
     
