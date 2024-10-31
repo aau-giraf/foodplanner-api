@@ -2,6 +2,7 @@ using FoodplannerApi.Helpers;
 using FoodplannerModels.Account;
 using FoodplannerServices;
 using FoodplannerServices.Account;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodplannerApi.Controller;
@@ -21,12 +22,12 @@ public class UsersController : BaseController {
         //Roles can be: Admin, Child, Teacher, Parent
         var user = new User
         {
-            Id = 1,
+            Id = 27,
             FirstName = "test",
             LastName = "test",
             Email = "user@test.com",
             Password = "test",
-            Role = "",
+            Role = "admin",
             RoleApproved = true
         };
 
@@ -34,6 +35,17 @@ public class UsersController : BaseController {
         
         return Ok(token);
     }
+
+    /* To retrieve the token from the header, use the following code:
+    [HttpGet]
+    public async Task<IActionResult> GetDecodeString([FromHeader(Name = "Authorization")] string token)
+    {
+        //Decodes a token for development purposes
+        var id = _authService.RetrieveIdFromJWTToken(token);  // retrives id from token.
+        return Ok(id);
+    }
+    */
+
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] UserCreateDTO userCreate){
@@ -43,11 +55,11 @@ public class UsersController : BaseController {
         try{
             var id = await _userService.CreateUserAsync(userCreate);
             if (id > 0){
-                return Ok(id);
+                return Created(string.Empty, id);
             }
             return BadRequest();
         } catch (InvalidOperationException e){
-            return BadRequest(e.Message);
+            return BadRequest(new ErrorResponse {Email = [e.Message]});
         }
     }
     
@@ -56,10 +68,64 @@ public class UsersController : BaseController {
         if (!ModelState.IsValid){
             return BadRequest(ModelState);
         }
-        var result = await _userService.GetJWTByEmailAndPasswordAsync(user.Email, user.Password);
-        if (result != null){
-            return Ok(result);
+        try{
+            var result = await _userService.GetJWTByEmailAndPasswordAsync(user.Email, user.Password);
+            if (result != null){
+                return Ok(result);
+            }
+            return BadRequest(new ErrorResponse {Message = ["Email eller password er forkert"]});
+        } catch (InvalidOperationException e){
+            return BadRequest(new ErrorResponse {Message = ["Email eller password er forkert"]});
         }
-        return NotFound();
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> UpdatePinCode([FromHeader(Name = "Authorization")] string token, [FromBody] Pincode pincode){
+        try{
+            var idString = _authService.RetrieveIdFromJWTToken(token);
+            if (!int.TryParse(idString, out int id)) {
+                return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
+            }
+            var result = await _userService.UpdateUserPinCodeAsync(pincode.PinCode, id);
+            if (result.Length > 0){
+                return Created();
+            }
+            return BadRequest();
+        }catch (InvalidOperationException e){
+            return BadRequest(new ErrorResponse {Message = [e.Message]});
+        }
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> CheckPinCode([FromHeader(Name = "Authorization")] string token, [FromBody] Pincode pincode){
+        try{
+            var idString = _authService.RetrieveIdFromJWTToken(token);
+            if (!int.TryParse(idString, out int id)) {
+                return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
+            }
+            var result = await _userService.GetUserByIdAndPinCodeAsync(id, pincode.PinCode);
+            if (result.Length > 0){
+                return Ok();
+            }
+            return BadRequest();
+            //return BadRequest(new ErrorResponse {Message = ["Forkert pinkode"]});
+        } catch (InvalidOperationException e){
+            return BadRequest(new ErrorResponse {Message = [e.Message]});
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> HasPinCode([FromHeader(Name = "Authorization")] string token) {
+        try {    
+            var idString = _authService.RetrieveIdFromJWTToken(token);
+            if (!int.TryParse(idString, out int id)) {
+                return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
+            }
+            var result = await _userService.UserHasPinCodeAsync(id);
+            return Ok(new {HasPinCode = result});
+        }
+        catch (InvalidOperationException e){
+            return BadRequest(new ErrorResponse {Message = [e.Message]});
+        }
     }
 }

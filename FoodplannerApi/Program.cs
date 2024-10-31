@@ -173,6 +173,12 @@ builder.Services.AddScoped<MealService>();
 builder.Services.AddScoped<IngredientService>();
 builder.Services.AddScoped<PackedIngredientService>();
 builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
+builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepository));
+builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));
+
+
+builder.Services.AddScoped<IChildrenService, ChildrenService>();
+builder.Services.AddScoped<IClassroomService, ClassroomService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
