@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices.JavaScript;
+using System.Security.Claims;
 using FoodplannerApi.Helpers;
 using System.ComponentModel.DataAnnotations;
 using FoodplannerModels.Image;
@@ -11,7 +13,6 @@ namespace FoodplannerApi.Controller;
 public class ImagesController(IFoodImageService foodImageService, AuthService authService) : BaseController
 {
     private readonly long _maxFileSize = 2000000000;
-    
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> UploadImage(IFormFile imageFile, int userId)
@@ -85,7 +86,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
         return Ok(presignedImageLink);
     }
 
-    public class AuthoriseImageOwnerFilter : IAsyncActionFilter
+    private class AuthoriseImageOwnerFilter : IAsyncActionFilter
     {
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
@@ -114,11 +115,6 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
                     break;
                 }
             }
-        }
-
-        public void OnActionExecuted(ActionExecutedContext context)
-        {
-            throw new NotImplementedException();
         }
     }
 }
