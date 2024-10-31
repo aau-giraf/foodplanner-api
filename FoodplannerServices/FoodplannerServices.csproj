@@ -8,7 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FoodplannerDataAccessSql\FoodplannerDataAccessSql.csproj" />
     <ProjectReference Include="..\FoodplannerModels\FoodplannerModels.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Minio" Version="6.0.3" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
   </ItemGroup>
 
 </Project>

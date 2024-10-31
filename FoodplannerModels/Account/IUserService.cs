@@ -8,10 +8,15 @@ namespace FoodplannerModels.Account
 {
     public interface IUserService
     {
-        Task<IEnumerable<UserDTO>> GetAllUsersAsync();
-        Task<User> GetUserByIdAsync(int id);
-        Task<int> CreateUserAsync(User user);
+        Task<IEnumerable<UserCreateDTO>> GetAllUsersAsync();
+        Task<User?> GetUserByIdAsync(int id);
+        Task<int> CreateUserAsync(UserCreateDTO userCreate);
         Task<int> UpdateUserAsync(User user);
         Task<int> DeleteUserAsync(int id);
+        Task<UserCredsDTO?> GetJWTByEmailAndPasswordAsync(string email, string password);
+        Task<string> GetUserByIdAndPinCodeAsync(int id, string pinCode);
+        Task<string> UpdateUserPinCodeAsync(string pinCode, int id);
+        Task<bool> UserHasPinCodeAsync(int id);
+        
     }
 }

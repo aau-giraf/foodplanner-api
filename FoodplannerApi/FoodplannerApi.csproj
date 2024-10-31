@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>FoodplannerApi</RootNamespace>
     <UserSecretsId>5fd097b4-5a48-43fe-892a-2924ca909938</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +14,7 @@
     <PackageReference Include="FluentMigrator.Runner" Version="6.2.0" />
     <PackageReference Include="FluentMigrator.Runner.SQLite" Version="6.2.0" />
     <PackageReference Include="Infisical.Sdk" Version="2.3.7" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.10" />
     <PackageReference Include="Npgsql" Version="8.0.4" />
