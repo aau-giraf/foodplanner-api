@@ -16,6 +16,11 @@ public class ClassroomService : IClassroomService {
         var classroom = await _classroomRepository.GetAllAsync();
         return classroom;
     }
+    public async Task<int> InsertClassroomAsync(CreateClassroomDTO classroom)
+    {
+        var id = await _classroomRepository.InsertAsync(classroom);
+        return id;
+    }
 }
 
 

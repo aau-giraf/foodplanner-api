@@ -25,5 +25,17 @@ namespace FoodplannerDataAccessSql.Account
                 return result.ToList();
             } 
         }
+        public async Task<int> InsertAsync(CreateClassroomDTO entity)
+        {
+            var sql = "INSERT INTO classroom (class_name) VALUES (@ClassName) RETURNING class_id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QuerySingleAsync<int>(sql, new{
+                    ClassName = entity.ClassName
+                });
+                return result;
+            }
+        }
     }
 }

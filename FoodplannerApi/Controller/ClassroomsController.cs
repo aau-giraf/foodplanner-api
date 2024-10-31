@@ -18,4 +18,15 @@ public class ClassroomsController : BaseController
         var classroom = await _classroomService.GetAllClassroomAsync();
         return Ok(classroom);
     }
+
+    [HttpPost]
+    public async Task<ActionResult> Create([FromBody] CreateClassroomDTO createClassroomDTO){
+        var result = await _classroomService.InsertClassroomAsync(createClassroomDTO);
+        if (result > 0){
+             return Created(string.Empty, result);
+        }
+        return BadRequest();
+    }
+
+    
 }

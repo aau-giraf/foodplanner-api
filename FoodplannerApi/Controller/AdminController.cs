@@ -9,9 +9,11 @@ namespace FoodplannerApi.Controller;
 public class AdminController : BaseController
 {
     private readonly UserService _userService;
-    
-    public AdminController(UserService userService){
+    private readonly ClassroomService _classroomService;
+
+    public AdminController(UserService userService, ClassroomService classroomService){
         _userService = userService;
+        _classroomService = classroomService;
     }
    
     [HttpDelete("{id}")]
@@ -46,5 +48,15 @@ public class AdminController : BaseController
         }
         return NotFound();
     }
+
+    /* [HttpPost]
+    public async Task<ActionResult> Create([FromBody] CreateClassroomDTO createClassroomDTO){
+        var result = await _classroomService.InsertClassroomAsync(createClassroomDTO);
+        if (result > 0){
+             return Created(string.Empty, result);
+        }
+        return BadRequest();
+    } */
+
 
 }

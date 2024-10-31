@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace FoodplannerModels.Account
 {
-    public interface IClassroomService
+    public class CreateClassroomDTO
     {
-        Task<IEnumerable<Classroom>> GetAllClassroomAsync();
-        Task<int> InsertClassroomAsync(CreateClassroomDTO classroom);
+        public required string ClassName {get; set;}
 
     }
 }
