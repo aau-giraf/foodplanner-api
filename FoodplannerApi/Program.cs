@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text;
 using FoodplannerApi;
+using FoodplannerApi.Controller;
 using Npgsql;
 using FoodplannerDataAccessSql.Account;
 using FoodplannerDataAccessSql;
@@ -43,12 +44,20 @@ builder.Services.AddMinio(configureClient =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins",
-        builder =>
+        policy =>
         {
-            builder.WithOrigins("http://localhost:8081") // Replace with your client's URL
+            policy.WithOrigins("http://localhost:8081") // Replace with your client's URL
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
+    
+    options.AddPolicy("Develompment", 
+        policy =>
+    {
+        policy.WithOrigins("*")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
 });
 
 builder.Services.AddSwaggerGen(options =>
@@ -167,6 +176,7 @@ builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddAutoMapper(typeof(UserProfile));
 
 builder.Services.AddSingleton<AuthService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -175,8 +185,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 // Apply CORS policy
-app.UseCors("AllowSpecificOrigins");
+if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development") 
+    app.UseCors("Development");
+else app.UseCors("AllowSpecificOrigins");
+
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
