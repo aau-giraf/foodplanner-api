@@ -17,6 +17,7 @@ namespace FoodplannerModels.Account
         Task<string> GetUserByIdAndPinCodeAsync(int id, string pinCode);
         Task<string> UpdateUserPinCodeAsync(string pinCode, int id);
         Task<bool> UserHasPinCodeAsync(int id);
-        
+        Task<bool> UserUpdateArchivedAsync(int id, bool archived);
+        Task<IEnumerable<User?>> UserSelectAllNotArchivedAsync();        
     }
 }

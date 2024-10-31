@@ -106,7 +106,23 @@ namespace FoodplannerDataAccessSql.Account
 
         public Task<int> UpdateAsync(User entity)
         {
-            throw new NotImplementedException();
+            var sql = "UPDATE users SET first_name = @FirstName, last_name = @LastName, email = @Email, password = @Password, role = @Role, role_approved = @RoleApproved, archived = @Archived WHERE id = @Id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = connection.Execute(sql, new 
+                {
+                    FirstName = entity.FirstName, 
+                    LastName = entity.LastName, 
+                    Email = entity.Email, 
+                    Password = entity.Password,
+                    Role = entity.Role,
+                    RoleApproved = entity.RoleApproved,
+                    Id = entity.Id,
+                    Archived = entity.Archived
+                });
+                return Task.FromResult(result);
+            }
         }
 
         public async Task<string> UpdatePinCodeAsync(string pinCode, int id)
@@ -142,5 +158,28 @@ namespace FoodplannerDataAccessSql.Account
                 return result > 0;
             }
         }
+
+
+        public async Task<bool> UpdateArchivedAsync(int id, bool archived)
+        {
+            var sql = " UPDATE users SET archived = @Archived WHERE id = @Id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.ExecuteAsync(sql, new { Archived = archived, Id = id });
+                return result > 0;
+            }
+        }
+        public async Task<IEnumerable<User?>> SelectAllNotArchivedAsync()
+        {
+            var sql = "SELECT * FROM users WHERE archived = false";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QueryAsync<User>(sql);
+                return result.ToList();
+            }
+        }
     }
+
 }

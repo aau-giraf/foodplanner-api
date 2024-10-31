@@ -94,6 +94,14 @@ public class UserService : IUserService {
     public async Task<bool> UserHasPinCodeAsync(int id){
         return await _userRepository.HasPinCodeAsync(id);
     }
+
+    public async Task<bool> UserUpdateArchivedAsync(int id, bool archived){
+        return await _userRepository.UpdateArchivedAsync(id, archived);
+    }
+
+    public async Task<IEnumerable<User?>> UserSelectAllNotArchivedAsync(){
+        return await _userRepository.SelectAllNotArchivedAsync();
+    }
 }
 
 

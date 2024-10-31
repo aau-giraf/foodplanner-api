@@ -9,11 +9,9 @@ namespace FoodplannerApi.Controller;
 public class AdminController : BaseController
 {
     private readonly UserService _userService;
-    private readonly ClassroomService _classroomService;
 
-    public AdminController(UserService userService, ClassroomService classroomService){
+    public AdminController(UserService userService){
         _userService = userService;
-        _classroomService = classroomService;
     }
    
     [HttpDelete("{id}")]
@@ -49,14 +47,25 @@ public class AdminController : BaseController
         return NotFound();
     }
 
-    /* [HttpPost]
-    public async Task<ActionResult> Create([FromBody] CreateClassroomDTO createClassroomDTO){
-        var result = await _classroomService.InsertClassroomAsync(createClassroomDTO);
-        if (result > 0){
-             return Created(string.Empty, result);
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateArchived(int id, [FromBody] UserArchivedDTO userArchivedDTO)
+    {
+        if (id != userArchivedDTO.id){
+            return BadRequest();
         }
-        return BadRequest();
-    } */
+        var result = await _userService.UserUpdateArchivedAsync(id, userArchivedDTO.Archived);
 
+        if (result != null){
+            return Ok(result);
+        }
+        
+        return NotFound();
+    }
 
+    [HttpGet]
+    public async Task<IActionResult> GetNotArchived(){
+        var users = await _userService.UserSelectAllNotArchivedAsync();
+        return Ok(users);
+    }
+    
 }
