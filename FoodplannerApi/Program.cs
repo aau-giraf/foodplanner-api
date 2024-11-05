@@ -159,9 +159,10 @@ builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomReposit
 builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
 
 
-builder.Services.AddScoped<IChildrenService, ChildrenService>();
 builder.Services.AddScoped<IClassroomService, ClassroomService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ChildrenService>();
+builder.Services.AddScoped<IChildrenService, ChildrenService>();
 builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddAutoMapper(typeof(UserProfile));

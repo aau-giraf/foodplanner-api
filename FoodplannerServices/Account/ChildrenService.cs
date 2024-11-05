@@ -9,10 +9,13 @@ public class ChildrenService : IChildrenService {
 
     private readonly IMapper _mapper;
 
+    private readonly AuthService _authService;
 
-    public ChildrenService(IChildrenRepository childrenRepository, IMapper mapper) {
-       _childrenRepository = childrenRepository;
-         _mapper = mapper;
+
+    public ChildrenService(IChildrenRepository childrenRepository, IMapper mapper, AuthService authService) {
+        _childrenRepository = childrenRepository;
+        _mapper = mapper;
+        _authService = authService;
     }
 
     public async Task<int> CreateChildrenAsync(ChildrenCreateParentDTO childrenCreateDTO)

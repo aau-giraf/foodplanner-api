@@ -18,7 +18,7 @@ namespace FoodplannerDataAccessSql.Account
 
         public async Task<IEnumerable<Children>> GetAllAsync()
         {
-            var sql = "SELECT c.*, us.first_name, us.last_name, cl.* FROM children c INNER JOIN users us ON c.id = us.id INNER JOIN classroom cl ON c.class_id = cl.class_id";
+            var sql = "SELECT c.*, us.first_name, us.last_name, cl.* FROM children c INNER JOIN users us ON c.parent_id = us.id INNER JOIN classroom cl ON c.class_id = cl.class_id";
             using (var connection = _connectionFactory.Create()){
                 var children = await connection.QueryAsync<Children, User, Classroom, Children>(sql, (child, user, classroom) =>
                 {

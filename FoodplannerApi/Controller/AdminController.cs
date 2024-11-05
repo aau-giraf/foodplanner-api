@@ -9,9 +9,11 @@ namespace FoodplannerApi.Controller;
 public class AdminController : BaseController
 {
     private readonly UserService _userService;
+    private readonly ChildrenService _childrenService;
 
-    public AdminController(UserService userService){
+    public AdminController(UserService userService, ChildrenService childrenService){
         _userService = userService;
+        _childrenService = childrenService;
     }
    
     [HttpDelete("{id}")]
@@ -66,6 +68,12 @@ public class AdminController : BaseController
     public async Task<IActionResult> GetNotArchived(){
         var users = await _userService.UserSelectAllNotArchivedAsync();
         return Ok(users);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllChildren(){
+        var children = await _childrenService.GetAllChildrenAsync();
+        return Ok(children);
     }
     
 }
