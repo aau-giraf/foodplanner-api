@@ -172,11 +172,27 @@ builder.Services.AddAutoMapper(typeof(UserProfile));
 
 builder.Services.AddSingleton<AuthService>();
 
+// Set up connection to database before running migrations
+builder.Services.AddSingleton(serviceProvider => {
+        var host = SecretsLoader.GetSecret("DB_HOST");
+        var port = SecretsLoader.GetSecret("DB_PORT");
+        var database = SecretsLoader.GetSecret("DB_NAME");
+        var username = SecretsLoader.GetSecret("DB_USER");
+        var password = SecretsLoader.GetSecret("DB_PASS");
+
+        return new PostgreSQLConnectionFactory(host, port, database, username, password);
+    });
+
 // Build configs for migrations
 builder.Services.AddFluentMigratorCore()
     .ConfigureRunner(rb => rb
-        .AddPostgres() 
-        .WithGlobalConnectionString(builder.Configuration.GetConnectionString("TestDbConnection")) 
+        .AddPostgres()
+        .WithGlobalConnectionString(builder.Configuration.GetConnectionString(
+            $"Server={SecretsLoader.GetSecret("DB_HOST")};" +
+            $"Port={SecretsLoader.GetSecret("DB_PORT")};" +
+            $"Database={SecretsLoader.GetSecret("DB_NAME")};" +
+            $"User Id={SecretsLoader.GetSecret("DB_USER")};" +
+            $"Password={SecretsLoader.GetSecret("DB_PASS")}"))
         .ScanIn(typeof(CreateFoodImageTable).Assembly).For.Migrations()) 
     .AddLogging(lb => lb.AddFluentMigratorConsole()); //Add logging to migrations to see state.
 
