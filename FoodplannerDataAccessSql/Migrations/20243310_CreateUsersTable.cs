@@ -2,7 +2,7 @@
 
 namespace FoodplannerDataAccessSql.Migrations;
 
-[Migration(20243110)]
+[Migration(20243310)]
 public class CreateUsersTable : Migration {
     
     public override void Up()

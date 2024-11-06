@@ -14,7 +14,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using FoodplannerApi.Helpers;
 using FluentMigrator.Runner;
+using FluentMigrator.Runner.Initialization;
 using FluentMigrator.Postgres;
+using FoodplannerDataAccessSql.Migrations;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -175,7 +177,7 @@ builder.Services.AddFluentMigratorCore()
     .ConfigureRunner(rb => rb
         .AddPostgres() 
         .WithGlobalConnectionString(builder.Configuration.GetConnectionString("TestDbConnection")) 
-        .ScanIn(typeof(Program).Assembly).For.Migrations()) 
+        .ScanIn(typeof(CreateFoodImageTable).Assembly).For.Migrations()) 
     .AddLogging(lb => lb.AddFluentMigratorConsole()); //Add logging to migrations to see state.
 
 var app = builder.Build();
@@ -184,7 +186,12 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
-    runner.MigrateUp();
+
+    if (runner.HasMigrationsToApplyUp())
+    {
+        runner.ListMigrations();
+        runner.MigrateUp();
+    }
 }
 
 // Configure the HTTP request pipeline.
