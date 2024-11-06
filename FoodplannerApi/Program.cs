@@ -13,6 +13,8 @@ using Minio;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using FoodplannerApi.Helpers;
+using FluentMigrator.Runner;
+using FluentMigrator.Postgres;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -167,7 +169,23 @@ builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddAutoMapper(typeof(UserProfile));
 
 builder.Services.AddSingleton<AuthService>();
+
+// Build configs for migrations
+builder.Services.AddFluentMigratorCore()
+    .ConfigureRunner(rb => rb
+        .AddPostgres() 
+        .WithGlobalConnectionString(builder.Configuration.GetConnectionString("TestDbConnection")) 
+        .ScanIn(typeof(Program).Assembly).For.Migrations()) 
+    .AddLogging(lb => lb.AddFluentMigratorConsole()); //Add logging to migrations to see state.
+
 var app = builder.Build();
+
+// Run migrations at application startup
+using (var scope = app.Services.CreateScope())
+{
+    var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
+    runner.MigrateUp();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
