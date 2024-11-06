@@ -48,13 +48,13 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<User?> GetByIdAsync(int id)
+        public async Task<UserDTO?> GetByIdAsync(int id)
         {
-            var sql = "SELECT first_name, last_name, email FROM users WHERE id = @Id";
+            var sql = "SELECT * FROM users WHERE id = @Id";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.QueryFirstOrDefaultAsync<User>(sql, new { Id = id });
+                var result = await connection.QueryFirstOrDefaultAsync<UserDTO>(sql, new { Id = id });
                 return result;
             }
             
