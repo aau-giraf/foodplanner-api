@@ -31,7 +31,7 @@ public class FoodImageService(IImageService imageService, IFoodImageRepository f
         var foodImage = await foodImageRepository.GetImageByIdAsync(foodImageId);
         var foodImageLink = await imageService
             .LoadImagePresignedAsync(foodImage.UserId, Guid.Parse(foodImage.ImageId), foodImage.ImageFileType);
-        if (foodImageLink != null)
+        if (foodImageLink == null)
         {
             throw new NullReferenceException("Image link could not be retrieved.");
         }

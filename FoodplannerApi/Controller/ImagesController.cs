@@ -78,7 +78,6 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
 
     [HttpGet]
     [Authorize(Roles = "Children, Parent")]
-    [ServiceFilter(typeof(AuthoriseImageOwnerFilter))]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPresignedImageLink(int foodImageId)
     {
@@ -86,7 +85,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
         return Ok(presignedImageLink);
     }
 
-    private class AuthoriseImageOwnerFilter : IAsyncActionFilter
+    public class AuthoriseImageOwnerFilter : IAsyncActionFilter
     {
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
