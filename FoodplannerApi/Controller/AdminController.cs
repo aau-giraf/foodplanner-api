@@ -75,6 +75,23 @@ public class AdminController : BaseController
         return NotFound();
     }
 
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateRoleApproved(int id, [FromBody] UserRoleDTO userRoleDTO)
+    {
+        if (id != userRoleDTO.id)
+        {
+            return BadRequest();
+        }
+        var result = await _userService.UserUpdateRoleApprovedAsync(id, userRoleDTO.role_approved);
+
+        if (result != null)
+        {
+            return Ok(result);
+        }
+
+        return NotFound();
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetNotApproved()
     {

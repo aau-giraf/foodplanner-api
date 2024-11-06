@@ -170,6 +170,18 @@ namespace FoodplannerDataAccessSql.Account
                 return result > 0;
             }
         }
+
+        public async Task<bool> UpdateRoleApprovedAsync(int id, bool roleApproved)
+        {
+            var sql = "UPDATE users SET role_approved = @RoleApproved WHERE id = @Id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.ExecuteAsync(sql, new { RoleApproved = roleApproved, Id = id });
+                return result > 0;
+            }
+        }
+
         public async Task<IEnumerable<User?>> SelectAllNotArchivedAsync()
         {
             var sql = "SELECT * FROM users WHERE archived = false";

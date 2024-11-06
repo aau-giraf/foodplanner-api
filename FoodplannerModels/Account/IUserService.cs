@@ -19,6 +19,7 @@ namespace FoodplannerModels.Account
         Task<string> UpdateUserPinCodeAsync(string pinCode, int id);
         Task<bool> UserHasPinCodeAsync(int id);
         Task<bool> UserUpdateArchivedAsync(int id, bool archived);
+        Task<bool> UserUpdateRoleApprovedAsync(int id, bool roleApproved);
         Task<IEnumerable<User?>> UserSelectAllNotArchivedAsync();        
     }
 }

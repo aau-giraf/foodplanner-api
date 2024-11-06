@@ -103,6 +103,10 @@ public class UserService : IUserService {
         return await _userRepository.UpdateArchivedAsync(id, archived);
     }
 
+    public async Task<bool> UserUpdateRoleApprovedAsync(int id, bool roleApproved){
+        return await _userRepository.UpdateRoleApprovedAsync(id, roleApproved);
+    }
+
     public async Task<IEnumerable<User?>> UserSelectAllNotArchivedAsync(){
         return await _userRepository.SelectAllNotArchivedAsync();
     }
