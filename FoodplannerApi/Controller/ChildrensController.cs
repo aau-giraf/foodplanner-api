@@ -16,6 +16,13 @@ public class ChildrensController : BaseController
                 _authService = authService;
     }
 
+    [HttpGet]
+    [Authorize(Policy = "TeacherPolicy")]
+    public async Task<IActionResult> GetAllChildren(){
+        var children = await _childrenService.GetAllChildrenAsync();
+        return Ok(children);
+    }
+    
     [HttpPost]
     public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] ChildrenCreateDTO childrenCreate){
         if (!ModelState.IsValid){

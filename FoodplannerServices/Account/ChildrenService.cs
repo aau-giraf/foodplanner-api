@@ -22,9 +22,12 @@ public class ChildrenService : IChildrenService {
     
     }
 
-    public async Task<IEnumerable<Children>> GetAllChildrenAsync()
+    public async Task<IEnumerable<ChildrenGetAllDTO>> GetAllChildrenAsync()
     {
         var children = await _childrenRepository.GetAllAsync();
+        
+        
+        
         return children;
     }
 }

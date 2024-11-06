@@ -8,7 +8,7 @@ namespace FoodplannerModels.Account
 {
     public interface IChildrenRepository
     {
-        Task<IEnumerable<Children>> GetAllAsync();
+        Task<IEnumerable<ChildrenGetAllDTO>> GetAllAsync();
         Task<int> InsertAsync(Children entity);
     }
 }
