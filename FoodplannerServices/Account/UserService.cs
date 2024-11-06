@@ -95,6 +95,10 @@ public class UserService : IUserService {
         return await _userRepository.HasPinCodeAsync(id);
     }
 
+    public async Task<IEnumerable<User>> GetUsersNotApprovedAsync(){
+        return await _userRepository.GetAllNotApprovedAsync();
+    }
+
     public async Task<bool> UserUpdateArchivedAsync(int id, bool archived){
         return await _userRepository.UpdateArchivedAsync(id, archived);
     }
