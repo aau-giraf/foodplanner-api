@@ -16,11 +16,11 @@ public class Children {
 
     [ForeignKey("User")]
     public int parentId { get; set; }
-    public User user { get; set; }
+    //public User user { get; set; }
 
     [ForeignKey("Classroom")]
     public int classId { get; set; }
-    public Classroom Classroom { get; set; }
+    //public Classroom Classroom { get; set; }
 
 }
 

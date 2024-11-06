@@ -18,14 +18,16 @@ namespace FoodplannerDataAccessSql.Account
 
         public async Task<IEnumerable<Children>> GetAllAsync()
         {
-            var sql = "SELECT c.*, us.first_name, us.last_name, cl.* FROM children c INNER JOIN users us ON c.parent_id = us.id INNER JOIN classroom cl ON c.class_id = cl.class_id";
+            //var sql = "SELECT c.*, us.first_name, us.last_name, cl.* FROM children c INNER JOIN users us ON c.parent_id = us.id INNER JOIN classroom cl ON c.class_id = cl.class_id";
+            var sql = "SELECT * FROM children";
             using (var connection = _connectionFactory.Create()){
-                var children = await connection.QueryAsync<Children, User, Classroom, Children>(sql, (child, user, classroom) =>
+                var children = await connection.QueryAsync<Children>(sql);
+                /* var children = await connection.QueryAsync<Children, User, Classroom, Children>(sql, (child, user, classroom) =>
                 {
                     child.user = user;
                     child.Classroom = classroom;
                     return child;
-                }, splitOn: "parent_id, class_id");
+                }, splitOn: "parent_id, class_id"); */
                 return children;
 
             }
