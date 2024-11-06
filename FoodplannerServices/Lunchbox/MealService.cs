@@ -28,7 +28,7 @@ public class MealService (IMealRepository mealRepository, IPackedIngredientRepos
             PackedIngredientDTO packed = new() {Id = element.Id, Meal_ref = element.Meal_ref, Ingredient_ref = ingredient};
             ingredients.Add(packed);
         }
-        MealDTO mealDTO = new() {Id = meal.Id, User_ref = meal.User_ref, Image_ref = meal.Image_ref, Title = meal.Title, Date = meal.Date, Ingredients = ingredients};
+        MealDTO mealDTO = new() {Id = meal.Id, Image_ref = meal.Image_ref, Title = meal.Title, Date = meal.Date, Ingredients = ingredients};
         output.Add(mealDTO);
         }
 
@@ -50,7 +50,7 @@ public class MealService (IMealRepository mealRepository, IPackedIngredientRepos
             PackedIngredientDTO packed = new() {Id = element.Id, Meal_ref = element.Meal_ref, Ingredient_ref = ingredient};
             ingredients.Add(packed);
         }
-        MealDTO mealDTO = new() {Id = meal.Id, User_ref = meal.User_ref, Image_ref = meal.Image_ref, Title = meal.Title, Date = meal.Date, Ingredients = ingredients};
+        MealDTO mealDTO = new() {Id = meal.Id, Image_ref = meal.Image_ref, Title = meal.Title, Date = meal.Date, Ingredients = ingredients};
         output.Add(mealDTO);
         }
 
@@ -76,7 +76,7 @@ public class MealService (IMealRepository mealRepository, IPackedIngredientRepos
         }
         else
         {
-            MealDTO output = new() {Id = meal.Id, User_ref = meal.User_ref, Image_ref = meal.Image_ref, Title = meal.Title, Date = meal.Date, Ingredients = ingredients};
+            MealDTO output = new() {Id = meal.Id, Image_ref = meal.Image_ref, Title = meal.Title, Date = meal.Date, Ingredients = ingredients};
             return output;
         }
     }
