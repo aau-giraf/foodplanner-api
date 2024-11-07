@@ -38,18 +38,7 @@ public class UsersController : BaseController {
         
         return Ok(token);
     }
-
-    /* To retrieve the token from the header, use the following code:
-    [HttpGet]
-    public async Task<IActionResult> GetDecodeString([FromHeader(Name = "Authorization")] string token)
-    {
-        //Decodes a token for development purposes
-        var id = _authService.RetrieveIdFromJWTToken(token);  // retrives id from token.
-        return Ok(id);
-    }
-    */
-
-
+    
     [HttpPost]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     public async Task<IActionResult> Create([FromBody] UserCreateDTO userCreate){
@@ -71,7 +60,6 @@ public class UsersController : BaseController {
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-
     public async Task<IActionResult> Login([FromBody] Login user){
         if (!ModelState.IsValid){
             return BadRequest(ModelState);
@@ -88,6 +76,7 @@ public class UsersController : BaseController {
     }
 
     [HttpPut]
+    [Authorize(Roles = "Child, Parent")]
     public async Task<IActionResult> UpdatePinCode([FromHeader(Name = "Authorization")] string token, [FromBody] Pincode pincode){
         try{
             var idString = _authService.RetrieveIdFromJWTToken(token);
@@ -105,6 +94,10 @@ public class UsersController : BaseController {
     }
     
     [HttpPost]
+    [Authorize(Roles = "Child, Parent")]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CheckPinCode([FromHeader(Name = "Authorization")] string token, [FromBody] Pincode pincode){
         try{
             var idString = _authService.RetrieveIdFromJWTToken(token);
@@ -112,10 +105,9 @@ public class UsersController : BaseController {
                 return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
             }
             var result = await _userService.GetUserByIdAndPinCodeAsync(id, pincode.PinCode);
-            if (result.Length > 0){
-                return Ok();
-            }
-            return BadRequest();
+            
+            return Ok(result);
+                
             //return BadRequest(new ErrorResponse {Message = ["Forkert pinkode"]});
         } catch (InvalidOperationException e){
             return BadRequest(new ErrorResponse {Message = [e.Message]});
@@ -123,6 +115,7 @@ public class UsersController : BaseController {
     }
 
     [HttpGet]
+    [Authorize(Roles = "Child, Parent")]
     public async Task<IActionResult> HasPinCode([FromHeader(Name = "Authorization")] string token) {
         try {    
             var idString = _authService.RetrieveIdFromJWTToken(token);

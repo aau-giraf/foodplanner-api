@@ -51,7 +51,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
 
 
     [HttpDelete]
-    [Authorize(Roles = "Children, Parent")]
+    [Authorize(Roles = "Child, Parent")]
     [ServiceFilter(typeof(AuthoriseImageOwnerFilter))]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteImages(IEnumerable<int> foodImageIds)
@@ -66,7 +66,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
     }
 
     [HttpGet]
-    [Authorize(Roles = "Children, Parent")]
+    [Authorize(Roles = "Child, Parent")]
     [ServiceFilter(typeof(AuthoriseImageOwnerFilter))]
     [ProducesResponseType(typeof(FoodImage), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetFoodImage(int foodImageId)
@@ -77,7 +77,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
     }
 
     [HttpGet]
-    [Authorize(Roles = "Children, Parent")]
+    [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPresignedImageLink(int foodImageId)
     {
