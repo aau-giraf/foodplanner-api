@@ -54,7 +54,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
 
     [HttpDelete]
     [Authorize(Roles = "Children, Parent")]
-    [ServiceFilter(typeof(AuthoriseImageOwnerFilter))]
+    [AuthorizeImageOwnerFilter]
 
     public async Task<IActionResult> DeleteImages(IEnumerable<int> foodImageIds)
     {
@@ -69,7 +69,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
 
     [HttpGet]
     [Authorize(Roles = "Children, Parent")]
-    [ServiceFilter(typeof(AuthoriseImageOwnerFilter))]
+    [AuthorizeImageOwnerFilter]
     public async Task<IActionResult> GetFoodImage(int foodImageId)
     {
         if (foodImageId < 0)
@@ -79,7 +79,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
 
     [HttpGet]
     [Authorize(Roles = "Children, Parent")]
-    [ServiceFilter(typeof(AuthoriseImageOwnerFilter))]
+    [AuthorizeImageOwnerFilter]
 
     public async Task<IActionResult> GetPresignedImageLink(int foodImageId)
     {
@@ -87,7 +87,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
         return Ok(presignedImageLink);
     }
 
-    private class AuthoriseImageOwnerFilter : IAsyncActionFilter
+    private class AuthorizeImageOwnerFilter : ActionFilterAttribute, IAsyncActionFilter
     {
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
