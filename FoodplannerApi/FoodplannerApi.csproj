@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.35" />
+    <PackageReference Include="FluentMigrator" Version="6.2.0" />
     <PackageReference Include="FluentMigrator.Runner" Version="6.2.0" />
     <PackageReference Include="FluentMigrator.Runner.SQLite" Version="6.2.0" />
     <PackageReference Include="Infisical.Sdk" Version="2.3.7" />
