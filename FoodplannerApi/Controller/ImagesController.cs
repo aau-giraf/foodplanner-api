@@ -90,9 +90,9 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
         return Ok(presignedImageLink);
     }
 
-    private class AuthorizeImageOwnerFilter : ActionFilterAttribute, IAsyncActionFilter
+    public class AuthorizeImageOwnerFilter : ActionFilterAttribute
     {
-        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        public async override void OnActionExecuting(ActionExecutingContext context)
         {
             var authService = context.HttpContext.RequestServices.GetService<AuthService>();
             var foodImageService = context.HttpContext.RequestServices.GetService<IFoodImageService>();
