@@ -178,7 +178,6 @@ builder.Services.AddScoped<PackedIngredientService>();
 builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
 builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepository));
 builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));
-builder.Services.AddScoped(typeof(ImagesController.AuthoriseImageOwnerFilter));
 
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
 builder.Services.AddScoped<IClassroomService, ClassroomService>();
