@@ -14,8 +14,6 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
 {
     private readonly long _maxFileSize = 2000000000;
     
-    
-    
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> UploadImage(IFormFile imageFile, int userId)
@@ -57,7 +55,6 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
     [Authorize(Roles = "Children, Parent")]
     [AuthorizeImageOwnerFilter]
     [ProducesResponseType(StatusCodes.Status200OK)]
-
     public async Task<IActionResult> DeleteImages(IEnumerable<int> foodImageIds)
     {
         var imageIdList = foodImageIds.ToList();
@@ -90,9 +87,9 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
         return Ok(presignedImageLink);
     }
 
-    public class AuthorizeImageOwnerFilter : ActionFilterAttribute
+    private class AuthorizeImageOwnerFilter : ActionFilterAttribute
     {
-        public async override void OnActionExecuting(ActionExecutingContext context)
+        public override async void OnActionExecuting(ActionExecutingContext context)
         {
             var authService = context.HttpContext.RequestServices.GetService<AuthService>();
             var foodImageService = context.HttpContext.RequestServices.GetService<IFoodImageService>();
