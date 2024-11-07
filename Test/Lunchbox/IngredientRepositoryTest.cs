@@ -1,6 +1,7 @@
 using Dapper;
 using FoodplannerModels.Lunchbox;
 using FoodplannerDataAccessSql.Lunchbox;
+using FoodplannerDataAccessSql;
 
 /**
 * These are technicly integration tests, since the database has not been mocked using Xunits Fixture.
@@ -11,12 +12,13 @@ namespace testing
     [Collection("Sequential")]
     public class IngredientRepositoryTests
     {
+    private static readonly IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
+
     [Fact]
     public async void GetAllAsync_EmptyDatabase_ReturnsEmptyList()
     {
         //Setup
         await DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
         IEnumerable<Ingredient> expected = [];
         
         //Attempt
@@ -32,7 +34,6 @@ namespace testing
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
         Ingredient ingredient = new() { Id = 0, Name = "test", User_ref = 1, Image_ref = 1};
         
         //Attempt
@@ -53,7 +54,6 @@ namespace testing
     {
         //Setup
         await DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
         
         //Attempt
         Ingredient actual = await ingredientRep.GetByIdAsync(0);
@@ -68,7 +68,6 @@ namespace testing
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
         Ingredient ingredient = new() { Id = 0, Name = "test", User_ref = 1, Image_ref = 1};
         string expected = "test";
         
@@ -93,7 +92,6 @@ namespace testing
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
         Ingredient ingredient = new() { Id = 0, Name = "old test", User_ref = 1, Image_ref = 1};
         Ingredient updatedIngredient = new() { Id = 0, Name = "new test", User_ref = 1, Image_ref = 1};
         string expected = "new test";
@@ -120,7 +118,6 @@ namespace testing
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("ingredients");
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
         Ingredient ingredient = new() { Id = 0, Name = "test", User_ref = 1, Image_ref = 1};
         
         //Attempt

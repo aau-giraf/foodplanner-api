@@ -1,8 +1,12 @@
 using FoodplannerModels.Lunchbox;
+using FoodplannerModels.Account;
 using FoodplannerServices.Lunchbox;
 using FoodplannerDataAccessSql.Lunchbox;
+using FoodplannerDataAccessSql.Account;
 using FoodplannerApi.Controller;
+using FoodplannerApi.Helpers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Builder;
 using Dapper;
 
 namespace testing;
@@ -14,17 +18,19 @@ namespace testing;
 [Collection("Sequential")]
 public class MealControllerTest
 {
+    private static readonly UserRepository userRep = new(DatabaseConnection.GetConnection());
+    private static readonly MealRepository mealRep = new(DatabaseConnection.GetConnection());
+    private static readonly IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
+    private static readonly PackedIngredientRepository packedRep = new(DatabaseConnection.GetConnection());
+    private static readonly MealService mealServ = new(mealRep, packedRep, ingredientRep);
+    private static readonly AuthService authServ = new(WebApplication.CreateBuilder().Configuration);
+    private static readonly MealsController mealCon = new(mealServ, authServ);
 
     [Fact]
     public async void GetAll_NoInput_ReturnsOkObjectResult()
     {
         //Setup
         await DatabaseConnection.EmptyDatabase("meals");
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
-        PackedIngredientRepository packedRep = new(DatabaseConnection.GetConnection());
-        MealService mealServ = new(mealRep, packedRep, ingredientRep);
-        MealsController mealCon = new(mealServ);
 
         //Attempt
         IActionResult actual = await mealCon.GetAll();
@@ -38,14 +44,10 @@ public class MealControllerTest
     {
         //Setup
         await DatabaseConnection.EmptyDatabase("meals");
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
-        PackedIngredientRepository packedRep = new(DatabaseConnection.GetConnection());
-        MealService mealServ = new(mealRep, packedRep, ingredientRep);
-        MealsController mealCon = new(mealServ);
+        User user = new() {Id = 0, FirstName = "test", LastName = "test", Email = "", Password = "", Role = "Parent", RoleApproved = true, PinCode = ""};
 
         //Attempt
-        IActionResult actual = await mealCon.GetAllByUser(1, "test");
+        IActionResult actual = await mealCon.GetAllByUser("Bearer " + authServ.GenerateJWTToken(user), "test");
 
         //Verify
         Assert.IsType<OkObjectResult>(actual);
@@ -57,25 +59,15 @@ public class MealControllerTest
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("meals");
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
-        PackedIngredientRepository packedRep = new(DatabaseConnection.GetConnection());
-        MealService mealServ = new(mealRep, packedRep, ingredientRep);
-        MealsController mealCon = new(mealServ);
-        //--New User--
-        using var connection = DatabaseConnection.GetConnection().Create();
-        await connection.OpenAsync();
-        var sql = "INSERT INTO users (first_name, last_name, email, password, role, role_approved)\n";
-        sql += $"VALUES ('Temp2', 'Temp2', 'empty', '1234', 'Test', true)";
-        await connection.ExecuteAsync(sql);
-        //--New User--
+        User user2 = new() {Id = 2, FirstName = "test2", LastName = "test2", Email = "", Password = "", Role = "Parent", RoleApproved = true, PinCode = ""};
         Meal meal1 = new() { Id = 0, Title = "test1", User_ref = 1, Image_ref = 1, Date = "test"};
         Meal meal2 = new() { Id = 0, Title = "test2", User_ref = 2, Image_ref = 1, Date = "test"};
 
         //Attempt
+        await userRep.InsertAsync(user2);
         await mealRep.InsertAsync(meal1);
         await mealRep.InsertAsync(meal2);
-        IActionResult action = await mealCon.GetAllByUser(2, "test");
+        IActionResult action = await mealCon.GetAllByUser("Bearer " + authServ.GenerateJWTToken(user2), "test");
         var objectResult = action as OkObjectResult;
         var actual = objectResult.Value as List<MealDTO>;
 
@@ -94,11 +86,6 @@ public class MealControllerTest
     {
         //Setup
         await DatabaseConnection.EmptyDatabase("meals");
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
-        PackedIngredientRepository packedRep = new(DatabaseConnection.GetConnection());
-        MealService mealServ = new(mealRep, packedRep, ingredientRep);
-        MealsController mealCon = new(mealServ);
 
         //Attempt
         IActionResult actual = await mealCon.Get(0);
@@ -113,11 +100,6 @@ public class MealControllerTest
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("meals");
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
-        PackedIngredientRepository packedRep = new(DatabaseConnection.GetConnection());
-        MealService mealServ = new(mealRep, packedRep, ingredientRep);
-        MealsController mealCon = new(mealServ);
         Meal meal = new() { Id = 0, Title = "test", User_ref = 1, Image_ref = 1, Date = "test"};
 
         //Attempt
@@ -141,11 +123,6 @@ public class MealControllerTest
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("meals");
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
-        PackedIngredientRepository packedRep = new(DatabaseConnection.GetConnection());
-        MealService mealServ = new(mealRep, packedRep, ingredientRep);
-        MealsController mealCon = new(mealServ);
         Meal meal = new() { Id = 0, Title = "test", User_ref = 1, Image_ref = 1, Date = "test"};
 
         //Attempt
@@ -166,11 +143,6 @@ public class MealControllerTest
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("meals");
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
-        PackedIngredientRepository packedRep = new(DatabaseConnection.GetConnection());
-        MealService mealServ = new(mealRep, packedRep, ingredientRep);
-        MealsController mealCon = new(mealServ);
         Meal meal = new() { Id = 0, Title = "old test", User_ref = 1, Image_ref = 1, Date = "test"};
         Meal updatedMeal = new() { Id = 0, Title = "new test", User_ref = 1, Image_ref = 1, Date = "test"};
 
@@ -195,11 +167,6 @@ public class MealControllerTest
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("meals");
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
-        PackedIngredientRepository packedRep = new(DatabaseConnection.GetConnection());
-        MealService mealServ = new(mealRep, packedRep, ingredientRep);
-        MealsController mealCon = new(mealServ);
         Meal meal = new() { Id = 0, Title = "test", User_ref = 1, Image_ref = 1, Date = "test"};
 
         //Attempt
@@ -220,11 +187,6 @@ public class MealControllerTest
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("meals");
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
-        PackedIngredientRepository packedRep = new(DatabaseConnection.GetConnection());
-        MealService mealServ = new(mealRep, packedRep, ingredientRep);
-        MealsController mealCon = new(mealServ);
         Meal meal = new() { Id = 0, Title = "test", User_ref = 1, Image_ref = 1, Date = "test"};
 
         //Attempt
@@ -247,11 +209,6 @@ public class MealControllerTest
     {
         //Setup
         await DatabaseConnection.EmptyDatabase("meals");
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
-        PackedIngredientRepository packedRep = new(DatabaseConnection.GetConnection());
-        MealService mealServ = new(mealRep, packedRep, ingredientRep);
-        MealsController mealCon = new(mealServ);
 
         //Attempt
         IActionResult actual = await mealCon.Delete(0);

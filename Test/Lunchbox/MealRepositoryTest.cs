@@ -1,4 +1,5 @@
 using FoodplannerDataAccessSql.Lunchbox;
+using FoodplannerDataAccessSql;
 using FoodplannerModels.Lunchbox;
 using Dapper;
 using FoodplannerDataAccessSql.Account;
@@ -9,12 +10,13 @@ namespace testing;
 [Collection("Sequential")]
 public class MealRepositoryTest
 {   
+    private static readonly MealRepository mealRep = new(DatabaseConnection.GetConnection());
+
     [Fact]
     public async void GetAllAsync_EmptyDatabase_ReturnsEmptyList()
     {
         //Setup
         await DatabaseConnection.EmptyDatabase("meals");
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
         IEnumerable<Meal> expected = [];
         
         //Attempt
@@ -30,7 +32,6 @@ public class MealRepositoryTest
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("meals");
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
         Meal meal = new() { Id = 0, Title = "test", User_ref = 1, Image_ref = 1, Date = "test"};
         
         //Attempt
@@ -51,7 +52,6 @@ public class MealRepositoryTest
     {
         //Setup
         await DatabaseConnection.EmptyDatabase("meals");
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
         IEnumerable<Meal> expected = [];
         
         //Attempt
@@ -67,7 +67,6 @@ public class MealRepositoryTest
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("meals");
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
         Meal meal = new() { Id = 0, Title = "test", User_ref = 1, Image_ref = 1, Date = "test"};
         
         //Attempt
@@ -88,7 +87,6 @@ public class MealRepositoryTest
     {
         //Setup
         await DatabaseConnection.EmptyDatabase("meals");
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
         
         //Attempt
         Meal actual = await mealRep.GetByIdAsync(0);
@@ -103,7 +101,6 @@ public class MealRepositoryTest
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("meals");
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
         Meal meal = new() { Id = 0, Title = "test", User_ref = 1, Image_ref = 1, Date = "test"};
         string expected = "test";
         
@@ -128,7 +125,6 @@ public class MealRepositoryTest
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("meals");
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
         Meal meal = new() { Id = 0, Title = "old test", User_ref = 1, Image_ref = 1, Date = "test"};
         Meal updatedMeal = new() { Id = 0, Title = "new test", User_ref = 1, Image_ref = 1, Date = "test"};
         string expected = "new test";
@@ -156,7 +152,6 @@ public class MealRepositoryTest
         //Setup
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("meals");
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
         Meal meal = new() { Id = 0, Title = "test", User_ref = 1, Image_ref = 1, Date = "test"};
         
         //Attempt

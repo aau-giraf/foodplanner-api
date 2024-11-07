@@ -1,8 +1,10 @@
 using FoodplannerApi.Controller;
+using FoodplannerApi.Helpers;
 using FoodplannerModels.Lunchbox;
 using FoodplannerServices.Lunchbox;
 using FoodplannerDataAccessSql.Lunchbox;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Builder;
 using Dapper;
 
 namespace testing;
@@ -14,19 +16,19 @@ namespace testing;
 [Collection("Sequential")]  // Indicates that the tests in this collection should run sequentially to avoid issues with shared state.
 public class PackedIngredientControllerIntegrationTests
 {
+    private static readonly MealRepository mealRep = new(DatabaseConnection.GetConnection());
+    private static readonly IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
+    private static readonly PackedIngredientRepository packedIngredientRep = new(DatabaseConnection.GetConnection());
+    private static readonly PackedIngredientService packedIngredientServ = new(packedIngredientRep);
+    private static readonly AuthService authServ = new(WebApplication.CreateBuilder().Configuration);
+    private static readonly PackedIngredientController packedIngredientCon = new(packedIngredientServ, authServ);
+
     // Test case to verify that the GetAll method returns a successful response with an empty database.
     [Fact]
     public async void GetAll_NoInput_ReturnsOkObjectResult()
     {
         // Setup: Empty the database for a new test environment.
         await DatabaseConnection.EmptyDatabase("packed_ingredients");
-        
-        // Initialize repository and service for PackedIngredient.
-        PackedIngredientRepository packedIngredientRep = new(DatabaseConnection.GetConnection());
-        PackedIngredientService packedIngredientServ = new(packedIngredientRep);
-        
-        // Initialize the controller with the service.
-        PackedIngredientController packedIngredientCon = new(packedIngredientServ);
 
         // Attempt: Call the GetAll method.
         IActionResult actual = await packedIngredientCon.GetAll();
@@ -41,11 +43,6 @@ public class PackedIngredientControllerIntegrationTests
     {
         // Setup: Empty the database for a new test environment.
         await DatabaseConnection.EmptyDatabase("packed_ingredients");
-        
-        // Initialize repository, service, and controller for PackedIngredient.
-        PackedIngredientRepository packedIngredientRep = new(DatabaseConnection.GetConnection());
-        PackedIngredientService packedIngredientServ = new(packedIngredientRep);
-        PackedIngredientController packedIngredientCon = new(packedIngredientServ);
 
         // Attempt: Call the Get method with an invalid ID (0).
         IActionResult actual = await packedIngredientCon.Get(0);
@@ -61,16 +58,6 @@ public class PackedIngredientControllerIntegrationTests
         // Setup: Empty the database for a new test environment.
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("packed_ingredients");
-        
-        // Initialize repository, service, and controller for PackedIngredient.
-        PackedIngredientRepository packedIngredientRep = new(DatabaseConnection.GetConnection());
-        PackedIngredientService packedIngredientServ = new(packedIngredientRep);
-        PackedIngredientController packedIngredientCon = new(packedIngredientServ);
-        
-        // Setup: Create and insert a meal and an ingredient into the database.
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
-
         Meal meal = new() { Id = 1, Title = "test", User_ref = 1, Image_ref = 1, Date = "test"};       
         Ingredient ingredient = new() { Id = 1, Name = "test", User_ref = 1, Image_ref = 1};
         
@@ -109,16 +96,6 @@ public class PackedIngredientControllerIntegrationTests
         // Setup: Empty the database for a new test environment.
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("packed_ingredients");
-        
-        // Initialize repository, service, and controller for PackedIngredient.
-        PackedIngredientRepository packedIngredientRep = new(DatabaseConnection.GetConnection());
-        PackedIngredientService packedIngredientServ = new(packedIngredientRep);
-        PackedIngredientController packedIngredientCon = new(packedIngredientServ);
-
-        // Setup: Create and insert a meal and an ingredient into the database.
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
-
         Meal meal = new() { Id = 1, Title = "test", User_ref = 1, Image_ref = 1, Date = "test"};        
         Ingredient ingredient = new() { Id = 1, Name = "test", User_ref = 1, Image_ref = 1};
         
@@ -154,16 +131,6 @@ public class PackedIngredientControllerIntegrationTests
         // Setup: Empty the database for a new test environment.
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("packed_ingredients");
-        
-        // Initialize repository, service, and controller for PackedIngredient.
-        PackedIngredientRepository packedIngredientRep = new(DatabaseConnection.GetConnection());
-        PackedIngredientService packedIngredientServ = new(packedIngredientRep);
-        PackedIngredientController packedIngredientCon = new(packedIngredientServ);
-        
-        // Setup: Create and insert a meal and an ingredient into the database.
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
-
         Meal meal = new() { Id = 1, Title = "old test", User_ref = 1, Image_ref = 1, Date = "test"};
         Meal mealnew = new() { Id = 2, Title = "new test", User_ref = 1, Image_ref = 1, Date = "test"};               
         Ingredient ingredient = new() { Id = 1, Name = "test", User_ref = 1, Image_ref = 1};
@@ -206,16 +173,6 @@ public class PackedIngredientControllerIntegrationTests
         // Setup: Empty the database for a new test environment.
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("packed_ingredients");
-        
-        // Initialize repository, service, and controller for PackedIngredient.
-        PackedIngredientRepository packedIngredientRep = new(DatabaseConnection.GetConnection());
-        PackedIngredientService packedIngredientServ = new(packedIngredientRep);
-        PackedIngredientController packedIngredientCon = new(packedIngredientServ);
-
-        // Setup: Create and insert a meal and an ingredient into the database.
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
-
         Meal meal = new() { Id = 1, Title = "test", User_ref = 1, Image_ref = 1, Date = "test"};        
         Ingredient ingredient = new() { Id = 1, Name = "test", User_ref = 1, Image_ref = 1};
         
@@ -251,16 +208,6 @@ public class PackedIngredientControllerIntegrationTests
         // Setup: Empty the database for a new test environment.
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("packed_ingredients");
-        
-        // Initialize repository, service, and controller for PackedIngredient.
-        PackedIngredientRepository packedIngredientRep = new(DatabaseConnection.GetConnection());
-        PackedIngredientService packedIngredientServ = new(packedIngredientRep);
-        PackedIngredientController packedIngredientCon = new(packedIngredientServ);
-
-        // Setup: Create and insert a meal and an ingredient into the database.
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
-
         Meal meal = new() { Id = 1, Title = "test", User_ref = 1, Image_ref = 1, Date = "test"};        
         Ingredient ingredient = new() { Id = 1, Name = "test", User_ref = 1, Image_ref = 1};
         
@@ -299,16 +246,6 @@ public class PackedIngredientControllerIntegrationTests
         // Setup: Empty the database for a new test environment.
         await DatabaseConnection.SetupTempUserAndImage();
         await DatabaseConnection.EmptyDatabase("packed_ingredients");
-        
-        // Initialize repository, service, and controller for PackedIngredient.
-        PackedIngredientRepository packedIngredientRep = new(DatabaseConnection.GetConnection());
-        PackedIngredientService packedIngredientServ = new(packedIngredientRep);
-        PackedIngredientController packedIngredientCon = new(packedIngredientServ);
-
-        // Setup: Create and insert a meal and an ingredient into the database.
-        MealRepository mealRep = new(DatabaseConnection.GetConnection());
-        IngredientRepository ingredientRep = new(DatabaseConnection.GetConnection());
-
         Meal meal = new() { Id = 1, Title = "test", User_ref = 1, Image_ref = 1, Date = "test"};        
         Ingredient ingredient = new() { Id = 1, Name = "test", User_ref = 1, Image_ref = 1};
         
