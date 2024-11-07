@@ -13,6 +13,7 @@ namespace FoodplannerApi.Controller;
 public class ImagesController(IFoodImageService foodImageService, AuthService authService) : BaseController
 {
     private readonly long _maxFileSize = 2000000000;
+    
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> UploadImage(IFormFile imageFile, int userId)
@@ -52,7 +53,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
 
     [HttpDelete]
     [Authorize(Roles = "Child, Parent")]
-    [ServiceFilter(typeof(AuthoriseImageOwnerFilter))]
+    [AuthorizeImageOwnerFilter]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> DeleteImages(IEnumerable<int> foodImageIds)
     {
@@ -66,8 +67,9 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
     }
 
     [HttpGet]
+
     [Authorize(Roles = "Child, Parent")]
-    [ServiceFilter(typeof(AuthoriseImageOwnerFilter))]
+    [AuthorizeImageOwnerFilter]
     [ProducesResponseType(typeof(FoodImage), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetFoodImage(int foodImageId)
     {
@@ -78,6 +80,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
 
     [HttpGet]
     [Authorize(Roles = "Child, Parent")]
+    [AuthorizeImageOwnerFilter]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPresignedImageLink(int foodImageId)
     {
@@ -85,9 +88,9 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
         return Ok(presignedImageLink);
     }
 
-    public class AuthoriseImageOwnerFilter : IAsyncActionFilter
+    private class AuthorizeImageOwnerFilter : ActionFilterAttribute
     {
-        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        public override async void OnActionExecuting(ActionExecutingContext context)
         {
             var authService = context.HttpContext.RequestServices.GetService<AuthService>();
             var foodImageService = context.HttpContext.RequestServices.GetService<IFoodImageService>();
