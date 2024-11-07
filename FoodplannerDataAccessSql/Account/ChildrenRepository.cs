@@ -22,7 +22,9 @@ namespace FoodplannerDataAccessSql.Account
         SELECT 
             children.first_name AS FirstName,
             children.last_name AS LastName,
-            classroom.class_name AS ClassName
+            classroom.class_name AS ClassName,
+            children.child_id AS ChildId,
+            classroom.class_id AS ClassId
         FROM 
             children
         JOIN 
