@@ -59,3 +59,5 @@ private.txt
 #Secrets
 FoodplannerApi/appsettings.Development.json
 /.vs
+*.env
+docker-compose.yml
