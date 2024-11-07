@@ -2,8 +2,7 @@ using System.Runtime.InteropServices.JavaScript;
 using System.Security.Claims;
 using FoodplannerApi.Helpers;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-using FoodplannerDataAccessSql.Image;
+using FoodplannerModels.Image;
 using FoodplannerServices.Image;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +17,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
     
     
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> UploadImage(IFormFile imageFile, int userId)
     {
         if (imageFile.Length == 0) return BadRequest("File is empty");
@@ -35,6 +35,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
 
     [HttpPost]
     [ApiExplorerSettings(IgnoreApi = true)]
+    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
     public async Task<IActionResult> UploadImages([Required]IFormFileCollection imageFiles, int userId)
     {
         if (imageFiles.Any(file => file.Length == 0)) return BadRequest("A file is empty");
@@ -55,6 +56,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
     [HttpDelete]
     [Authorize(Roles = "Children, Parent")]
     [AuthorizeImageOwnerFilter]
+    [ProducesResponseType(StatusCodes.Status200OK)]
 
     public async Task<IActionResult> DeleteImages(IEnumerable<int> foodImageIds)
     {
@@ -70,6 +72,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
     [HttpGet]
     [Authorize(Roles = "Children, Parent")]
     [AuthorizeImageOwnerFilter]
+    [ProducesResponseType(typeof(FoodImage), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetFoodImage(int foodImageId)
     {
         if (foodImageId < 0)
@@ -80,7 +83,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
     [HttpGet]
     [Authorize(Roles = "Children, Parent")]
     [AuthorizeImageOwnerFilter]
-
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPresignedImageLink(int foodImageId)
     {
         var presignedImageLink = await foodImageService.GetFoodImageLink(foodImageId);
