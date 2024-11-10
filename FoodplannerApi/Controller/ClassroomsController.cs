@@ -28,5 +28,21 @@ public class ClassroomsController : BaseController
         return BadRequest();
     }
 
+    [HttpPut]
+    public async Task<ActionResult> Update([FromBody] UpdateClassroomDTO updateClassroomDTO){
+        var result = await _classroomService.UpdateClassroomAsync(updateClassroomDTO);
+        if (result > 0){
+            return Ok(result);
+        }
+        return BadRequest();
+    }
     
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete(int id){
+        var result = await _classroomService.DeleteClassroomAsync(id);
+        if (result > 0){
+            return Ok(result);
+        }
+        return BadRequest();
+    }
 }

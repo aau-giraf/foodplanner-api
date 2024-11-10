@@ -21,6 +21,18 @@ public class ClassroomService : IClassroomService {
         var id = await _classroomRepository.InsertAsync(classroom);
         return id;
     }
+
+    public async Task<int> UpdateClassroomAsync(UpdateClassroomDTO classroom)
+    {
+        var id = await _classroomRepository.UpdateAsync(classroom);
+        return id;
+    }
+
+    public async Task<int> DeleteClassroomAsync(int id)
+    {
+        var result = await _classroomRepository.DeleteAsync(id);
+        return result;
+    }
 }
 
 

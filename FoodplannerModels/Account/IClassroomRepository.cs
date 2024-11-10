@@ -10,6 +10,10 @@ namespace FoodplannerModels.Account
     {
         Task<IEnumerable<Classroom>> GetAllAsync();
         Task<int> InsertAsync(CreateClassroomDTO createClassroomDTO);
+
+        Task<int> UpdateAsync(UpdateClassroomDTO updateClassroomDTO);
+
+        Task<int> DeleteAsync(int id);
     }
 
 }
