@@ -11,7 +11,7 @@ namespace FoodplannerModels.Account
         Task<IEnumerable<Classroom>> GetAllAsync();
         Task<int> InsertAsync(CreateClassroomDTO createClassroomDTO);
 
-        Task<int> UpdateAsync(UpdateClassroomDTO updateClassroomDTO);
+        Task<int> UpdateAsync(CreateClassroomDTO createClassroomDTO, int id);
 
         Task<int> DeleteAsync(int id);
     }

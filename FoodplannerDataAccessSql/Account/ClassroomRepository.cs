@@ -38,7 +38,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<int> UpdateAsync(UpdateClassroomDTO entity)
+        public async Task<int> UpdateAsync(CreateClassroomDTO entity, int id)
         {
             var sql = "UPDATE classroom SET class_name = @ClassName WHERE class_id = @ClassRoomId RETURNING class_id";
             using (var connection = _connectionFactory.Create())
@@ -46,7 +46,7 @@ namespace FoodplannerDataAccessSql.Account
                 connection.Open();
                 var result = await connection.QuerySingleAsync<int>(sql, new{
                     entity.ClassName,
-                    entity.ClassRoomId
+                    ClassRoomId = id
                 });
                 return result;
             }

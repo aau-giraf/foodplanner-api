@@ -28,9 +28,9 @@ public class ClassroomsController : BaseController
         return BadRequest();
     }
 
-    [HttpPut]
-    public async Task<ActionResult> Update([FromBody] UpdateClassroomDTO updateClassroomDTO){
-        var result = await _classroomService.UpdateClassroomAsync(updateClassroomDTO);
+    [HttpPut("{id}")]
+    public async Task<ActionResult> Update([FromBody] CreateClassroomDTO createClassroomDTO, int id){
+        var result = await _classroomService.UpdateClassroomAsync(createClassroomDTO, id);
         if (result > 0){
             return Ok(result);
         }

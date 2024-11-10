@@ -22,10 +22,10 @@ public class ClassroomService : IClassroomService {
         return id;
     }
 
-    public async Task<int> UpdateClassroomAsync(UpdateClassroomDTO classroom)
+    public async Task<int> UpdateClassroomAsync(CreateClassroomDTO classroom, int id)
     {
-        var id = await _classroomRepository.UpdateAsync(classroom);
-        return id;
+        var _id = await _classroomRepository.UpdateAsync(classroom, id);
+        return _id;
     }
 
     public async Task<int> DeleteClassroomAsync(int id)
