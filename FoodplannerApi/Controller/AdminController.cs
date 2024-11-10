@@ -113,4 +113,15 @@ public class AdminController : BaseController
         return Ok(children);
     }
 
+    [HttpPut]
+    public async Task<IActionResult> UpdateChild([FromBody] Children children)
+    {
+        var result = await _childrenService.UpdateChildrenAsync(children);
+        if (result > 0)
+        {
+            return NoContent();
+        }
+        return NotFound();
+    }
+
 }
