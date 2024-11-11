@@ -15,39 +15,39 @@ namespace FoodplannerDataAccessSql.Account
             _connectionFactory = connectionFactory;
         }
 
- public async Task<int> DeleteAsync(int id)
-{
-    var deleteChildrenSql = "DELETE FROM children WHERE parent_id = @Id";
-    var deleteUserSql = "DELETE FROM users WHERE id = @Id";
-
-    using (var connection = _connectionFactory.Create())
-    {
-        connection.Open();
-        using (var transaction = connection.BeginTransaction())
+        public async Task<int> DeleteAsync(int id)
         {
-            try
+            var deleteChildrenSql = "DELETE FROM children WHERE parent_id = @Id";
+            var deleteUserSql = "DELETE FROM users WHERE id = @Id";
+
+            using (var connection = _connectionFactory.Create())
             {
-                await connection.ExecuteAsync(deleteChildrenSql, new { Id = id }, transaction);
-                var result = await connection.ExecuteAsync(deleteUserSql, new { Id = id }, transaction);
-                transaction.Commit();
-                return result;
-            }
-            catch
-            {
-                transaction.Rollback();
-                throw;
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        await connection.ExecuteAsync(deleteChildrenSql, new { Id = id }, transaction);
+                        var result = await connection.ExecuteAsync(deleteUserSql, new { Id = id }, transaction);
+                        transaction.Commit();
+                        return result;
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
             }
         }
-    }
-}
 
-        public async Task<IEnumerable<User>> GetAllAsync()
+        public async Task<IEnumerable<UserDTO>> GetAllAsync()
         {
             var sql = "SELECT first_name, last_name, email FROM users";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.QueryAsync<User>(sql);
+                var result = await connection.QueryAsync<UserDTO>(sql);
                 return result.ToList();
             }
         }
@@ -72,7 +72,7 @@ namespace FoodplannerDataAccessSql.Account
                 var result = await connection.QueryFirstOrDefaultAsync<UserDTO>(sql, new { Id = id });
                 return result;
             }
-            
+
         }
 
         public async Task<IEnumerable<User>> GetAllNotApprovedAsync()
@@ -89,7 +89,8 @@ namespace FoodplannerDataAccessSql.Account
         public async Task<bool> EmailExistsAsync(string email)
         {
             var sql = "SELECT COUNT(1) FROM users WHERE email = @Email";
-            using (var connection = _connectionFactory.Create()){
+            using (var connection = _connectionFactory.Create())
+            {
                 connection.Open();
                 var count = await connection.ExecuteScalarAsync<int>(sql, new { Email = email });
                 return count > 0;
@@ -99,23 +100,23 @@ namespace FoodplannerDataAccessSql.Account
         public async Task<int> InsertAsync(User entity)
         {
             var sql = "INSERT INTO users (first_name, last_name, email, password, role, role_approved) VALUES (@FirstName, @LastName, @Email, @Password, @role, @RoleApproved) RETURNING id";
-            
+
             using (var connection = _connectionFactory.Create())
             {
-            
+
                 connection.Open();
-                var result = await connection.QuerySingleAsync<int>(sql, new 
-                {   
-                    FirstName = entity.FirstName, 
-                    LastName = entity.LastName, 
-                    Email = entity.Email, 
+                var result = await connection.QuerySingleAsync<int>(sql, new
+                {
+                    FirstName = entity.FirstName,
+                    LastName = entity.LastName,
+                    Email = entity.Email,
                     Password = entity.Password,
                     role = entity.Role,
                     RoleApproved = entity.RoleApproved
                 });
                 return result;
-            
-            }     
+
+            }
         }
 
 
@@ -125,11 +126,11 @@ namespace FoodplannerDataAccessSql.Account
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = connection.Execute(sql, new 
+                var result = connection.Execute(sql, new
                 {
-                    FirstName = entity.FirstName, 
-                    LastName = entity.LastName, 
-                    Email = entity.Email, 
+                    FirstName = entity.FirstName,
+                    LastName = entity.LastName,
+                    Email = entity.Email,
                     Password = entity.Password,
                     Role = entity.Role,
                     RoleApproved = entity.RoleApproved,
@@ -169,7 +170,7 @@ namespace FoodplannerDataAccessSql.Account
             {
                 connection.Open();
                 var result = await connection.ExecuteScalarAsync<int>(sql, new { Id = id });
-                
+
                 return result > 0;
             }
         }

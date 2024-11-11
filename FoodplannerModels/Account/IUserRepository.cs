@@ -8,7 +8,7 @@ namespace FoodplannerModels.Account
 {
     public interface IUserRepository
     {
-        Task<IEnumerable<User>> GetAllAsync();
+        Task<IEnumerable<UserDTO>> GetAllAsync();
         Task<IEnumerable<User>> GetAllNotApprovedAsync();
         Task<UserDTO?> GetByIdAsync(int id);
         Task<string> GetPinCodeByIdAsync(int id);
@@ -22,6 +22,6 @@ namespace FoodplannerModels.Account
         Task<bool> UpdateArchivedAsync(int id, bool archived);
         Task<bool> UpdateRoleApprovedAsync(int id, bool roleApproved);
         Task<IEnumerable<User?>> SelectAllNotArchivedAsync();
-        
+
     }
 }
