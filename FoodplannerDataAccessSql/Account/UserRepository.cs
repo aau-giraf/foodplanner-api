@@ -176,13 +176,19 @@ namespace FoodplannerDataAccessSql.Account
         }
 
 
-        public async Task<bool> UpdateArchivedAsync(int id, bool archived)
+        public async Task<bool> UpdateArchivedAsync(int id)
         {
-            var sql = " UPDATE users SET archived = @Archived WHERE id = @Id";
+            var selectSql = "SELECT archived FROM users WHERE id = @Id";
+            var updateSql = " UPDATE users SET archived = @Archived WHERE id = @Id";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.ExecuteAsync(sql, new { Archived = archived, Id = id });
+
+                var currentArchived = await connection.ExecuteScalarAsync<bool>(selectSql, new { Id = id });
+
+                var newArchived = !currentArchived;
+
+                var result = await connection.ExecuteAsync(updateSql, new { Archived = newArchived, Id = id });
                 return result > 0;
             }
         }

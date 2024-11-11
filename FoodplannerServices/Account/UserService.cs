@@ -114,9 +114,9 @@ public class UserService : IUserService
         return await _userRepository.GetAllNotApprovedAsync();
     }
 
-    public async Task<bool> UserUpdateArchivedAsync(int id, bool archived)
+    public async Task<bool> UserUpdateArchivedAsync(int id)
     {
-        return await _userRepository.UpdateArchivedAsync(id, archived);
+        return await _userRepository.UpdateArchivedAsync(id);
     }
 
     public async Task<bool> UserUpdateRoleApprovedAsync(int id, bool roleApproved)

@@ -59,20 +59,19 @@ public class AdminController : BaseController
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateArchived(int id, [FromBody] UserArchivedDTO userArchivedDTO)
+    public async Task<IActionResult> UpdateArchived(int id)
     {
-        if (id != userArchivedDTO.id)
-        {
-            return BadRequest();
-        }
-        var result = await _userService.UserUpdateArchivedAsync(id, userArchivedDTO.Archived);
+
+        var result = await _userService.UserUpdateArchivedAsync(id);
 
         if (result != null)
         {
             return Ok(result);
         }
-
-        return NotFound();
+        else
+        {
+            return NotFound();
+        }
     }
 
     [HttpPut("{id}")]
