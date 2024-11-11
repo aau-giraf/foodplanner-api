@@ -13,6 +13,8 @@ namespace FoodplannerModels.Account
 
         Task<int> UpdateAsync(CreateClassroomDTO createClassroomDTO, int id);
 
+        Task<bool> CheckChildrenInClassroom(int id);
+
         Task<int> DeleteAsync(int id);
     }
 

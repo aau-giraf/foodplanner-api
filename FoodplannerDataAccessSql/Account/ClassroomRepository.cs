@@ -17,7 +17,7 @@ namespace FoodplannerDataAccessSql.Account
         }
         public async Task<IEnumerable<Classroom>> GetAllAsync()
         {
-            var sql = "SELECT * FROM classroom";
+            var sql = "SELECT * FROM classroom ORDER BY class_name";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
@@ -49,6 +49,17 @@ namespace FoodplannerDataAccessSql.Account
                     ClassRoomId = id
                 });
                 return result;
+            }
+        }
+
+        public async Task<bool> CheckChildrenInClassroom(int id)
+        {
+            var sql = "SELECT COUNT(*) FROM children WHERE class_id = @Id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QuerySingleAsync<int>(sql, new { Id = id });
+                return result > 0;
             }
         }
 

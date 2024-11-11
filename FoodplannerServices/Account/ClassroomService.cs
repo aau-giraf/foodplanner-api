@@ -1,6 +1,7 @@
 using AutoMapper;
 using FoodplannerApi.Helpers;
 using FoodplannerModels.Account;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace FoodplannerServices.Account;
 
@@ -26,6 +27,12 @@ public class ClassroomService : IClassroomService {
     {
         var _id = await _classroomRepository.UpdateAsync(classroom, id);
         return _id;
+    }
+
+    public async Task<bool> CheckChildrenInClassroom(int id)
+    {
+        var result = await _classroomRepository.CheckChildrenInClassroom(id);
+        return result;
     }
 
     public async Task<int> DeleteClassroomAsync(int id)
