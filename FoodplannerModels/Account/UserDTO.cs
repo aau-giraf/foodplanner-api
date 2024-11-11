@@ -13,6 +13,7 @@ namespace FoodplannerModels.Account
         public required string Last_name { get; set; }
         public required string Email { get; set; }
         public required string Role { get; set; }
+        public required string Archived { get; set; }
 
     }
 }
