@@ -1,6 +1,7 @@
 using AutoMapper;
 using FoodplannerApi.Helpers;
 using FoodplannerModels.Account;
+using Microsoft.AspNetCore.Identity;
 
 namespace FoodplannerServices.Account;
 
@@ -26,7 +27,7 @@ public class UserService : IUserService
         return userDTO;
     }
 
-    public async Task<UserDTO?> GetUserByIdAsync(int id)
+    public async Task<User?> GetUserByIdAsync(int id)
     {
         return await _userRepository.GetByIdAsync(id);
     }
@@ -67,6 +68,8 @@ public class UserService : IUserService
             throw new InvalidOperationException("Forkert brugernavn eller adgangskode");
         }
 
+        user.Role = user.Role == "Parent" ? "Child" : user.Role;
+
         var jwt = _authService.GenerateJWTToken(user);
         var userCreds = new UserCredsDTO
         {
@@ -90,7 +93,7 @@ public class UserService : IUserService
         return pincode;
     }
 
-    public async Task<string> GetUserByIdAndPinCodeAsync(int id, string pinCode)
+    public async Task<UserCredsDTO> GetUserByIdAndPinCodeAsync(int id, string pinCode)
     {
         var pincode = await _userRepository.GetPinCodeByIdAsync(id);
         if (pincode == null)
@@ -101,7 +104,22 @@ public class UserService : IUserService
         {
             throw new InvalidOperationException("Forkert pinkode");
         }
-        return pincode;
+        var user = await _userRepository.GetByIdAsync(id);
+
+        if (user == null)
+        {
+            throw new InvalidOperationException("Bruger ikke fundet");
+        }
+
+        var jwt = _authService.GenerateJWTToken(user);
+        var userCreds = new UserCredsDTO
+        {
+            JWT = jwt,
+            Role = user.Role,
+            RoleApproved = user.RoleApproved
+        };
+
+        return userCreds;
     }
 
     public async Task<bool> UserHasPinCodeAsync(int id)

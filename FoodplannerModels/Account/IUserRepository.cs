@@ -10,7 +10,7 @@ namespace FoodplannerModels.Account
     {
         Task<IEnumerable<UserDTO>> GetAllAsync();
         Task<IEnumerable<User>> GetAllNotApprovedAsync();
-        Task<UserDTO?> GetByIdAsync(int id);
+        Task<User?> GetByIdAsync(int id);
         Task<string> GetPinCodeByIdAsync(int id);
         Task<bool> EmailExistsAsync(string email);
         Task<int> InsertAsync(User entity);
