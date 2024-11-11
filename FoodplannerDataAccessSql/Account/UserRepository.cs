@@ -43,7 +43,7 @@ namespace FoodplannerDataAccessSql.Account
 
         public async Task<IEnumerable<UserDTO>> GetAllAsync()
         {
-            var sql = "SELECT first_name, last_name, email FROM users";
+            var sql = "SELECT first_name, last_name, email, role FROM users";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();

@@ -69,5 +69,17 @@ namespace FoodplannerDataAccessSql.Account
                 return result;
             }
         }
+
+
+        public async Task<int> DeleteAsync(int id)
+        {
+            var sql = "DELETE FROM children WHERE child_id = @ChildId";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.ExecuteAsync(sql, new { ChildId = id });
+                return result;
+            }
+        }
     }
 }

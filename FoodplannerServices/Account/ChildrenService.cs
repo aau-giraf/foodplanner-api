@@ -37,6 +37,11 @@ public class ChildrenService : IChildrenService
     {
         return await _childrenRepository.UpdateAsync(children);
     }
+
+    public async Task<int> DeleteChildrenAsync(int id)
+    {
+        return await _childrenRepository.DeleteAsync(id);
+    }
 }
 
 
