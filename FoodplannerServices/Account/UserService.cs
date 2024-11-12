@@ -59,7 +59,7 @@ public class UserService : IUserService {
             throw new InvalidOperationException("Forkert brugernavn eller adgangskode");
         }
         
-        user.Role = user.Role == "Parent" ? "Child" : user.Role;
+        user.Role = user.Role == "Parent" ? user.Role : "Child";
         
         var jwt = _authService.GenerateJWTToken(user);
         var userCreds = new UserCredsDTO

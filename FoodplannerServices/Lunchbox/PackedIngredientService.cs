@@ -28,8 +28,8 @@ namespace FoodplannerServices.Lunchbox
         }
 
         // Creates a new packed ingredient
-        public async Task<int> CreatePackedIngredientAsync(PackedIngredient packedIngredient){
-            return await _packedIngredientRepository.InsertAsync(packedIngredient);
+        public async Task<int> CreatePackedIngredientAsync(int meal_ref, int ingredient_ref){
+            return await _packedIngredientRepository.InsertAsync(meal_ref, ingredient_ref);
         }
 
         // Updates an existing packed ingredient

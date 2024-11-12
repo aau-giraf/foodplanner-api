@@ -20,15 +20,15 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
     {
         if (imageFile.Length == 0) return BadRequest("File is empty");
         if (imageFile.Length >= _maxFileSize) return BadRequest("File too big");
-        
-        var foodImageId = foodImageService.CreateFoodImage(
+
+        var foodImageId = await foodImageService.CreateFoodImage(
             userId,
             imageFile.OpenReadStream(),
             imageFile.FileName,
             imageFile.ContentType,
             imageFile.Length);
         
-        return Ok($"FoodImage [{foodImageId}] uploaded successfully");
+        return Ok(foodImageId);
     }
 
     [HttpPost]

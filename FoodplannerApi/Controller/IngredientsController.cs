@@ -62,8 +62,8 @@ public class IngredientsController (IngredientService ingredientService, AuthSer
         // Calls the service to fetch the ingredient by ID
         var result = await _ingredientService.CreateIngredientAsync(ingredient);
         if (result > 0){
-            // Returns 201 with an object of the new ingredient
-            return CreatedAtAction(nameof(Get), new { id = ingredient.Id}, ingredient);
+            var createdIngredient = await _ingredientService.GetIngredientByIdAsync(result);
+            return CreatedAtAction(nameof(Get), new { id = result }, createdIngredient);
         }
         return BadRequest(); // Returns 400 if the creation fails
     }

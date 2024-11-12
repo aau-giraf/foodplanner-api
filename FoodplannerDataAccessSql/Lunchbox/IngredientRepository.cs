@@ -46,8 +46,8 @@ public class IngredientRepository (PostgreSQLConnectionFactory connectionFactory
         using var connection = _connectionFactory.Create(); // Create a new database connection.
         connection.Open(); // Open the connection to the database.
         var sql = $"INSERT INTO ingredients (name, user_ref, image_ref)\n"; // SQL query for insertion.
-        sql += $"VALUES ('{entity.Name}', '{entity.User_ref}', '{entity.Image_ref}')"; // Values to insert.
-        return await connection.ExecuteAsync(sql, entity); // Execute the insertion and return the number of affected rows.
+        sql += $"VALUES (@Name, @User_ref, @Image_ref) RETURNING id"; // Values to insert.
+        return await connection.QuerySingleAsync<int>(sql, new {entity.Name, entity.User_ref, Image_ref = (object?)entity.Image_ref ?? DBNull.Value}); // Execute the insertion and return the number of affected rows.
     }
 
     // Asynchronously updates an existing ingredient in the database.

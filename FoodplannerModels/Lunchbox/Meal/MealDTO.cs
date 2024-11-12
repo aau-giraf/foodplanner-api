@@ -9,7 +9,7 @@ public class MealDTO {
     // Unique identifier for the ingredient.
     public required int Id {get; set;}
     // Reference to the meal's image.
-    public required int Image_ref {get; set;}
+    public int? Image_ref {get; set;}
     // Title of the meal.
     public required string Title {get; set;}
     // Date accosiated with the meal

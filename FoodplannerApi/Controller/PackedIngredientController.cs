@@ -38,13 +38,16 @@ namespace FoodplannerApi.Controller
 
         // Create a new packed ingredient
         [HttpPost]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([FromBody] PackedIngredient packedIngredient) {
+        [Authorize(Roles = "Parent")]
+        public async Task<IActionResult> Create([FromBody] PackedIngredientContainer packIngredient) {
             // Calls the service to create a new packed ingredient
-            var result = await _packedIngredientService.CreatePackedIngredientAsync(packedIngredient); 
+            var meal_ref = packIngredient.Meal_ref;
+            var ingredient_ref = packIngredient.Ingredient_ref;
+            var result = await _packedIngredientService.CreatePackedIngredientAsync(meal_ref, ingredient_ref); 
             if (result > 0)
             {
-                return CreatedAtAction(nameof(Get), new { id = packedIngredient.Id }, packedIngredient);
+                var createdPI = await _packedIngredientService.GetPackedIngredientByIdAsync(result);
+                return CreatedAtAction(nameof(Get), new { id = result }, createdPI);
             }
             return BadRequest();
         }
@@ -63,7 +66,7 @@ namespace FoodplannerApi.Controller
 
         // Delete a packed ingredient by id
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Parent")]
         public async Task<IActionResult> Delete(int id) {
             // Calls the service to delete the packed ingredient by ID
             var result = await _packedIngredientService.DeletePackedIngredientAsync(id);
@@ -73,5 +76,10 @@ namespace FoodplannerApi.Controller
             }
             return NotFound();
         }
+    }
+
+    public class PackedIngredientContainer{
+        public int Meal_ref {get; set;}
+        public int Ingredient_ref { get; set; }
     }
 }

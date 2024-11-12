@@ -39,14 +39,14 @@ namespace FoodplannerDataAccessSql.Lunchbox
         }
 
         // Inserts a new packed ingredient into the database
-        public async Task<int> InsertAsync(PackedIngredient entity) {
+        public async Task<int> InsertAsync(int meal_ref, int ingredient_ref) {
             using var connection = _connectionFactory.Create();
             connection.Open();
 
             var sql = $"INSERT INTO packed_ingredients (meal_ref, ingredient_ref)\n";
-            sql += $"VALUES ('{entity.Meal_ref}', '{entity.Ingredient_ref}')";
+            sql += $"VALUES (@meal_ref, @ingredient_ref) RETURNING id"; // Values to insert.
 
-            return await connection.ExecuteAsync(sql, entity);
+            return await connection.QuerySingleAsync<int>(sql, new{meal_ref, ingredient_ref});
         }
 
 

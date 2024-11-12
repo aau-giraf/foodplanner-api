@@ -43,11 +43,12 @@ public class MealRepository (PostgreSQLConnectionFactory connectionFactory) : IM
     // Asynchronously inserts a new meal into the database.
     public async Task<int> InsertAsync(Meal entity)
     {
+        string? imageRef = entity.Image_ref == null ? "NULL" : $"'{entity.Image_ref}'";
         using var connection = _connectionFactory.Create(); // Create a new database connection.
         connection.Open(); // Open the connection to the database.
         var sql = $"INSERT INTO meals (title, user_ref, image_ref, date)\n"; // SQL query for insertion.
-        sql += $"VALUES ('{entity.Title}', '{entity.User_ref}', '{entity.Image_ref}', '{entity.Date}')"; // Values to insert.
-        return await connection.ExecuteAsync(sql, entity); // Execute the insertion and return the number of affected rows.
+        sql += $"VALUES (@Title, @User_ref, @Image_ref, @Date) RETURNING id"; // Values to insert.
+        return await connection.QuerySingleAsync<int>(sql, new{entity.Title, entity.User_ref, Image_ref = (object?)entity.Image_ref ?? DBNull.Value, entity.Date}); // Execute the insertion and return the number of affected rows.
     }
 
     // Asynchronously updates an existing meal in the database.
