@@ -17,7 +17,7 @@ public class ChildrensController : BaseController
     }
 
     [HttpGet]
-   // [Authorize(Policy = "TeacherPolicy")]
+    [Authorize(Policy = "TeacherPolicy")]
     [ProducesResponseType(typeof(IEnumerable<ChildrenGetAllDTO>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllChildren(){
         var children = await _childrenService.GetAllChildrenAsync();
