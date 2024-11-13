@@ -8,15 +8,17 @@ namespace FoodplannerServices.Account;
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IChildrenRepository _childrenRepository;
     private readonly IMapper _mapper;
     private readonly AuthService _authService;
 
 
-    public UserService(IUserRepository userRepository, IMapper mapper, AuthService authService)
+    public UserService(IUserRepository userRepository, IMapper mapper, AuthService authService, IChildrenRepository childrenRepository)
     {
         _userRepository = userRepository;
         _mapper = mapper;
         _authService = authService;
+        _childrenRepository = childrenRepository;
     }
 
     public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
@@ -105,7 +107,7 @@ public class UserService : IUserService
             throw new InvalidOperationException("Forkert pinkode");
         }
         var user = await _userRepository.GetByIdAsync(id);
-
+        user.Id = id;
         if (user == null)
         {
             throw new InvalidOperationException("Bruger ikke fundet");

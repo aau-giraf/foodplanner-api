@@ -33,6 +33,12 @@ public class ChildrenService : IChildrenService
         return children;
     }
 
+    public async Task<IEnumerable<ChildrenGetAllDTO>> GetAllChildrenClassesAsync()
+    {
+        var children = await _childrenRepository.GetAllChildrenClassesAsync();
+        return children;
+    }
+
     public async Task<int> UpdateChildrenAsync(Children children)
     {
         return await _childrenRepository.UpdateAsync(children);
