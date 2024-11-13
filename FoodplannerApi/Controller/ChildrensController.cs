@@ -27,6 +27,7 @@ public class ChildrensController : BaseController
 
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
+    [ProducesResponseType(typeof(IEnumerable<Children>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
         var children = await _childrenService.GetAllChildrenAsync();
