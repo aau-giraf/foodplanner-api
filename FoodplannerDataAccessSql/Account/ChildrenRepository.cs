@@ -27,9 +27,7 @@ namespace FoodplannerDataAccessSql.Account
                     return child;
                 }, splitOn: "parent_id, class_id");
                 return children;
-
             }
-        
         }
 
         public async Task<int> InsertAsync(Children entity)
@@ -43,6 +41,19 @@ namespace FoodplannerDataAccessSql.Account
                     LastName = entity.LastName,
                     ParentId = entity.parentId,
                     ClassId = entity.classId
+                });
+                return result;
+            }
+        }
+
+        public async Task<Children> GetByIdAsync(int id)
+        {
+            var sql = "SELECT * FROM children WHERE child_id = @Id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QuerySingleAsync<Children>(sql, new {
+                    Id = id
                 });
                 return result;
             }

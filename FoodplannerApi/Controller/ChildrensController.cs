@@ -22,7 +22,7 @@ public class ChildrensController : BaseController
             return BadRequest(ModelState);
         }
         try{
-            var idString = _authService.RetrieveIdFromJWTToken(token); // Use the method to get the parentId from the token    
+            var idString = _authService.RetrieveIdFromJwtToken(token); // Use the method to get the parentId from the token    
             if (!int.TryParse(idString, out int parentId))
             {
                 return BadRequest(new ErrorResponse { Message = new[] { "Id er ikke et tal" } });
