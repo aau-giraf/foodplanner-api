@@ -16,7 +16,19 @@ namespace FoodplannerDataAccessSql.Account
             _connectionFactory = connectionFactory;
         }
 
-        public async Task<IEnumerable<ChildrenGetAllDTO>> GetAllAsync()
+        public async Task<IEnumerable<Children>> GetAllAsync()
+        {
+            var sql = "SELECT * FROM children";
+            using (var connection = _connectionFactory.Create())
+            {
+                var children = await connection.QueryAsync<Children>(sql);
+                return children;
+
+            }
+
+        }
+
+                public async Task<IEnumerable<ChildrenGetAllDTO>> GetAllChildrenClassesAsync()
         {
             var query = @"
         SELECT 
@@ -59,12 +71,43 @@ namespace FoodplannerDataAccessSql.Account
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.QuerySingleAsync<int>(sql, new {
+                var result = await connection.QuerySingleAsync<int>(sql, new
+                {
                     FirstName = entity.FirstName,
                     LastName = entity.LastName,
                     ParentId = entity.parentId,
                     ClassId = entity.classId
                 });
+                return result;
+            }
+        }
+
+        public async Task<int> UpdateAsync(Children entity)
+        {
+            var sql = "UPDATE children SET first_name = @FirstName, last_name = @LastName, parent_id = @ParentId, class_id = @ClassId WHERE child_id = @ChildId";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.ExecuteAsync(sql, new
+                {
+                    ChildId = entity.ChildId,
+                    FirstName = entity.FirstName,
+                    LastName = entity.LastName,
+                    ParentId = entity.parentId,
+                    ClassId = entity.classId
+                });
+                return result;
+            }
+        }
+
+
+        public async Task<int> DeleteAsync(int id)
+        {
+            var sql = "DELETE FROM children WHERE child_id = @ChildId";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.ExecuteAsync(sql, new { ChildId = id });
                 return result;
             }
         }
