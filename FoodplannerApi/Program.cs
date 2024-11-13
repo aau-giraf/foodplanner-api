@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text;
 using FoodplannerApi;
+using FoodplannerApi.Controller;
 using Npgsql;
 using FoodplannerDataAccessSql.Account;
 using FoodplannerDataAccessSql;
@@ -47,12 +48,20 @@ builder.Services.AddMinio(configureClient =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins",
-        builder =>
+        policy =>
         {
-            builder.WithOrigins("http://localhost:8081") // Replace with your client's URL
+            policy.WithOrigins("http://localhost:8081") // Replace with your client's URL
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
+    
+    options.AddPolicy("Development", 
+        policy =>
+    {
+        policy.WithOrigins("*")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
 });
 
 builder.Services.AddSwaggerGen(options =>
@@ -162,7 +171,6 @@ builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepositor
 builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));
 builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
 
-
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
 builder.Services.AddScoped<IClassroomService, ClassroomService>();
 builder.Services.AddScoped<UserService>();
@@ -195,6 +203,7 @@ builder.Services.AddFluentMigratorCore()
         .ScanIn(typeof(InitTables).Assembly).For.Migrations()) 
     .AddLogging(lb => lb.AddFluentMigratorConsole()); //Add logging to migrations to see state.
 
+
 var app = builder.Build();
 
 // Run migrations at application startup
@@ -215,8 +224,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 // Apply CORS policy
-app.UseCors("AllowSpecificOrigins");
+if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development") 
+    app.UseCors("Development");
+else app.UseCors("AllowSpecificOrigins");
+
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
