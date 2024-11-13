@@ -75,13 +75,13 @@ namespace FoodplannerDataAccessSql.Account
 
         }
 
-        public async Task<IEnumerable<User>> GetAllNotApprovedAsync()
+        public async Task<IEnumerable<UserDTO>> GetAllNotApprovedAsync()
         {
             var sql = "SELECT id, first_name, last_name, email, role FROM users WHERE role_approved = false";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.QueryAsync<User>(sql);
+                var result = await connection.QueryAsync<UserDTO>(sql);
                 return result.ToList();
             }
         }

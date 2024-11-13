@@ -9,7 +9,7 @@ namespace FoodplannerModels.Account
     public interface IUserRepository
     {
         Task<IEnumerable<UserDTO>> GetAllAsync();
-        Task<IEnumerable<User>> GetAllNotApprovedAsync();
+        Task<IEnumerable<UserDTO>> GetAllNotApprovedAsync();
         Task<User?> GetByIdAsync(int id);
         Task<string> GetPinCodeByIdAsync(int id);
         Task<bool> EmailExistsAsync(string email);
