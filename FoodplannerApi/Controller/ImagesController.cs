@@ -2,6 +2,8 @@ using System.Runtime.InteropServices.JavaScript;
 using System.Security.Claims;
 using FoodplannerApi.Helpers;
 using System.ComponentModel.DataAnnotations;
+using FoodplannerDataAccessSql.Account;
+using FoodplannerModels.Account;
 using FoodplannerModels.Image;
 using FoodplannerServices.Image;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +12,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace FoodplannerApi.Controller;
 
-public class ImagesController(IFoodImageService foodImageService, AuthService authService) : BaseController
+public class ImagesController(IFoodImageService foodImageService) : BaseController
 {
     private readonly long _maxFileSize = 2000000000;
     
@@ -93,9 +95,11 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
         public override async void OnActionExecuting(ActionExecutingContext context)
         {
             var authService = context.HttpContext.RequestServices.GetService<AuthService>();
+            var userRepository = context.HttpContext.RequestServices.GetService<IUserRepository>();
             var foodImageService = context.HttpContext.RequestServices.GetService<IFoodImageService>();
             var token = context.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
             var foodImageIds = context.HttpContext.Request.Query["foodImageId"];
+            
             if (token == null)
             {
                 context.Result = new UnauthorizedResult();
@@ -103,16 +107,21 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
             {
                 context.Result = new BadRequestResult();
             }
-            else if (authService == null || foodImageService == null)
+            else if (authService == null || foodImageService == null || userRepository == null)
             {
                 throw new Exception("Missing services");
             } else
             {
-                var userid = authService.RetrieveIdFromJWTToken(token);
+                var userId = int.Parse(authService.RetrieveIdFromJwtToken(token));
+                var role = authService.RetrieveRoleFromJwtToken(token);
+                if (role == "Teacher")
+                {
+                    return;
+                }
                 foreach (var foodImageId in foodImageIds)
                 {
                     var foodImage = await foodImageService.GetFoodImage(int.Parse(foodImageId));
-                    if (userid == foodImage.UserId.ToString()) continue;
+                    if (userId == foodImage.UserId) continue;
                     context.Result = new UnauthorizedResult();
                     break;
                 }
