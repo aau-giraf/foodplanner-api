@@ -16,7 +16,7 @@ namespace FoodplannerDataAccessSql.Account
             _connectionFactory = connectionFactory;
         }
 
-        public async Task<IEnumerable<ChildrenGetAllDTO>> GetAllAsync()
+        public async Task<IEnumerable<Children>> GetAllAsync()
         {
             var sql = "SELECT * FROM children";
             using (var connection = _connectionFactory.Create())

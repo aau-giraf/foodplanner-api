@@ -20,10 +20,21 @@ public class ChildrensController : BaseController
     [HttpGet]
     [Authorize(Policy = "TeacherPolicy")]
     [ProducesResponseType(typeof(IEnumerable<ChildrenGetAllDTO>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllChildren(){
+    public async Task<IActionResult> GetAllChildrenClassesAsync(){
+        var children = await _childrenService.GetAllChildrenClassesAsync();
+        return Ok(children);
+    }
+
+    [HttpGet]
+    [Authorize(Policy = "AdminPolicy")]
+    public async Task<IActionResult> GetAll()
+    {
         var children = await _childrenService.GetAllChildrenAsync();
         return Ok(children);
     }
+
+
+
     
     [HttpPost]
     public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] ChildrenCreateDTO childrenCreate)
