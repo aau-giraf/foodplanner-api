@@ -10,6 +10,7 @@ namespace FoodplannerModels.Account
     {
         Task<IEnumerable<ChildrenGetAllDTO>> GetAllAsync();
         Task<int> InsertAsync(Children entity);
+        Task<Children> GetByIdAsync(int id);
         Task<int> GetParentIdByChildIdAsync(int id);
     }
 }
