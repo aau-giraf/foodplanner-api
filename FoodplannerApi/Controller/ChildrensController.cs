@@ -35,6 +35,20 @@ public class ChildrensController : BaseController
     }
 
 
+    [HttpGet]
+    public async Task<IActionResult> GetChildrenByParentId([FromHeader(Name = "Authorization")] string token)
+    {
+
+        var idString = _authService.RetrieveIdFromJWTToken(token);
+        if (!int.TryParse(idString, out int id))
+        {
+            return BadRequest(new ErrorResponse{Message = ["Error"]});
+        }
+        var children = await _childrenService.GetChildrenByIdAsync(id);
+        return Ok(children);
+    }
+
+
 
     
     [HttpPost]
