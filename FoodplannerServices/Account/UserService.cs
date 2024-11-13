@@ -86,18 +86,17 @@ public class UserService : IUserService {
 
     public async Task<UserCredsDTO> GetUserByIdAndPinCodeAsync(int id, string pinCode)
     {
-
-        var parent_id = await _childrenRepository.GetParentIdByChildIdAsync(id);
         
-        var pincode = await _userRepository.GetPinCodeByIdAsync(parent_id);
+        
+        var pincode = await _userRepository.GetPinCodeByIdAsync(id);
         if (pincode == null){
             throw new InvalidOperationException("Bruger har ikke en pinkode");
         } else if (!BCrypt.Net.BCrypt.Verify(pinCode, pincode)){
             throw new InvalidOperationException("Forkert pinkode");
         }
 
-        var user = await _userRepository.GetByIdAsync(parent_id);
-        user.Id = parent_id;
+        var user = await _userRepository.GetByIdAsync(id);
+        user.Id = id;
         if (user == null){
             throw new InvalidOperationException("Bruger ikke fundet");
         }
