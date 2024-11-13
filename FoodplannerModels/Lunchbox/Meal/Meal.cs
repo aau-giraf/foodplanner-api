@@ -11,7 +11,7 @@ public class Meal {
     // Title of the meal.
     public required string Title {get; set;}
     // Reference to the user associated with the meal.
-    public required int User_ref {get; set;}
+    public int User_ref {get; set;}
     // Reference to the meal's image.
     public int? Image_ref {get; set;}
     // Date accosiated with the meal

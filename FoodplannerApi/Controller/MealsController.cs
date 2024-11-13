@@ -78,13 +78,23 @@ public class MealsController (MealService mealService, AuthService authService) 
     // Update an existing meal
     [HttpPut("{id}")]
     [Authorize(Roles = "Parent")]
-    public async Task<IActionResult> Update([FromBody] Meal meal, int id){
-        var result = await _mealService.UpdateMealAsync(meal, id);
-        if (result > 0){ // Returns the updated meal with a 200 OK status
-            var changedMeal = await _mealService.GetMealByIdAsync(id);
-            return Ok(changedMeal);
+    public async Task<IActionResult> Update([FromHeader(Name = "Authorization")] string token, [FromBody] Meal meal, int id){
+        try {    
+            var idString = _authService.RetrieveIdFromJWTToken(token);
+            if (!int.TryParse(idString, out int user_id)) {
+                return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
+            }
+            meal.User_ref = user_id;
+            var result = await _mealService.UpdateMealAsync(meal, id);
+            if (result > 0){ // Returns the updated meal with a 200 OK status
+                var changedMeal = await _mealService.GetMealByIdAsync(id);
+                return Ok(changedMeal);
+            }
+            return BadRequest();
         }
-        return BadRequest();
+        catch (InvalidOperationException e){
+            return BadRequest(new ErrorResponse {Message = [e.Message]});
+        }
     }
 
     // Delete a meal by ID
