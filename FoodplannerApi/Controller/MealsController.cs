@@ -56,13 +56,13 @@ public class MealsController (MealService mealService, AuthService authService) 
     // Create a new meal
     [HttpPost]
     [Authorize(Roles = "Parent")]
-    public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] Meal meal){
+    public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] MealContainer mealContainer){
         try {    
             var idString = _authService.RetrieveIdFromJWTToken(token);
             if (!int.TryParse(idString, out int id)) {
                 return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
             }
-            meal.User_ref = id;
+            Meal meal = new() {Id = mealContainer.Id, Title = mealContainer.Title, User_ref = id, Image_ref = mealContainer.Image_ref, Date = mealContainer.Date};
             var result = await _mealService.CreateMealAsync(meal);
             if (result > 0){ // Returns 201 with an object of the new meal
                 var createdMeal = await _mealService.GetMealByIdAsync(result);
@@ -99,4 +99,10 @@ public class MealsController (MealService mealService, AuthService authService) 
         return NotFound();
     }
 
+    public class MealContainer{
+        public int Id {get; set;}
+        public string Title {get; set;}
+        public int? Image_ref {get; set;}
+        public string Date {get; set;}
+    }
 }
