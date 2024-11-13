@@ -16,20 +16,41 @@ namespace FoodplannerDataAccessSql.Account
             _connectionFactory = connectionFactory;
         }
 
-        public async Task<IEnumerable<Children>> GetAllAsync()
+        public async Task<IEnumerable<ChildrenGetAllDTO>> GetAllAsync()
         {
-            var sql = "SELECT c.*, us.first_name, us.last_name, cl.* FROM children c INNER JOIN users us ON c.id = us.id INNER JOIN classroom cl ON c.class_id = cl.class_id";
+            var query = @"
+        SELECT 
+            children.first_name AS FirstName,
+            children.last_name AS LastName,
+            classroom.class_name AS ClassName,
+            children.child_id AS ChildId,
+            classroom.class_id AS ClassId
+        FROM 
+            children
+        JOIN 
+            users ON children.parent_id = users.id
+        JOIN 
+            classroom ON children.class_id = classroom.class_id
+        WHERE 
+            users.role_approved = 'true';";
+            
             using (var connection = _connectionFactory.Create()){
-                var children = await connection.QueryAsync<Children, User, Classroom, Children>(sql, (child, user, classroom) =>
-                {
-                    child.user = user;
-                    child.Classroom = classroom;
-                    return child;
-                }, splitOn: "parent_id, class_id");
+                var children = await connection.QueryAsync<ChildrenGetAllDTO>(query);
                 return children;
 
             }
         
+        }
+        
+        public async Task<int> GetParentIdByChildIdAsync(int id)
+        {
+            var sql = "SELECT parent_id FROM children WHERE child_id = @Id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QuerySingleAsync<int>(sql, new { Id = id });
+                return result;
+            }
         }
 
         public async Task<int> InsertAsync(Children entity)
