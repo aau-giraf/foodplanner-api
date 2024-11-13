@@ -7,15 +7,17 @@ namespace FoodplannerServices.Account;
 
 public class UserService : IUserService {
     private readonly IUserRepository _userRepository;
+    private readonly IChildrenRepository _childrenRepository;
     private readonly IMapper _mapper;
     private readonly AuthService _authService;
 
 
-    public UserService(IUserRepository userRepository, IMapper mapper, AuthService authService)
+    public UserService(IUserRepository userRepository, IMapper mapper, AuthService authService, IChildrenRepository childrenRepository)
     {
         _userRepository = userRepository;
         _mapper = mapper;
         _authService = authService;
+        _childrenRepository = childrenRepository;
     }
 
     public async Task<IEnumerable<UserCreateDTO>> GetAllUsersAsync(){
@@ -82,16 +84,20 @@ public class UserService : IUserService {
         return pincode;
     } 
 
-    public async Task<UserCredsDTO> GetUserByIdAndPinCodeAsync(int id, string pinCode){
-        var pincode = await _userRepository.GetPinCodeByIdAsync(id);
+    public async Task<UserCredsDTO> GetUserByIdAndPinCodeAsync(int id, string pinCode)
+    {
+
+        var parent_id = await _childrenRepository.GetParentIdByChildIdAsync(id);
+        
+        var pincode = await _userRepository.GetPinCodeByIdAsync(parent_id);
         if (pincode == null){
             throw new InvalidOperationException("Bruger har ikke en pinkode");
         } else if (!BCrypt.Net.BCrypt.Verify(pinCode, pincode)){
             throw new InvalidOperationException("Forkert pinkode");
         }
 
-        var user = await _userRepository.GetByIdAsync(id);
-        
+        var user = await _userRepository.GetByIdAsync(parent_id);
+        user.Id = parent_id;
         if (user == null){
             throw new InvalidOperationException("Bruger ikke fundet");
         }
