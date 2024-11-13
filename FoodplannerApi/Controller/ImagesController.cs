@@ -107,7 +107,7 @@ public class ImagesController(IFoodImageService foodImageService) : BaseControll
             {
                 context.Result = new BadRequestResult();
             }
-            else if (authService == null || foodImageService == null || userRepository == null || childrenRepository == null)
+            else if (authService == null || foodImageService == null || userRepository == null)
             {
                 throw new Exception("Missing services");
             } else
