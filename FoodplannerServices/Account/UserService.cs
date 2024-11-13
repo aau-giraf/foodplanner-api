@@ -129,7 +129,7 @@ public class UserService : IUserService
         return await _userRepository.HasPinCodeAsync(id);
     }
 
-    public async Task<IEnumerable<User>> GetUsersNotApprovedAsync()
+    public async Task<IEnumerable<UserDTO>> GetUsersNotApprovedAsync()
     {
         return await _userRepository.GetAllNotApprovedAsync();
     }
