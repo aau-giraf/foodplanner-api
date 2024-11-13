@@ -52,7 +52,7 @@ namespace FoodplannerDataAccessSql.Account
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.QuerySingleAsync<Children>(sql, new {
+                var result = await connection.QueryFirstOrDefaultAsync<Children>(sql, new {
                     Id = id
                 });
                 return result;

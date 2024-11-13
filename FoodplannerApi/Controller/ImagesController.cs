@@ -118,6 +118,11 @@ public class ImagesController(IFoodImageService foodImageService) : BaseControll
                 if (role == "Child")
                 {
                     var child = await childrenRepository.GetByIdAsync(userId);
+                    if (child == null)
+                    {
+                        context.Result = new BadRequestObjectResult($"Unable to authenticate child: child with id [{userId}] not found");
+                        return;
+                    }
                     var parent = await userRepository.GetByIdAsync(child.parentId);
                     userId = parent.Id;
                 }
