@@ -33,7 +33,7 @@ Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 var endpoint = SecretsLoader.GetSecret("MINIO_ENDPOINT");
 var accessKey = SecretsLoader.GetSecret("MINIO_ACCESS");
 var secretKey = SecretsLoader.GetSecret("MINIO_SECRET");
-builder.Services.AddMinio(configureClient => 
+builder.Services.AddMinio(configureClient =>
     configureClient
         .WithEndpoint(endpoint)
         .WithCredentials(accessKey, secretKey)
@@ -50,8 +50,8 @@ builder.Services.AddCors(options =>
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
-    
-    options.AddPolicy("Develompment", 
+
+    options.AddPolicy("Development",
         policy =>
     {
         policy.WithOrigins("*")
@@ -95,7 +95,8 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-builder.Services.AddSingleton(serviceProvider => {
+builder.Services.AddSingleton(serviceProvider =>
+{
     var host = SecretsLoader.GetSecret("DB_HOST");
     var port = SecretsLoader.GetSecret("DB_PORT");
     var database = SecretsLoader.GetSecret("DB_NAME");
@@ -114,12 +115,15 @@ builder.Services.AddControllers();
 var configuration = builder.Configuration;
 
 
-builder.Services.AddAuthentication(cfg => {
+builder.Services.AddAuthentication(cfg =>
+{
     cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(x => {
-    x.TokenValidationParameters = new TokenValidationParameters {
+}).AddJwtBearer(x =>
+{
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
@@ -166,11 +170,11 @@ builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
 builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepository));
 builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));
 builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
-builder.Services.AddScoped(typeof(ImagesController.AuthoriseImageOwnerFilter));
 
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
 builder.Services.AddScoped<IClassroomService, ClassroomService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ChildrenService>();
 builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddAutoMapper(typeof(UserProfile));
@@ -187,7 +191,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Apply CORS policy
-if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development") 
+if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
     app.UseCors("Development");
 else app.UseCors("AllowSpecificOrigins");
 
