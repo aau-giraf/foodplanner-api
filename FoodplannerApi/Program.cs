@@ -14,6 +14,10 @@ using Minio;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using FoodplannerApi.Helpers;
+using FluentMigrator.Runner;
+using FluentMigrator.Runner.Initialization;
+using FluentMigrator.Postgres;
+using FoodplannerDataAccessSql.Migrations;
 using Microsoft.OpenApi.Models;
 
 
@@ -182,7 +186,43 @@ builder.Services.AddAutoMapper(typeof(UserProfile));
 
 builder.Services.AddSingleton<AuthService>();
 
+// Set up connection to database before running migrations
+builder.Services.AddSingleton(serviceProvider => {
+        var host = SecretsLoader.GetSecret("DB_HOST");
+        var port = SecretsLoader.GetSecret("DB_PORT");
+        var database = SecretsLoader.GetSecret("DB_NAME");
+        var username = SecretsLoader.GetSecret("DB_USER");
+        var password = SecretsLoader.GetSecret("DB_PASS");
+
+        return new PostgreSQLConnectionFactory(host, port, database, username, password);
+    });
+
+builder.Services.AddFluentMigratorCore()
+    .ConfigureRunner(rb => rb
+        .AddPostgres()
+        .WithGlobalConnectionString(
+            $"Host={SecretsLoader.GetSecret("DB_HOST")};" +
+            $"Port={SecretsLoader.GetSecret("DB_PORT")};" +
+            $"Database={SecretsLoader.GetSecret("DB_NAME")};" +
+            $"Username={SecretsLoader.GetSecret("DB_USER")};" +
+            $"Password={SecretsLoader.GetSecret("DB_PASS")}")
+        .ScanIn(typeof(InitTables).Assembly).For.Migrations()) 
+    .AddLogging(lb => lb.AddFluentMigratorConsole()); //Add logging to migrations to see state.
+
+
 var app = builder.Build();
+
+// Run migrations at application startup
+using (var scope = app.Services.CreateScope())
+{
+    var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
+
+    if (runner.HasMigrationsToApplyUp())
+    {
+        runner.ListMigrations();
+        runner.MigrateUp();
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
