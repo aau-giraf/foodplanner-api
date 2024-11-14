@@ -30,7 +30,7 @@ public class UsersController : BaseController {
             LastName = "test",
             Email = "user@test.com",
             Password = "test",
-            Role = "admin",
+            Role = "Teacher",
             RoleApproved = true
         };
 
@@ -79,7 +79,7 @@ public class UsersController : BaseController {
     [Authorize(Roles = "Child, Parent")]
     public async Task<IActionResult> UpdatePinCode([FromHeader(Name = "Authorization")] string token, [FromBody] Pincode pincode){
         try{
-            var idString = _authService.RetrieveIdFromJWTToken(token);
+            var idString = _authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id)) {
                 return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
             }
@@ -100,7 +100,7 @@ public class UsersController : BaseController {
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CheckPinCode([FromHeader(Name = "Authorization")] string token, [FromBody] Pincode pincode){
         try{
-            var idString = _authService.RetrieveIdFromJWTToken(token);
+            var idString = _authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id)) {
                 return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
             }
@@ -118,7 +118,7 @@ public class UsersController : BaseController {
     [Authorize(Roles = "Child, Parent")]
     public async Task<IActionResult> HasPinCode([FromHeader(Name = "Authorization")] string token) {
         try {    
-            var idString = _authService.RetrieveIdFromJWTToken(token);
+            var idString = _authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id)) {
                 return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
             }
@@ -129,4 +129,8 @@ public class UsersController : BaseController {
             return BadRequest(new ErrorResponse {Message = [e.Message]});
         }
     }
+
+    
+
+   
 }

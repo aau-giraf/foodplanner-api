@@ -26,4 +26,5 @@ public class User {
     public required string Role { get; set; }
     public required bool RoleApproved { get; set; }
     public string PinCode { get; set; }
+    public bool Archived { get; set; }
 }
