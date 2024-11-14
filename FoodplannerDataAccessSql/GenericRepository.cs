@@ -73,4 +73,5 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         return typeof(T).GetProperties().Where(p => p.Name != "Id").Select(p => $"{p.Name} = @{p.Name}");
     }
+
 }
