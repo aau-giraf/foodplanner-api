@@ -30,7 +30,7 @@ public class MealsController (MealService mealService, AuthService authService) 
     [Authorize(Roles = "Parent")]
     public async Task<IActionResult> GetAllByUser([FromHeader(Name = "Authorization")] string token, string date){
         try {    
-            var idString = _authService.RetrieveIdFromJWTToken(token);
+            var idString = _authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id)) {
                 return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
             }
@@ -58,7 +58,7 @@ public class MealsController (MealService mealService, AuthService authService) 
     [Authorize(Roles = "Parent")]
     public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] MealContainer mealContainer){
         try {    
-            var idString = _authService.RetrieveIdFromJWTToken(token);
+            var idString = _authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id)) {
                 return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
             }
@@ -80,7 +80,7 @@ public class MealsController (MealService mealService, AuthService authService) 
     [Authorize(Roles = "Parent")]
     public async Task<IActionResult> Update([FromHeader(Name = "Authorization")] string token, [FromBody] Meal meal, int id){
         try {    
-            var idString = _authService.RetrieveIdFromJWTToken(token);
+            var idString = _authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int user_id)) {
                 return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
             }

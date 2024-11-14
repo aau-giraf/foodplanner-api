@@ -31,7 +31,7 @@ public class IngredientsController (IngredientService ingredientService, AuthSer
     [Authorize(Roles = "Parent")]
     public async Task<IActionResult> GetAllByUser([FromHeader(Name = "Authorization")] string token){
         try {    
-            var idString = _authService.RetrieveIdFromJWTToken(token);
+            var idString = _authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id)) {
                 return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
             }

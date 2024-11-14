@@ -13,7 +13,7 @@ using FoodplannerModels.Account;
 
 namespace FoodplannerApi.Controller;
 
-public class ImagesController(IFoodImageService foodImageService) : BaseController
+public class ImagesController(IFoodImageService foodImageService, AuthService authService) : BaseController
 {
     private readonly long _maxFileSize = 2000000000;
     private readonly AuthService _authService = authService;
@@ -23,7 +23,7 @@ public class ImagesController(IFoodImageService foodImageService) : BaseControll
     public async Task<IActionResult> UploadImage([FromHeader(Name = "Authorization")] string token, IFormFile imageFile)
     {
         try {    
-            var idString = _authService.RetrieveIdFromJWTToken(token);
+            var idString = _authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id)) {
                 return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
             }
