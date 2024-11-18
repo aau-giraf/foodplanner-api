@@ -28,7 +28,7 @@ public class MealService (IMealRepository mealRepository, IPackedIngredientRepos
             PackedIngredientDTO packed = new() {Id = element.Id, Meal_ref = element.Meal_ref, Ingredient_ref = ingredient};
             ingredients.Add(packed);
         }
-        MealDTO mealDTO = new() {Id = meal.Id, Image_ref = meal.Image_ref, Title = meal.Title, Date = meal.Date, Ingredients = ingredients};
+        MealDTO mealDTO = new() {Id = meal.Id, Food_image_id = meal.Food_image_id, Name = meal.Name, Date = meal.Date, Ingredients = ingredients};
         output.Add(mealDTO);
         }
 
@@ -36,8 +36,8 @@ public class MealService (IMealRepository mealRepository, IPackedIngredientRepos
     }
 
     // Retrieves all meals by user id.
-    public async Task<List<MealDTO>> GetAllMealsByUserAsync(int user_ref, string date){
-        var meals = await _mealRepository.GetAllByUserAsync(user_ref, date);
+    public async Task<List<MealDTO>> GetAllMealsByUserAsync(int userId, string date){
+        var meals = await _mealRepository.GetAllByUserAsync(userId, date);
         List<MealDTO> output = [];
         foreach(Meal meal in meals)
         {
@@ -50,7 +50,7 @@ public class MealService (IMealRepository mealRepository, IPackedIngredientRepos
             PackedIngredientDTO packed = new() {Id = element.Id, Meal_ref = element.Meal_ref, Ingredient_ref = ingredient};
             ingredients.Add(packed);
         }
-        MealDTO mealDTO = new() {Id = meal.Id, Image_ref = meal.Image_ref, Title = meal.Title, Date = meal.Date, Ingredients = ingredients};
+        MealDTO mealDTO = new() {Id = meal.Id, Food_image_id = meal.Food_image_id, Name = meal.Name, Date = meal.Date, Ingredients = ingredients};
         output.Add(mealDTO);
         }
 
@@ -76,7 +76,7 @@ public class MealService (IMealRepository mealRepository, IPackedIngredientRepos
         }
         else
         {
-            MealDTO output = new() {Id = meal.Id, Image_ref = meal.Image_ref, Title = meal.Title, Date = meal.Date, Ingredients = ingredients};
+            MealDTO output = new() {Id = meal.Id, Food_image_id = meal.Food_image_id, Name = meal.Name, Date = meal.Date, Ingredients = ingredients};
             return output;
         }
     }

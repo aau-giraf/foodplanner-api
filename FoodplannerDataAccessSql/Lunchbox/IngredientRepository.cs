@@ -21,18 +21,18 @@ public class IngredientRepository (PostgreSQLConnectionFactory connectionFactory
     }
 
     // Asynchronously retrieves all ingredients by user.
-    public async Task<IEnumerable<Ingredient>> GetAllByUserAsync(int user_ref)
+    public async Task<IEnumerable<Ingredient>> GetAllByUserAsync(int id)
     {
-        var sql = $"SELECT * FROM ingredients WHERE user_ref = {user_ref}"; // SQL query to select all ingredients.
+        var sql = "SELECT * FROM ingredients WHERE id = @Id"; // SQL query to select all ingredients.
         using var connection = _connectionFactory.Create(); // Create a new database connection.
         connection.Open();  // Open the connection to the database.
-        return await connection.QueryAsync<Ingredient>(sql); // Execute the query and return all ingredients.
+        return await connection.QueryAsync<Ingredient>(sql, new{ Id = id }); // Execute the query and return all ingredients.
     }
 
     // Asynchronously retrieves an ingredient by its unique ID.
     public async Task<Ingredient> GetByIdAsync(int id)
     {
-        var sql = $"SELECT * FROM ingredients WHERE id = '{id}'"; // SQL query to select an ingredient by ID.
+        var sql = "SELECT * FROM ingredients WHERE id = @Id"; // SQL query to select an ingredient by ID.
         using var connection = _connectionFactory.Create(); // Create a new database connection.
         connection.Open(); // Open the connection to the database.
         var result = await connection.QuerySingleOrDefaultAsync<Ingredient>(sql, new { Id = id }); // Execute the query and retrieve the ingredient.
@@ -45,9 +45,13 @@ public class IngredientRepository (PostgreSQLConnectionFactory connectionFactory
     {
         using var connection = _connectionFactory.Create(); // Create a new database connection.
         connection.Open(); // Open the connection to the database.
-        var sql = $"INSERT INTO ingredients (name, user_ref, image_ref)\n"; // SQL query for insertion.
-        sql += $"VALUES (@Name, @User_ref, @Image_ref) RETURNING id"; // Values to insert.
-        return await connection.QuerySingleAsync<int>(sql, new {entity.Name, entity.User_ref, Image_ref = (object?)entity.Image_ref ?? DBNull.Value}); // Execute the insertion and return the number of affected rows.
+        var sql = "INSERT INTO ingredients (name, user_id, food_image_id) VALUES (@Name, @UserId, @FoodImageId) RETURNING id"; // SQL query for insertion.
+        return await connection.QuerySingleAsync<int>(sql, new
+        {
+            Name = entity.Name, 
+            UserId = entity.User_id, 
+            FoodImageId = entity.Food_image_id 
+        }); // Execute the insertion and return the number of affected rows.
     }
 
     // Asynchronously updates an existing ingredient in the database.
@@ -55,16 +59,20 @@ public class IngredientRepository (PostgreSQLConnectionFactory connectionFactory
     {
         using var connection = _connectionFactory.Create(); // Create a new database connection.
         connection.Open(); // Open the connection to the database.
-        var sql = $"UPDATE ingredients\n"; // SQL query to update an ingredient.
-        sql += $"SET name = '{entity.Name}', user_ref = '{entity.User_ref}', image_ref = '{entity.Image_ref}'"; // Set new values.
-        sql += $"WHERE id = '{id}'"; // Condition for which ingredient to update.
-        return await connection.ExecuteAsync(sql, entity); // Execute the update and return the number of affected rows.
+        var sql = "UPDATE ingredients SET name = @Name, user_id = @UserId, food_image_id = @FoodImageId WHERE id = @Id"; // SQL query to update an ingredient.
+        return await connection.ExecuteAsync(sql, new
+        {
+            Name = entity.Name, 
+            UserId = entity.User_id, 
+            FoodImageId = entity.Food_image_id, 
+            Id = id
+        }); // Execute the update and return the number of affected rows.
     }
 
     // Asynchronously deletes an ingredient from the database by its ID.
     public async Task<int> DeleteAsync(int id)
     {
-        var sql = $"DELETE FROM ingredients WHERE id = '{id}'"; // SQL query to delete an ingredient by ID.
+        var sql = "DELETE FROM ingredients WHERE id = @Id"; // SQL query to delete an ingredient by ID.
         using var connection = _connectionFactory.Create(); // Create a new database connection.
         connection.Open(); // Open the connection to the database.
         return await connection.ExecuteAsync(sql, new { Id = id }); // Execute the deletion and return the number of affected rows.

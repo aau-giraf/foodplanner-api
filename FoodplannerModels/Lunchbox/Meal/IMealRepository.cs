@@ -8,7 +8,7 @@ public interface IMealRepository
     // Gets all meals asynchronously.
     Task<IEnumerable<Meal>> GetAllAsync();
     // Gets all meals by user id asynchronously.
-    Task<IEnumerable<Meal>> GetAllByUserAsync(int user_ref, string date);
+    Task<IEnumerable<Meal>> GetAllByUserAsync(int id, string date);
     // Gets an meal by ID asynchronously.
     Task<Meal> GetByIdAsync(int id);
     // Inserts a new meal asynchronously.

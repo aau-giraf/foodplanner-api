@@ -27,7 +27,6 @@ public class MealsController (MealService mealService, AuthService authService) 
 
     // Get all meals by user id
     [HttpGet("{date}")]
-    [Authorize(Roles = "Parent")]
     public async Task<IActionResult> GetAllByUser([FromHeader(Name = "Authorization")] string token, string date){
         try {    
             var idString = _authService.RetrieveIdFromJwtToken(token);
@@ -62,7 +61,7 @@ public class MealsController (MealService mealService, AuthService authService) 
             if (!int.TryParse(idString, out int id)) {
                 return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
             }
-            Meal meal = new() {Id = mealContainer.Id, Title = mealContainer.Title, User_ref = id, Image_ref = mealContainer.Image_ref, Date = mealContainer.Date};
+            Meal meal = new() {Id = mealContainer.Id, Name = mealContainer.Name, User_id = id, Food_image_id = mealContainer.Food_image_id, Date = mealContainer.Date};
             var result = await _mealService.CreateMealAsync(meal);
             if (result > 0){ // Returns 201 with an object of the new meal
                 var createdMeal = await _mealService.GetMealByIdAsync(result);
@@ -84,7 +83,7 @@ public class MealsController (MealService mealService, AuthService authService) 
             if (!int.TryParse(idString, out int user_id)) {
                 return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
             }
-            meal.User_ref = user_id;
+            meal.User_id = user_id;
             var result = await _mealService.UpdateMealAsync(meal, id);
             if (result > 0){ // Returns the updated meal with a 200 OK status
                 var changedMeal = await _mealService.GetMealByIdAsync(id);
@@ -111,8 +110,8 @@ public class MealsController (MealService mealService, AuthService authService) 
 
     public class MealContainer{
         public int Id {get; set;}
-        public string Title {get; set;}
-        public int? Image_ref {get; set;}
+        public string Name {get; set;}
+        public int Food_image_id {get; set;}
         public string Date {get; set;}
     }
 }
