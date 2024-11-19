@@ -6,79 +6,32 @@ namespace FoodplannerServices.Lunchbox;
 /**
 * The service for the Meal class.
 */
-public class MealService (IMealRepository mealRepository, IPackedIngredientRepository packedIngredientRepository, IIngredientRepository ingredientRepository) : IMealService
+public class MealService (IMealRepository mealRepository, IPackedIngredientRepository packedIngredientRepository, IIngredientRepository ingredientRepository, IMapper mapper) : IMealService
 {
     // Dependency injection of the meal repository.
     private readonly IMealRepository _mealRepository = mealRepository;
     private readonly IPackedIngredientRepository _packedIngredientRepository = packedIngredientRepository;
     private readonly IIngredientRepository _ingredientRepository = ingredientRepository;
+    private readonly IMapper _mapper;
 
     // Retrieves all meals from the repository.
-    public async Task<List<MealDTO>> GetAllMealsAsync(){
-        var meals = await _mealRepository.GetAllAsync();
-        List<MealDTO> output = [];
-        foreach(Meal meal in meals)
-        {
-            var packedIngredients = await _packedIngredientRepository.GetAllByMealIdAsync(meal.Id);
-
-        List<PackedIngredientDTO> ingredients = [];
-        foreach(PackedIngredient element in packedIngredients)
-        {
-            var ingredient = await _ingredientRepository.GetByIdAsync(element.Ingredient_ref);
-            PackedIngredientDTO packed = new() {Id = element.Id, Meal_ref = element.Meal_ref, Ingredient_ref = ingredient};
-            ingredients.Add(packed);
-        }
-        MealDTO mealDTO = new() {Id = meal.Id, Image_ref = meal.Image_ref, Title = meal.Title, Date = meal.Date, Ingredients = ingredients};
-        output.Add(mealDTO);
-        }
-
-        return output;
+    public async Task<IEnumerable<MealDTO>> GetAllMealsAsync(){
+        var meal = await _mealRepository.GetAllAsync();
+        var mealDTO = _mapper.Map<IEnumerable<MealDTO>>(meal);
+        return mealDTO;
     }
 
     // Retrieves all meals by user id.
-    public async Task<List<MealDTO>> GetAllMealsByUserAsync(int user_ref, string date){
-        var meals = await _mealRepository.GetAllByUserAsync(user_ref, date);
-        List<MealDTO> output = [];
-        foreach(Meal meal in meals)
-        {
-            var packedIngredients = await _packedIngredientRepository.GetAllByMealIdAsync(meal.Id);
-
-        List<PackedIngredientDTO> ingredients = [];
-        foreach(PackedIngredient element in packedIngredients)
-        {
-            var ingredient = await _ingredientRepository.GetByIdAsync(element.Ingredient_ref);
-            PackedIngredientDTO packed = new() {Id = element.Id, Meal_ref = element.Meal_ref, Ingredient_ref = ingredient};
-            ingredients.Add(packed);
-        }
-        MealDTO mealDTO = new() {Id = meal.Id, Image_ref = meal.Image_ref, Title = meal.Title, Date = meal.Date, Ingredients = ingredients};
-        output.Add(mealDTO);
-        }
-
-        return output;
+    public async Task<IEnumerable<MealDTO>> GetAllMealsByUserAsync(int user_ref, string date){
+        var meal = await _mealRepository.GetAllByUserAsync(user_ref, date);
+        var mealDTO = _mapper.Map<IEnumerable<MealDTO>>(meal);
+        return mealDTO;
     }
 
     // Retrieves a specific meal by its ID.
     public async Task<MealDTO> GetMealByIdAsync(int id){
         var meal = await _mealRepository.GetByIdAsync(id);
-        var packedIngredients = await _packedIngredientRepository.GetAllByMealIdAsync(id);
-
-        List<PackedIngredientDTO> ingredients = [];
-        foreach(PackedIngredient element in packedIngredients)
-        {
-            var ingredient = await _ingredientRepository.GetByIdAsync(element.Ingredient_ref);
-            PackedIngredientDTO packed = new() {Id = element.Id, Meal_ref = element.Meal_ref, Ingredient_ref = ingredient};
-            ingredients.Add(packed);
-        }
-
-        if(meal == null)
-        {
-            return null;
-        }
-        else
-        {
-            MealDTO output = new() {Id = meal.Id, Image_ref = meal.Image_ref, Title = meal.Title, Date = meal.Date, Ingredients = ingredients};
-            return output;
-        }
+        return _mapper.Map<MealDTO>(meal);
     }
 
     // Creates a new meal in the repository.
