@@ -22,7 +22,7 @@ namespace FoodplannerDataAccessSql.Lunchbox
 
         // Get all packed ingredients by a meal ID
         public async Task<IEnumerable<PackedIngredient>> GetAllByMealIdAsync(int id) {
-            var sql = $"SELECT * FROM packed_ingredients WHERE meal_ref = @Id";
+            var sql = $"SELECT * FROM packed_ingredients WHERE meal_ref = '{id}'";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open(); 
@@ -34,7 +34,7 @@ namespace FoodplannerDataAccessSql.Lunchbox
 
         // Get a specific packed ingredient by its ID
         public async Task<PackedIngredient> GetByIdAsync(int id) {
-            var sql = $"SELECT * FROM packed_ingredients WHERE id = @Id";
+            var sql = $"SELECT * FROM packed_ingredients WHERE id = '{id}'";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open(); 
@@ -46,7 +46,7 @@ namespace FoodplannerDataAccessSql.Lunchbox
 
         // Inserts a new packed ingredient into the database and returns its Id
         public async Task<int> InsertAsync(int meal_ref, int ingredient_ref) {
-            var sql = $"INSERT INTO packed_ingredients (meal_ref, ingredient_ref) VALUES (@meal_ref, @ingredient_ref) RETURNING id";
+            var sql = $"INSERT INTO packed_ingredients (meal_ref, ingredient_ref) VALUES ('{meal_ref}', '{ingredient_ref}') RETURNING id";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
@@ -61,7 +61,7 @@ namespace FoodplannerDataAccessSql.Lunchbox
 
         // Updates an existing packed ingredient
         public async Task<int> UpdateAsync(PackedIngredient entity, int id) {
-            var sql = $"UPDATE packed_ingredients SET meal_ref = @Meal_ref, ingredient_ref = @Ingredient_ref WHERE id = @Id";
+            var sql = $"UPDATE packed_ingredients SET meal_ref = @Meal_ref, ingredient_ref = @Ingredient_ref WHERE id = '{id}'";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
@@ -76,7 +76,7 @@ namespace FoodplannerDataAccessSql.Lunchbox
 
         // Deletes a packed ingredient from the database by its ID
         public async Task<int> DeleteAsync(int id) {
-            var sql = $"DELETE FROM packed_ingredients WHERE id = @Id"; 
+            var sql = $"DELETE FROM packed_ingredients WHERE id = '{id}'"; 
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
