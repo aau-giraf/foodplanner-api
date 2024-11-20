@@ -6,7 +6,7 @@ namespace FoodplannerDataAccessSql.Lunchbox;
 /**
 * The repository for the Ingredient class.
 */
-public class IngredientRepository (PostgreSQLConnectionFactory connectionFactory) : IIngredientRepository
+public class IngredientRepository(PostgreSQLConnectionFactory connectionFactory) : IIngredientRepository
 {
     private readonly PostgreSQLConnectionFactory _connectionFactory = connectionFactory;
 
@@ -46,7 +46,7 @@ public class IngredientRepository (PostgreSQLConnectionFactory connectionFactory
     }
 
     // Asynchronously inserts a new ingredient into the database and returns its Id.
-    public async Task<int> InsertAsync(Ingredient entity)
+    public async Task<int> InsertAsync(IngredientDTO entity, int id)
     {
         var sql = "INSERT INTO ingredients (name, user_id, food_image_id) VALUES (@Name, @UserId, @FoodImageId) RETURNING id";
         using (var connection = _connectionFactory.Create())
@@ -56,7 +56,7 @@ public class IngredientRepository (PostgreSQLConnectionFactory connectionFactory
             return await connection.QuerySingleAsync<int>(sql, new
             {
                 Name = entity.Name,
-                UserId = entity.User_id,
+                UserId = id,
                 FoodImageId = entity.Food_image_id ?? (object)DBNull.Value,
             });
         }
