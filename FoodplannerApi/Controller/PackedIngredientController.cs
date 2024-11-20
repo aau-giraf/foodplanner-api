@@ -41,9 +41,9 @@ namespace FoodplannerApi.Controller
         [Authorize(Roles = "Parent")]
         public async Task<IActionResult> Create([FromBody] PackedIngredientContainer packIngredient) {
             // Calls the service to create a new packed ingredient
-            var meal_ref = packIngredient.Meal_ref;
-            var ingredient_ref = packIngredient.Ingredient_ref;
-            var result = await _packedIngredientService.CreatePackedIngredientAsync(meal_ref, ingredient_ref); 
+            var mealId = packIngredient.Meal_id;
+            var ingredientId = packIngredient.Ingredient_id;
+            var result = await _packedIngredientService.CreatePackedIngredientAsync(mealId, ingredientId); 
             if (result > 0)
             {
                 var createdPI = await _packedIngredientService.GetPackedIngredientByIdAsync(result);
@@ -79,7 +79,7 @@ namespace FoodplannerApi.Controller
     }
 
     public class PackedIngredientContainer{
-        public int Meal_ref {get; set;}
-        public int Ingredient_ref { get; set; }
+        public int Meal_id {get; set;}
+        public int Ingredient_id { get; set; }
     }
 }

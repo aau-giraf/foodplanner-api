@@ -12,7 +12,7 @@ public interface IPackedIngredientService
     // Retrieves a specific packed ingredient by its ID asynchronously.
     Task<PackedIngredient> GetPackedIngredientByIdAsync(int id);
     // Creates a new packed ingredient asynchronously.
-    Task<int> CreatePackedIngredientAsync(int meal_ref, int ingredient_ref);
+    Task<int> CreatePackedIngredientAsync(int meal_id, int ingredient_id);
     // Updates an existing packed ingredient by ID asynchronously.
     Task<int> UpdatePackedIngredientAsync(PackedIngredient packedIngredient, int id);
     // Deletes a packed ingredient by its ID asynchronously.

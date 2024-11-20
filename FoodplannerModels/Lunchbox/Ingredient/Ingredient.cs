@@ -11,5 +11,5 @@ public class Ingredient {
     // Reference to the user associated with the ingredient.
     public required int User_id {get; set;}
     // Reference to the ingredient's image.
-    public required int Food_image_id {get; set;}
+    public int? Food_image_id {get; set;}
 }

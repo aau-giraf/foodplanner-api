@@ -24,18 +24,18 @@ public class IngredientRepository (PostgreSQLConnectionFactory connectionFactory
     // Asynchronously retrieves all ingredients by user.
     public async Task<IEnumerable<Ingredient>> GetAllByUserAsync(int id)
     {
-        var sql = $"SELECT * FROM ingredients WHERE user_ref = '{user_ref}'";
+        var sql = "SELECT * FROM ingredients WHERE user_id = @Id";
         using (var connection = _connectionFactory.Create())
         {
             connection.Open();
-            return await connection.QueryAsync<Ingredient>(sql);
+            return await connection.QueryAsync<Ingredient>(sql, new { Id = id });
         }
     }
 
     // Asynchronously retrieves an ingredient by its unique ID.
     public async Task<Ingredient> GetByIdAsync(int id)
     {
-        var sql = $"SELECT * FROM ingredients WHERE id = '{id}'";
+        var sql = "SELECT * FROM ingredients WHERE id = @Id";
         using (var connection = _connectionFactory.Create())
         {
             connection.Open();
@@ -48,16 +48,16 @@ public class IngredientRepository (PostgreSQLConnectionFactory connectionFactory
     // Asynchronously inserts a new ingredient into the database and returns its Id.
     public async Task<int> InsertAsync(Ingredient entity)
     {
-        var sql = "INSERT INTO ingredients (name, user_ref, image_ref) VALUES (@Name, @User_ref, @Image_ref) RETURNING id";
+        var sql = "INSERT INTO ingredients (name, user_id, food_image_id) VALUES (@Name, @UserId, @FoodImageId) RETURNING id";
         using (var connection = _connectionFactory.Create())
         {
             connection.Open();
-            //Since image_ref is nullable in the database, we cast it as a nullable object in a null-coalescing operator in order to return the correct form of null to the database.
+            //Since food_image_id is nullable in the database, we cast it as a nullable object in a null-coalescing operator in order to return the correct form of null to the database.
             return await connection.QuerySingleAsync<int>(sql, new
             {
                 Name = entity.Name,
-                User_ref = entity.User_ref,
-                Image_ref = (object?)entity.Image_ref ?? DBNull.Value
+                UserId = entity.User_id,
+                FoodImageId = entity.Food_image_id ?? (object)DBNull.Value,
             });
         }
     }
@@ -65,7 +65,7 @@ public class IngredientRepository (PostgreSQLConnectionFactory connectionFactory
     // Asynchronously updates an existing ingredient in the database.
     public async Task<int> UpdateAsync(Ingredient entity, int id)
     {
-        var sql = $"UPDATE ingredients SET name = @Name, user_ref = @User_ref, image_ref = @Image_ref WHERE id = '{id}'";
+        var sql = "UPDATE ingredients SET name = @Name, user_id = @UserId, food_image_id = @FoodImageId WHERE id = @Id";
         using (var connection = _connectionFactory.Create())
         {
             connection.Open();
@@ -73,8 +73,8 @@ public class IngredientRepository (PostgreSQLConnectionFactory connectionFactory
             {
                 Id = id,
                 Name = entity.Name,
-                User_ref = entity.User_ref,
-                Image_ref = entity.Image_ref
+                UserId = entity.User_id,
+                FoodImageId = entity.Food_image_id
             });
         }
     }
@@ -82,7 +82,7 @@ public class IngredientRepository (PostgreSQLConnectionFactory connectionFactory
     // Asynchronously deletes an ingredient from the database by its ID.
     public async Task<int> DeleteAsync(int id)
     {
-        var sql = $"DELETE FROM ingredients WHERE id = '{id}'";
+        var sql = "DELETE FROM ingredients WHERE id = @Id";
         using (var connection = _connectionFactory.Create())
         {
             connection.Open();

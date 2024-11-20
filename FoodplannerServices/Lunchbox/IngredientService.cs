@@ -15,9 +15,9 @@ public class IngredientService (IIngredientRepository ingredientRepository) : II
         return await _ingredientRepository.GetAllAsync();
     }
     // Retrieves all ingredients by user.
-    public async Task<IEnumerable<Ingredient>> GetAllIngredientsByUserAsync(int user_ref){
+    public async Task<IEnumerable<Ingredient>> GetAllIngredientsByUserAsync(int userId){
 
-        var ingredients = await _ingredientRepository.GetAllByUserAsync(user_ref);
+        var ingredients = await _ingredientRepository.GetAllByUserAsync(userId);
         return ingredients.ToList();
     }
     // Retrieves a specific ingredient by its ID.

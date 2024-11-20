@@ -13,7 +13,7 @@ public class Meal {
     // Reference to the user associated with the meal.
     public int User_id {get; set;}
     // Reference to the meal's image.
-    public int Food_image_id {get; set;}
+    public int? Food_image_id {get; set;}
     // Date accosiated with the meal
     public required string Date {get; set;}
 }
