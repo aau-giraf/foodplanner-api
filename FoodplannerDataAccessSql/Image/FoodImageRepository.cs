@@ -36,13 +36,13 @@ public class FoodImageRepository(PostgreSQLConnectionFactory connectionFactory) 
     public async Task<int> InsertImageAsync(string imageId, int userId, string imageName, string imageFileType, long fileSize)
     {
         int result;
-        var sql = "INSERT INTO food_image (image_id, user_id, image_name, image_file_type, size)" + 
-                  $"VALUES ('{imageId}', {userId}, '{imageName}', '{imageFileType}', {fileSize})";
+        var sql = "INSERT INTO food_image (image_id, user_id, image_name, image_file_type, size)\n" + 
+                  $"VALUES (@imageId, @userId, @imageName, @imageFileType, @fileSize) RETURNING id";
 
         await using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            result = await connection.ExecuteScalarAsync<int>(sql);
+            result = await connection.QuerySingleAsync<int>(sql, new{imageId, userId, imageName, imageFileType, fileSize});
         }
         return result;
     }

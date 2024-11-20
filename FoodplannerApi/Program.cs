@@ -3,8 +3,14 @@ using System.Text;
 using FoodplannerApi;
 using FoodplannerApi.Controller;
 using Npgsql;
-using FoodplannerDataAccessSql.Account;
 using FoodplannerDataAccessSql;
+using FoodplannerDataAccessSql.Account;
+using FoodplannerDataAccessSql.Lunchbox;
+using FoodplannerModels;
+using FoodplannerModels.Account;
+using FoodplannerServices.Account;
+using FoodplannerModels.Lunchbox;
+using FoodplannerServices.Lunchbox;
 using FoodplannerDataAccessSql.Image;
 using FoodplannerModels;
 using FoodplannerModels.Account;
@@ -19,7 +25,6 @@ using FluentMigrator.Runner.Initialization;
 using FluentMigrator.Postgres;
 using FoodplannerDataAccessSql.Migrations;
 using Microsoft.OpenApi.Models;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -172,9 +177,16 @@ builder.Services.AddAuthorization(options =>
 //Dependency Injection Starts Here !
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
+builder.Services.AddScoped(typeof(IMealRepository), typeof(MealRepository));
+builder.Services.AddScoped(typeof(IIngredientRepository), typeof(IngredientRepository));
+builder.Services.AddScoped(typeof(IPackedIngredientRepository), typeof(PackedIngredientRepository));
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<MealService>();
+builder.Services.AddScoped<IngredientService>();
+builder.Services.AddScoped<PackedIngredientService>();
+builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
 builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepository));
 builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));
-builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
 
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
 builder.Services.AddScoped<IClassroomService, ClassroomService>();
