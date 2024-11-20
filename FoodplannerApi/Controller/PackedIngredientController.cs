@@ -16,7 +16,7 @@ namespace FoodplannerApi.Controller
 
         // Get all packed ingredients
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> GetAll() {
             // Calls the service to get all packed ingredients
             var packedIngredients = await _packedIngredientService.GetAllPackedIngredientsAsync(); 
@@ -25,7 +25,7 @@ namespace FoodplannerApi.Controller
 
         // Get a specific packed ingredient by id
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> Get(int id) {
             // Calls the service to get the packed ingredient by ID
             var packedIngredient = await _packedIngredientService.GetPackedIngredientByIdAsync(id); 
@@ -54,7 +54,7 @@ namespace FoodplannerApi.Controller
 
         // Update an existing packed ingredient
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> Update([FromBody] PackedIngredient packedIngredient, int id){
             var result = await _packedIngredientService.UpdatePackedIngredientAsync(packedIngredient, id);
             if (result > 0){

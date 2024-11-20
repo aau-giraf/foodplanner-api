@@ -12,20 +12,13 @@ public class IngredientService (IIngredientRepository ingredientRepository) : II
     private readonly IIngredientRepository _ingredientRepository = ingredientRepository;
     // Retrieves all ingredients from the repository.
     public async Task<IEnumerable<Ingredient>> GetAllIngredientsAsync(){
-
-        var ingredients = await _ingredientRepository.GetAllAsync();
-        return ingredients;
+        return await _ingredientRepository.GetAllAsync();
     }
     // Retrieves all ingredients by user.
-    public async Task<List<Ingredient>> GetAllIngredientsByUserAsync(int id){
+    public async Task<IEnumerable<Ingredient>> GetAllIngredientsByUserAsync(int user_ref){
 
-        var ingredients = await _ingredientRepository.GetAllByUserAsync(id);
-        List<Ingredient> output = [];
-        foreach(Ingredient element in ingredients)
-        {
-            output.Add(element);
-        }
-        return output;
+        var ingredients = await _ingredientRepository.GetAllByUserAsync(user_ref);
+        return ingredients.ToList();
     }
     // Retrieves a specific ingredient by its ID.
     public async Task<Ingredient> GetIngredientByIdAsync(int id){

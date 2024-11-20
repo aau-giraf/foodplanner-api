@@ -19,7 +19,7 @@ public class IngredientsController (IngredientService ingredientService, AuthSer
 
     // Get all ingredients
     [HttpGet]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<IActionResult> GetAll(){
         // Calls the service to fetch all ingredients
         var ingredients = await _ingredientService.GetAllIngredientsAsync(); // Fetch all ingredients.

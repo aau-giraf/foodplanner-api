@@ -19,7 +19,7 @@ public class MealsController (MealService mealService, AuthService authService) 
 
     // Get all meals
     [HttpGet]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<IActionResult> GetAll(){
         var meals = await _mealService.GetAllMealsAsync();
         return Ok(meals);
