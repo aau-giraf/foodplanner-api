@@ -9,28 +9,51 @@ using FoodplannerServices.Image;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using FoodplannerModels.Account;
 
 namespace FoodplannerApi.Controller;
 
-public class ImagesController(IFoodImageService foodImageService) : BaseController
+public class ImagesController(IFoodImageService foodImageService, AuthService authService) : BaseController
 {
     private readonly long _maxFileSize = 2000000000;
+    private readonly AuthService _authService = authService;
     
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> UploadImage(IFormFile imageFile, int userId)
+    public async Task<IActionResult> UploadImage([FromHeader(Name = "Authorization")] string token, IFormFile imageFile)
     {
-        if (imageFile.Length == 0) return BadRequest("File is empty");
-        if (imageFile.Length >= _maxFileSize) return BadRequest("File too big");
+        try {    
+            var idString = _authService.RetrieveIdFromJwtToken(token);
+            if (!int.TryParse(idString, out int id)) {
+                return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
+            }
+            var foodImageId = await foodImageService.CreateFoodImage(
+                id,
+                imageFile.OpenReadStream(),
+                imageFile.FileName,
+                imageFile.ContentType,
+                imageFile.Length
+            );
         
-        var foodImageId = foodImageService.CreateFoodImage(
-            userId,
-            imageFile.OpenReadStream(),
-            imageFile.FileName,
-            imageFile.ContentType,
-            imageFile.Length);
+            return Ok(foodImageId);
+        }
+        catch (InvalidOperationException e){
+            return BadRequest(new ErrorResponse {Message = [e.Message]});
+        }
+        // var imageFile = imageContainer.ImageFile;
+        // var userId = imageContainer.UserId;
+
+        // if (imageFile.Length == 0) return BadRequest("File is empty");
+        // if (imageFile.Length >= _maxFileSize) return BadRequest("File too big");
+
+        // var foodImageId = await foodImageService.CreateFoodImage(
+        //     userId,
+        //     imageFile.OpenReadStream(),
+        //     imageFile.FileName,
+        //     imageFile.ContentType,
+        //     imageFile.Length);
         
-        return Ok($"FoodImage [{foodImageId}] uploaded successfully");
+        // return Ok(foodImageId);
     }
 
     [HttpPost]
@@ -81,8 +104,8 @@ public class ImagesController(IFoodImageService foodImageService) : BaseControll
     }
 
     [HttpGet]
-    [Authorize(Roles = "Child, Parent, Teacher")]
-    [AuthorizeImageOwnerFilter]
+    [Authorize(Roles = "Parent")]
+    //[AuthorizeImageOwnerFilter]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPresignedImageLink(int foodImageId)
     {
