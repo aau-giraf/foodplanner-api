@@ -214,6 +214,17 @@ namespace FoodplannerDataAccessSql.Account
                 return result.ToList();
             }
         }
+
+        public async Task<UserDTO> GetLoggedInAsync(int id)
+        {
+            var sql = "SELECT id, first_name, last_name, email, role, role_approved FROM users WHERE id = @Id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QueryFirstOrDefaultAsync<UserDTO>(sql, new { Id = id });
+                return result;
+            }
+        }
     }
 
 }

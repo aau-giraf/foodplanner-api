@@ -174,7 +174,19 @@ public class UsersController : BaseController
     }
 
 
+    [HttpGet]
+    [Authorize(Roles = "Child, Parent")]
+    public async Task<IActionResult> GetLoggedIn([FromHeader(Name = "Authorization")] string token)
+    {
 
+        var idString = _authService.RetrieveIdFromJwtToken(token);
+        if (!int.TryParse(idString, out int id))
+        {
+            return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+        }
+        var user = await _userService.GetLoggedInUserAsync(id);
+        return Ok(user);
+    }
 
 
 }

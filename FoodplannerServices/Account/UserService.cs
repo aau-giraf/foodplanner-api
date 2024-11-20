@@ -148,6 +148,12 @@ public class UserService : IUserService
     {
         return await _userRepository.SelectAllNotArchivedAsync();
     }
+
+    public async Task<UserDTO> GetLoggedInUserAsync(int id)
+    {
+        var user = await _userRepository.GetLoggedInAsync(id);
+        return user;
+    }
 }
 
 
