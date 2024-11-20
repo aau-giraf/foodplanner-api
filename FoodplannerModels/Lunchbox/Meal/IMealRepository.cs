@@ -12,7 +12,7 @@ public interface IMealRepository
     // Gets an meal by ID asynchronously.
     Task<Meal> GetByIdAsync(int id);
     // Inserts a new meal asynchronously.
-    Task<int> InsertAsync(Meal entity);
+    Task<int> InsertAsync(Meal entity, int id);
     // Updates an existing meal asynchronously.
     Task<int> UpdateAsync(Meal entity, int id);
     // Deletes an meal by ID asynchronously.

@@ -6,7 +6,7 @@ namespace FoodplannerDataAccessSql.Lunchbox;
 /**
 * The repository for the Meal class.
 */
-public class MealRepository (PostgreSQLConnectionFactory connectionFactory) : IMealRepository
+public class MealRepository(PostgreSQLConnectionFactory connectionFactory) : IMealRepository
 {
     private readonly PostgreSQLConnectionFactory _connectionFactory = connectionFactory;
 
@@ -47,7 +47,7 @@ public class MealRepository (PostgreSQLConnectionFactory connectionFactory) : IM
     }
 
     // Asynchronously inserts a new meal into the database and returns its Id.
-    public async Task<int> InsertAsync(Meal entity)
+    public async Task<int> InsertAsync(Meal entity, int id)
     {
         var sql = "INSERT INTO meals (name, user_id, food_image_id, date) VALUES (@Name, @UserId, @FoodImageId, @Date) RETURNING id";
         using (var connection = _connectionFactory.Create())
@@ -57,7 +57,7 @@ public class MealRepository (PostgreSQLConnectionFactory connectionFactory) : IM
             return await connection.QuerySingleAsync<int>(sql, new
             {
                 Name = entity.Name,
-                UserId = entity.User_id,
+                UserId = id,
                 FoodImageId = entity.Food_image_id ?? (object)DBNull.Value,
                 Date = entity.Date
             });

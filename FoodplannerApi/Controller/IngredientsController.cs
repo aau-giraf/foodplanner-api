@@ -29,7 +29,7 @@ public class IngredientsController(IngredientService ingredientService, AuthServ
 
     // Get all ingredients by user
     [HttpGet]
-    [Authorize(Roles = "Parent")]
+    [Authorize(Roles = "Child, Parent")]
     public async Task<IActionResult> GetAllByUser([FromHeader(Name = "Authorization")] string token)
     {
         try
@@ -51,7 +51,7 @@ public class IngredientsController(IngredientService ingredientService, AuthServ
 
     // Get a specific ingredient by ID
     [HttpGet("{id}")]
-    [Authorize(Roles = "Parent")]
+    [Authorize(Roles = "Child, Parent")]
     public async Task<IActionResult> Get(int id)
     {
         var ingredient = await _ingredientService.GetIngredientByIdAsync(id); // Fetch the ingredient by ID.
@@ -64,8 +64,7 @@ public class IngredientsController(IngredientService ingredientService, AuthServ
 
     // Create a new ingredient
     [HttpPost]
-    /* [Authorize(Roles = "Parent")]
-    [Authorize(Roles = "Child")] */
+    [Authorize(Roles = "Child, Parent")]
     public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] IngredientDTO ingredient)
     {
         var idString = _authService.RetrieveIdFromJwtToken(token); // Use the method to get the parentId from the token
@@ -85,7 +84,7 @@ public class IngredientsController(IngredientService ingredientService, AuthServ
 
     // Update an existing ingredient
     [HttpPut("{id}")]
-    [Authorize(Roles = "Parent")]
+    [Authorize(Roles = "Child, Parent")]
     public async Task<IActionResult> Update([FromBody] Ingredient ingredient, int id)
     {
         var result = await _ingredientService.UpdateIngredientAsync(ingredient, id); // Calls the service to update the ingredient by ID
@@ -99,7 +98,7 @@ public class IngredientsController(IngredientService ingredientService, AuthServ
 
     // Delete an ingredient by ID
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Parent")]
+    [Authorize(Roles = "Child, Parent")]
     public async Task<IActionResult> Delete(int id)
     {
         // Calls the service to delete the ingredient by ID

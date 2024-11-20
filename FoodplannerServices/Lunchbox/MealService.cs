@@ -1,19 +1,24 @@
 using FoodplannerModels.Lunchbox;
+using AutoMapper;
+
 
 namespace FoodplannerServices.Lunchbox;
 
 /**
 * The service for the Meal class.
 */
-public class MealService (IMealRepository mealRepository, IPackedIngredientRepository packedIngredientRepository, IIngredientRepository ingredientRepository) : IMealService
+public class MealService(IMealRepository mealRepository, IPackedIngredientRepository packedIngredientRepository, IIngredientRepository ingredientRepository, IMapper mapper) : IMealService
 {
     // Dependency injection of the meal repository.
     private readonly IMealRepository _mealRepository = mealRepository;
     private readonly IPackedIngredientRepository _packedIngredientRepository = packedIngredientRepository;
     private readonly IIngredientRepository _ingredientRepository = ingredientRepository;
+    private readonly IMapper _mapper = mapper;
+
 
     // Retrieves all meals from the repository.
-    public async Task<IEnumerable<MealDTO>> GetAllMealsAsync(){
+    public async Task<IEnumerable<MealDTO>> GetAllMealsAsync()
+    {
         var meals = await _mealRepository.GetAllAsync();
 
         // Fetch all packed ingredients for all meals in one go.
@@ -63,7 +68,8 @@ public class MealService (IMealRepository mealRepository, IPackedIngredientRepos
 
 
     // Retrieves all meals by user id.
-    public async Task<IEnumerable<MealDTO>> GetAllMealsByUserAsync(int userId, string date){
+    public async Task<IEnumerable<MealDTO>> GetAllMealsByUserAsync(int userId, string date)
+    {
         var meals = await _mealRepository.GetAllByUserAsync(userId, date);
 
         // Fetch all packed ingredients for all meals in one go.
@@ -112,7 +118,8 @@ public class MealService (IMealRepository mealRepository, IPackedIngredientRepos
     }
 
     // Retrieves a specific meal by its ID.
-    public async Task<MealDTO> GetMealByIdAsync(int id){
+    public async Task<MealDTO> GetMealByIdAsync(int id)
+    {
         // Fetch the single meal.
         var meal = await _mealRepository.GetByIdAsync(id);
         if (meal == null)
@@ -152,17 +159,22 @@ public class MealService (IMealRepository mealRepository, IPackedIngredientRepos
 
 
     // Creates a new meal in the repository.
-    public async Task<int> CreateMealAsync(Meal meal){
-        return await _mealRepository.InsertAsync(meal);
+    public async Task<int> CreateMealAsync(MealCreateDTO mealCreateDTO, int id)
+    {
+        var meal = _mapper.Map<Meal>(mealCreateDTO);
+
+        return await _mealRepository.InsertAsync(meal, id);
     }
     // Updates an existing meal in the repository by ID.
-    
-    public async Task<int> UpdateMealAsync(Meal meal, int id){
+
+    public async Task<int> UpdateMealAsync(Meal meal, int id)
+    {
         return await _mealRepository.UpdateAsync(meal, id);
     }
     // Deletes an meal from the repository by ID.
 
-    public async Task<int> DeleteMealAsync(int id){
+    public async Task<int> DeleteMealAsync(int id)
+    {
         return await _mealRepository.DeleteAsync(id);
     }
 }
