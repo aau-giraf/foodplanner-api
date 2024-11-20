@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+//using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
@@ -30,26 +30,15 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
             return result.ToList();
         }
     }
-
-    public async Task AddChatThreadAsync(ChatThread chatThread)
+    
+    public async Task AddMessageToThread(int MessageId, int ChatThreadId)
     {
-        const string sql = "INSERT INTO ChatThread (ChatThreadId, ChatThreadName) VALUES (@ChatThreadId, @ChatThreadName)";
+        const string sql = "INSERT INTO ChatThread (MessageId, ChatThreadId) VALUES (@MessageId, @ChatThreadId)";
         await using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            await connection.ExecuteAsync(sql, chatThread);
+            await connection.ExecuteAsync(sql, new { MessageId, ChatThreadId });
         }
-      
-    }
-
-    public async Task UpdateChatThreadAsync(ChatThread chatThread)
-    {
-      
-    }
-
-    public async Task DeleteChatThreadAsync(int id)
-    {
-       
     }
 
     // Methods for Message
@@ -77,7 +66,7 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
 
     public async Task AddMessageAsync(Message message)
     {
-        const string sql = "INSERT INTO Message (MessageId, Content, SentAt, SentByUserId, RecievedByUserId, ChatThreadId) VALUES (@MessageId, @Content, @SentAt, @SentByUserId, @RecievedByUserId, @ChatThreadId)";
+        const string sql = "INSERT INTO Message (MessageId, Content, SentAt, SentByUserId, ChatThreadId) VALUES (@MessageId, @Content, @SentAt, @SentByUserId, @RecievedByUserId, @ChatThreadId)";
         await using (var connection = connectionFactory.Create())
         {
             connection.Open();
@@ -95,13 +84,13 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
         }
     }
 
-    public async Task DeleteMessageAsync(int MessageId)
+    public async Task ArchiveMessageAsync(int MessageId)
     {
-        const string sql = "DELETE FROM Message WHERE MessageId = @MessageId";
-        using (var connection = connectionFactory.Create())
+        const string sql = "UPDATE Message SET Archived = 1 WHERE MessageId = @MessageId";
+        await using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            await connection.ExecuteAsync(sql, new { MessageId });
+            await connection.ExecuteAsync(sql, MessageId);
         }
     }
 }

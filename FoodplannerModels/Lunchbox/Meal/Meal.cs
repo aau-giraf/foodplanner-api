@@ -16,4 +16,6 @@ public class Meal {
     public int? Image_ref {get; set;}
     // Date accosiated with the meal
     public required string Date {get; set;}
+    
+    public required int ChatThreadId {get; set;}
 }
