@@ -58,7 +58,7 @@ public class IngredientsController (IngredientService ingredientService, AuthSer
     // Create a new ingredient
     [HttpPost]
     [Authorize(Roles = "Parent")]
-    public async Task<IActionResult> Create([FromBody] Ingredient ingredient){
+    public async Task<IActionResult> Create([FromBody] IngredientDTO ingredient){
         // Calls the service to fetch the ingredient by ID
         var result = await _ingredientService.CreateIngredientAsync(ingredient);
         if (result > 0){
