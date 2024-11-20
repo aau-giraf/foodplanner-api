@@ -6,7 +6,7 @@ namespace FoodplannerModels.Lunchbox;
 public interface IPackedIngredientService
 {
     // Retrieves all packed ingredients asynchronously,
-    Task<IEnumerable<PackedIngredientDTO>> GetAllPackedIngredientsAsync();
+    Task<IEnumerable<PackedIngredientProperDTO>> GetAllPackedIngredientsAsync();
     // Retrieves all packed ingredients by a meal ID asynchronously.
     Task<IEnumerable<PackedIngredientDTO>> GetAllPackedIngredientsByMealIdAsync(int id);
     // Retrieves a specific packed ingredient by its ID asynchronously.

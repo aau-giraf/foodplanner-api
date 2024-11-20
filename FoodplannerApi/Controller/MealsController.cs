@@ -28,6 +28,8 @@ public class MealsController(MealService mealService, AuthService authService) :
 
     // Get all meals by user id
     [HttpGet("{date}")]
+    [Authorize(Roles = "Child, Parent")]
+
     public async Task<IActionResult> GetAllByUser([FromHeader(Name = "Authorization")] string token, string date)
     {
         try
@@ -48,7 +50,7 @@ public class MealsController(MealService mealService, AuthService authService) :
 
     // Get a specific meal by ID
     [HttpGet("{id}")]
-    [Authorize(Roles = "Parent")]
+    [Authorize(Roles = "Child, Parent")]
     public async Task<IActionResult> Get(int id)
     {
         var meal = await _mealService.GetMealByIdAsync(id);

@@ -194,20 +194,21 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ChildrenService>();
 builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
-builder.Services.AddAutoMapper(typeof(UserProfile));
+builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfile));
 
 builder.Services.AddSingleton<AuthService>();
 
 // Set up connection to database before running migrations
-builder.Services.AddSingleton(serviceProvider => {
-        var host = SecretsLoader.GetSecret("DB_HOST");
-        var port = SecretsLoader.GetSecret("DB_PORT");
-        var database = SecretsLoader.GetSecret("DB_NAME");
-        var username = SecretsLoader.GetSecret("DB_USER");
-        var password = SecretsLoader.GetSecret("DB_PASS");
+builder.Services.AddSingleton(serviceProvider =>
+{
+    var host = SecretsLoader.GetSecret("DB_HOST");
+    var port = SecretsLoader.GetSecret("DB_PORT");
+    var database = SecretsLoader.GetSecret("DB_NAME");
+    var username = SecretsLoader.GetSecret("DB_USER");
+    var password = SecretsLoader.GetSecret("DB_PASS");
 
-        return new PostgreSQLConnectionFactory(host, port, database, username, password);
-    });
+    return new PostgreSQLConnectionFactory(host, port, database, username, password);
+});
 
 builder.Services.AddFluentMigratorCore()
     .ConfigureRunner(rb => rb
@@ -218,7 +219,7 @@ builder.Services.AddFluentMigratorCore()
             $"Database={SecretsLoader.GetSecret("DB_NAME")};" +
             $"Username={SecretsLoader.GetSecret("DB_USER")};" +
             $"Password={SecretsLoader.GetSecret("DB_PASS")}")
-        .ScanIn(typeof(InitTables).Assembly).For.Migrations()) 
+        .ScanIn(typeof(InitTables).Assembly).For.Migrations())
     .AddLogging(lb => lb.AddFluentMigratorConsole()); //Add logging to migrations to see state.
 
 
