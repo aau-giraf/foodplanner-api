@@ -1,3 +1,5 @@
+using FoodplannerModels.FeedbackChat;
+
 public interface IChatRepository
 {
     // Methods for ChatThread

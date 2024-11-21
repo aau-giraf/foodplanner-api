@@ -32,21 +32,56 @@ public class FeedbackChatController : BaseController
     [HttpGet("{childId}")]
     public async Task<IActionResult> GetMessages(int childId)
     {
-        
-              
+        try
+        {
             var messages = await _chatService.GetMessagesAsync(childId);
             return Ok(messages);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
     
     [HttpDelete("{messageId}")]
     public async Task<IActionResult> ArchiveMessage(int messageId)
     {
-        var result = await _chatService.ArchiveMessageAsync(messageId);
-        if (result)
+        try
         {
-            return Ok();
+            var result = await _chatService.ArchiveMessageAsync(messageId);
+            if (result)
+            {
+                return Ok();
+            }
+            return BadRequest();
         }
-        return BadRequest();
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
+    
+    [HttpPut]
+    public async Task<IActionResult> UpdateMessage([FromBody] UpdateMessageDTO message)
+    {
+        try
+        {
+            var result = await _chatService.UpdateMessageAsync(message);
+            if (result)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+    
+    
     
 }

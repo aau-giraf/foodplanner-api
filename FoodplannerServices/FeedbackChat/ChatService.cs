@@ -27,6 +27,8 @@ namespace FoodplannerServices.FeedbackChat
         {
             var message = _mapper.Map<Message>(messageDTO);
             message.Date = System.DateTime.Now;
+            var chatThreadId = await _chatRepository.GetChatThreadIdByChildIdAsync(messageDTO.ChildId);
+            message.ChatThreadId = chatThreadId;
             await _chatRepository.AddMessageAsync(message);
             return true;
         }
@@ -39,17 +41,31 @@ namespace FoodplannerServices.FeedbackChat
         
         public async Task<IEnumerable<Message>> GetMessagesAsync(int ChildId)
         {
+            
             var chatThreadId = await _chatRepository.GetChatThreadIdByChildIdAsync(ChildId);
             if (chatThreadId == 0)
             {
                 chatThreadId = await _chatRepository.AddChatThreadIdByChildIdAsync(ChildId);
             }
-            return await _chatRepository.GetMessagesByChatThreadIdAsync(chatThreadId);
+            var result = await _chatRepository.GetMessagesByChatThreadIdAsync(chatThreadId);
+            
+            foreach (Message message in result)
+            {
+                if (message.Archived)
+                {
+                    message.Content = "";
+                }
+            }
+            return result;
         }
+        
+        
 
-        public async Task<bool> UpdateMessageAsync(Message message)
+        public async Task<bool> UpdateMessageAsync(UpdateMessageDTO message)
         {
-            await _chatRepository.UpdateMessageAsync(message);
+            var _message = _mapper.Map<Message>(message);
+            
+            await _chatRepository.UpdateMessageAsync(_message);
             return true;
         }
 

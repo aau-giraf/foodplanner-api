@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
 using FoodplannerDataAccessSql;
+using FoodplannerModels.FeedbackChat;
 
 public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : IChatRepository
 {
@@ -80,7 +81,7 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
 
     public async Task UpdateMessageAsync(Message message)
     {
-       const string sql = "UPDATE Message SET Content = @Content WHERE MessageId = @MessageId";
+       const string sql = "UPDATE message SET content = @Content WHERE message_id = @MessageId";
        await using (var connection = connectionFactory.Create())
         {
             connection.Open();
@@ -90,11 +91,11 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
 
     public async Task ArchiveMessageAsync(int MessageId)
     {
-        const string sql = "UPDATE Message SET Archived = 1 WHERE MessageId = @MessageId";
+        const string sql = "UPDATE message SET archived = true WHERE message_id = @MessageId";
         await using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            await connection.ExecuteAsync(sql, MessageId);
+            await connection.ExecuteAsync(sql, new {MessageId});
         }
     }
 }
