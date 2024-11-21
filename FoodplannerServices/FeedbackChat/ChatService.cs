@@ -1,16 +1,20 @@
 ﻿using FoodplannerModels.FeedbackChat;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
+
 
 namespace FoodplannerServices.FeedbackChat
 {
     public class ChatService : IChatService
     {
         private readonly IChatRepository _chatRepository;
+        private readonly IMapper _mapper;
 
-        public ChatService(IChatRepository chatRepository)
+        public ChatService(IChatRepository chatRepository, IMapper mapper)
         {
             _chatRepository = chatRepository;
+            _mapper = mapper;
         }
 
         // Methods for ChatThread
@@ -24,9 +28,12 @@ namespace FoodplannerServices.FeedbackChat
             return await _chatRepository.GetAllChatThreadsAsync();
         }
 
-        public async Task AddMessageToThread(int MessageId, int ChatThreadId)
+        public async Task<bool> AddMessageToThread(AddMessageDTO messageDTO)
         {
-            await _chatRepository.AddMessageToThread(MessageId, ChatThreadId);
+            var message = _mapper.Map<Message>(messageDTO);
+            message.SentAt = System.DateTime.Now;
+            await _chatRepository.AddMessageAsync(message);
+            return true;
         }
 
         // Methods for Message
@@ -40,19 +47,22 @@ namespace FoodplannerServices.FeedbackChat
             return await _chatRepository.GetMessagesByChatThreadIdAsync(chatThreadId);
         }
 
-        public async Task AddMessageAsync(Message message)
+        public async Task<bool> AddMessageAsync(Message message)
         {
             await _chatRepository.AddMessageAsync(message);
+            return true;
         }
 
-        public async Task UpdateMessageAsync(Message message)
+        public async Task<bool> UpdateMessageAsync(Message message)
         {
             await _chatRepository.UpdateMessageAsync(message);
+            return true;
         }
 
-        public async Task ArchiveMessageAsync(int messageId)
+        public async Task<bool> ArchiveMessageAsync(int messageId)
         {
             await _chatRepository.ArchiveMessageAsync(messageId);
+            return true;
         }
     }
 }

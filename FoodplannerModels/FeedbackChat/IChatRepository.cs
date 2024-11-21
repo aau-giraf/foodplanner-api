@@ -3,7 +3,7 @@ public interface IChatRepository
     // Methods for ChatThread
     Task<ChatThread> GetChatThreadByIdAsync(int id);
     Task<IEnumerable<ChatThread>> GetAllChatThreadsAsync();
-    Task AddMessageToThread(int MessageId, int ChatThreadId);
+    
     
 
     // Methods for Message

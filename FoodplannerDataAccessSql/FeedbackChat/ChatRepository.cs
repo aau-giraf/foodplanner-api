@@ -30,16 +30,6 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
             return result.ToList();
         }
     }
-    
-    public async Task AddMessageToThread(int MessageId, int ChatThreadId)
-    {
-        const string sql = "INSERT INTO ChatThread (MessageId, ChatThreadId) VALUES (@MessageId, @ChatThreadId)";
-        await using (var connection = connectionFactory.Create())
-        {
-            connection.Open();
-            await connection.ExecuteAsync(sql, new { MessageId, ChatThreadId });
-        }
-    }
 
     // Methods for Message
     public async Task<Message> GetMessageByIdAsync(int MessageId)
@@ -66,7 +56,7 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
 
     public async Task AddMessageAsync(Message message)
     {
-        const string sql = "INSERT INTO Message (MessageId, Content, SentAt, SentByUserId, ChatThreadId) VALUES (@MessageId, @Content, @SentAt, @SentByUserId, @RecievedByUserId, @ChatThreadId)";
+        const string sql = "INSERT INTO Message (Content, SentAt, SentByUserId, ChatThreadId) VALUES (@Content, @SentAt, @SentByUserId, @RecievedByUserId, @ChatThreadId)";
         await using (var connection = connectionFactory.Create())
         {
             connection.Open();
