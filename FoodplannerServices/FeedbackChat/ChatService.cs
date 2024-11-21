@@ -26,7 +26,7 @@ namespace FoodplannerServices.FeedbackChat
         public async Task<bool> AddMessage(AddMessageDTO messageDTO)
         {
             var message = _mapper.Map<Message>(messageDTO);
-            message.SentAt = System.DateTime.Now;
+            message.Date = System.DateTime.Now;
             await _chatRepository.AddMessageAsync(message);
             return true;
         }

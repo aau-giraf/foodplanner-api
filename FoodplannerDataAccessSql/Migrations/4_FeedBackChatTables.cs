@@ -18,12 +18,18 @@ public class FeedBackChatTables : Migration
             Create.Table("message")
                 .WithColumn("message_id").AsInt32().PrimaryKey().Identity()
                 .WithColumn("chat_thread_id").AsInt32().NotNullable()
-                .WithColumn("message").AsString(1000).NotNullable()
-                .WithColumn("date").AsDateTime().NotNullable();
+                .WithColumn("content").AsString(1000).NotNullable()
+                .WithColumn("date").AsDateTime().NotNullable()
+                .WithColumn("User_id").AsInt32().NotNullable();
             
             Create.ForeignKey("fk_message_chat_thread_id")
                 .FromTable("message").ForeignColumn("chat_thread_id")
                 .ToTable("chat_thread").PrimaryColumn("chat_thread_id");
+            
+            Create.ForeignKey("fk_message_user_id")
+                .FromTable("message").ForeignColumn("user_id")
+                .ToTable("users").PrimaryColumn("id");
+                
         }
 
     public override void Down()

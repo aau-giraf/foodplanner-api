@@ -11,10 +11,10 @@ public class Message
     public string Content { get; set; }
 
     [Required]
-    public DateTime SentAt { get; set; }
+    public DateTime Date { get; set; }
 
-    [ForeignKey("SentByUserId")]
-    public int SentByUserId { get; set; }
+    [ForeignKey("UserId")]
+    public int UserId { get; set; }
 
     [ForeignKey("ChatThreadId")]
     public int ChatThreadId { get; set; }
