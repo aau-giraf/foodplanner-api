@@ -17,7 +17,7 @@ public class FeedbackChatController : BaseController
     public async Task<IActionResult> AddMessage([FromBody] AddMessageDTO message )
     {
         try {
-        var result = await _chatService.AddMessage(message);
+        var result = await _chatService.AddMessageAsync(message);
         if (result)
             {
                 return Created(string.Empty, result);
@@ -38,5 +38,15 @@ public class FeedbackChatController : BaseController
             return Ok(messages);
     }
     
+    [HttpDelete("{messageId}")]
+    public async Task<IActionResult> ArchiveMessage(int messageId)
+    {
+        var result = await _chatService.ArchiveMessageAsync(messageId);
+        if (result)
+        {
+            return Ok();
+        }
+        return BadRequest();
+    }
     
 }

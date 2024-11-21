@@ -201,15 +201,13 @@ builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 
+
+builder.Services.AddSingleton<AuthService>();
+
 // Add Automapper
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(ChatProfile));
 
-
-
-
-
-builder.Services.AddSingleton<AuthService>();
 
 // Set up connection to database before running migrations
 builder.Services.AddSingleton(serviceProvider => {
