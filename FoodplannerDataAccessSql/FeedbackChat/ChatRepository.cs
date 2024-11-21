@@ -11,7 +11,7 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
     // Methods for ChatThread
     public async Task<ChatThread> GetChatThreadByIdAsync(int ChatThreadId)
     {
-        const string sql = "SELECT * FROM ChatThread WHERE Id = @ChatThreadId";
+        const string sql = "SELECT * FROM chat_thread WHERE Id = @ChatThreadId";
         using (var connection = connectionFactory.Create())
         {
             connection.Open();
@@ -20,17 +20,31 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
         }
     }
 
-    public async Task<IEnumerable<ChatThread>> GetAllChatThreadsAsync()
+    public async Task<int> GetChatThreadIdByChildIdAsync(int ChildId)
     {
-        const string sql = "SELECT * FROM ChatThread";
+        const string sql = "SELECT chat_thread_id FROM chat_thread WHERE child_id = @ChildId";
         using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            var result = await connection.QueryAsync<ChatThread>(sql);
-            return result.ToList();
+            var result = await connection.QueryFirstOrDefaultAsync<int>(sql, new { ChildId });
+            return result;
+        }
+    }
+    
+    public async Task<int> AddChatThreadIdByChildIdAsync(int ChildId)
+    {
+        const string sql = "INSERT INTO chat_thread (child_id) VALUES (@ChildId) RETURNING chat_thread_id";
+        
+    
+        await using (var connection = connectionFactory.Create())
+        {
+            connection.Open();
+            var chatThreadId = await connection.ExecuteScalarAsync<int>(sql, new { ChildId });
+            return chatThreadId;
         }
     }
 
+    
     // Methods for Message
     public async Task<Message> GetMessageByIdAsync(int MessageId)
     {

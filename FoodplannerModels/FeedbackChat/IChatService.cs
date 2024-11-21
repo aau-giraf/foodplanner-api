@@ -4,13 +4,12 @@ namespace FoodplannerModels.FeedbackChat
     {
         // Methods for ChatThread
         Task<ChatThread> GetChatThreadByIdAsync(int id);
-        Task<IEnumerable<ChatThread>> GetAllChatThreadsAsync();
-        Task<bool> AddMessageToThread(AddMessageDTO message);
+        Task<bool> AddMessage(AddMessageDTO message);
     
 
         // Methods for Message
         Task<Message> GetMessageByIdAsync(int MessageId);
-        Task<IEnumerable<Message>> GetMessagesByChatThreadIdAsync(int chatThreadId);
+        Task<IEnumerable<Message>> GetMessagesAsync(int chatThreadId);
         Task<bool> AddMessageAsync(Message message);
         Task<bool> UpdateMessageAsync(Message message);
         Task<bool> ArchiveMessageAsync(int messageId);

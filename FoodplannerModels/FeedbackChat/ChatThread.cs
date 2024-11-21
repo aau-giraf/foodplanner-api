@@ -6,8 +6,8 @@ public class ChatThread
     [Key]
     public int ChatThreadId { get; set; }
 
-    [ForeignKey("UserId")]
-    public int UserId { get; set; }
+    [ForeignKey("ChildId")]
+    public int ChildId { get; set; }
     
     
     

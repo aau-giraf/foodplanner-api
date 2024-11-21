@@ -13,26 +13,35 @@ public class FeedbackChatController : BaseController
         _chatService = chatService;
     }
     
-    [HttpGet]
-    public async Task<IActionResult> GetAllChatThreads()
-    {
-        var chatThreads = await _chatService.GetAllChatThreadsAsync();
-        return Ok(chatThreads);
-    }
-    
     [HttpPost]
     public async Task<IActionResult> AddMessage([FromBody] AddMessageDTO message )
     {
         try {
-        var result = await _chatService.AddMessageToThread(message);
+        var result = await _chatService.AddMessage(message);
         if (result)
-        {
-            return Created(string.Empty, result);
-        }
-        return BadRequest();
+            {
+                return Created(string.Empty, result);
+            }
+            return BadRequest();
         }
         catch (Exception e){
             return BadRequest();
         }
     }
+    
+    [HttpGet("{childId}")]
+    public async Task<IActionResult> GetMessages(int childId)
+    {
+        try
+        {
+            var messages = await _chatService.GetMessagesAsync(childId);
+            return Ok(messages);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+    
+    
 }
