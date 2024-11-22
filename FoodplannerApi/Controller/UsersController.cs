@@ -189,7 +189,7 @@ public class UsersController : BaseController
     }
 
     [HttpPut]
-    [Authorize(Roles = "Parent, Teacher, Admin")]
+    [Authorize(Roles = "Parent, Child,  Teacher, Admin")]
     public async Task<IActionResult> UpdateLoggedIn([FromHeader(Name = "Authorization")] string token, [FromBody] UserUpdateDTO user)
     {
         var idString = _authService.RetrieveIdFromJwtToken(token);
@@ -207,7 +207,7 @@ public class UsersController : BaseController
     }
 
     [HttpPut]
-    [Authorize(Roles = "Parent, Teacher, Admin")]
+    [Authorize(Roles = "Parent, Child,  Teacher, Admin")]
     public async Task<IActionResult> UpdatePassword([FromHeader(Name = "Authorization")] string token, [FromBody] Password password)
     {
         var idString = _authService.RetrieveIdFromJwtToken(token);
