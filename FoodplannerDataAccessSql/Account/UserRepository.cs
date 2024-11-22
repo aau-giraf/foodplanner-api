@@ -234,6 +234,7 @@ namespace FoodplannerDataAccessSql.Account
                 connection.Open();
                 var result = await connection.ExecuteAsync(sql, new
                 {
+                    Id = id,
                     FirstName = userUpdateDTO.FirstName,
                     LastName = userUpdateDTO.LastName,
                     Email = userUpdateDTO.Email,
