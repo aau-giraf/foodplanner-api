@@ -170,7 +170,7 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ChildPolicy", policy => policy.RequireRole("Child"));
     options.AddPolicy("ParentPolicy", policy => policy.RequireRole("Parent"));
-    options.AddPolicy("TeacherPolicy", policy => policy.RequireRole("Teacher"));
+    options.AddPolicy("TeacherPolicy", policy => policy.RequireRole("Teacher", "Admin"));
     options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
 });
 
