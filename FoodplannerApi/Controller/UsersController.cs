@@ -201,7 +201,7 @@ public class UsersController : BaseController
         var result = await _userService.UpdateUserLoggedInAsync(id, user);
         if (result > 0)
         {
-            return NoContent();
+            return Created();
         }
         return NotFound();
     }
@@ -219,7 +219,7 @@ public class UsersController : BaseController
         var result = await _userService.UpdateUserPasswordAsync(password.password, id);
         if (result.Length > 0)
         {
-            return NoContent();
+            return Created();
         }
         return NotFound();
     }
