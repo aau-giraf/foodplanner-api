@@ -24,5 +24,7 @@ namespace FoodplannerModels.Account
         Task<IEnumerable<User?>> SelectAllNotArchivedAsync();
         Task<UserDTO> GetLoggedInAsync(int id);
 
+        Task<int> UpdateLoggedInAsync(int id, UserUpdateDTO userUpdate);
+        Task<string> UpdatePasswordAsync(string password, int id);
     }
 }

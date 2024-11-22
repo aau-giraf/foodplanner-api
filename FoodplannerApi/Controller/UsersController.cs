@@ -188,5 +188,40 @@ public class UsersController : BaseController
         return Ok(user);
     }
 
+    [HttpPut]
+    [Authorize(Roles = "Parent, Teacher, Admin")]
+    public async Task<IActionResult> UpdateLoggedIn([FromHeader(Name = "Authorization")] string token, [FromBody] UserUpdateDTO user)
+    {
+        var idString = _authService.RetrieveIdFromJwtToken(token);
+        if (!int.TryParse(idString, out int id))
+        {
+            return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+        }
+
+        var result = await _userService.UpdateUserLoggedInAsync(id, user);
+        if (result > 0)
+        {
+            return NoContent();
+        }
+        return NotFound();
+    }
+
+    [HttpPut]
+    [Authorize(Roles = "Parent, Teacher, Admin")]
+    public async Task<IActionResult> UpdatePassword([FromHeader(Name = "Authorization")] string token, [FromBody] Password password)
+    {
+        var idString = _authService.RetrieveIdFromJwtToken(token);
+        if (!int.TryParse(idString, out int id))
+        {
+            return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+        }
+
+        var result = await _userService.UpdateUserPasswordAsync(password.password, id);
+        if (result.Length > 0)
+        {
+            return NoContent();
+        }
+        return NotFound();
+    }
 
 }

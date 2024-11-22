@@ -51,6 +51,7 @@ public class UserService : IUserService
 
     public async Task<int> UpdateUserAsync(User user)
     {
+        user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
         return await _userRepository.UpdateAsync(user);
     }
 
@@ -153,6 +154,19 @@ public class UserService : IUserService
     {
         var user = await _userRepository.GetLoggedInAsync(id);
         return user;
+    }
+
+    public async Task<int> UpdateUserLoggedInAsync(int id, UserUpdateDTO userUpdateDTO)
+    {
+        var user = await _userRepository.UpdateLoggedInAsync(id, userUpdateDTO);
+        return user;
+    }
+
+    public async Task<string> UpdateUserPasswordAsync(string password, int id)
+    {
+        password = BCrypt.Net.BCrypt.HashPassword(password);
+        var _password = await _userRepository.UpdatePasswordAsync(password, id);
+        return _password;
     }
 }
 

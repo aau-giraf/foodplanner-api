@@ -225,6 +225,34 @@ namespace FoodplannerDataAccessSql.Account
                 return result;
             }
         }
-    }
 
+        public async Task<int> UpdateLoggedInAsync(int id, UserUpdateDTO userUpdateDTO)
+        {
+            var sql = "UPDATE users SET first_name = @FirstName, last_name = @LastName, email = @Email WHERE id = @Id RETURNING id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.ExecuteAsync(sql, new
+                {
+                    FirstName = userUpdateDTO.FirstName,
+                    LastName = userUpdateDTO.LastName,
+                    Email = userUpdateDTO.Email,
+                });
+                return result;
+            }
+        }
+
+        public async Task<string> UpdatePasswordAsync(string password, int id)
+        {
+            var sql = "UPDATE users SET password = @Password WHERE id = @Id RETURNING password";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.ExecuteScalarAsync<string>(sql, new { Password = password, Id = id });
+                return result;
+            }
+        }
+
+
+    }
 }
