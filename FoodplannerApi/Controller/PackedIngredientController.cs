@@ -82,6 +82,18 @@ namespace FoodplannerApi.Controller
             }
             return NotFound();
         }
+
+        [HttpPut]
+        [Authorize(Roles = "Child, Parent")]
+        public async Task<IActionResult> UpdateOrder([FromBody] List<PackedIngredient> packedIngredients)
+        {
+            var result = await _packedIngredientService.UpdatePackedIngredientOrderAsync(packedIngredients);
+            if (result)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
     }
 
 }

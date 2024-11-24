@@ -11,4 +11,5 @@ public interface IPackedIngredientRepository
     Task<int> InsertAsync(int meal_id, int ingredient_id);
     Task<int> UpdateAsync(PackedIngredient packedIngredient, int id);
     Task<int> DeleteAsync(int id);
+    Task<bool> UpdateOrderAsync(int id, int order);
 }

@@ -50,5 +50,18 @@ namespace FoodplannerServices.Lunchbox
         {
             return await _packedIngredientRepository.DeleteAsync(id);
         }
+
+        public async Task<bool> UpdatePackedIngredientOrderAsync(List<PackedIngredient> packedIngredients)
+        {
+            foreach (var packedIngredient in packedIngredients)
+            {
+                var result = await _packedIngredientRepository.UpdateOrderAsync(packedIngredient.Id, packedIngredient.order_number);
+                if (!result)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }

@@ -17,4 +17,5 @@ public interface IPackedIngredientService
     Task<int> UpdatePackedIngredientAsync(PackedIngredient packedIngredient, int id);
     // Deletes a packed ingredient by its ID asynchronously.
     Task<int> DeletePackedIngredientAsync(int id);
+    Task<bool> UpdatePackedIngredientOrderAsync(List<PackedIngredient> packedIngredients);
 }
