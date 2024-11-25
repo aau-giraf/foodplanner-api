@@ -1,22 +1,38 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Test.JwtTest
 {
     public class JwtTokenGenerationTests
     {
-        private readonly string _issuer = "Aalborg University";
-        private readonly string _audience = "Egebakken";
-        private readonly string _secret = "Foodplanner_secret_giraf_multi_projcet_102930572926483932629376594y629";
+        private readonly string _issuer;
+        private readonly string _audience;
+        private readonly string _secret;
 
-        [Fact]
-        public void GenerateJwtToken_ShouldIncludeExpectedClaims()
+        public JwtTokenGenerationTests()
+        {
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            _issuer = configuration["ApplicationSettings:JWT_Issuer"] ?? "DefaultIssuer";
+            _audience = configuration["ApplicationSettings:JWT_Audience"] ?? "DefaultAudience";
+            _secret = configuration["ApplicationSettings:JWT_Secret"] ?? "DefaultSecret";
+        }
+
+        [Theory]
+        [InlineData("Admin")]
+        [InlineData("Parent")]
+        [InlineData("Teacher")]
+        [InlineData("Child")]
+        [InlineData("Guest")]
+        public void GenerateJwtToken_ShouldIncludeExpectedClaims(string role)
         {
             // Arrange
             var userId = Guid.NewGuid();
-            var role = "Admin";
             var roleApproved = true;
             var token = GenerateTestToken(userId, role, roleApproved);
 
@@ -26,7 +42,7 @@ namespace Test.JwtTest
 
             // Assert
             Assert.NotNull(token);
-            Assert.Equal(userId.ToString(), jwtToken.Claims.First(c => c.Type == JwtRegisteredClaimNames.Sub).Value);
+            Assert.Equal(userId.ToString(), jwtToken.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
             Assert.Equal(role, jwtToken.Claims.First(c => c.Type == ClaimTypes.Role).Value);
             Assert.Equal(roleApproved.ToString(), jwtToken.Claims.First(c => c.Type == "RoleApproved").Value);
         }
@@ -35,9 +51,10 @@ namespace Test.JwtTest
         {
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
                 new Claim(ClaimTypes.Role, role),
-                new Claim("RoleApproved", roleApproved.ToString())
+                new Claim("RoleApproved", roleApproved.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
@@ -47,7 +64,7 @@ namespace Test.JwtTest
                 issuer: _issuer,
                 audience: _audience,
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(30),
+                expires: DateTime.Now.AddDays(7),
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
