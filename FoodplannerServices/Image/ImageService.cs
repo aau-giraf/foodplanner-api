@@ -17,7 +17,6 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         var imageId = Guid.NewGuid();
         string objectName = ObjectName(userId, imageId, contentType);
         EnsureInitializedAsync().Wait();
-            Console.WriteLine("We here !");
         var putObjectArgs = new PutObjectArgs()
             .WithBucket(UserImageBucket)
             .WithObject(objectName)
