@@ -1,5 +1,5 @@
-﻿using FoodplannerModels.Account;
-using FoodplannerApi.Helpers;
+﻿using FoodplannerApi.Helpers;
+using FoodplannerModels.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

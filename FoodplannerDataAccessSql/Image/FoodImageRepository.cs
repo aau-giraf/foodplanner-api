@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using FoodplannerModels.Image;
-using Npgsql;
 
 namespace FoodplannerDataAccessSql.Image;
 

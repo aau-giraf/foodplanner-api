@@ -1,5 +1,4 @@
-﻿using FoodplannerModels.Image;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Minio;
 using Minio.DataModel.Args;
 

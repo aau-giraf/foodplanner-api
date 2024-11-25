@@ -1,6 +1,4 @@
-﻿using FoodplannerModels.Account;
-
-namespace FoodplannerModels.Lunchbox;
+﻿namespace FoodplannerModels.Lunchbox;
 
 // Temperary interface for the ingredient.
 public interface IIngredientService

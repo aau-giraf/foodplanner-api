@@ -1,11 +1,12 @@
 using System.Net;
-using Minio;
 using FoodplannerServices.Image;
 using Microsoft.Extensions.Logging;
+using Minio;
 using Minio.DataModel;
 using Minio.DataModel.Args;
 using Minio.DataModel.Response;
 using Moq;
+
 namespace testing;
 
 public class ImageServiceTests(ImageServiceFixture imageServiceFixture) : IClassFixture<ImageServiceFixture>

@@ -1,6 +1,7 @@
-namespace FoodplannerModels.Account;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
+namespace FoodplannerModels.Account;
 
 public class Children {
     [Key]

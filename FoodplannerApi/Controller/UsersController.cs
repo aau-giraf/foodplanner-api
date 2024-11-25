@@ -1,10 +1,8 @@
 using FoodplannerApi.Helpers;
 using FoodplannerModels.Account;
-using FoodplannerServices;
 using FoodplannerServices.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace FoodplannerApi.Controller;
 

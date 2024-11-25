@@ -1,6 +1,5 @@
 using AutoMapper;
 
-
 namespace FoodplannerModels.Account
 {
     public class ChildrenProfile : Profile

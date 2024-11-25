@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace FoodplannerModels.Account;
+﻿namespace FoodplannerModels.Account;
 
 public class ChildrenGetAllDTO
 {

@@ -1,15 +1,11 @@
-using System.Runtime.InteropServices.JavaScript;
-using System.Security.Claims;
-using FoodplannerApi.Helpers;
 using System.ComponentModel.DataAnnotations;
-using FoodplannerDataAccessSql.Account;
+using FoodplannerApi.Helpers;
 using FoodplannerModels.Account;
 using FoodplannerModels.Image;
 using FoodplannerServices.Image;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using FoodplannerModels.Account;
 
 namespace FoodplannerApi.Controller;
 

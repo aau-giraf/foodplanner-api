@@ -1,6 +1,4 @@
-﻿using FoodplannerModels.Account;
-
-namespace FoodplannerModels.Lunchbox;
+﻿namespace FoodplannerModels.Lunchbox;
 
 /**
 * Interface for the ingredient repository.
