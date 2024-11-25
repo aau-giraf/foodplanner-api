@@ -31,11 +31,11 @@ namespace FoodplannerServices.FeedbackChat
         }
 
         // Methods for Message
-        public async Task<IEnumerable<Message>> GetMessagesAsync(int chatThreadId)
+        public async Task<IEnumerable<UserNameFeedbackChatDTO>> GetMessagesAsync(int chatThreadId)
         {
             var result = await _chatRepository.GetMessagesByChatThreadIdAsync(chatThreadId);
             
-            foreach (Message message in result)
+            foreach (UserNameFeedbackChatDTO message in result)
             {
                 if (message.Archived)
                 {

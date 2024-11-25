@@ -10,7 +10,7 @@ namespace FoodplannerModels.FeedbackChat
     
 
         // Methods for Message
-        Task<IEnumerable<Message>> GetMessagesAsync(int chatThreadId);
+        Task<IEnumerable<UserNameFeedbackChatDTO>> GetMessagesAsync(int chatThreadId);
         Task<bool> UpdateMessageAsync(UpdateMessageDTO message);
         Task<bool> ArchiveMessageAsync(int messageId);
         

@@ -58,14 +58,31 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
         }
     }
 
-    public async Task<IEnumerable<Message>> GetMessagesByChatThreadIdAsync(int chatThreadId)
+    // Message in IEnum param has to be DTO then we can JOIN the 2 queries, so we can select the name based on the userId
+    // public async Task<IEnumerable<Message>> GetMessagesByChatThreadIdAsync(int chatThreadId)
+    // {
+    //     const string sql = "SELECT * FROM message WHERE chat_thread_id = @chatThreadId";
+    //     using (var connection = connectionFactory.Create())
+    //     {
+    //         connection.Open();
+    //         var result = await connection.QueryAsync<Message>(sql, new{ chatThreadId });
+    //         return result.ToList();
+    //     }
+    // }
+    
+    public async Task<IEnumerable<UserNameFeedbackChatDTO>> GetMessagesByChatThreadIdAsync(int chatThreadId)
     {
-        const string sql = "SELECT * FROM message WHERE chat_thread_id = @chatThreadId";
+        const string sql = @"
+                                SELECT message.*, users.first_name
+                                FROM message 
+                                JOIN users ON message.user_id = users.id
+                                WHERE message.chat_thread_id = @chatThreadId";
+
         using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            var result = await connection.QueryAsync<Message>(sql, new{ chatThreadId });
-            return result.ToList();
+            var result = await connection.QueryAsync<UserNameFeedbackChatDTO>(sql, new{ chatThreadId });
+            return result;
         }
     }
 

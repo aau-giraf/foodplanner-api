@@ -8,7 +8,7 @@ public interface IChatRepository
     
 
     // Methods for Message
-    Task<IEnumerable<Message>> GetMessagesByChatThreadIdAsync(int chatThreadId);
+    Task<IEnumerable<UserNameFeedbackChatDTO>> GetMessagesByChatThreadIdAsync(int chatThreadId);
     Task AddMessageAsync(Message message);
     Task UpdateMessageAsync(Message message);
     Task ArchiveMessageAsync(int messageId);

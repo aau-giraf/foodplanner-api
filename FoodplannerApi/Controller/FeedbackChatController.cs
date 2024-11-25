@@ -39,12 +39,12 @@ public class FeedbackChatController : BaseController
     [Authorize(Roles = "Parent, Teacher")]
     public async Task<IActionResult> GetMessages(int chatThreadId)
     {
-        try
-        {
+        // try
+        // {
             var messages = await _chatService.GetMessagesAsync(chatThreadId);
             return Ok(messages);
-        }
-        catch (Exception)
+                //}
+        //catch (Exception)
         {
             return BadRequest();
         }
