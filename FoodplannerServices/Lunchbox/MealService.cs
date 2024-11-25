@@ -50,7 +50,8 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
                 {
                     Id = p.Id,
                     Meal_id = p.Meal_id,
-                    Ingredient_id = ingredientsById[p.Ingredient_id]
+                    Ingredient_id = ingredientsById[p.Ingredient_id],
+                    order_number = p.order_number
                 }).ToList();
 
             return new MealDTO
@@ -101,7 +102,8 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
                 {
                     Id = p.Id,
                     Meal_id = p.Meal_id,
-                    Ingredient_id = ingredientsById[p.Ingredient_id]
+                    Ingredient_id = ingredientsById[p.Ingredient_id],
+                    order_number = p.order_number
                 }).ToList();
 
             return new MealDTO
@@ -143,7 +145,8 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
         {
             Id = p.Id,
             Meal_id = p.Meal_id,
-            Ingredient_id = ingredientsById[p.Ingredient_id]
+            Ingredient_id = ingredientsById[p.Ingredient_id],
+            order_number = p.order_number
         }).ToList();
 
         // Construct and return the MealDTO.

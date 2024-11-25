@@ -12,4 +12,5 @@ public class PackedIngredientDTO
     public required Ingredient Ingredient_id { get; set; }
     // The unique identifier for the PackedIngredient entry.
     public required int Id { get; set; }
+    public required int order_number { get; set; }
 }
