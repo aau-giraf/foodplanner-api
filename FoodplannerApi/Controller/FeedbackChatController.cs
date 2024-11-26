@@ -20,20 +20,46 @@ public class FeedbackChatController : BaseController
     
     [HttpPost]
     [Authorize(Roles = "Parent, Teacher")]
-    public async Task<IActionResult> AddMessage([FromBody] AddMessageDTO message )
+    public async Task<IActionResult> AddMessage([FromBody] AddMessageDTO messageDto, [FromHeader(Name = "Authorization")] string token)
     {
-        try {
-        var result = await _chatService.AddMessageAsync(message);
-        if (result)
+        try
+        {
+            // Retrieve UserId from the JWT token
+            var idString = _authService.RetrieveIdFromJwtToken(token);
+            if (!int.TryParse(idString, out int userId))
+            {
+                return BadRequest(new { Message = "Id er ikke et tal" });
+            }
+
+           
+            var chatThreadId = await _chatService.GetChatThreadIdByUserIdAsync(userId);
+            if (chatThreadId == null)
+            {
+                return NotFound(new { Message = "ChatThreadId ikke fundet" });
+            }
+
+            var fullMessage = new AddMessageDTO
+            {
+                Content = messageDto.Content,
+                UserId = userId,
+                ChatThreadId = chatThreadId 
+            };
+            
+            var result = await _chatService.AddMessageAsync(fullMessage);
+            if (result)
             {
                 return Created(string.Empty, result);
             }
-            return BadRequest();
+            return BadRequest(new { Message = "Kunne ikke oprette besked" });
         }
-        catch (Exception){
-            return BadRequest();
+        catch (Exception ex)
+        {
+           
+            Console.WriteLine(ex.Message);
+            return StatusCode(500, new { Message = "En serverfejl opstod" });
         }
     }
+
     
     [HttpGet("{chatThreadId}")]
     [Authorize(Roles = "Parent, Teacher")]
@@ -52,12 +78,20 @@ public class FeedbackChatController : BaseController
     
     [HttpGet("{childId}")]
     [Authorize(Roles = "Teacher")]
-    public async Task<IActionResult> GetChatThreadIdByChildId(int childId)
+    public async Task<IActionResult> GetChatThreadIdAndUserIdFromChildIdAndToken(int childId, [FromHeader(Name = "Authorization")] string token)
     {
         try
         {
+            var idString = _authService.RetrieveIdFromJwtToken(token);
+            if (!int.TryParse(idString, out int id)) {
+                return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
+            }
             var chatThreadId = await _chatService.GetChatThreadIdByChildIdAsync(childId);
-            return Ok(chatThreadId);
+            var response = new {
+                UserId = id,
+                ChatThreadId = chatThreadId
+            };
+            return Ok(response);
         }
         catch (Exception )
         {
@@ -67,14 +101,19 @@ public class FeedbackChatController : BaseController
     
     [HttpGet]
     [Authorize(Roles = "Parent")]
-    public async Task<IActionResult> GetChatThreadIdByUserId([FromHeader(Name = "Authorization")] string token) {
+    public async Task<IActionResult> GetChatThreadIdAndUserIdFromToken([FromHeader(Name = "Authorization")] string token) {
         try {    
             var idString = _authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id)) {
                 return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
             }
             var chatThreadId = await _chatService.GetChatThreadIdByUserIdAsync(id);
-            return Ok(chatThreadId);
+            
+            var response = new {
+                UserId = id,
+                ChatThreadId = chatThreadId
+            };
+            return Ok(response);
         }
         catch (Exception )
         {
