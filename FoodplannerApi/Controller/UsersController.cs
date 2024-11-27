@@ -175,7 +175,7 @@ public class UsersController : BaseController
 
 
     [HttpGet]
-    [Authorize(Roles = "Child, Parent")]
+    [Authorize(Roles = "Child, Parent, Teacher")]
     public async Task<IActionResult> GetLoggedIn([FromHeader(Name = "Authorization")] string token)
     {
 
