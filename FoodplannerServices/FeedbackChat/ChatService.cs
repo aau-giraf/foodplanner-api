@@ -39,7 +39,7 @@ namespace FoodplannerServices.FeedbackChat
             {
                 if (message.Archived)
                 {
-                    message.Content = "";
+                    message.Content = "Denne besked er blevet slettet.";
                 }
             }
             return result;
