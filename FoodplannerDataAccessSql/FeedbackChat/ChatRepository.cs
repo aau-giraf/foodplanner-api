@@ -76,7 +76,8 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
                                 SELECT message.*, users.first_name
                                 FROM message 
                                 JOIN users ON message.user_id = users.id
-                                WHERE message.chat_thread_id = @chatThreadId";
+                                WHERE message.chat_thread_id = @chatThreadId
+                                ORDER BY message.date ASC";
 
         using (var connection = connectionFactory.Create())
         {
