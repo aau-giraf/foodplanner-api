@@ -37,13 +37,8 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
                 imageFile.ContentType,
                 imageFile.Length
             );
-            if (foodImageId != 0)
-            {
-                return Ok(foodImageId);
 
-            }
-            return BadRequest(new ErrorResponse { Message = ["Kunne ikke gemme billede"] });
-
+            return Ok(foodImageId);
         }
         catch (InvalidOperationException e)
         {
