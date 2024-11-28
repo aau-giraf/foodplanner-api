@@ -9,4 +9,5 @@ public class UserNameFeedbackChatDTO
     public int UserId { get; set; }
     public int ChatThreadId { get; set; }
     public bool Archived { get; set; }
+    public bool IsEdited { get; set; }
 }

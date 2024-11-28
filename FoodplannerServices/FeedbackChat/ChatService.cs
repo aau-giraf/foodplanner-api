@@ -21,10 +21,11 @@ namespace FoodplannerServices.FeedbackChat
         }
 
         // Methods for ChatThread
-        public async Task<bool> AddMessageAsync(AddMessageDTO messageDTO)
+        public async Task<bool> AddMessageAsync(AddMessageDTO messageDTO,int userId)
         {
             var message = _mapper.Map<Message>(messageDTO);
             message.Date = System.DateTime.Now;
+            message.UserId = userId;
             
             await _chatRepository.AddMessageAsync(message);
             return true;

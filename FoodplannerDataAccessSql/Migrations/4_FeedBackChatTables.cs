@@ -21,7 +21,8 @@ public class FeedBackChatTables : Migration
                 .WithColumn("content").AsString(1000).NotNullable()
                 .WithColumn("date").AsDateTime().NotNullable()
                 .WithColumn("user_id").AsInt32().NotNullable()
-                .WithColumn("archived").AsBoolean().NotNullable().WithDefaultValue(false);
+                .WithColumn("archived").AsBoolean().NotNullable().WithDefaultValue(false)
+                .WithColumn("is_edited").AsBoolean().NotNullable().WithDefaultValue(false);
             
             Create.ForeignKey("fk_message_chat_thread_id")
                 .FromTable("message").ForeignColumn("chat_thread_id")

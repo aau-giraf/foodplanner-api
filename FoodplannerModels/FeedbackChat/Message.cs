@@ -20,4 +20,5 @@ public class Message
     public int ChatThreadId { get; set; }
     
     public bool Archived { get; set; }
+    public bool IsDeleted { get; set; }
 }

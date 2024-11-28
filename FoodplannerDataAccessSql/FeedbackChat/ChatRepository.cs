@@ -99,7 +99,7 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
 
     public async Task UpdateMessageAsync(Message message)
     {
-       const string sql = "UPDATE message SET content = @Content WHERE message_id = @MessageId";
+       const string sql = "UPDATE message SET content = @Content, is_edited = true WHERE message_id = @MessageId";
        await using (var connection = connectionFactory.Create())
         {
             connection.Open();

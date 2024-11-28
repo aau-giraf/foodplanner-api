@@ -30,22 +30,8 @@ public class FeedbackChatController : BaseController
             {
                 return BadRequest(new { Message = "Id er ikke et tal" });
             }
-
-           
-            var chatThreadId = await _chatService.GetChatThreadIdByUserIdAsync(userId);
-            if (chatThreadId == null)
-            {
-                return NotFound(new { Message = "ChatThreadId ikke fundet" });
-            }
-
-            var fullMessage = new AddMessageDTO
-            {
-                Content = messageDto.Content,
-                UserId = userId,
-                ChatThreadId = chatThreadId 
-            };
-            
-            var result = await _chatService.AddMessageAsync(fullMessage);
+         
+            var result = await _chatService.AddMessageAsync(messageDto, userId);
             if (result)
             {
                 return Created(string.Empty, result);
@@ -65,12 +51,12 @@ public class FeedbackChatController : BaseController
     [Authorize(Roles = "Parent, Teacher")]
     public async Task<IActionResult> GetMessages(int chatThreadId)
     {
-        // try
-        // {
+        try
+        {
             var messages = await _chatService.GetMessagesAsync(chatThreadId);
             return Ok(messages);
-                //}
-        //catch (Exception)
+        }
+        catch (Exception)
         {
             return BadRequest();
         }
@@ -159,7 +145,4 @@ public class FeedbackChatController : BaseController
             return BadRequest();
         }
     }
-    
-    
-    
 }

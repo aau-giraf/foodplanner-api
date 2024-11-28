@@ -3,7 +3,7 @@ namespace FoodplannerModels.FeedbackChat
     public interface IChatService
     {
         // Methods for ChatThread
-        Task<bool> AddMessageAsync(AddMessageDTO message);
+        Task<bool> AddMessageAsync(AddMessageDTO message, int userId);
         Task<int> GetChatThreadIdByChildIdAsync(int chatThreadId);
         Task<int> GetChatThreadIdByUserIdAsync(int UserId);
         
