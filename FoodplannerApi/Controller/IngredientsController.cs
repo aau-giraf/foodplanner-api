@@ -58,14 +58,23 @@ public class IngredientsController (IngredientService ingredientService, AuthSer
     // Create a new ingredient
     [HttpPost]
     [Authorize(Roles = "Parent")]
-    public async Task<IActionResult> Create([FromBody] Ingredient ingredient){
-        // Calls the service to fetch the ingredient by ID
-        var result = await _ingredientService.CreateIngredientAsync(ingredient);
-        if (result > 0){
-            var createdIngredient = await _ingredientService.GetIngredientByIdAsync(result);
-            return CreatedAtAction(nameof(Get), new { id = result }, createdIngredient);
+    public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] IngredientContainer ingredientContainer){
+        try {    
+            var idString = _authService.RetrieveIdFromJwtToken(token);
+            if (!int.TryParse(idString, out int id)) {
+                return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
+            }
+            Ingredient ingredient = new() {Id = 0, Name = ingredientContainer.Name, User_ref = id, Image_ref = ingredientContainer.Image_ref};
+            var result = await _ingredientService.CreateIngredientAsync(ingredient);
+            if (result > 0){ // Returns 201 with an object of the new ingredient
+                var createdIngredient = await _ingredientService.GetIngredientByIdAsync(result);
+                return CreatedAtAction(nameof(Get), new { id = result }, createdIngredient);
+            }
+            return BadRequest();
         }
-        return BadRequest(); // Returns 400 if the creation fails
+        catch (InvalidOperationException e){
+            return BadRequest(new ErrorResponse {Message = [e.Message]});
+        }
     }
 
     // Update an existing ingredient
@@ -91,5 +100,10 @@ public class IngredientsController (IngredientService ingredientService, AuthSer
             return Ok(ingredient);
         }
         return NotFound(); // Returns 404 if the ingredient was not found
+    }
+
+    public class IngredientContainer{
+        public string Name {get; set;}
+        public int? Image_ref {get; set;}
     }
 }
