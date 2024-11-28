@@ -79,6 +79,7 @@ public class IngredientsController(IngredientService ingredientService, AuthServ
             var createdIngredient = await _ingredientService.GetIngredientByIdAsync(result);
             return CreatedAtAction(nameof(Get), new { id = result }, createdIngredient);
         }
+        return BadRequest();
     }
 
     // Update an existing ingredient
