@@ -79,7 +79,6 @@ public class IngredientsController(IngredientService ingredientService, AuthServ
             var createdIngredient = await _ingredientService.GetIngredientByIdAsync(result);
             return CreatedAtAction(nameof(Get), new { id = result }, createdIngredient);
         }
-        return BadRequest(); // Returns 400 if the creation fails
     }
 
     // Update an existing ingredient
@@ -109,5 +108,11 @@ public class IngredientsController(IngredientService ingredientService, AuthServ
             return Ok(ingredient);
         }
         return NotFound(); // Returns 404 if the ingredient was not found
+    }
+
+    public class IngredientContainer
+    {
+        public string Name { get; set; }
+        public int? Image_ref { get; set; }
     }
 }

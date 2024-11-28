@@ -159,21 +159,6 @@ public class UsersController : BaseController
         }
     }
 
-    [HttpGet("{id}")]
-    [ProducesResponseType(typeof(IEnumerable<UserDTO>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [Authorize(Roles = "Child, Parent")]
-    public async Task<IActionResult> Get(int id)
-    {
-        var users = await _userService.GetUserByIdAsync(id);
-        if (users == null)
-        {
-            return NotFound();
-        }
-        return Ok(users);
-    }
-
-
     [HttpGet]
     [Authorize(Roles = "Child, Parent, Teacher")]
     public async Task<IActionResult> GetLoggedIn([FromHeader(Name = "Authorization")] string token)
@@ -217,7 +202,7 @@ public class UsersController : BaseController
         }
 
         var result = await _userService.UpdateUserPasswordAsync(password.password, id);
-        if (result.Length > 0)
+        if (result > 0)
         {
             return Created();
         }

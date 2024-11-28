@@ -243,13 +243,13 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<string> UpdatePasswordAsync(string password, int id)
+        public async Task<int> UpdatePasswordAsync(string password, int id)
         {
-            var sql = "UPDATE users SET password = @Password WHERE id = @Id RETURNING password";
+            var sql = "UPDATE users SET password = @Password WHERE id = @Id";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.ExecuteScalarAsync<string>(sql, new { Password = password, Id = id });
+                var result = await connection.ExecuteAsync(sql, new { Password = password, Id = id });
                 return result;
             }
         }

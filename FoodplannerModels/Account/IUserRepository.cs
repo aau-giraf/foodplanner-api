@@ -25,6 +25,6 @@ namespace FoodplannerModels.Account
         Task<UserDTO> GetLoggedInAsync(int id);
 
         Task<int> UpdateLoggedInAsync(int id, UserUpdateDTO userUpdate);
-        Task<string> UpdatePasswordAsync(string password, int id);
+        Task<int> UpdatePasswordAsync(string password, int id);
     }
 }
