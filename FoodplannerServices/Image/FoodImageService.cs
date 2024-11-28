@@ -1,8 +1,5 @@
-﻿using System.Diagnostics;
-using FoodplannerDataAccessSql.Image;
-using FoodplannerModels.Account;
+﻿using FoodplannerDataAccessSql.Image;
 using FoodplannerModels.Image;
-
 
 namespace FoodplannerServices.Image;
 

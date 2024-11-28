@@ -1,7 +1,4 @@
-using AutoMapper;
-using FoodplannerApi.Helpers;
 using FoodplannerModels.Account;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace FoodplannerServices.Account;
 

@@ -1,5 +1,6 @@
-namespace FoodplannerModels.Account;
 using System.ComponentModel.DataAnnotations;
+
+namespace FoodplannerModels.Account;
 
 public class User {
     [Key]

@@ -1,9 +1,9 @@
+using FoodplannerApi.Helpers;
 using FoodplannerModels.Account;
 using FoodplannerModels.Lunchbox;
 using FoodplannerServices.Lunchbox;
-using FoodplannerApi.Helpers;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FoodplannerApi.Controller;
 

@@ -1,7 +1,6 @@
 using AutoMapper;
 using FoodplannerApi.Helpers;
 using FoodplannerModels.Account;
-using Microsoft.AspNetCore.Identity;
 
 namespace FoodplannerServices.Account;
 

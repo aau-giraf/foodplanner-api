@@ -1,7 +1,5 @@
 using FoodplannerDataAccessSql.Image;
-using FoodplannerModels.Image;
 using FoodplannerServices.Image;
-using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace testing;

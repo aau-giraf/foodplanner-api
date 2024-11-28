@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace FoodplannerModels.Account;
+﻿namespace FoodplannerModels.Account;
 
 public class UserCredsDTO
 {
