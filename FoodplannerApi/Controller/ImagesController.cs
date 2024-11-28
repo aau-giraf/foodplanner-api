@@ -17,16 +17,19 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
 {
     private readonly long _maxFileSize = 2000000000;
     private readonly AuthService _authService = authService;
-    
+
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> UploadImage([FromHeader(Name = "Authorization")] string token, IFormFile imageFile)
     {
-        try {    
+        try
+        {
             var idString = _authService.RetrieveIdFromJwtToken(token);
-            if (!int.TryParse(idString, out int id)) {
-                return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
+            if (!int.TryParse(idString, out int id))
+            {
+                return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
             }
+
             var foodImageId = await foodImageService.CreateFoodImage(
                 id,
                 imageFile.OpenReadStream(),
@@ -34,11 +37,17 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
                 imageFile.ContentType,
                 imageFile.Length
             );
-        
-            return Ok(foodImageId);
+            if (foodImageId != 0)
+            {
+                return Ok(foodImageId);
+
+            }
+            return BadRequest(new ErrorResponse { Message = ["Kunne ikke gemme billede"] });
+
         }
-        catch (InvalidOperationException e){
-            return BadRequest(new ErrorResponse {Message = [e.Message]});
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new ErrorResponse { Message = [e.Message] });
         }
         // var imageFile = imageContainer.ImageFile;
         // var userId = imageContainer.UserId;
@@ -52,14 +61,14 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
         //     imageFile.FileName,
         //     imageFile.ContentType,
         //     imageFile.Length);
-        
+
         // return Ok(foodImageId);
     }
 
     [HttpPost]
     [ApiExplorerSettings(IgnoreApi = true)]
     [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> UploadImages([Required]IFormFileCollection imageFiles, int userId)
+    public async Task<IActionResult> UploadImages([Required] IFormFileCollection imageFiles, int userId)
     {
         if (imageFiles.Any(file => file.Length == 0)) return BadRequest("A file is empty");
         if (imageFiles.Any(file => file.Length >= _maxFileSize)) return BadRequest("a file too big");
@@ -71,7 +80,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
                 file.ContentType,
                 file.Length))
             .Select(task => task.Result.ToString());
-        
+
         return Ok(ids);
     }
 
@@ -85,9 +94,9 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
         var imageIdList = foodImageIds.ToList();
         if (imageIdList == null || !imageIdList.Any())
             return BadRequest("No imageIds provided");
-        
+
         foodImageIds.ToList().ForEach(id => foodImageService.DeleteImage(id));
-        
+
         return Ok("Images deleted successfully");
     }
 
@@ -122,18 +131,20 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
             var foodImageService = context.HttpContext.RequestServices.GetService<IFoodImageService>();
             var token = context.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
             var foodImageIds = context.HttpContext.Request.Query["foodImageId"];
-            
+
             if (token == null)
             {
                 context.Result = new UnauthorizedResult();
-            } else if (foodImageIds.Any(id => id == null))
+            }
+            else if (foodImageIds.Any(id => id == null))
             {
                 context.Result = new BadRequestResult();
             }
             else if (authService == null || foodImageService == null || userRepository == null)
             {
                 throw new Exception("Missing services");
-            } else
+            }
+            else
             {
                 var userId = int.Parse(authService.RetrieveIdFromJwtToken(token));
                 var role = authService.RetrieveRoleFromJwtToken(token);
