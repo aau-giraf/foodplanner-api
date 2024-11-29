@@ -9,11 +9,11 @@ public class Meal {
     // Unique identifier for the ingredient.
     public required int Id {get; set;}
     // Title of the meal.
-    public required string Title {get; set;}
+    public required string Name {get; set;}
     // Reference to the user associated with the meal.
-    public int User_ref {get; set;}
+    public int User_id {get; set;}
     // Reference to the meal's image.
-    public int? Image_ref {get; set;}
+    public int? Food_image_id {get; set;}
     // Date accosiated with the meal
     public required string Date {get; set;}
 }
