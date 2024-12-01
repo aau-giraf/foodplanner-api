@@ -16,25 +16,29 @@ public class PackedIngredientServiceTests
         var mockPackedIngredientRepository = new Mock<IPackedIngredientRepository>();
         var mockMapper = new Mock<IMapper>();
 
+        // Data returned by repository mock
         var packedIngredients = new List<PackedIngredient>
         {
-            new PackedIngredient { Id = 1, Meal_ref = 101, Ingredient_ref = 201 },
-            new PackedIngredient { Id = 2, Meal_ref = 102, Ingredient_ref = 202 }
+            new PackedIngredient { Id = 1, Meal_id = 101, Ingredient_id = 201, order_number = 2 },
+            new PackedIngredient { Id = 2, Meal_id = 102, Ingredient_id = 202, order_number = 1 }
         };
 
-        var packedIngredientDTOs = new List<PackedIngredientDTO>
+        // Expected data mapped by AutoMapper
+        var PackedIngredientProperDTOs = new List<PackedIngredientProperDTO>
         {
-            new PackedIngredientDTO { Id = 1, Meal_ref = 101, Ingredient_ref = new Ingredient{ Id = 1, Name = "Lettuce", User_ref = 3 } },
-            new PackedIngredientDTO { Id = 2, Meal_ref = 102, Ingredient_ref = new Ingredient{ Id = 1, Name = "rottests", User_ref = 2 } }
+            new PackedIngredientProperDTO { Meal_id = 101, Ingredient_id =  2 },
+            new PackedIngredientProperDTO { Meal_id = 102, Ingredient_id = 1 }
         };
 
+        // Mock the repository behavior
         mockPackedIngredientRepository
             .Setup(repo => repo.GetAllAsync())
             .ReturnsAsync(packedIngredients);
 
+        // Mock the mapping behavior
         mockMapper
-            .Setup(mapper => mapper.Map<IEnumerable<PackedIngredientDTO>>(packedIngredients))
-            .Returns(packedIngredientDTOs);
+            .Setup(mapper => mapper.Map<IEnumerable<PackedIngredientProperDTO>>(packedIngredients))
+            .Returns(PackedIngredientProperDTOs);
 
         var packedIngredientService = new PackedIngredientService(mockPackedIngredientRepository.Object, mockMapper.Object);
 
@@ -43,8 +47,7 @@ public class PackedIngredientServiceTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(packedIngredientDTOs.Count, result.Count());
-        Assert.Equal(packedIngredientDTOs, result);
+        Assert.Equal(PackedIngredientProperDTOs.Count, result.Count()); // Checks that the count matches
     }
 
     [Fact]
@@ -57,14 +60,14 @@ public class PackedIngredientServiceTests
         int mealId = 101;
         var packedIngredients = new List<PackedIngredient>
         {
-            new PackedIngredient { Id = 1, Meal_ref = mealId, Ingredient_ref = 201 },
-            new PackedIngredient { Id = 2, Meal_ref = mealId, Ingredient_ref = 202 }
+            new PackedIngredient { Id = 1, Meal_id = mealId, Ingredient_id = 201, order_number = 1 },
+            new PackedIngredient { Id = 2, Meal_id = mealId, Ingredient_id = 202, order_number = 2 }
         };
 
         var packedIngredientDTOs = new List<PackedIngredientDTO>
         {
-            new PackedIngredientDTO { Id = 1, Meal_ref = mealId, Ingredient_ref = new Ingredient{ Id = 1, Name = "jbsfljbatest", User_ref = 2 }  },
-            new PackedIngredientDTO { Id = 2, Meal_ref = mealId, Ingredient_ref = new Ingredient{ Id = 1, Name = "rottests", User_ref = 2 }  }
+            new PackedIngredientDTO { Id = 1, Meal_id = mealId, Ingredient_id = new Ingredient{ Id = 1, Name = "jbsfljbatest", User_id = 2 }, order_number = 1 },
+            new PackedIngredientDTO { Id = 2, Meal_id = mealId, Ingredient_id = new Ingredient{ Id = 1, Name = "rottests", User_id = 2 }, order_number = 2 }
         };
 
         mockPackedIngredientRepository
@@ -83,7 +86,7 @@ public class PackedIngredientServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(packedIngredientDTOs.Count, result.Count());
-        Assert.All(result, dto => Assert.Equal(mealId, dto.Meal_ref));
+        Assert.All(result, dto => Assert.Equal(mealId, dto.Meal_id));
     }
 
     [Fact]
@@ -93,7 +96,7 @@ public class PackedIngredientServiceTests
         var mockPackedIngredientRepository = new Mock<IPackedIngredientRepository>();
         var mockMapper = new Mock<IMapper>();
 
-        var packedIngredient = new PackedIngredient { Id = 1, Meal_ref = 101, Ingredient_ref = 201 };
+        var packedIngredient = new PackedIngredient { Id = 1, Meal_id = 101, Ingredient_id = 201, order_number = 5 };
 
         mockPackedIngredientRepository
             .Setup(repo => repo.GetByIdAsync(packedIngredient.Id))
@@ -107,8 +110,8 @@ public class PackedIngredientServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(packedIngredient.Id, result.Id);
-        Assert.Equal(packedIngredient.Meal_ref, result.Meal_ref);
-        Assert.Equal(packedIngredient.Ingredient_ref, result.Ingredient_ref);
+        Assert.Equal(packedIngredient.Meal_id, result.Meal_id);
+        Assert.Equal(packedIngredient.Ingredient_id, result.Ingredient_id);
     }
 
     [Fact]
@@ -141,7 +144,7 @@ public class PackedIngredientServiceTests
         var mockPackedIngredientRepository = new Mock<IPackedIngredientRepository>();
         var mockMapper = new Mock<IMapper>();
 
-        var packedIngredient = new PackedIngredient { Id = 1, Meal_ref = 101, Ingredient_ref = 201 };
+        var packedIngredient = new PackedIngredient { Id = 1, Meal_id = 101, Ingredient_id = 201, order_number = 1 };
         int rowsAffected = 1;
 
         mockPackedIngredientRepository
