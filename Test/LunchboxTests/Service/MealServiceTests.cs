@@ -1,11 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using FoodplannerModels.Lunchbox;
 using FoodplannerServices.Lunchbox;
 using Moq;
-using Xunit;
 using AutoMapper;
+
+namespace Test.Service;
 
 public class MealServiceTests
 {
