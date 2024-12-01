@@ -30,16 +30,29 @@ public class IngredientService(IIngredientRepository ingredientRepository) : IIn
     // Creates a new ingredient in the repository.
     public async Task<int> CreateIngredientAsync(IngredientDTO ingredient, int id)
     {
+        if (string.IsNullOrWhiteSpace(ingredient.Name)) {
+            throw new ArgumentException("Ingredient name cannot be null or empty");
+        }
         return await _ingredientRepository.InsertAsync(ingredient, id);
     }
     // Updates an existing ingredient in the repository by ID.
     public async Task<int> UpdateIngredientAsync(Ingredient ingredient, int id)
     {
+        if (id <= 0) {
+            throw new ArgumentException("Invalid ingredient ID");
+        }
+    
         return await _ingredientRepository.UpdateAsync(ingredient, id);
     }
     // Deletes an ingredient from the repository by ID.
     public async Task<int> DeleteIngredientAsync(int id)
     {
+        var rowsAffected = await _ingredientRepository.DeleteAsync(id);
+
+        if (rowsAffected == 0) {
+            throw new ArgumentException("Ingredient not found");
+        }
+        
         return await _ingredientRepository.DeleteAsync(id);
     }
 }
