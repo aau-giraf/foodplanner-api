@@ -23,7 +23,7 @@ public class IngredientService(IIngredientRepository ingredientRepository) : IIn
         return ingredients.ToList();
     }
     // Retrieves a specific ingredient by its ID.
-    public async Task<Ingredient> GetIngredientByIdAsync(int id)
+    public async Task<Ingredient?> GetIngredientByIdAsync(int id)
     {
         return await _ingredientRepository.GetByIdAsync(id);
     }
