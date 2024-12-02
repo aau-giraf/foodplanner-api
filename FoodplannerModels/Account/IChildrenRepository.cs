@@ -16,5 +16,6 @@ namespace FoodplannerModels.Account
         Task<int> UpdateAsync(Children entity);
 
         Task<int> DeleteAsync(int id);
+        Task<Children> GetChildByIdAsync(int id);
     }
 }
