@@ -172,7 +172,7 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ChildPolicy", policy => policy.RequireRole("Child"));
     options.AddPolicy("ParentPolicy", policy => policy.RequireRole("Parent"));
-    options.AddPolicy("TeacherPolicy", policy => policy.RequireRole("Teacher"));
+    options.AddPolicy("TeacherPolicy", policy => policy.RequireRole("Teacher", "Admin"));
     options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
 });
 
@@ -201,6 +201,7 @@ builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 
+builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfile));
 
 builder.Services.AddSingleton<AuthService>();
 
@@ -210,15 +211,16 @@ builder.Services.AddAutoMapper(typeof(ChatProfile));
 
 
 // Set up connection to database before running migrations
-builder.Services.AddSingleton(serviceProvider => {
-        var host = SecretsLoader.GetSecret("DB_HOST");
-        var port = SecretsLoader.GetSecret("DB_PORT");
-        var database = SecretsLoader.GetSecret("DB_NAME");
-        var username = SecretsLoader.GetSecret("DB_USER");
-        var password = SecretsLoader.GetSecret("DB_PASS");
+builder.Services.AddSingleton(serviceProvider =>
+{
+    var host = SecretsLoader.GetSecret("DB_HOST");
+    var port = SecretsLoader.GetSecret("DB_PORT");
+    var database = SecretsLoader.GetSecret("DB_NAME");
+    var username = SecretsLoader.GetSecret("DB_USER");
+    var password = SecretsLoader.GetSecret("DB_PASS");
 
-        return new PostgreSQLConnectionFactory(host, port, database, username, password);
-    });
+    return new PostgreSQLConnectionFactory(host, port, database, username, password);
+});
 
 builder.Services.AddFluentMigratorCore()
     .ConfigureRunner(rb => rb
@@ -229,7 +231,7 @@ builder.Services.AddFluentMigratorCore()
             $"Database={SecretsLoader.GetSecret("DB_NAME")};" +
             $"Username={SecretsLoader.GetSecret("DB_USER")};" +
             $"Password={SecretsLoader.GetSecret("DB_PASS")}")
-        .ScanIn(typeof(InitTables).Assembly).For.Migrations()) 
+        .ScanIn(typeof(InitTables).Assembly).For.Migrations())
     .AddLogging(lb => lb.AddFluentMigratorConsole()); //Add logging to migrations to see state.
 
 
