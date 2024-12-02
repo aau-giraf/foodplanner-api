@@ -102,7 +102,7 @@ public class ChildrensController : BaseController
 
 
     [Authorize(Policy = "TeacherPolicy")]
-    [HttpGet]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetChildFromChildId(int id)
     {
         var child = await _childrenService.GetChildFromChildIdAsync(id);
