@@ -78,7 +78,8 @@ namespace Test.JwtTest
                 ValidAudience = Audience,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Secret))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Secret)),
+                ClockSkew = TimeSpan.FromMinutes(5)
             };
             var handler = new JwtSecurityTokenHandler();
 
@@ -114,33 +115,7 @@ namespace Test.JwtTest
                 handler.ValidateToken(expiredToken, validationParameters, out _);
             });
         }
-
-        [Fact]
-        public void ValidateJwtToken_ShouldHandleClockSkew()
-        {
-            // Arrange
-            var token = GenerateJwtToken(Guid.NewGuid(), "Admin", true);
-            var validationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuer = Issuer,
-                ValidateAudience = true,
-                ValidAudience = Audience,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Secret)),
-                ClockSkew = TimeSpan.FromMinutes(5)
-            };
-            var handler = new JwtSecurityTokenHandler();
-
-            // Act
-            var principal = handler.ValidateToken(token, validationParameters, out var validatedToken);
-
-            // Assert
-            Assert.NotNull(principal);
-            Assert.NotNull(validatedToken);
-        }
-
+        
         [Fact]
         public void ValidateJwtToken_ShouldFail_WhenRequiredClaimIsMissing()
         {
