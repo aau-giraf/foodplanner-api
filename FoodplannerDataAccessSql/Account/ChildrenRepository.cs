@@ -134,5 +134,16 @@ namespace FoodplannerDataAccessSql.Account
                 return result;
             }
         }
+        
+        public async Task<int> GetChildIdByParentIdAsync(int id)
+        {
+            var sql = "SELECT child_id FROM children WHERE parent_id = @Id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QuerySingleAsync<int>(sql, new { Id = id });
+                return result;
+            }
+        }
     }
 }

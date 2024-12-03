@@ -96,7 +96,6 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
     }
 
     [HttpGet]
-
     [Authorize(Roles = "Child, Parent")]
     [AuthorizeImageOwnerFilter]
     [ProducesResponseType(typeof(FoodImage), StatusCodes.Status200OK)]
