@@ -1,6 +1,7 @@
 using AutoMapper;
 using FoodplannerApi.Helpers;
 using FoodplannerModels.Account;
+using FoodplannerModels.Auth;
 using Microsoft.AspNetCore.Identity;
 
 namespace FoodplannerServices.Account;
@@ -10,10 +11,10 @@ public class UserService : IUserService
     private readonly IUserRepository _userRepository;
     private readonly IChildrenRepository _childrenRepository;
     private readonly IMapper _mapper;
-    private readonly AuthService _authService;
+    private readonly IAuthService _authService;
 
 
-    public UserService(IUserRepository userRepository, IMapper mapper, AuthService authService, IChildrenRepository childrenRepository)
+    public UserService(IUserRepository userRepository, IMapper mapper, IAuthService authService, IChildrenRepository childrenRepository)
     {
         _userRepository = userRepository;
         _mapper = mapper;
