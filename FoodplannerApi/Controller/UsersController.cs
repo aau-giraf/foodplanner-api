@@ -1,5 +1,6 @@
 using FoodplannerApi.Helpers;
 using FoodplannerModels.Account;
+using FoodplannerModels.Auth;
 using FoodplannerServices;
 using FoodplannerServices.Account;
 using Microsoft.AspNetCore.Authorization;
@@ -10,10 +11,10 @@ namespace FoodplannerApi.Controller;
 
 public class UsersController : BaseController
 {
-    private readonly UserService _userService;
-    private readonly AuthService _authService;
+    private readonly IUserService _userService;
+    private readonly IAuthService _authService;
 
-    public UsersController(UserService userService, AuthService authService)
+    public UsersController(IUserService userService, IAuthService authService)
     {
         _userService = userService;
         _authService = authService;
@@ -190,6 +191,8 @@ public class UsersController : BaseController
         }
         return NotFound();
     }
+
+
 
     [HttpPut]
     [Authorize(Roles = "Parent, Child,  Teacher, Admin")]
