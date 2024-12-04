@@ -25,6 +25,7 @@ using FluentMigrator.Runner.Initialization;
 using FluentMigrator.Postgres;
 using FoodplannerDataAccessSql.Migrations;
 using Microsoft.OpenApi.Models;
+using FoodplannerModels.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -191,6 +192,7 @@ builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomReposit
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
 builder.Services.AddScoped<IClassroomService, ClassroomService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ChildrenService>();
 builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
