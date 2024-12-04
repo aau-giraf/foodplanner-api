@@ -96,7 +96,6 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
     }
 
     [HttpGet]
-
     [Authorize(Roles = "Child, Parent")]
     [AuthorizeImageOwnerFilter]
     [ProducesResponseType(typeof(FoodImage), StatusCodes.Status200OK)]
@@ -108,7 +107,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
     }
 
     [HttpGet]
-    [Authorize(Roles = "Parent")]
+    [Authorize(Roles = "Parent, Child, Teacher, Admin")]
     //[AuthorizeImageOwnerFilter]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPresignedImageLink(int foodImageId)

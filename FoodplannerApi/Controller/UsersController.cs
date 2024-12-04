@@ -160,56 +160,7 @@ public class UsersController : BaseController
         }
     }
 
-    [HttpGet]
-    [Authorize(Roles = "Child, Parent, Teacher")]
-    public async Task<IActionResult> GetLoggedIn([FromHeader(Name = "Authorization")] string token)
-    {
-
-        var idString = _authService.RetrieveIdFromJwtToken(token);
-        if (!int.TryParse(idString, out int id))
-        {
-            return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
-        }
-        var user = await _userService.GetLoggedInUserAsync(id);
-        return Ok(user);
-    }
-
-    [HttpPut]
-    [Authorize(Roles = "Parent, Child,  Teacher, Admin")]
-    public async Task<IActionResult> UpdateLoggedIn([FromHeader(Name = "Authorization")] string token, [FromBody] UserUpdateDTO user)
-    {
-        var idString = _authService.RetrieveIdFromJwtToken(token);
-        if (!int.TryParse(idString, out int id))
-        {
-            return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
-        }
-
-        var result = await _userService.UpdateUserLoggedInAsync(id, user);
-        if (result > 0)
-        {
-            return Created();
-        }
-        return NotFound();
-    }
 
 
-
-    [HttpPut]
-    [Authorize(Roles = "Parent, Child,  Teacher, Admin")]
-    public async Task<IActionResult> UpdatePassword([FromHeader(Name = "Authorization")] string token, [FromBody] Password password)
-    {
-        var idString = _authService.RetrieveIdFromJwtToken(token);
-        if (!int.TryParse(idString, out int id))
-        {
-            return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
-        }
-
-        var result = await _userService.UpdateUserPasswordAsync(password.password, id);
-        if (result > 0)
-        {
-            return Created();
-        }
-        return NotFound();
-    }
 
 }

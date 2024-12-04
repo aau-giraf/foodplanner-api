@@ -28,7 +28,7 @@ namespace FoodplannerDataAccessSql.Account
 
         }
 
-                public async Task<IEnumerable<ChildrenGetAllDTO>> GetAllChildrenClassesAsync()
+        public async Task<IEnumerable<ChildrenGetAllDTO>> GetAllChildrenClassesAsync()
         {
             var query = @"
         SELECT 
@@ -45,15 +45,16 @@ namespace FoodplannerDataAccessSql.Account
             classroom ON children.class_id = classroom.class_id
         WHERE 
             users.role_approved = 'true';";
-            
-            using (var connection = _connectionFactory.Create()){
+
+            using (var connection = _connectionFactory.Create())
+            {
                 var children = await connection.QueryAsync<ChildrenGetAllDTO>(query);
                 return children;
 
             }
-        
+
         }
-        
+
         public async Task<int> GetParentIdByChildIdAsync(int id)
         {
             var sql = "SELECT parent_id FROM children WHERE child_id = @Id";
@@ -119,6 +120,28 @@ namespace FoodplannerDataAccessSql.Account
             {
                 connection.Open();
                 var result = await connection.ExecuteAsync(sql, new { ChildId = id });
+                return result;
+            }
+        }
+
+        public async Task<Children> GetChildByIdAsync(int id)
+        {
+            var sql = "SELECT * FROM children WHERE child_id = @Id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QuerySingleAsync<Children>(sql, new { Id = id });
+                return result;
+            }
+        }
+        
+        public async Task<int> GetChildIdByParentIdAsync(int id)
+        {
+            var sql = "SELECT child_id FROM children WHERE parent_id = @Id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QuerySingleAsync<int>(sql, new { Id = id });
                 return result;
             }
         }

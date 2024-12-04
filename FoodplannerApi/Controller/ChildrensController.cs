@@ -21,7 +21,8 @@ public class ChildrensController : BaseController
     [HttpGet]
     [Authorize(Policy = "TeacherPolicy")]
     [ProducesResponseType(typeof(IEnumerable<ChildrenGetAllDTO>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllChildrenClassesAsync(){
+    public async Task<IActionResult> GetAllChildrenClassesAsync()
+    {
         var children = await _childrenService.GetAllChildrenClassesAsync();
         return Ok(children);
     }
@@ -43,7 +44,7 @@ public class ChildrensController : BaseController
         var idString = _authService.RetrieveIdFromJwtToken(token);
         if (!int.TryParse(idString, out int id))
         {
-            return BadRequest(new ErrorResponse{Message = ["Error"]});
+            return BadRequest(new ErrorResponse { Message = ["Error"] });
         }
         var children = await _childrenService.GetChildrenByIdAsync(id);
         return Ok(children);
@@ -51,7 +52,7 @@ public class ChildrensController : BaseController
 
 
 
-    
+
     [HttpPost]
     public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] ChildrenCreateDTO childrenCreate)
     {
@@ -96,6 +97,19 @@ public class ChildrensController : BaseController
         if (result > 0)
         {
             return NoContent();
+        }
+        return NotFound();
+    }
+
+
+    [Authorize(Policy = "TeacherPolicy")]
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetChildFromChildId(int id)
+    {
+        var child = await _childrenService.GetChildFromChildIdAsync(id);
+        if (child != null)
+        {
+            return Ok(child);
         }
         return NotFound();
     }
