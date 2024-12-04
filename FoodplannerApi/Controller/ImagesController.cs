@@ -113,7 +113,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
     public async Task<IActionResult> GetPresignedImageLink(int foodImageId)
     {
         var presignedImageLink = await foodImageService.GetFoodImageLink(foodImageId);
-        return Ok(presignedImageLink.Replace("localhost", HttpContext.Request.Host.Host));
+        return Ok(presignedImageLink.Replace("localhost", HttpContext.Request.Host.ToString()));
     }
 
     private class AuthorizeImageOwnerFilter : ActionFilterAttribute
