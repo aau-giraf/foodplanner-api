@@ -23,25 +23,25 @@ The Foodplanner API is a backend service for the GIRAF Foodplanner application, 
 ```plaintext
 src/
 ├── FoodplannerApi/                        # Contains main functionality
-    ├── Controller/                        # API controllers for handling HTTP requests
+│   └── Controller/                        # API controllers for handling HTTP requests
 ├── FoodplannerDataAccessSQL/              # Data access layer
-    ├── Account/                           # Account repositories
-    ├── FeedbackChat/                      # Feedback repositories
-    ├── Image/                             # Image repositories
-    ├── LunchBox/                          # LunchBox repositories
-    ├── Migrations/                        # Database migrations
+│   ├── Account/                           # Account repositories
+│   ├── FeedbackChat/                      # Feedback repositories
+│   ├── Image/                             # Image repositories
+│   ├── LunchBox/                          # LunchBox repositories
+│   └── Migrations/                        # Database migrations
 ├── FoodplannerModels/                     # Model layer
-    ├── Account/                           # Account models
-    ├── FeedbackChat/                      # Feedback models
-    ├── Image/                             # Image models
-    ├── LunchBox/                          # LunchBox models
+│   ├── Account/                           # Account models
+│   ├── FeedbackChat/                      # Feedback models
+│   ├── Image/                             # Image models
+│   └── LunchBox/                          # LunchBox models
 ├── FoodplannerServices/                   # Service Layer
-    ├── Account/                           # Account services
-    ├── Auth/                              # Authentication services
-    ├── FeedbackChat/                      # Feedback services
-    ├── Image/                             # Image services
-    ├── LunchBox/                          # LunchBox services
-├── Test/                                  # Tests
+│   ├── Account/                           # Account services
+│   ├── Auth/                              # Authentication services
+│   ├── FeedbackChat/                      # Feedback services
+│   ├── Image/                             # Image services
+│   └── LunchBox/                          # LunchBox services
+└── Test/                                  # Tests
 ```
 
 ## Migrations
