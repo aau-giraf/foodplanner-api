@@ -24,9 +24,9 @@ jobs:
       # Step 3: Build Docker image (specifying the working directory)
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_NAME }}/foodplanner-api:staging .
+          docker build -t dressi123/foodplanner-api:staging .
 
       # Step 4: Push Docker image
       - name: Push Docker image
         run: |
-          docker push ${{ secrets.DOCKER_NAME }}/foodplanner-api:staging
+          docker push dressi123/foodplanner-api:staging
