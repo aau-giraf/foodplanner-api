@@ -24,6 +24,8 @@ using FluentMigrator.Runner;
 using FluentMigrator.Runner.Initialization;
 using FluentMigrator.Postgres;
 using FoodplannerDataAccessSql.Migrations;
+using FoodplannerModels.FeedbackChat;
+using FoodplannerServices.FeedbackChat;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -170,11 +172,12 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ChildPolicy", policy => policy.RequireRole("Child"));
     options.AddPolicy("ParentPolicy", policy => policy.RequireRole("Parent"));
-    options.AddPolicy("TeacherPolicy", policy => policy.RequireRole("Teacher"));
+    options.AddPolicy("TeacherPolicy", policy => policy.RequireRole("Teacher", "Admin"));
     options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
 });
 
 //Dependency Injection Starts Here !
+// Add Repositories
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
 builder.Services.AddScoped(typeof(IMealRepository), typeof(MealRepository));
@@ -187,27 +190,37 @@ builder.Services.AddScoped<PackedIngredientService>();
 builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
 builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepository));
 builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));
+builder.Services.AddScoped(typeof(IChatRepository), typeof(ChatRepository));
 
+// Add Services
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
 builder.Services.AddScoped<IClassroomService, ClassroomService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ChildrenService>();
 builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
-builder.Services.AddAutoMapper(typeof(UserProfile));
+builder.Services.AddScoped<IChatService, ChatService>();
+
+builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfile));
 
 builder.Services.AddSingleton<AuthService>();
 
-// Set up connection to database before running migrations
-builder.Services.AddSingleton(serviceProvider => {
-        var host = SecretsLoader.GetSecret("DB_HOST");
-        var port = SecretsLoader.GetSecret("DB_PORT");
-        var database = SecretsLoader.GetSecret("DB_NAME");
-        var username = SecretsLoader.GetSecret("DB_USER");
-        var password = SecretsLoader.GetSecret("DB_PASS");
+// Add Automapper
+builder.Services.AddAutoMapper(typeof(UserProfile));
+builder.Services.AddAutoMapper(typeof(ChatProfile));
 
-        return new PostgreSQLConnectionFactory(host, port, database, username, password);
-    });
+
+// Set up connection to database before running migrations
+builder.Services.AddSingleton(serviceProvider =>
+{
+    var host = SecretsLoader.GetSecret("DB_HOST");
+    var port = SecretsLoader.GetSecret("DB_PORT");
+    var database = SecretsLoader.GetSecret("DB_NAME");
+    var username = SecretsLoader.GetSecret("DB_USER");
+    var password = SecretsLoader.GetSecret("DB_PASS");
+
+    return new PostgreSQLConnectionFactory(host, port, database, username, password);
+});
 
 builder.Services.AddFluentMigratorCore()
     .ConfigureRunner(rb => rb
@@ -218,7 +231,7 @@ builder.Services.AddFluentMigratorCore()
             $"Database={SecretsLoader.GetSecret("DB_NAME")};" +
             $"Username={SecretsLoader.GetSecret("DB_USER")};" +
             $"Password={SecretsLoader.GetSecret("DB_PASS")}")
-        .ScanIn(typeof(InitTables).Assembly).For.Migrations()) 
+        .ScanIn(typeof(InitTables).Assembly).For.Migrations())
     .AddLogging(lb => lb.AddFluentMigratorConsole()); //Add logging to migrations to see state.
 
 
