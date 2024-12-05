@@ -1,4 +1,5 @@
-﻿using FoodplannerDataAccessSql.Image;
+﻿using System.Diagnostics;
+using FoodplannerDataAccessSql.Image;
 using FoodplannerModels.Account;
 using FoodplannerModels.Image;
 
