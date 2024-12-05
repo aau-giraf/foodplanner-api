@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using FoodplannerServices.Image;
 using FoodplannerModels.Image;
+using FoodplannerModels.Auth;
 
 
 
@@ -22,7 +23,7 @@ public class ImagesControllerTests
         var imageId = 12345;
 
         var mockFoodImageService = new Mock<IFoodImageService>();
-        var mockAuthService = new Mock<AuthService>();
+        var mockAuthService = new Mock<IAuthService>();
 
         var controller = new ImagesController(mockFoodImageService.Object, mockAuthService.Object);
 
@@ -85,16 +86,16 @@ public class ImagesControllerTests
             return fileName == "image1.jpg" ? imageId1 : imageId2;
         });
 
-        var mockAuthService = new Mock<AuthService>();
+        var mockAuthService = new Mock<IAuthService>();
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
 
         var controller = new ImagesController(mockFoodImageService.Object, mockAuthService.Object);
-        //act
 
+        // Act
         var result = await controller.UploadImages(imageFiles, userId);
-
         var okResult = Assert.IsType<OkObjectResult>(result);
-        //assert
+        
+        // Assert
         Assert.Equal(200, okResult.StatusCode);
 
         var imageIds = Assert.IsType<IEnumerable<string>>(okResult.Value);
@@ -109,7 +110,7 @@ public class ImagesControllerTests
         var token = "valid-jwt-token";
         var foodImageIds = new List<int> { 12345, 67890 };
 
-        var mockAuthService = new Mock<AuthService>();
+        var mockAuthService = new Mock<IAuthService>();
         var userId = 1;
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
 
@@ -138,7 +139,7 @@ public class ImagesControllerTests
         var token = "valid-jwt-token";
         var foodImageId = 12345;
 
-        var mockAuthService = new Mock<AuthService>();
+        var mockAuthService = new Mock<IAuthService>();
         var userId = 1;
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
 
@@ -172,13 +173,13 @@ public class ImagesControllerTests
         var token = "valid-jwt-token";
         var foodImageId = 12345;
 
-        var mockAuthService = new Mock<AuthService>();
+        var mockAuthService = new Mock<IAuthService>();
         var userId = 1;
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
 
         var mockFoodImageService = new Mock<IFoodImageService>();
 
-        var presignedLink = "https://cdn.discordapp.com/attachments/1282632525776289802/1313768692441550881/aHR0cHM6Ly9ib2x0LWdjZG4uc2MtY2RuLm5ldC8zL3Jnb0lnWUk3dWxBT2RlMFAydE9jaD9ibz1FZzBhQUJvQU1nRjlTQUpRVldBQiZ1Yz04NQ.png?ex=675155f0&is=67500470&hm=885182fa8609d27d3f19ea95d8b676ec0bd98c4c6253d9ca0bad1c8d0460831f&";
+        var presignedLink = "localhost";
 
         mockFoodImageService.Setup(service => service.GetFoodImageLink(foodImageId)).ReturnsAsync(presignedLink);
 
