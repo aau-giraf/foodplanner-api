@@ -22,6 +22,9 @@ namespace FoodplannerModels.Account
         Task<bool> UpdateArchivedAsync(int id);
         Task<bool> UpdateRoleApprovedAsync(int id, bool roleApproved);
         Task<IEnumerable<User?>> SelectAllNotArchivedAsync();
+        Task<UserDTO> GetLoggedInAsync(int id);
 
+        Task<int> UpdateLoggedInAsync(int id, UserUpdateDTO userUpdate);
+        Task<int> UpdatePasswordAsync(string password, int id);
     }
 }

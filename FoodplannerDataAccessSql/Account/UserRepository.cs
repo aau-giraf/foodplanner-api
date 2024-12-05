@@ -214,6 +214,46 @@ namespace FoodplannerDataAccessSql.Account
                 return result.ToList();
             }
         }
-    }
 
+        public async Task<UserDTO> GetLoggedInAsync(int id)
+        {
+            var sql = "SELECT id, first_name, last_name, email, role, role_approved FROM users WHERE id = @Id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QueryFirstOrDefaultAsync<UserDTO>(sql, new { Id = id });
+                return result;
+            }
+        }
+
+        public async Task<int> UpdateLoggedInAsync(int id, UserUpdateDTO userUpdateDTO)
+        {
+            var sql = "UPDATE users SET first_name = @FirstName, last_name = @LastName, email = @Email WHERE id = @Id RETURNING id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.ExecuteAsync(sql, new
+                {
+                    Id = id,
+                    FirstName = userUpdateDTO.FirstName,
+                    LastName = userUpdateDTO.LastName,
+                    Email = userUpdateDTO.Email,
+                });
+                return result;
+            }
+        }
+
+        public async Task<int> UpdatePasswordAsync(string password, int id)
+        {
+            var sql = "UPDATE users SET password = @Password WHERE id = @Id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.ExecuteAsync(sql, new { Password = password, Id = id });
+                return result;
+            }
+        }
+
+
+    }
 }

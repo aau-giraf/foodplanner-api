@@ -9,34 +9,61 @@ using FoodplannerServices.Image;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using FoodplannerModels.Account;
 
 namespace FoodplannerApi.Controller;
 
-public class ImagesController(IFoodImageService foodImageService) : BaseController
+public class ImagesController(IFoodImageService foodImageService, AuthService authService) : BaseController
 {
     private readonly long _maxFileSize = 2000000000;
-    
+    private readonly AuthService _authService = authService;
+
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> UploadImage(IFormFile imageFile, int userId)
+    public async Task<IActionResult> UploadImage([FromHeader(Name = "Authorization")] string token, IFormFile imageFile)
     {
-        if (imageFile.Length == 0) return BadRequest("File is empty");
-        if (imageFile.Length >= _maxFileSize) return BadRequest("File too big");
-        
-        var foodImageId = foodImageService.CreateFoodImage(
-            userId,
-            imageFile.OpenReadStream(),
-            imageFile.FileName,
-            imageFile.ContentType,
-            imageFile.Length);
-        
-        return Ok($"FoodImage [{foodImageId}] uploaded successfully");
+        try
+        {
+            var idString = _authService.RetrieveIdFromJwtToken(token);
+            if (!int.TryParse(idString, out int id))
+            {
+                return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+            }
+
+            var foodImageId = await foodImageService.CreateFoodImage(
+                id,
+                imageFile.OpenReadStream(),
+                imageFile.FileName,
+                imageFile.ContentType,
+                imageFile.Length
+            );
+
+            return Ok(foodImageId);
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new ErrorResponse { Message = [e.Message] });
+        }
+        // var imageFile = imageContainer.ImageFile;
+        // var userId = imageContainer.UserId;
+
+        // if (imageFile.Length == 0) return BadRequest("File is empty");
+        // if (imageFile.Length >= _maxFileSize) return BadRequest("File too big");
+
+        // var foodImageId = await foodImageService.CreateFoodImage(
+        //     userId,
+        //     imageFile.OpenReadStream(),
+        //     imageFile.FileName,
+        //     imageFile.ContentType,
+        //     imageFile.Length);
+
+        // return Ok(foodImageId);
     }
 
     [HttpPost]
     [ApiExplorerSettings(IgnoreApi = true)]
     [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> UploadImages([Required]IFormFileCollection imageFiles, int userId)
+    public async Task<IActionResult> UploadImages([Required] IFormFileCollection imageFiles, int userId)
     {
         if (imageFiles.Any(file => file.Length == 0)) return BadRequest("A file is empty");
         if (imageFiles.Any(file => file.Length >= _maxFileSize)) return BadRequest("a file too big");
@@ -48,7 +75,7 @@ public class ImagesController(IFoodImageService foodImageService) : BaseControll
                 file.ContentType,
                 file.Length))
             .Select(task => task.Result.ToString());
-        
+
         return Ok(ids);
     }
 
@@ -62,14 +89,13 @@ public class ImagesController(IFoodImageService foodImageService) : BaseControll
         var imageIdList = foodImageIds.ToList();
         if (imageIdList == null || !imageIdList.Any())
             return BadRequest("No imageIds provided");
-        
+
         foodImageIds.ToList().ForEach(id => foodImageService.DeleteImage(id));
-        
+
         return Ok("Images deleted successfully");
     }
 
     [HttpGet]
-
     [Authorize(Roles = "Child, Parent")]
     [AuthorizeImageOwnerFilter]
     [ProducesResponseType(typeof(FoodImage), StatusCodes.Status200OK)]
@@ -81,13 +107,13 @@ public class ImagesController(IFoodImageService foodImageService) : BaseControll
     }
 
     [HttpGet]
-    [Authorize(Roles = "Child, Parent, Teacher")]
-    [AuthorizeImageOwnerFilter]
+    [Authorize(Roles = "Parent, Child, Teacher, Admin")]
+    //[AuthorizeImageOwnerFilter]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPresignedImageLink(int foodImageId)
     {
         var presignedImageLink = await foodImageService.GetFoodImageLink(foodImageId);
-        return Ok(presignedImageLink);
+        return Ok(presignedImageLink.Replace("localhost", HttpContext.Request.Host.Host));
     }
 
     private class AuthorizeImageOwnerFilter : ActionFilterAttribute
@@ -99,18 +125,20 @@ public class ImagesController(IFoodImageService foodImageService) : BaseControll
             var foodImageService = context.HttpContext.RequestServices.GetService<IFoodImageService>();
             var token = context.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
             var foodImageIds = context.HttpContext.Request.Query["foodImageId"];
-            
+
             if (token == null)
             {
                 context.Result = new UnauthorizedResult();
-            } else if (foodImageIds.Any(id => id == null))
+            }
+            else if (foodImageIds.Any(id => id == null))
             {
                 context.Result = new BadRequestResult();
             }
             else if (authService == null || foodImageService == null || userRepository == null)
             {
                 throw new Exception("Missing services");
-            } else
+            }
+            else
             {
                 var userId = int.Parse(authService.RetrieveIdFromJwtToken(token));
                 var role = authService.RetrieveRoleFromJwtToken(token);
