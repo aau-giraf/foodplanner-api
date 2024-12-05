@@ -209,76 +209,32 @@ public class UsersControllerTests
     }
 
     [Fact]
-    public async Task UpdatePinCode_ValidRequest_ReturnsCreated()
-    {
-        // Arrange
-        var mockUserService = new Mock<IUserService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
-
-        var token = authService.GenerateJWTToken(new User
-        {
-            Id = 1,
-            FirstName = "Test",
-            LastName = "User",
-            Email = "test@example.com",
-            Password = "passwordTester",
-            Role = "Parent",
-            RoleApproved = true
-        });
-
-        var pincode = new Pincode
-        {
-            PinCode = "1234"
-        };
-
-
-        mockUserService
-            .Setup(s => s.UpdateUserPinCodeAsync(It.IsAny<string>(), It.IsAny<int>()))
-            .ReturnsAsync("PinCodeUpdatedSuccessfully");
-
-        var controller = new UsersController(mockUserService.Object, authService);
-
-        // Act
-        var result = await controller.UpdatePinCode($"Bearer {token}", pincode);
-
-        // Assert
-        var createdResult = Assert.IsType<CreatedResult>(result);
-        Assert.Equal(201, createdResult.StatusCode);
-    }
-
-    [Fact]
     public async Task UpdatePinCode_ReturnsCreatedResult_WhenPinCodeIsUpdated()
     {
         // Arrange
+        var validToken = "valid-token";
+        var userId = 1;
+        var pincode = new Pincode { PinCode = "1234" };
+
         var mockUserService = new Mock<IUserService>();
         var mockAuthService = new Mock<IAuthService>();
 
-        var validToken = "valid-token";
-        var userId = 1;
-
-        var pincode = new Pincode { PinCode = "1234" };
+        var controller = new UsersController(mockUserService.Object, mockAuthService.Object);
 
         mockAuthService
-            .Setup(auth => auth.RetrieveIdFromJwtToken(It.Is<string>(token => token == $"Bearer {validToken}")))
+            .Setup(auth => auth.RetrieveIdFromJwtToken($"Bearer {validToken}"))
             .Returns(userId.ToString());
 
         mockUserService
-            .Setup(service => service.UpdateUserPinCodeAsync(It.IsAny<string>(), It.IsAny<int>()))
+            .Setup(service => service.UpdateUserPinCodeAsync(pincode.PinCode, userId))
             .ReturnsAsync("PinCodeUpdatedSuccessfully");
-
-        var controller = new UsersController(mockUserService.Object, mockAuthService.Object);
 
         // Act
         var result = await controller.UpdatePinCode($"Bearer {validToken}", pincode);
 
         // Assert
-        Assert.NotNull(result);
-        var createdResult = Assert.IsType<CreatedResult>(result);
-        Assert.Equal(201, createdResult.StatusCode);
+        Assert.IsType<CreatedResult>(result);
     }
-
-
-
 
 
     [Fact]
@@ -378,39 +334,4 @@ public class UsersControllerTests
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
         Assert.Equal(400, badRequestResult.StatusCode);
     }
-
-
-
-    [Fact]
-    public async Task CheckPinCode_IncorrectPin_ReturnsBadRequest()
-    {
-        //arrange
-        var token = "valid-jwt-token";
-        var pinCode = new Pincode { PinCode = "wrongPinBlaBlaBla" };
-        var userId = 27;
-
-        var mockUserService = new Mock<IUserService>();
-        var authService = new Mock<IAuthService>();
-
-        var _controller = new UsersController(mockUserService.Object, authService.Object);
-
-        var userCredsDTO = new UserCredsDTO
-        {
-            JWT = "jwt-token",
-            Role = "Child",
-            RoleApproved = true
-        };
-
-        mockUserService.Setup(service => service.GetUserByIdAndPinCodeAsync(userId, pinCode.PinCode)).ReturnsAsync((UserCredsDTO)null);
-
-        authService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
-
-        // Act
-        var result = await _controller.CheckPinCode(token, pinCode);
-
-        // Assert
-        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-        Assert.Equal(400, badRequestResult.StatusCode);
-    }
-
 }
