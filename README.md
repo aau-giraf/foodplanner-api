@@ -133,7 +133,69 @@ To set this up correctly please follow these steps.
 -   [Docker](https://docs.docker.com/engine/install/ubuntu/)
 -   [Cron](https://www.digitalocean.com/community/tutorials/how-to-use-cron-to-automate-tasks-ubuntu-1804)
 
-3.  Create a new file called `docker-auto-deploy.sh` and open it using the following command.
+3. Create a new file called `docker-compose.yml` and open it using the following command
+
+    ```bash
+    touch docker-compose.yml
+    nano docker-compose.yml
+    ```
+
+    Paste the following code into the file. **Remember to update the variables with your own information.**
+
+    ```yml
+    version: "3.8"
+
+    services:
+        minio:
+            image: minio/minio:latest
+            container_name: minio_giraf
+            restart: unless-stopped
+            ports:
+                - "9000:9000"
+                - "9001:9001"
+            volumes:
+                - ./minio/data:/mnt/data
+            environment:
+                - MINIO_ROOT_USER=<insert here>
+                - MINIO_ROOT_PASSWORD=<insert here>
+                - MINIO_VOLUMES=/mnt/data
+            command: server /mnt/data --console-address ":9001"
+
+        postgres:
+            image: postgres:latest
+            container_name: postgres_giraf
+            restart: unless-stopped
+            ports:
+                - "5432:5432"
+            volumes:
+                - ./postgres/data:/var/lib/postgresql/data
+            environment:
+                - POSTGRES_PASSWORD=<insert here>
+                - POSTGRES_USER=<insert here>
+                - POSTGRES_DB=<insert here>
+    ```
+
+    Go ahead and run the docker compose file using the following command:
+
+    ```bash
+    docker compose -f docker-compose.yml up
+    ```
+
+    This will create two containers containing **Minio** for image storage and PostgreSQL for data storage.
+    The Minio server can now be accessed and managed on `http://<server-ip>:9001`
+
+4. Connect to the newly created PostgreSQL container using your prefered PostgreSQL database tool ex. [pgAdmin](https://www.pgadmin.org/download/).
+
+    ```
+    Host name/address   # This is your server ip
+    Port                # 5432 unless changed in docker-compose.yml
+    Username            # The one you wrote in docker-compose.yml
+    Password            # The one you wrote in docker-compose.yml
+    ```
+
+    When connected go ahead and create two new databases called `giraf_foodplanner_db_stage` and `giraf_foodplanner_db_prod` You dont have to create any new tables these will be automaticly generated when the dotnet application runs.
+
+5. Create a new file called `docker-auto-deploy.sh` and open it using the following command.
 
     ```bash
       touch docker-auto-deploy.sh
@@ -236,8 +298,8 @@ To set this up correctly please follow these steps.
 
     ```
 
-4.  Last but not least, we need to set up a cron job to run the `docker-auto-deploy.sh` script periodically.
-    Open Cron using the following command
+6. Last but not least, we need to set up a cron job to run the `docker-auto-deploy.sh` script periodically.
+   Open Cron using the following command
 
 ```bash
 cronjob -e
