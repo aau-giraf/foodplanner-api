@@ -189,16 +189,15 @@ To set this up correctly please follow these steps.
 
 4. Connect to the newly created PostgreSQL container using your prefered PostgreSQL database tool ex. [pgAdmin](https://www.pgadmin.org/download/).
 
-    ```
-    Host name/address   # This is your server ip
-    Port                # 5432 unless changed in docker-compose.yml
-    Username            # The one you wrote in docker-compose.yml
-    Password            # The one you wrote in docker-compose.yml
-    ```
+> [!TIP]
+> **Host name/address**: This is your server-ip<br>
+**Port**: 5432 unless changed in docker-compose.yml<br>
+**Username**: The one you wrote in docker-compose.yml<br>
+**Password**: The one you wrote in docker-compose.yml
 
     When connected go ahead and create two new databases called `giraf_foodplanner_db_stage` and `giraf_foodplanner_db_prod` You dont have to create any new tables these will be automaticly generated when the dotnet application runs.
 
-5. Create a new file called `docker-auto-deploy.sh` and open it using the following command.
+6. Create a new file called `docker-auto-deploy.sh` and open it using the following command.
 
     ```bash
       touch docker-auto-deploy.sh
@@ -301,7 +300,7 @@ To set this up correctly please follow these steps.
 
     ```
 
-6. Last but not least, we need to set up a cron job to run the `docker-auto-deploy.sh` script periodically.
+7. Last but not least, we need to set up a cron job to run the `docker-auto-deploy.sh` script periodically.
    Open Cron using the following command
 
 ```bash
