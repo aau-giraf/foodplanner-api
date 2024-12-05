@@ -2,7 +2,7 @@ using FluentMigrator;
 
 namespace FoodplannerDataAccessSql.Migrations;
 
-[Migration(4)]
+[Migration(5)]
 public class FeedBackChatTables : Migration
 {
         public override void Up()
