@@ -128,6 +128,9 @@ To set this up correctly please follow these steps.
 
 1. First step is to figure out where to host the server. A great place is AAU's own hosting platform https://strato-new.claaudia.aau.dk here the most important thing is to pick a server running Ubuntu.
 
+[!IMPORTANT]
+If Strato is decided then remember to open all the ports that are expected to be used. This can be done in Security Groups under the Network section. These ports could be 5432, 8080, 8081, 9000 and 9001
+
 2. Install the following on the server:
 
 -   [Docker](https://docs.docker.com/engine/install/ubuntu/)
