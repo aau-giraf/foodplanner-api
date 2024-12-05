@@ -4,19 +4,19 @@ The Foodplanner API is a backend service for the GIRAF Foodplanner application, 
 
 ## Features
 
-- **User Management**: Role-based access control for teachers and parents.
-- **Meal Planning**: Endpoints for creating, updating, and managing meal plans.
-- **Database Integration**: Utilizes PostgreSQL for reliable data storage.
-- **Database Migration**: Utilizes FlutentMigrator for scalable data storage.
-- **RESTful API**: Follows REST principles for easy integration and development.
+-   **User Management**: Role-based access control for teachers and parents.
+-   **Meal Planning**: Endpoints for creating, updating, and managing meal plans.
+-   **Database Integration**: Utilizes PostgreSQL for reliable data storage.
+-   **Database Migration**: Utilizes FlutentMigrator for scalable data storage.
+-   **RESTful API**: Follows REST principles for easy integration and development.
 
 ## Technologies Used
 
-- **Framework**: ASP.NET Core
-- **Database**: PostgreSQL
-- **Image Database**: Minio
-- **Authentication**: JWT (JSON Web Token)
-- **Containerization**: Docker (optional)
+-   **Framework**: ASP.NET Core
+-   **Database**: PostgreSQL
+-   **Image Database**: Minio
+-   **Authentication**: JWT (JSON Web Token)
+-   **Containerization**: Docker (optional)
 
 ## Project Structure
 
@@ -46,7 +46,7 @@ src/
 
 ## Migrations
 
-When making changes to the database, such as making tables or making new relations a new migration should be added defining this change. 
+When making changes to the database, such as making tables or making new relations a new migration should be added defining this change.
 
 Migration files are versioned, which enables rollback to a previous database version. Version names are sequently rising starting at 1, meaning the next migration should have version 2 and so on. Documentation is found on https://fluentmigrator.github.io/articles/intro.html.
 
@@ -57,43 +57,53 @@ New migrations are added by including a new file in the [Migrations folder](http
 ### Prerequisites
 
 Ensure you have the following installed:
-- [ASP.NET Core SDK](https://dotnet.microsoft.com/en-us/download)
-- [Docker](https://www.docker.com) (optional, for containerized deployment)
+
+-   [ASP.NET Core SDK](https://dotnet.microsoft.com/en-us/download)
+-   [Docker](https://www.docker.com) (optional, for containerized deployment)
 
 ### Installation
+
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/aau-giraf/foodplanner-api.git
 ```
+
 2. Navigate to the project directory:
+
 ```bash
 cd foodplanner-api/foodplannerApi
 ```
+
 3. Install dependencies:
+
 ```bash
 dotnet restore
 ```
+
 4. Setup development environment:
 
 Make sure to have a JSON file called `appsettings.Development.json` in the same directory as `appsettings.json`, containing the following properties.
+
 ```json
 {
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "Infisical": {
-    "ClientId": "<ClientId>",
-    "ClientSecret": "<ClientSecret>",
-    "Workspace": "<Workspace>"
-  }
+	"Logging": {
+		"LogLevel": {
+			"Default": "Information",
+			"Microsoft.AspNetCore": "Warning"
+		}
+	},
+	"Infisical": {
+		"ClientId": "<ClientId>",
+		"ClientSecret": "<ClientSecret>",
+		"Workspace": "<Workspace>"
+	}
 }
 ```
 
 Overwriting environment variables is possible, this is done by adding to the `"Infisical"` group.
 Example
+
 ```json
 ...
 "Infisical": {
@@ -105,34 +115,178 @@ Example
 ...
 ```
 
-### Database Setup
-1. Create a PostgreSQL database.
-   This can be done using the docker-compose file <link her>
+### Github Actions
+
+Ensure github actions is correctly setup.
+
+TODO: vi skal lige have skrevet den her færdig når vi ved hvad der skal gøres i forhold til docker hub.
+
+### Server Setup
+
+The server will consist of docker containers such as a staging and production API, PostgreSQL database and a Minio database. It will integrate with Github actions to streamline development and automaticly update Staging and Production API to follow newest releases.
+To set this up correctly please follow these steps.
+
+1. First step is to figure out where to host the server. A great place is AAU's own hosting platform https://strato-new.claaudia.aau.dk here the most important thing is to pick a server running Ubuntu.
+
+2. Install the following on the server:
+
+-   [Docker](https://docs.docker.com/engine/install/ubuntu/)
+-   [Cron](https://www.digitalocean.com/community/tutorials/how-to-use-cron-to-automate-tasks-ubuntu-1804)
+
+3.  Create a new file called `docker-auto-deploy.sh` and open it using the following command.
+
+    ```bash
+      touch docker-auto-deploy.sh
+      nano docker-auto-deploy.sh
+    ```
+
+    Paste the following code into the file. **Remember to update the variables with your own information.**
+
+    ```bash
+    # Variables
+
+    DOCKER_IMAGE="<docker-hub-name>/foodplanner-api" # Replace with your Docker image name
+    CONTAINER_NAME="foodplanner-api" # Name of your running container
+    LAST_IMAGE_FILE="/var/tmp/last_image_version_stage.txt" # File to store the last pulled image version
+    LAST_IMAGE_FILE_PROD="/var/tmp/last_image_version_prod.txt"
+
+    CLIENT_ID="<client-id>"
+    CLIENT_SECRET="<client-secret>"
+    WORKSPACE="<workspace>"
+
+    # Function to pull and deploy
+
+    pull_and_deploy() {
+    echo "New image found, pulling and deploying..."
+    sudo docker pull $DOCKER_IMAGE:staging
+
+        # Stop the existing container
+        sudo docker stop $CONTAINER_NAME-stage
+        sudo docker rm $CONTAINER_NAME-stage
+
+        # Start a new container with the updated image
+        sudo docker run -d --name $CONTAINER_NAME-stage -p 8080:8080 -e CLIENT_ID=$CLIENT_ID -e CLIENT_SECRET=$CLIENT_SECRET -e WORKSPACE=$WORKSPACE -e ASPNETCORE_ENVIRONMENT=Staging  $DOCKER_IMAGE:staging
+
+        # Store the new image digest in the file
+        echo $LATEST_DIGEST > $LAST_IMAGE_FILE
+        echo "Deployment successful."
+
+    }
+
+    pull_and_deploy_prod() {
+    echo "New image found, pulling and deploying..."
+    sudo docker pull $DOCKER_IMAGE:prod
+
+        # Stop the existing container
+        sudo docker stop $CONTAINER_NAME-prod
+        sudo docker rm $CONTAINER_NAME-prod
+
+        # Start a new container with the updated image
+        sudo docker run -d --name $CONTAINER_NAME-prod -p 8081:8080 -e CLIENT_ID=$CLIENT_ID -e CLIENT_SECRET=$CLIENT_SECRET -e WORKSPACE=$WORKSPACE -e ASPNETCORE_ENVIRONMENT=Production $DOCKER_IMAGE:prod
+
+        # Store the new image digest in the file
+        echo $LATEST_DIGEST_PROD > $LAST_IMAGE_FILE_PROD
+        echo "Deployment successful."
+
+    }
+
+    # Get the current latest image digest from Docker Hub
+
+    LATEST_DIGEST=$(curl -s https://hub.docker.com/v2/repositories/$DOCKER_IMAGE/tags/staging/ | jq -r '.images[0].digest')
+    LATEST_DIGEST_PROD=$(curl -s https://hub.docker.com/v2/repositories/$DOCKER_IMAGE/tags/prod/ | jq -r '.images[0].digest')
+
+    # For staging
+
+    # Check if the last image version file exists
+
+    if [ ! -f "$LAST_IMAGE_FILE" ]; then
+    echo "No previous image found, pulling the latest version..."
+    pull_and_deploy
+    else # Read the last pulled image digest
+    LAST_DIGEST=$(cat $LAST_IMAGE_FILE)
+
+        # Compare the latest digest with the last pulled one
+        if [ "$LATEST_DIGEST" != "$LAST_DIGEST" ]; then
+            pull_and_deploy
+        else
+            echo "No new image found."
+        fi
+
+        fi
+
+    # For production
+
+    if [ ! -f "$LAST_IMAGE_FILE_PROD" ]; then
+    echo "No previous image found, pulling the latest version..."
+    pull_and_deploy_prod
+    else
+
+    # Read the last pulled image digest
+
+    LAST_DIGEST_PROD=$(cat $LAST_IMAGE_FILE_PROD)
+
+    # Compare the latest digest with the last pulled one
+
+    if [ "$LATEST_DIGEST_PROD" != "$LAST_DIGEST_PROD" ]; then
+    pull_and_deploy_prod
+    else
+    echo "No new image found."
+    fi
+    fi
+
+    ```
+
+4.  Last but not least, we need to set up a cron job to run the `docker-auto-deploy.sh` script periodically.
+    Open Cron using the following command
+
+```bash
+cronjob -e
+```
+
+Then add the following line to the end of the file.
+
+```bash
+* * * * * $HOME/docker-auto-deploy.sh >> $HOME/docker-deploy.log 2>&1
+```
+
+This will run the bash script once every minute and write the output to `docker-deploy.log`
 
 ## Running the API
+
 1. Start the API locally:
+
 ```bash
 dotnet run
 ```
+
 2. The API will be available at https://localhost:8080
 
 ## API Documentation
 
 The API is documented using Swagger, available at:
-- https://localhost:8080/swagger/index.html
+
+-   https://localhost:8080/swagger/index.html
 
 # Contributing
+
 Contributions are welcome! Follow these steps:
+
 1. Create a branch for your feature or bugfix:
+
 ```bash
 git checkout -b feature-name
 ```
+
 2. Commit your changes:
+
 ```bash
 git commit -m "Add feature name"
 ```
+
 3. Push to the branch:
+
 ```bash
 git push origin feature-name
 ```
+
 5. Open a pull request to the staging branch, test it, and then create a new pull request for main.
