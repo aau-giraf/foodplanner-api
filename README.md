@@ -353,4 +353,4 @@ git commit -m "Add feature name"
 git push origin feature-name
 ```
 
-5. Open a pull request to the staging branch, test it, and then create a new pull request for main.
+4. Open a pull request to the staging branch, test it, and then create a new pull request for main.
