@@ -1,0 +1,9 @@
+{
+    "Database": {
+      "Host": "localhost",
+      "Port": "<Port of the PostgreSQL Docker container for tests>",
+      "Database": "<Database>",
+      "Username": "<Username>",
+      "Password": "<Password>"
+    }
+}
