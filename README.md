@@ -39,3 +39,7 @@ When making changes to the database, such as making tables or making new relatio
 Migration files are versioned, which enables rollback to a previous database version. Version names are sequently rising starting at 1, meaning the next migration should have version 2 and so on. Documentation is found on https://fluentmigrator.github.io/articles/intro.html.
 
 New migrations are added by including a new file in the [Migrations folder](https://github.com/aau-giraf/foodplanner-api/tree/staging/FoodplannerDataAccessSql/Migrations) and the class must inherit `Migration`. Important is to implement `up` and `down` methods which must be each others reverse.
+
+## Xunit Tests
+
+When running the tests, the repository tests require a PostgreSQL Docker Container to connect to. In the settings.json file within the Test folder is where the properties for the Docker Container should be updated, for the tests to work.
