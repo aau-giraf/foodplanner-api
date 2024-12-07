@@ -1,4 +1,4 @@
-namespace testing;
+namespace Test.Repository;
 
 [CollectionDefinition("Database collection")]
 public class DatabaseCollection : ICollectionFixture<DatabaseFixture>

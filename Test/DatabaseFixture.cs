@@ -6,7 +6,7 @@ using Dapper;
 using FluentMigrator.Runner;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace testing;
+namespace Test.Repository;
 
 public class DatabaseFixture : IDisposable
 {
@@ -62,6 +62,26 @@ public class DatabaseFixture : IDisposable
     public async Task<int> CreateTestImage(int userId)
     {
         var sql = $"INSERT INTO food_image (image_id, user_id, image_name, image_file_type, size) VALUES ('1', '{userId}', 'test', 'none', '0') RETURNING id";
+        using (var connection = factory.Create())
+        {
+            connection.Open();
+            return await connection.QuerySingleAsync<int>(sql);
+        }
+    }
+
+    public async Task<int> CreateTestMeal(int userId, int imageId)
+    {
+        var sql = $"INSERT INTO meals (name, user_id, food_image_id, date) VALUES ('test', '{userId}', '{imageId}', 'test') RETURNING id";
+        using (var connection = factory.Create())
+        {
+            connection.Open();
+            return await connection.QuerySingleAsync<int>(sql);
+        }
+    }
+
+    public async Task<int> CreateTestIngredient(int userId, int imageId)
+    {
+        var sql = $"INSERT INTO ingredients (name, user_id, food_image_id) VALUES ('test', '{userId}', '{imageId}') RETURNING id";
         using (var connection = factory.Create())
         {
             connection.Open();
