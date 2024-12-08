@@ -3,6 +3,7 @@ using FoodplannerServices.Account;
 using Moq;
 using AutoMapper;
 using FoodplannerModels.Auth;
+using Microsoft.AspNetCore.Identity;
 
 namespace Test.Service;
 
@@ -12,6 +13,7 @@ public class UserServiceTests
     private readonly Mock<IChildrenRepository> _mockChildrenRepository;
     private readonly Mock<IAuthService> _mockAuthService;
     private readonly Mock<IMapper> _mockMapper;
+    private readonly Mock<IPasswordHandler> _mockPasswordHandler;
     private readonly UserService _userService;
 
     public UserServiceTests()
@@ -20,12 +22,14 @@ public class UserServiceTests
         _mockChildrenRepository = new Mock<IChildrenRepository>();
         _mockAuthService = new Mock<IAuthService>();
         _mockMapper = new Mock<IMapper>();
+        _mockPasswordHandler = new Mock<IPasswordHandler>();
 
         _userService = new UserService(
             _mockUserRepository.Object,
             _mockMapper.Object,
             _mockAuthService.Object,
-            _mockChildrenRepository.Object
+            _mockChildrenRepository.Object,
+            _mockPasswordHandler.Object
         );
     }
     
@@ -43,7 +47,7 @@ public class UserServiceTests
             .ReturnsAsync(expectedUsers);
     
 
-        _mockMapper.Setup(lu => lu.Map<List<UserDTO>>(It.IsAny<List<UserDTO>>()))
+        _mockMapper.Setup(lu => lu.Map<IEnumerable<UserDTO>>(It.IsAny<List<UserDTO>>()))
             .Returns(expectedUsers);
         
         // Act
@@ -151,9 +155,10 @@ public class UserServiceTests
         // Arrange
         var expectedId = 1;
         var inputUser = new User { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role = "Teacher", RoleApproved = true };
+        var encodedUser = new User { Id = inputUser.Id, FirstName = inputUser.FirstName, LastName = inputUser.LastName, Email = inputUser.Email, Password = BCrypt.Net.BCrypt.HashPassword(inputUser.Password), Role = inputUser.Role, RoleApproved = inputUser.RoleApproved };
 
         _mockUserRepository
-            .Setup(repo => repo.DeleteAsync(expectedId))
+            .Setup(repo => repo.UpdateAsync(inputUser))
             .ReturnsAsync(expectedId);
         
         // Act
@@ -168,12 +173,16 @@ public class UserServiceTests
     {
         // Arrange
         var expectedJWT = "jwtToken";
-        var inputUser = new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role = "Teacher", RoleApproved = true };
+        var password = "password";
+        var inputUser = new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "encrypted password", Role = "Teacher", RoleApproved = true };
         var expectedCreds = new UserCredsDTO { JWT = expectedJWT, Role = inputUser.Role, RoleApproved = inputUser.RoleApproved };
         
         _mockUserRepository
             .Setup(repo => repo.GetUserByEmailAsync(inputUser.Email))
             .ReturnsAsync(inputUser);
+        _mockPasswordHandler
+            .Setup(handler => handler.VerifyPassword(password, inputUser.Password))
+            .Returns(true);
         _mockAuthService
             .Setup(auth => auth.GenerateJWTToken(inputUser))
             .Returns(expectedJWT);
@@ -183,7 +192,9 @@ public class UserServiceTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(expectedCreds, result);
+        Assert.Equal(expectedCreds.JWT, result.JWT);
+        Assert.Equal(expectedCreds.Role, result.Role);
+        Assert.Equal(expectedCreds.RoleApproved, result.RoleApproved);
     }
 
     [Theory]
@@ -193,12 +204,16 @@ public class UserServiceTests
     {
         // Arrange
         var expectedJWT = "jwtToken";
-        var inputUser = new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role = inputUserRole, RoleApproved = true };
+        var password = "password";
+        var inputUser = new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "encrypted password", Role = inputUserRole, RoleApproved = true };
         var expectedCreds = new UserCredsDTO { JWT = expectedJWT, Role = "Child", RoleApproved = inputUser.RoleApproved };
         
         _mockUserRepository
             .Setup(repo => repo.GetUserByEmailAsync(inputUser.Email))
             .ReturnsAsync(inputUser);
+        _mockPasswordHandler
+            .Setup(handler => handler.VerifyPassword(password, inputUser.Password))
+            .Returns(true);
         _mockAuthService
             .Setup(auth => auth.GenerateJWTToken(inputUser))
             .Returns(expectedJWT);
@@ -208,7 +223,9 @@ public class UserServiceTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(expectedCreds, result);
+        Assert.Equal(expectedCreds.JWT, result.JWT);
+        Assert.Equal(expectedCreds.Role, result.Role);
+        Assert.Equal(expectedCreds.RoleApproved, result.RoleApproved);
     }
 
     [Fact]
@@ -235,9 +252,12 @@ public class UserServiceTests
     {
         // Arrange
         var newPincode = "1234";
-        var expectedPincode = BCrypt.Net.BCrypt.HashPassword(newPincode);
+        var expectedPincode = "encrypted";
         var id = 1;
 
+        _mockPasswordHandler
+            .Setup(handler => handler.EncryptPassword(newPincode))
+            .Returns(expectedPincode);
         _mockUserRepository
             .Setup(repo => repo.UpdatePinCodeAsync(expectedPincode, id))
             .ReturnsAsync(expectedPincode);
@@ -246,7 +266,6 @@ public class UserServiceTests
         var result = await _userService.UpdateUserPinCodeAsync(newPincode, id);
 
         // Assert
-        Assert.NotNull(expectedPincode);
         Assert.NotNull(result);
         Assert.Equal(expectedPincode, result);
     }
@@ -273,16 +292,20 @@ public class UserServiceTests
     {
         // Arrange
         var pin = "1234";
+        var encryptedPin = "encrypted";
         var token = "jwtToken";
         var inputUser = new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role = "Teacher", RoleApproved = true };
         var expectedCreds = new UserCredsDTO { JWT = token, Role = inputUser.Role, RoleApproved = inputUser.RoleApproved };
-
+        
+        _mockUserRepository
+            .Setup(repo => repo.GetPinCodeByIdAsync(inputUser.Id))
+            .ReturnsAsync(encryptedPin);
+        _mockPasswordHandler
+            .Setup(handler => handler.VerifyPassword(encryptedPin, pin))
+            .Returns(true);
         _mockUserRepository
             .Setup(repo => repo.GetByIdAsync(inputUser.Id))
             .ReturnsAsync(inputUser);
-        _mockUserRepository
-            .Setup(repo => repo.GetPinCodeByIdAsync(inputUser.Id))
-            .ReturnsAsync(pin);
         _mockAuthService
             .Setup(auth => auth.GenerateJWTToken(inputUser))
             .Returns(token);
@@ -292,7 +315,9 @@ public class UserServiceTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(expectedCreds, result);
+        Assert.Equal(expectedCreds.JWT, result.JWT);
+        Assert.Equal(expectedCreds.Role, result.Role);
+        Assert.Equal(expectedCreds.RoleApproved, result.RoleApproved);
     }
 
     [Fact]
@@ -444,16 +469,23 @@ public class UserServiceTests
     {
         // Arrange
         var expectedId = 1;
-        var updateUser = new UserUpdateDTO { FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com" };
+        var password = "password";
+        var encryptedPassword = "encrypted password";
 
+        _mockPasswordHandler
+            .Setup(handler => handler.EncryptPassword(password))
+            .Returns(encryptedPassword);
+        
         _mockUserRepository
-            .Setup(repo => repo.UpdatePasswordAsync(It.IsAny<string>(), expectedId))
+            .Setup(repo => repo.UpdatePasswordAsync(encryptedPassword, expectedId))
             .ReturnsAsync(expectedId);
         
         // Act
-        var result = await _userService.UpdateUserLoggedInAsync(expectedId, updateUser);
+        var result = await _userService.UpdateUserPasswordAsync(password, expectedId);
 
         // Assert
         Assert.Equal(expectedId, result);
     }
+
+    
 }
