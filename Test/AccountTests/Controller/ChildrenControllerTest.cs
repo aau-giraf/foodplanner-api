@@ -108,12 +108,17 @@ public class ChildrenControllerTest
         // Arrange
         var token = "jwtToken";
         var createChildren = new ChildrenCreateDTO { FirstName = "niels", LastName = "nielsen", classId = 1 };
-        var resultChildren = new ChildrenCreateParentDTO { FirstName = createChildren.FirstName, LastName = createChildren.LastName, classId = createChildren.classId, parentId = 1};
+        var parentId = 1;
         _mockAuthService
             .Setup(auth => auth.RetrieveIdFromJwtToken(token))
-            .Returns("1");
+            .Returns("" + parentId);
         _mockChildrenService
-            .Setup(repo => repo.CreateChildrenAsync(resultChildren))
+            .Setup(repo => repo.CreateChildrenAsync(It.Is<ChildrenCreateParentDTO>(dto =>
+                dto.FirstName == createChildren.FirstName &&
+                dto.LastName == createChildren.LastName &&
+                dto.classId == createChildren.classId &&
+                dto.parentId == parentId
+            )))
             .ReturnsAsync(1);
         
         // Act
@@ -129,12 +134,17 @@ public class ChildrenControllerTest
         // Arrange
         var token = "jwtToken";
         var createChildren = new ChildrenCreateDTO { FirstName = "niels", LastName = "nielsen", classId = 1 };
-        var resultChildren = new ChildrenCreateParentDTO { FirstName = createChildren.FirstName, LastName = createChildren.LastName, classId = createChildren.classId, parentId = 1};
+        var parentId = 1;
         _mockAuthService
             .Setup(auth => auth.RetrieveIdFromJwtToken(token))
-            .Returns("1");
+            .Returns("" + parentId);
         _mockChildrenService
-            .Setup(repo => repo.CreateChildrenAsync(resultChildren))
+            .Setup(repo => repo.CreateChildrenAsync(It.Is<ChildrenCreateParentDTO>(dto =>
+                dto.FirstName == createChildren.FirstName &&
+                dto.LastName == createChildren.LastName &&
+                dto.classId == createChildren.classId &&
+                dto.parentId == parentId
+            )))
             .ReturnsAsync(0);
         
         // Act
