@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+    minio:
+        image: minio/minio:latest
+        container_name: minio_giraf
+        restart: unless-stopped
+        ports:
+            - "9000:9000"
+            - "9001:9001"
+        volumes:
+            - ./minio/data:/mnt/data
+        environment:
+            - MINIO_ROOT_USER=<insert here>
+            - MINIO_ROOT_PASSWORD=<insert here>
+            - MINIO_VOLUMES=/mnt/data
+        command: server /mnt/data --console-address ":9001"
+
+    postgres:
+        image: postgres:latest
+        container_name: postgres_giraf
+        restart: unless-stopped
+        ports:
+            - "5432:5432"
+        volumes:
+            - ./postgres/data:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_PASSWORD=<insert here>
+            - POSTGRES_USER=<insert here>
+            - POSTGRES_DB=<insert here>
