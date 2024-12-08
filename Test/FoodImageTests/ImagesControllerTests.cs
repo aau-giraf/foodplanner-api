@@ -94,7 +94,7 @@ public class ImagesControllerTests
         // Act
         var result = await controller.UploadImages(imageFiles, userId);
         var okResult = Assert.IsType<OkObjectResult>(result);
-        
+
         // Assert
         Assert.Equal(200, okResult.StatusCode);
 
@@ -175,15 +175,19 @@ public class ImagesControllerTests
 
         var mockAuthService = new Mock<IAuthService>();
         var userId = 1;
-        mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
+        mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token))
+            .Returns(userId.ToString());
 
         var mockFoodImageService = new Mock<IFoodImageService>();
 
-        var presignedLink = "localhost";
+        var presignedLink = "http://localhos/sample-link";
 
-        mockFoodImageService.Setup(service => service.GetFoodImageLink(foodImageId)).ReturnsAsync(presignedLink);
+        mockFoodImageService.Setup(service => service.GetFoodImageLink(foodImageId))
+            .ReturnsAsync(presignedLink);
 
         var controller = new ImagesController(mockFoodImageService.Object, mockAuthService.Object);
+        controller.ControllerContext.HttpContext = new DefaultHttpContext();
+        controller.HttpContext.Request.Headers["Authorization"] = $"Bearer {token}";
 
         // Act
         var result = await controller.GetPresignedImageLink(foodImageId);
