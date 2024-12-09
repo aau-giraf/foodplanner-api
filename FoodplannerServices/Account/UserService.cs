@@ -1,7 +1,6 @@
 using AutoMapper;
-using FoodplannerApi.Helpers;
 using FoodplannerModels.Account;
-using Microsoft.AspNetCore.Identity;
+using FoodplannerModels.Auth;
 
 namespace FoodplannerServices.Account;
 
@@ -10,15 +9,17 @@ public class UserService : IUserService
     private readonly IUserRepository _userRepository;
     private readonly IChildrenRepository _childrenRepository;
     private readonly IMapper _mapper;
-    private readonly AuthService _authService;
+    private readonly IAuthService _authService;
+    private readonly IPasswordHandler _passwordHandler;
 
 
-    public UserService(IUserRepository userRepository, IMapper mapper, AuthService authService, IChildrenRepository childrenRepository)
+    public UserService(IUserRepository userRepository, IMapper mapper, IAuthService authService, IChildrenRepository childrenRepository, IPasswordHandler passwordHandler)
     {
         _userRepository = userRepository;
         _mapper = mapper;
         _authService = authService;
         _childrenRepository = childrenRepository;
+        _passwordHandler = passwordHandler;
     }
 
     public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
@@ -43,7 +44,7 @@ public class UserService : IUserService
             throw new InvalidOperationException("Email eksisterer allerede");
         }
 
-        user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+        user.Password = _passwordHandler.EncryptPassword(user.Password);
         user.RoleApproved = false;
         return await _userRepository.InsertAsync(user);
 
@@ -51,7 +52,7 @@ public class UserService : IUserService
 
     public async Task<int> UpdateUserAsync(User user)
     {
-        user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+        user.Password = _passwordHandler.EncryptPassword(user.Password);
         return await _userRepository.UpdateAsync(user);
     }
 
@@ -64,9 +65,7 @@ public class UserService : IUserService
     {
         var user = await _userRepository.GetUserByEmailAsync(email);
 
-        //bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user?.Password);
-
-        if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.Password))
+        if (user == null || _passwordHandler.VerifyPassword(password, user.Password))
         {
             throw new InvalidOperationException("Forkert brugernavn eller adgangskode");
         }
@@ -90,7 +89,7 @@ public class UserService : IUserService
         {
             throw new InvalidOperationException("Pinkode skal være 4 cifre");
         }
-        pinCode = BCrypt.Net.BCrypt.HashPassword(pinCode);
+        pinCode = _passwordHandler.EncryptPassword(pinCode);
         var pincode = await _userRepository.UpdatePinCodeAsync(pinCode, id);
 
         return pincode;
@@ -103,7 +102,7 @@ public class UserService : IUserService
         {
             throw new InvalidOperationException("Bruger har ikke en pinkode");
         }
-        else if (!BCrypt.Net.BCrypt.Verify(pinCode, pincode))
+        else if (_passwordHandler.VerifyPassword(pinCode, pincode))
         {
             throw new InvalidOperationException("Forkert pinkode");
         }
@@ -164,7 +163,7 @@ public class UserService : IUserService
 
     public async Task<int> UpdateUserPasswordAsync(string password, int id)
     {
-        password = BCrypt.Net.BCrypt.HashPassword(password);
+        password = _passwordHandler.EncryptPassword(password);
         var _password = await _userRepository.UpdatePasswordAsync(password, id);
         return _password;
     }

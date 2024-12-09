@@ -9,9 +9,9 @@ namespace FoodplannerApi.Controller
     /**
     * The controller for the PackedIngredient class.
     */
-    public class PackedIngredientController(PackedIngredientService packedIngredientService, AuthService authService) : BaseController
+    public class PackedIngredientController(IPackedIngredientService packedIngredientService, AuthService authService) : BaseController
     {
-        private readonly PackedIngredientService _packedIngredientService = packedIngredientService;
+        private readonly IPackedIngredientService _packedIngredientService = packedIngredientService;
         private readonly AuthService _authService = authService;
 
         // Get all packed ingredients

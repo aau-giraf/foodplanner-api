@@ -1,6 +1,7 @@
 using AutoMapper;
 using FoodplannerApi.Helpers;
 using FoodplannerModels.Account;
+using FoodplannerModels.Auth;
 
 namespace FoodplannerServices.Account;
 
@@ -10,10 +11,10 @@ public class ChildrenService : IChildrenService
 
     private readonly IMapper _mapper;
 
-    private readonly AuthService _authService;
+    private readonly IAuthService _authService;
 
 
-    public ChildrenService(IChildrenRepository childrenRepository, IMapper mapper, AuthService authService)
+    public ChildrenService(IChildrenRepository childrenRepository, IMapper mapper, IAuthService authService)
     {
         _childrenRepository = childrenRepository;
         _mapper = mapper;

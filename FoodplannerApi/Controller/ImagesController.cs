@@ -10,13 +10,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using FoodplannerModels.Account;
+using FoodplannerModels.Auth;
 
 namespace FoodplannerApi.Controller;
 
-public class ImagesController(IFoodImageService foodImageService, AuthService authService) : BaseController
+public class ImagesController(IFoodImageService foodImageService, IAuthService authService) : BaseController
 {
     private readonly long _maxFileSize = 2000000000;
-    private readonly AuthService _authService = authService;
+    private readonly IAuthService _authService = authService;
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -67,14 +68,19 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
     {
         if (imageFiles.Any(file => file.Length == 0)) return BadRequest("A file is empty");
         if (imageFiles.Any(file => file.Length >= _maxFileSize)) return BadRequest("a file too big");
-        var ids = imageFiles
-            .Select(async file => await foodImageService.CreateFoodImage(
+
+        var ids = new List<string>();
+
+        for(int i = 0; i < imageFiles.Count; i++)
+        {
+            var id = await foodImageService.CreateFoodImage(
                 userId,
-                file.OpenReadStream(),
-                file.FileName,
-                file.ContentType,
-                file.Length))
-            .Select(task => task.Result.ToString());
+                imageFiles[i].OpenReadStream(),
+                imageFiles[i].FileName,
+                imageFiles[i].ContentType,
+                imageFiles[i].Length);
+            ids.Add(id.ToString());
+        }
 
         return Ok(ids);
     }
@@ -103,7 +109,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
     {
         if (foodImageId < 0)
             return BadRequest("Invalid userId");
-        return Ok(foodImageService.GetFoodImage(foodImageId));
+        return Ok(await foodImageService.GetFoodImage(foodImageId));
     }
 
     [HttpGet]
@@ -138,7 +144,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
             {
                 throw new Exception("Missing services");
             }
-            else
+            else 
             {
                 var userId = int.Parse(authService.RetrieveIdFromJwtToken(token));
                 var role = authService.RetrieveRoleFromJwtToken(token);
