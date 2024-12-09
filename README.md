@@ -61,6 +61,11 @@ Ensure you have the following installed:
 -   [ASP.NET Core SDK](https://dotnet.microsoft.com/en-us/download)
 -   [Docker](https://www.docker.com) (optional, for containerized deployment)
 
+An active [Infisical](https://infisical.com/) project must exist for managing secrets, either use the existing project, create a new one or overwrite all secrets. 
+Refer to [Installation 4. Setup development environment](#Installation) on how to overwrite secrets locally.
+
+
+
 ### Installation
 
 1. Clone the repository:
