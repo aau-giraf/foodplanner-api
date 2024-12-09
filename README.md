@@ -382,6 +382,7 @@ docker-compose-example.yaml
 > The credentials must match the Infisical setup for development in secrets.
 
 > [!NOTE]
+> ***Minio and Adminer are interfaces to alter Minio bucket and PostgreSQL database. (You can also use pgAdmin or any other tools for the database)*** <br>
 > **Minio**: http://localhost:9001/login<br>
 **Username**: girafminio<br>
 **Password**: girafminio <br> <br>
