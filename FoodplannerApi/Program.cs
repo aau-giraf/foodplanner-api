@@ -58,7 +58,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigins",
         policy =>
         {
-            policy.WithOrigins("http://localhost:8081") // Replace with your client's URL
+            policy.WithOrigins("http://localhost:8081/*") // Replace with your client's URL
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
@@ -298,3 +298,5 @@ var backendPort = SecretsLoader.GetSecret("BACKEND_PORT");
 app.Urls.Add($"http://0.0.0.0:{backendPort}");
 
 app.Run();
+
+public partial class Program {}

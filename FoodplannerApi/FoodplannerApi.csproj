@@ -29,4 +29,8 @@
     <ProjectReference Include="..\FoodplannerServices\FoodplannerServices.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Test" />
+  </ItemGroup>
+
 </Project>

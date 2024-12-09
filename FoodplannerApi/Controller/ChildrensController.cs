@@ -1,5 +1,6 @@
 ﻿using FoodplannerModels.Account;
 using FoodplannerApi.Helpers;
+using FoodplannerModels.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +10,7 @@ namespace FoodplannerApi.Controller;
 public class ChildrensController : BaseController
 {
     private readonly IChildrenService _childrenService;
-    private readonly AuthService _authService;
+    private readonly IAuthService _authService;
 
     public ChildrensController(IChildrenService childrenService, AuthService authService)
     {

@@ -10,13 +10,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using FoodplannerModels.Account;
+using FoodplannerModels.Auth;
 
 namespace FoodplannerApi.Controller;
 
-public class ImagesController(IFoodImageService foodImageService, AuthService authService) : BaseController
+public class ImagesController(IFoodImageService foodImageService, IAuthService authService) : BaseController
 {
     private readonly long _maxFileSize = 2000000000;
-    private readonly AuthService _authService = authService;
+    private readonly IAuthService _authService = authService;
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -120,7 +121,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
     {
         public override async void OnActionExecuting(ActionExecutingContext context)
         {
-            var authService = context.HttpContext.RequestServices.GetService<AuthService>();
+            var authService = context.HttpContext.RequestServices.GetService<IAuthService>();
             var userRepository = context.HttpContext.RequestServices.GetService<IUserRepository>();
             var foodImageService = context.HttpContext.RequestServices.GetService<IFoodImageService>();
             var token = context.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
