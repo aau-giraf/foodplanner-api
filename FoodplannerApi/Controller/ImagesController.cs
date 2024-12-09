@@ -69,16 +69,18 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
         if (imageFiles.Any(file => file.Length == 0)) return BadRequest("A file is empty");
         if (imageFiles.Any(file => file.Length >= _maxFileSize)) return BadRequest("a file too big");
 
+        var ids = new List<string>();
 
-
-        var ids = imageFiles
-            .Select(async file => await foodImageService.CreateFoodImage(
+        for(int i = 0; i < imageFiles.Count; i++)
+        {
+            var id = await foodImageService.CreateFoodImage(
                 userId,
-                file.OpenReadStream(),
-                file.FileName,
-                file.ContentType,
-                file.Length))
-            .Select(task => task.Result.ToString());
+                imageFiles[i].OpenReadStream(),
+                imageFiles[i].FileName,
+                imageFiles[i].ContentType,
+                imageFiles[i].Length);
+            ids.Add(id.ToString());
+        }
 
         return Ok(ids);
     }
