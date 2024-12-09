@@ -315,9 +315,78 @@ Then add the following line to the end of the file.
 
 This will run the bash script once every minute and write the output to `docker-deploy.log`
 
-## Running the API
+## Running the API Locally
+### Setup local database.
+Have docker installed.
+1. Create a file in a local folder named docker-compose-example.yaml (Its gonna be the name of the docker container)
+  ```yml
+docker-compose-example.yaml
+``` 
+2. Paste in the following:
+    ```yml
+	version: '3.8'
+	
+	services:
+	  minio:
+	    image: minio/minio:latest
+	    container_name: minio_giraf_local
+	    restart: unless-stopped
+	    ports:
+	      - "9000:9000"
+	      - "9001:9001"
+	    volumes:
+	      - ./minio/data:/mnt/data
+	    environment:
+	      - MINIO_ROOT_USER=girafminio
+	      - MINIO_ROOT_PASSWORD=girafminio
+	      - MINIO_VOLUMES=/mnt/data
+	    command: server /mnt/data --console-address ":9001"
+	
+	  postgres:
+	    image: postgres:latest
+	    container_name: postgres_giraf_local
+	    restart: unless-stopped
+	    ports:
+	      - "7654:5432"
+	    volumes:
+	      - ./postgres/data:/var/lib/postgresql/data
+	    environment:
+	      - POSTGRES_PASSWORD=postgres
+	      - POSTGRES_USER=postgres
+	      - POSTGRES_DB=giraf
+	
+	  adminer:
+	    image: adminer
+	    restart: unless-stopped
+	    container_name: adminer_giraf_local
+	    ports:
+	      - "8000:8080"
+    ```
 
-1. Start the API locally:
+3. Open cmd
+4. Change directory to the folder containing the yml file:
+   ```bash
+	cd PATH TO YOUR FOLDER.
+	```
+5. Run your yml
+    ```bash
+	docker compose -f docker-compose-example.yaml up
+	```
+
+> [!IMPORTANT]
+> The credentials must match the Infisical setup for development in secrets.
+
+> [!NOTE]
+> **Minio**: http://localhost:9001/login<br>
+**Username**: girafminio<br>
+**Password**: girafminio <br> <br>
+> **Adminer**: http://localhost:8000/ <br>
+**Server**: postgres<br>
+**Username**: postgres<br>
+**Password**: postgres<br>
+**Database**: giraf
+
+6. Start the API locally:
 
 ```bash
 dotnet run
