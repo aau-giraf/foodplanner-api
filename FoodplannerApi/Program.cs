@@ -24,6 +24,7 @@ using FluentMigrator.Runner;
 using FluentMigrator.Runner.Initialization;
 using FluentMigrator.Postgres;
 using FoodplannerDataAccessSql.Migrations;
+using FoodplannerModels.Auth;
 using FoodplannerModels.FeedbackChat;
 using FoodplannerServices.FeedbackChat;
 using Microsoft.OpenApi.Models;
@@ -200,10 +201,15 @@ builder.Services.AddScoped<ChildrenService>();
 builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddScoped<IChatService, ChatService>();
+//apparently må vi ikke use interface, selvom det er god practice i testing...
+//builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<AuthService>();
+
+
 
 builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfile));
 
-builder.Services.AddSingleton<AuthService>();
+//builder.Services.AddSingleton<AuthService>();
 
 // Add Automapper
 builder.Services.AddAutoMapper(typeof(UserProfile));
