@@ -139,7 +139,7 @@ public class FeedbackChatController : BaseController
     }
     
     [HttpPut]
-    [Authorize(Roles = "Parent, Teacher")]
+    //[Authorize(Roles = "Parent, Teacher")]
     public async Task<IActionResult> UpdateMessage([FromBody] UpdateMessageDTO message)
     {
         try
