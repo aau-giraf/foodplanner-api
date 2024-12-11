@@ -120,7 +120,7 @@ public class FeedbackChatController : BaseController
     
     
     [HttpDelete("{messageId}")]
-    [Authorize(Roles = "Parent, Teacher")]
+    //[Authorize(Roles = "Parent, Teacher")]
     public async Task<IActionResult> ArchiveMessage(int messageId)
     {
         try
