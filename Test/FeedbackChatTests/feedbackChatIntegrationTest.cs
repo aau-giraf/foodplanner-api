@@ -98,29 +98,40 @@ public class FeedbackChatIntegrationTests : IClassFixture<WebApplicationFactory<
     }
 
     [Fact]
-    public async Task GetMessages_ReturnsOk_WhenMessagesExist()
+    public async Task GetMessages_ReturnsOk_AndCorrectMessages()
     {
-        // Arrange
+        // Arrange: Add a single message to the database
         var messageDto = new AddMessageDTO
         {
             Content = "Hello, world!",
-            ChatThreadId = 2
+            ChatThreadId = 1
         };
-        
+
         var token = GenerateJwtToken(1, "Parent", true);
         var content = new StringContent(JsonSerializer.Serialize(messageDto), Encoding.UTF8, "application/json");
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        
-        // Act
-        var response = await _client.GetAsync("/api/FeedbackChat/GetMessages/2");
-        
-        // Assert
-        Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
-    }
 
+        // Act 1: Send the message to add it to the database
+        var addMessageResponse = await _client.PostAsync("/api/FeedbackChat/AddMessage", content);
+        addMessageResponse.EnsureSuccessStatusCode(); // Ensure message is added successfully
+
+        // Act 2: Call the GetMessages endpoint
+        var getMessagesResponse = await _client.GetAsync("/api/FeedbackChat/GetMessages/1");
+
+        // Assert: Ensure the response status is OK
+        Assert.Equal(HttpStatusCode.OK, getMessagesResponse.StatusCode);
+
+        // Act 3: Parse the response content
+        var responseContent = await getMessagesResponse.Content.ReadAsStringAsync();
+
+        // Assert: Verify the returned content includes the added message
+        Assert.Contains("Hello, world!", responseContent); // Ensure the message appears in the response
+    }
+    
+    
     [Fact]
-public async Task ArchiveMessage_ReturnsOK_WhenMessageArchived()
-{
+    public async Task ArchiveMessage_ReturnsOK_WhenMessageArchived()
+    {
     // Arrange
     var messageDto = new AddMessageDTO
     {
@@ -145,73 +156,73 @@ public async Task ArchiveMessage_ReturnsOK_WhenMessageArchived()
 
     // Assert: Ensure the archived flag is true (it will return true if archived in the DB)
     Assert.True(isArchived, "The message should be archived in the database.");
-}
+    }
 
     
-[Fact]
-public async Task UpdateMessage_ReturnsOk_WhenMessageEdited()
-{
-    // Arrange: Create and add a message to the database
-    var messageDto = new AddMessageDTO
+    [Fact]
+    public async Task UpdateMessage_ReturnsOk_WhenMessageEdited()
     {
-        Content = "Original content",
-        ChatThreadId = 1
-    };
-
-    var token = GenerateJwtToken(1, "Parent", true);
-    var content = new StringContent(JsonSerializer.Serialize(messageDto), Encoding.UTF8, "application/json");
-    _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-    var addMessageResponse = await _client.PostAsync("/api/FeedbackChat/AddMessage", content);
-    addMessageResponse.EnsureSuccessStatusCode(); // Ensure that message was added successfully
-
-    // Retrieve the message ID from the database (since ID is auto-incremented)
-    int messageId = 0;
-    using (var connection = new NpgsqlConnection(_connectionString))
-    {
-        await connection.OpenAsync();
-        var command = new NpgsqlCommand("SELECT message_id FROM message WHERE content = @Content LIMIT 1", connection);
-        command.Parameters.AddWithValue("@Content", "Original content");
-        var result = await command.ExecuteScalarAsync();
-        messageId = (int)result;
-    }
-
-    // Create the DTO for updating the message
-    var updateMessageDto = new UpdateMessageDTO
-    {
-        MessageId = messageId,
-        Content = "Updated content"
-    };
-
-    // Act: Send the request to update the message
-    var updateContent = new StringContent(JsonSerializer.Serialize(updateMessageDto), Encoding.UTF8, "application/json");
-    var updateResponse = await _client.PutAsync("/api/FeedbackChat/UpdateMessage", updateContent);
-
-    // Assert: Ensure the response is OK
-    Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
-
-    // Verify the message content is updated in the database and is_edited flag is true
-    bool isMessageUpdated = false;
-    bool isEdited = false;
-    using (var connection = new NpgsqlConnection(_connectionString))
-    {
-        await connection.OpenAsync();
-        var command = new NpgsqlCommand("SELECT content, is_edited FROM message WHERE message_id = @MessageId", connection);
-        command.Parameters.AddWithValue("@MessageId", messageId);
-        using (var reader = await command.ExecuteReaderAsync())
+        // Arrange: Create and add a message to the database
+        var messageDto = new AddMessageDTO
         {
-            if (await reader.ReadAsync())
+            Content = "Original content",
+            ChatThreadId = 1
+        };
+
+        var token = GenerateJwtToken(1, "Parent", true);
+        var content = new StringContent(JsonSerializer.Serialize(messageDto), Encoding.UTF8, "application/json");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var addMessageResponse = await _client.PostAsync("/api/FeedbackChat/AddMessage", content);
+        addMessageResponse.EnsureSuccessStatusCode(); // Ensure that message was added successfully
+
+        // Retrieve the message ID from the database (since ID is auto-incremented)
+        int messageId = 0;
+        using (var connection = new NpgsqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var command = new NpgsqlCommand("SELECT message_id FROM message WHERE content = @Content LIMIT 1", connection);
+            command.Parameters.AddWithValue("@Content", "Original content");
+            var result = await command.ExecuteScalarAsync();
+            messageId = (int)result;
+        }
+
+        // Create the DTO for updating the message
+        var updateMessageDto = new UpdateMessageDTO
+        {
+            MessageId = messageId,
+            Content = "Updated content"
+        };
+
+        // Act: Send the request to update the message
+        var updateContent = new StringContent(JsonSerializer.Serialize(updateMessageDto), Encoding.UTF8, "application/json");
+        var updateResponse = await _client.PutAsync("/api/FeedbackChat/UpdateMessage", updateContent);
+
+        // Assert: Ensure the response is OK
+        Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
+
+        // Verify the message content is updated in the database and is_edited flag is true
+        bool isMessageUpdated = false;
+        bool isEdited = false;
+        using (var connection = new NpgsqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            var command = new NpgsqlCommand("SELECT content, is_edited FROM message WHERE message_id = @MessageId", connection);
+            command.Parameters.AddWithValue("@MessageId", messageId);
+            using (var reader = await command.ExecuteReaderAsync())
             {
-                isMessageUpdated = reader.GetString(0) == "Updated content"; // Check if content was updated
-                isEdited = reader.GetBoolean(1); // Check if is_edited flag is true
+                if (await reader.ReadAsync())
+                {
+                    isMessageUpdated = reader.GetString(0) == "Updated content"; // Check if content was updated
+                    isEdited = reader.GetBoolean(1); // Check if is_edited flag is true
+                }
             }
         }
-    }
 
-    // Assert: Ensure the message content was updated and is_edited is set to true
-    Assert.True(isMessageUpdated, "The message content should be updated.");
-    Assert.True(isEdited, "The message should have the 'is_edited' flag set to true.");
-}
+        // Assert: Ensure the message content was updated and is_edited is set to true
+        Assert.True(isMessageUpdated, "The message content should be updated.");
+        Assert.True(isEdited, "The message should have the 'is_edited' flag set to true.");
+    }
 
 
 // Helper method to check the database directly
