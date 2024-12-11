@@ -21,15 +21,22 @@ namespace FoodplannerServices.FeedbackChat
         }
 
         // Methods for ChatThread
-        public async Task<bool> AddMessageAsync(AddMessageDTO messageDTO,int userId)
+        public async Task<bool> AddMessageAsync(AddMessageDTO messageDTO, int userId)
         {
+            if (string.IsNullOrWhiteSpace(messageDTO.Content))
+            {
+                
+                throw new ArgumentException("beskeden må ikke være tom");
+            }
+
             var message = _mapper.Map<Message>(messageDTO);
-            message.Date = System.DateTime.Now;
+            message.Date = DateTime.Now;
             message.UserId = userId;
-            
+
             await _chatRepository.AddMessageAsync(message);
             return true;
         }
+
 
         // Methods for Message
         public async Task<IEnumerable<UserNameFeedbackChatDTO>> GetMessagesAsync(int chatThreadId)

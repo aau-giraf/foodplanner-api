@@ -29,31 +29,37 @@ public class FeedbackChatController : BaseController
     {
         try
         {
-            // Retrieve UserId from the JWT token
+            if (string.IsNullOrWhiteSpace(messageDto.Content) || messageDto.Content.Length > 1000)
+            {
+                return BadRequest(new { Message = "Message content must be between 1 and 1000 characters." });
+            }
+
             var idString = _authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int userId))
             {
                 return BadRequest(new { Message = "Id er ikke et tal" });
             }
-         
+
             var result = await _chatService.AddMessageAsync(messageDto, userId);
             if (result)
             {
                 return Created(string.Empty, result);
             }
+
             return BadRequest(new { Message = "Kunne ikke oprette besked" });
         }
         catch (Exception ex)
         {
-           
             Console.WriteLine(ex.Message);
             return StatusCode(500, new { Message = "En serverfejl opstod" });
         }
     }
 
+
+
     
     [HttpGet("{chatThreadId}")]
-    [Authorize(Roles = "Parent, Teacher")]
+    //[Authorize(Roles = "Parent, Teacher")]
     public async Task<IActionResult> GetMessages(int chatThreadId)
     {
         try

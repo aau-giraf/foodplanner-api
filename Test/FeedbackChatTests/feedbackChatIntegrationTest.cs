@@ -15,14 +15,12 @@ public class FeedbackChatIntegrationTests : IClassFixture<WebApplicationFactory<
     private const string Secret = "TestSecretKeyThatIsExactly32BytesLong123";
     private readonly string _connectionString = "Host=localhost;Port=7654;Username=postgres;Password=postgres;Database=giraf";
 
-
-
-
     public FeedbackChatIntegrationTests(WebApplicationFactory<Program> factory)
     {
         _factory = factory;
         _client = factory.CreateClient();
     }
+
     //message table has to be dropped before running test, test only expects 1 message
     [Fact]
     public async Task AddMessageAsync_ReturnsCreated_AndWritesToDatabase()
@@ -42,7 +40,8 @@ public class FeedbackChatIntegrationTests : IClassFixture<WebApplicationFactory<
         var response = await _client.PostAsync("/api/FeedbackChat/AddMessage", content);
         Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
 
-        // Assert: Check the database
+        // Assert
+        // I repeat, clean the message table before running this test
         using (var connection = new NpgsqlConnection(_connectionString))
         {
             await connection.OpenAsync();
@@ -52,6 +51,75 @@ public class FeedbackChatIntegrationTests : IClassFixture<WebApplicationFactory<
             Assert.Equal(1, count);  // Verify that exactly one record was added
         }
     }
+
+    
+    [Fact]
+    public async Task AddMessageAsync_ReturnsBadRequest_WhenMessageIsEmpty()
+    {
+        // Arrange
+        var messageDto = new AddMessageDTO
+        {
+            Content = string.Empty, 
+            ChatThreadId = 1
+        };
+
+        var token = GenerateJwtToken(1, "Parent", true);
+        var content = new StringContent(JsonSerializer.Serialize(messageDto), Encoding.UTF8, "application/json");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        // Act
+        var response = await _client.PostAsync("/api/FeedbackChat/AddMessage", content);
+
+        // Assert
+        Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+    }
+    
+    [Fact]
+    public async Task AddMessageAsync_ReturnsBadRequest_WhenMessageExceedsCharacterLimit()
+    {
+        // Arrange: Create a message exceeding 1000 characters
+        var messageDto = new AddMessageDTO
+        {
+            Content = new string('A', 1001), // 1001 characters
+            ChatThreadId = 1
+        };
+
+        var token = GenerateJwtToken(1, "Parent", true);
+        var content = new StringContent(JsonSerializer.Serialize(messageDto), Encoding.UTF8, "application/json");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        // Act: Send the request
+        var response = await _client.PostAsync("/api/FeedbackChat/AddMessage", content);
+
+        // Assert: Expect a BadRequest response
+        Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetMessages_ReturnsOk_WhenMessagesExist()
+    {
+        // Arrange
+        var messageDto = new AddMessageDTO
+        {
+            Content = "Hello, world!",
+            ChatThreadId = 2
+        };
+        
+        var token = GenerateJwtToken(1, "Parent", true);
+        var content = new StringContent(JsonSerializer.Serialize(messageDto), Encoding.UTF8, "application/json");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        
+        // Act
+        var response = await _client.GetAsync("/api/FeedbackChat/GetMessages/2");
+        
+        
+        // Assert
+        Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+        
+            
+    }
+
+
 
     private string GenerateJwtToken(int userId, string role, bool roleApproved, DateTime? expiration = null)
     {
@@ -65,7 +133,7 @@ public class FeedbackChatIntegrationTests : IClassFixture<WebApplicationFactory<
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("TestSecretKeyThatIsExactly32BytesLong123"));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Secret));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
