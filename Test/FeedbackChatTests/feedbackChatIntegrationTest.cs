@@ -132,32 +132,56 @@ public class FeedbackChatIntegrationTests : IClassFixture<WebApplicationFactory<
     [Fact]
     public async Task ArchiveMessage_ReturnsOK_WhenMessageArchived()
     {
-    // Arrange
-    var messageDto = new AddMessageDTO
-    {
-        Content = "This message will be archived",
-        ChatThreadId = 1
-    };
-    var token = GenerateJwtToken(1, "Parent", true);
-    var content = new StringContent(JsonSerializer.Serialize(messageDto), Encoding.UTF8, "application/json");
-    _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-    
-    await _client.PostAsync("/api/FeedbackChat/AddMessage", content);
+        // Arrange
+        var messageDto = new AddMessageDTO
+        {
+            Content = "This message will be archived",
+            ChatThreadId = 1
+        };
+        var token = GenerateJwtToken(1, "Parent", true);
+        var content = new StringContent(JsonSerializer.Serialize(messageDto), Encoding.UTF8, "application/json");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-    // Act: 
-    // Note: The message ID is hardcoded to 41, this number changes every time we run the test :)))))))))
-    var archiveResponse = await _client.DeleteAsync($"/api/FeedbackChat/ArchiveMessage/41");
-    
-    // Assert: Check if the archive response is OK
-    Assert.Equal(HttpStatusCode.OK, archiveResponse.StatusCode);
+        // Add the message to the database
+        var addMessageResponse = await _client.PostAsync("/api/FeedbackChat/AddMessage", content);
+        Assert.Equal(HttpStatusCode.Created, addMessageResponse.StatusCode); // Ensure the message is added
 
-    // Verify the message is archived by checking the database by checking OG content
-    bool isArchived = await CheckIfMessageIsArchivedInDatabase("This message will be archived");
+        // Retrieve the ID of the newly added message from the database
+        var messageId = await GetMessageIdByContent("This message will be archived");
+        Assert.NotNull(messageId); // Ensure the message ID is retrieved
 
-    // Assert: Ensure the archived flag is true (it will return true if archived in the DB)
-    Assert.True(isArchived, "The message should be archived in the database.");
+        // Act: Archive the message
+        var archiveResponse = await _client.DeleteAsync($"/api/FeedbackChat/ArchiveMessage/{messageId}");
+        Assert.Equal(HttpStatusCode.OK, archiveResponse.StatusCode);
+
+        // Verify the message is archived by checking the database
+        bool isArchived = await CheckIfMessageIsArchivedInDatabase(messageId);
+        Assert.True(isArchived, "The message should be archived in the database.");
     }
 
+    
+    
+    private async Task<int?> GetMessageIdByContent(string messageContent)
+    {
+        var query = "SELECT message_id FROM message WHERE content = @Content";
+
+        using (var connection = new NpgsqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+
+            var command = new NpgsqlCommand(query, connection);
+            command.Parameters.AddWithValue("@Content", messageContent);
+
+            var result = await command.ExecuteScalarAsync();
+
+            // Ensure result is not null and safely cast to int
+            if (result == DBNull.Value || result == null)
+            {
+                return null; // Return null if no value found
+            }
+            return (int)result; // Return the ID
+        }
+    }
     
     [Fact]
     public async Task UpdateMessage_ReturnsOk_WhenMessageEdited()
@@ -226,16 +250,16 @@ public class FeedbackChatIntegrationTests : IClassFixture<WebApplicationFactory<
 
 
 // Helper method to check the database directly
-private async Task<bool> CheckIfMessageIsArchivedInDatabase(string messageContent)
+private async Task<bool> CheckIfMessageIsArchivedInDatabase(int? messageId)
 {
-    var query = "SELECT archived FROM message WHERE content = @Content";
+    var query = "SELECT archived FROM message WHERE message_id = @messageId";
 
     using (var connection = new NpgsqlConnection(_connectionString))
     {
         await connection.OpenAsync();
 
         var command = new NpgsqlCommand(query, connection);
-        command.Parameters.AddWithValue("@Content", messageContent);
+        command.Parameters.AddWithValue("@messageId", messageId);
 
         var result = await command.ExecuteScalarAsync();
 
