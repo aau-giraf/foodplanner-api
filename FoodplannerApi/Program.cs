@@ -26,6 +26,7 @@ using FluentMigrator.Postgres;
 using FoodplannerDataAccessSql.Migrations;
 using FoodplannerModels.FeedbackChat;
 using FoodplannerServices.FeedbackChat;
+using FoodplannerServices.Secret;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -144,7 +145,7 @@ builder.Services.AddAuthentication(cfg =>
         ValidAudience = configuration["ApplicationSettings:JWT_Audience"],
         RoleClaimType = ClaimTypes.Role,
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(configuration["ApplicationSettings:JWT_Secret"])
+            Encoding.UTF8.GetBytes(SecretsLoader.GetSecret("JWT_SECRET"))
         ),
         ClockSkew = TimeSpan.Zero
     };
