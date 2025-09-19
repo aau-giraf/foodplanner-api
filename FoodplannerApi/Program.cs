@@ -20,6 +20,7 @@ using Minio;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using FoodplannerApi.Helpers;
+using FoodplannerServices.Hubs;
 using FluentMigrator.Runner;
 using FluentMigrator.Runner.Initialization;
 using FluentMigrator.Postgres;
@@ -205,6 +206,9 @@ builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfi
 
 builder.Services.AddSingleton<AuthService>();
 
+//Add signalR
+builder.Services.AddSignalR();
+
 // Add Automapper
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(ChatProfile));
@@ -263,6 +267,11 @@ if (app.Environment.IsDevelopment())
     });
     app.UseSwaggerUI();
 }
+
+//SingalR policy
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.MapHub<FeedbackChatHub>("/Hub");
 
 // Apply CORS policy
 if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
