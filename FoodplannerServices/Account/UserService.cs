@@ -107,11 +107,11 @@ public class UserService : IUserService
             throw new InvalidOperationException("Forkert pinkode");
         }
         var user = await _userRepository.GetByIdAsync(id);
-        user.Id = id;
         if (user == null)
         {
             throw new InvalidOperationException("Bruger ikke fundet");
         }
+        user.Id = id;
 
         var jwt = _authService.GenerateJWTToken(user);
         var userCreds = new UserCredsDTO

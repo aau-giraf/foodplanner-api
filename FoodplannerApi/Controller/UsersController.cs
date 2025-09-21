@@ -22,7 +22,7 @@ public class UsersController : BaseController
 
     [HttpGet]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetBearerTest()
+    public IActionResult GetBearerTest()
     {
         //Generates a token for development purposes, Status must be Active.
         //Roles can be: Admin, Child, Teacher, Parent
@@ -84,7 +84,7 @@ public class UsersController : BaseController
             }
             return BadRequest(new ErrorResponse { Message = ["Email eller password er forkert"] });
         }
-        catch (InvalidOperationException e)
+        catch
         {
             return BadRequest(new ErrorResponse { Message = ["Email eller password er forkert"] });
         }

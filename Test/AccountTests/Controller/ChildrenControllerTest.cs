@@ -29,7 +29,7 @@ public class ChildrenControllerTest
         // Arrange
         var children = new List<ChildrenGetAllDTO> {
             new ChildrenGetAllDTO { ChildId = 1, FirstName = "niels", LastName = "nielsen", ClassName = "1.A" },
-            new ChildrenGetAllDTO { ChildId = 1, FirstName = "ole", LastName = "olsen", ClassName = "1.A" },
+            new ChildrenGetAllDTO { ChildId = 2, FirstName = "ole", LastName = "olsen", ClassName = "1.A" },
         };
         _mockChildrenService
             .Setup(repo => repo.GetAllChildrenClassesAsync())

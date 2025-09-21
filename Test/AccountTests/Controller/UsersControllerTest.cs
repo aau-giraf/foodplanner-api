@@ -26,7 +26,7 @@ public class UsersControllerTests
         var controller = new UsersController(mockUserService.Object, authService);
 
 
-        var result = await controller.GetBearerTest();
+        var result = controller.GetBearerTest();
 
         //act
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -318,7 +318,6 @@ public class UsersControllerTests
         //arrange
         var token = "invalid-jwt-token";
         var pinCode = new Pincode { PinCode = "1234" };
-        var userId = 27;
 
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();

@@ -9,7 +9,6 @@ using FoodplannerServices.Image;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using FoodplannerModels.Account;
 using FoodplannerModels.Auth;
 
 namespace FoodplannerApi.Controller;
@@ -70,18 +69,16 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
         if (imageFiles.Any(file => file.Length >= _maxFileSize)) return BadRequest("a file too big");
 
         var ids = new List<string>();
-
-        for(int i = 0; i < imageFiles.Count; i++)
-        {
+        for (int i = 0; i < imageFiles.Count; i++) 
+        { 
             var id = await foodImageService.CreateFoodImage(
                 userId,
                 imageFiles[i].OpenReadStream(),
                 imageFiles[i].FileName,
                 imageFiles[i].ContentType,
                 imageFiles[i].Length);
-            ids.Add(id.ToString());
+            ids.Add(id.ToString()); 
         }
-
         return Ok(ids);
     }
 
@@ -96,7 +93,8 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
         if (imageIdList == null || !imageIdList.Any())
             return BadRequest("No imageIds provided");
 
-        foodImageIds.ToList().ForEach(id => foodImageService.DeleteImage(id));
+        var tasks = imageIdList.Select(id => foodImageService.DeleteImage(id));
+        await Task.WhenAll(tasks);
 
         return Ok("Images deleted successfully");
     }
@@ -144,7 +142,7 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
             {
                 throw new Exception("Missing services");
             }
-            else 
+            else
             {
                 var userId = int.Parse(authService.RetrieveIdFromJwtToken(token));
                 var role = authService.RetrieveRoleFromJwtToken(token);
@@ -154,6 +152,8 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
                 }
                 foreach (var foodImageId in foodImageIds)
                 {
+                    if(foodImageId == null) { throw new Exception("FoodImageId is null"); }
+
                     var foodImage = await foodImageService.GetFoodImage(int.Parse(foodImageId));
                     if (userId == foodImage.UserId) continue;
                     context.Result = new UnauthorizedResult();
