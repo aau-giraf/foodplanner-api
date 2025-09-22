@@ -1,7 +1,5 @@
 using System.Security.Claims;
 using System.Text;
-using FoodplannerApi;
-using FoodplannerApi.Controller;
 using Npgsql;
 using FoodplannerDataAccessSql;
 using FoodplannerDataAccessSql.Account;
@@ -12,17 +10,12 @@ using FoodplannerServices.Account;
 using FoodplannerModels.Lunchbox;
 using FoodplannerServices.Lunchbox;
 using FoodplannerDataAccessSql.Image;
-using FoodplannerModels;
-using FoodplannerModels.Account;
-using FoodplannerServices.Account;
 using FoodplannerServices.Image;
 using Minio;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using FoodplannerApi.Helpers;
 using FluentMigrator.Runner;
-using FluentMigrator.Runner.Initialization;
-using FluentMigrator.Postgres;
 using FoodplannerDataAccessSql.Migrations;
 using FoodplannerModels.FeedbackChat;
 using FoodplannerServices.FeedbackChat;
@@ -42,7 +35,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
-//Configre and add MinIO service
+//Configure and add MinIO service
 var endpoint = SecretsLoader.GetSecret("MINIO_ENDPOINT");
 var accessKey = SecretsLoader.GetSecret("MINIO_ACCESS");
 var secretKey = SecretsLoader.GetSecret("MINIO_SECRET");
@@ -75,31 +68,31 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "Foodplanner API",
         Version = "v1"
     });
 
     // Add JWT authentication to Swagger
-    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer",
         BearerFormat = "JWT",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        In = ParameterLocation.Header,
         Description = "Enter 'Bearer' [space] and then your token in the text input below. Example: \"Bearer 12345abcdef\"",
     });
 
-    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
-            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            new OpenApiSecurityScheme
             {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                Reference = new OpenApiReference
                 {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
                 }
             },
