@@ -8,7 +8,7 @@ public class UserBuilder : User
     {
         this.FirstName = "testFirstName";
         this.LastName = "testLastName";
-        this.Email = "test@gtesting.com";
+        this.Email = "test@testing.com";
         this.Password = "Test123!";
         this.Role = "Parent";
     }
