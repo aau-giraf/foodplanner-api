@@ -2,61 +2,62 @@ using FoodplannerModels.Account;
 
 namespace Test.Builder;
 
-public class UserBuilder : User
+public class UserBuilder
 {
-    public UserBuilder()
-    {
-        this.FirstName = "testFirstName";
-        this.LastName = "testLastName";
-        this.Email = "test@gtesting.com";
-        this.Password = "Test123!";
-        this.Role = "Parent";
-    }
+    private string _firstName = "testFirstName";
+    private string _lastName = "testLastName";
+    private string _email = "test@gtesting.com";
+    private string _password = "Test123!";
+    private string _role = "Parent";
+    private bool _roleApproved;
+    private string? _pinCode;
+    private bool _archived;
+
     public UserBuilder WithFirstName(string firstName)
     {
-        this.FirstName = firstName;
+        _firstName = firstName;
         return this;
     }
 
     public UserBuilder WithLastName(string lastName)
     {
-        this.LastName = lastName;
+        _lastName = lastName;
         return this;
     }
-    
+
     public UserBuilder WithEmail(string email)
     {
-        this.Email = email;
+        _email = email;
         return this;
     }
 
     public UserBuilder WithPassword(string password)
     {
-        this.Password = password;
+        _password = password;
         return this;
     }
 
     public UserBuilder WithRole(string role)
     {
-        this.Role = role;
+        _role = role;
         return this;
     }
 
     public UserBuilder WithRoleApproved(bool roleApproved)
     {
-        this.RoleApproved = roleApproved;
+        _roleApproved = roleApproved;
         return this;
     }
 
     public UserBuilder WithPinCode(string pinCode)
     {
-        this.PinCode = pinCode;
+        _pinCode = pinCode;
         return this;
     }
 
     public UserBuilder WithArchived(bool archived)
     {
-        this.Archived = archived;
+        _archived = archived;
         return this;
     }
 
@@ -64,14 +65,14 @@ public class UserBuilder : User
     {
         return new User
         {
-            FirstName = this.FirstName,
-            LastName = this.LastName,
-            Email = this.Email,
-            Password = this.Password,
-            Role = this.Role,
-            RoleApproved = this.RoleApproved,
-            PinCode = this.PinCode,
-            Archived = this.Archived,
+            FirstName = _firstName,
+            LastName = _lastName,
+            Email = _email,
+            Password = _password,
+            Role = _role,
+            RoleApproved = _roleApproved,
+            PinCode = _pinCode,
+            Archived = _archived,
         };
     }
 }

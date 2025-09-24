@@ -2,54 +2,53 @@ using FoodplannerModels.Lunchbox;
 
 namespace Test.Builder;
 
-public class MealBuilder : Meal
+public class MealBuilder
 {
-   public MealBuilder()
-   {
-      this.Id = 99999;
-      this.Name = "testMeal";
-      this.Date = "11/11/50";
-   }
+    private int _id = 99999;
+    private string _name = "testMeal";
+    private string _date = "11/11/2050";
+    private int _userId;
+    private int? _foodImageId;
 
-   public MealBuilder WithId(int id)
-   {
-      this.Id = id;
-      return this;
-   }
+    public MealBuilder WithId(int id)
+    {
+        _id = id;
+        return this;
+    }
 
-   public MealBuilder WithName(string name)
-   {
-      this.Name = name;
-      return this;
-   }
+    public MealBuilder WithName(string name)
+    {
+        _name = name;
+        return this;
+    }
 
-   public MealBuilder WithUserId(int userId)
-   {
-      this.User_id = userId;
-      return this;
-   }
+    public MealBuilder WithUserId(int userId)
+    {
+        _userId = userId;
+        return this;
+    }
 
-   public MealBuilder WithFoodImageId(int? foodImageId)
-   {
-      this.Food_image_id = foodImageId;
-      return this;
-   }
+    public MealBuilder WithFoodImageId(int? foodImageId)
+    {
+        _foodImageId = foodImageId;
+        return this;
+    }
 
-   public MealBuilder WithDate(string date)
-   {
-      this.Date = date;
-      return this;
-   }
+    public MealBuilder WithDate(string date)
+    {
+        _date = date;
+        return this;
+    }
 
-   public Meal Build()
-   {
-      return new Meal
-      {
-         Id = this.Id,
-         Name = this.Name,
-         User_id = this.User_id,
-         Food_image_id = this.Food_image_id,
-         Date = this.Date,
-      };
-   }
+    public Meal Build()
+    {
+        return new Meal
+        {
+            Id = _id,
+            Name = _name,
+            User_id = _userId,
+            Food_image_id = _foodImageId,
+            Date = _date,
+        };
+    }
 }

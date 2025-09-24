@@ -2,41 +2,41 @@ using FoodplannerModels.Account;
 
 namespace Test.Builder;
 
-public class ChildBuilder : Children
+public class ChildBuilder
 {
-    public ChildBuilder()
-    {
-        this.FirstName = "testFirstName";
-        this.LastName = "testLastName";
-    }
+    private int _childId;
+    private string _firstName = "testFirstName";
+    private string _lastName = "testLastName";
+    private int _parentId;
+    private int _classId;
 
-    public ChildBuilder WithId(int childId)
+    public ChildBuilder WithId(int id)
     {
-        this.ChildId = childId;
-        return this;
-    }
-    
-    public ChildBuilder WithFirstName(string firstName)
-    {
-        this.FirstName = firstName;
-        return this;
-    }
-    
-    public ChildBuilder WithLastName(string lastName)
-    {
-        this.LastName = lastName;
-        return this;
-    }
-    
-    public ChildBuilder WithParentId(int parentId)
-    {
-        this.parentId = parentId;
+        _childId = id;
         return this;
     }
 
-    public ChildBuilder WithClassId(int classId)
+    public ChildBuilder WithFirstName(string value)
     {
-        this.classId = classId;
+        _firstName = value;
+        return this;
+    }
+
+    public ChildBuilder WithLastName(string value)
+    {
+        _lastName = value;
+        return this;
+    }
+
+    public ChildBuilder WithParentId(int id)
+    {
+        _parentId = id;
+        return this;
+    }
+
+    public ChildBuilder WithClassId(int id)
+    {
+        _classId = id;
         return this;
     }
 
@@ -44,11 +44,11 @@ public class ChildBuilder : Children
     {
         return new Children()
         {
-            ChildId = this.ChildId,
-            FirstName = this.FirstName,
-            LastName = this.LastName,
-            parentId = this.parentId,
-            classId = this.classId,
+            ChildId = _childId,
+            FirstName = _firstName,
+            LastName = _lastName,
+            parentId = _parentId,
+            classId = _classId
         };
     }
 }
