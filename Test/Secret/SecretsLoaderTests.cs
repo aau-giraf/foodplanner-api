@@ -37,7 +37,7 @@ public class SecretsLoaderTests
     }
 
     [Fact]
-    public void Configure_EnvironmentContainsStringsDoesNotThrow()
+    public void Configure_EnvironmentContainsStrings_DoesNotThrow()
     {
         // Arrange
         var ClientIdKey = "CLIENT_ID";
