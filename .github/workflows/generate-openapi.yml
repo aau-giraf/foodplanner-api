@@ -15,20 +15,19 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-        postgres:
-          image: postgres:13
-          env:
-            POSTGRES_USER: postgres
-            POSTGRES_PASSWORD: postgres
-            POSTGRES_DB: foodplanner
-          ports:
-            - 7654:5432
-          options: >-
-            --health-cmd "pg_isready -U postgres"
-            --health-interval 10s
-            --health-timeout 5s
-            --health-retries 5
-
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: giraf
+        ports:
+          - 7654:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
