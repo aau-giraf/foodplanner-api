@@ -14,6 +14,21 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+        postgres:
+          image: postgres:13
+          env:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: foodplanner
+          ports:
+            - 7654:5432
+          options: >-
+            --health-cmd "pg_isready -U postgres"
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
+
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
@@ -24,11 +39,18 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
+
+      
     - name: Run backend in background
       env:
         CLIENT_ID: ${{ secrets.CLIENT_ID }}
         CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
         WORKSPACE: ${{ secrets.WORKSPACE }}
+        DB_HOST: 127.0.0.1
+        DB_PORT: 7654
+        DB_USER: postgres
+        DB_PASSWORD: postgres
+        DB_NAME: giraf
       run: |
         dotnet run --no-build --urls http://localhost:8080 --project FoodplannerApi/FoodplannerApi.csproj &
         echo $! > backend.pid
