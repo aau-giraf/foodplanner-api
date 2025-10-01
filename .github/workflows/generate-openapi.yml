@@ -30,7 +30,7 @@ jobs:
           sleep 10
 
     - name: Generate OpenAPI JSON
-      run: curl http://localhost:8080/swagger/v1/swagger.json -o openapi.json
+      run: curl http://localhost:8080/swagger/index.json -o openapi.json
 
     - name: Push openapi.json to openapi-staging branch
       run: |
