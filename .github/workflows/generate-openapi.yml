@@ -45,10 +45,6 @@ jobs:
     - name: Generate OpenAPI JSON
       run: curl http://localhost:8080/swagger/index.json -o openapi.json
 
-    
-    - name: Generate OpenAPI JSON
-      run: curl http://localhost:8080/swagger/index.json -o openapi.json
-
     - name: Push openapi.json to openapi-staging branch
       run: |
           git config user.name "github-actions"
