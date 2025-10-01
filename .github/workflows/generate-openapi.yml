@@ -60,16 +60,9 @@ jobs:
 
     - name: Push openapi.json to openapi-staging branch
       run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-
-          # Tjek om openapi-staging eksisterer, ellers opret
-          git fetch origin openapi-staging || true
-          git checkout -B openapi-staging origin/openapi-staging || git checkout -b openapi-staging
-
-          cp openapi.json ./openapi.json
-
-          git add openapi.json
-          git commit -m "chore: update openapi.json [skip ci]" || echo "No changes to commit"
-
-          git push origin openapi-staging
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git checkout -B openapi-staging
+        git add openapi.json
+        git commit -m "chore: update openapi.json [skip ci]" || echo "No changes to commit"
+        git push origin openapi-staging
