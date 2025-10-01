@@ -27,19 +27,24 @@ jobs:
     - name: Run backend in background
       run: |
           dotnet run --no-build --urls http://localhost:8080 &
-          sleep 10
+          echo $! > backend.pid
 
-    - name: Start API server
+    - name: Wait for backend to be ready
       run: |
-        dotnet run --project FoodplannerApi/FoodplannerApi.csproj &
-        for i in {1..15}; do
-          if curl -s http://localhost:8080/health; then
-            echo "Server is up!";
-            break;
-          fi
-          echo "Waiting for server..."
-          sleep 2
-        done
+          for i in {1..15}; do
+            if curl -sf http://localhost:8080/swagger/index.json; then
+              echo "Backend is up!";
+              exit 0
+            fi
+            echo "Waiting for backend..."
+            sleep 2
+          done
+          echo "Backend did not start in time" >&2
+          exit 1
+
+    - name: Generate OpenAPI JSON
+      run: curl http://localhost:8080/swagger/index.json -o openapi.json
+
     
     - name: Generate OpenAPI JSON
       run: curl http://localhost:8080/swagger/index.json -o openapi.json
