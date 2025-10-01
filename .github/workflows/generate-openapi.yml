@@ -26,8 +26,8 @@ jobs:
       run: dotnet build --no-restore
     - name: Run backend in background
       run: |
-          dotnet run --no-build --urls http://localhost:8080 &
-          echo $! > backend.pid
+        dotnet run --no-build --urls http://localhost:8080 --project FoodplannerApi/FoodplannerApi.csproj &
+        echo $! > backend.pid
 
     - name: Wait for backend to be ready
       run: |
