@@ -25,6 +25,10 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Run backend in background
+      env:
+        CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+        WORKSPACE: ${{ secrets.WORKSPACE }}
       run: |
         dotnet run --no-build --urls http://localhost:8080 --project FoodplannerApi/FoodplannerApi.csproj &
         echo $! > backend.pid
