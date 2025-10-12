@@ -23,8 +23,15 @@ public class ChildrenService : IChildrenService
     public async Task<int> CreateChildrenAsync(ChildrenCreateParentDTO childrenCreateDTO)
     {
         var children = _mapper.Map<Children>(childrenCreateDTO);
-        return await _childrenRepository.InsertAsync(children);
-
+        var childId = await _childrenRepository.InsertAsync(children);
+        
+        // Add all parent relationships
+        foreach (var parentId in childrenCreateDTO.ParentIds)
+        {
+            await _childrenRepository.AddParentToChildAsync(parentId, childId);
+        }
+        
+        return childId;
     }
 
     public async Task<IEnumerable<Children>> GetAllChildrenAsync()
@@ -39,10 +46,16 @@ public class ChildrenService : IChildrenService
         return children;
     }
 
-    public async Task<Children> GetChildrenByIdAsync(int id)
+    public async Task<IEnumerable<Children>> GetChildrenByParentIdAsync(int parentId)
     {
-        var children = await _childrenRepository.GetByParentIdAsync(id);
+        var children = await _childrenRepository.GetChildrenByParentIdAsync(parentId);
         return children;
+    }
+
+    public async Task<IEnumerable<User>> GetParentsByChildIdAsync(int childId)
+    {
+        var parents = await _childrenRepository.GetParentsByChildIdAsync(childId);
+        return parents;
     }
 
     public async Task<int> UpdateChildrenAsync(Children children)
@@ -58,6 +71,16 @@ public class ChildrenService : IChildrenService
     public async Task<Children> GetChildFromChildIdAsync(int id)
     {
         return await _childrenRepository.GetChildByIdAsync(id);
+    }
+
+    public async Task<int> AddParentToChildAsync(int userId, int childId)
+    {
+        return await _childrenRepository.AddParentToChildAsync(userId, childId);
+    }
+
+    public async Task<int> RemoveParentFromChildAsync(int userId, int childId)
+    {
+        return await _childrenRepository.RemoveParentFromChildAsync(userId, childId);
     }
 }
 
