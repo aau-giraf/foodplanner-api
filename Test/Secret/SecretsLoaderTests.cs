@@ -1,4 +1,5 @@
 using FoodplannerServices.Secret;
+using Infisical.Sdk;
 using Microsoft.Extensions.Configuration;
 using Moq;
 
@@ -116,7 +117,7 @@ public class SecretsLoaderTests
     }
 
     [Fact]
-    public void GetSecret_InvalidSecretKey_ReturnsNull()
+    public void GetSecret_InvalidSecretKey_ThrowsInfisicalException()
     {
         // Arrange
         var ClientIdKey = "Infisical:ClientId";
@@ -142,10 +143,7 @@ public class SecretsLoaderTests
 
         var invalidSecretKey = "InvalidSecretKey";
 
-        // Act
-        var result = SecretsLoader.GetSecret(invalidSecretKey);
-
-        // Assert
-        Assert.Null(result);
+        // Act + Assert
+        Assert.Throws<InfisicalException>(() => SecretsLoader.GetSecret(invalidSecretKey));
     }
 }
