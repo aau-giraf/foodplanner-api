@@ -7,15 +7,15 @@ namespace FoodplannerServices.Account;
 public class ChildrenService : IChildrenService
 {
     private readonly IChildrenRepository _childrenRepository;
-
+    private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
-
     private readonly AuthService _authService;
 
 
-    public ChildrenService(IChildrenRepository childrenRepository, IMapper mapper, AuthService authService)
+    public ChildrenService(IChildrenRepository childrenRepository, IUserRepository userRepository, IMapper mapper, AuthService authService)
     {
         _childrenRepository = childrenRepository;
+        _userRepository = userRepository;
         _mapper = mapper;
         _authService = authService;
     }
@@ -25,10 +25,9 @@ public class ChildrenService : IChildrenService
         var children = _mapper.Map<Children>(childrenCreateDTO);
         var childId = await _childrenRepository.InsertAsync(children);
         
-        // Add all parent relationships
         foreach (var parentId in childrenCreateDTO.ParentIds)
         {
-            await _childrenRepository.AddParentToChildAsync(parentId, childId);
+            await AddParentToChildAsync(parentId, childId);
         }
         
         return childId;
@@ -75,6 +74,22 @@ public class ChildrenService : IChildrenService
 
     public async Task<int> AddParentToChildAsync(int userId, int childId)
     {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null)
+        {
+            throw new InvalidOperationException("Bruger ikke fundet");
+        }
+
+        if (user.Role != "Parent")
+        {
+            throw new InvalidOperationException("Kun brugere med rolle 'Parent' kan tilføjes som forældre");
+        }
+
+        if (!user.RoleApproved)
+        {
+            throw new InvalidOperationException("Brugerens rolle er ikke godkendt");
+        }
+
         return await _childrenRepository.AddParentToChildAsync(userId, childId);
     }
 
