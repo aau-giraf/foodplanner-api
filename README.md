@@ -141,7 +141,7 @@ To set this up correctly please follow these steps.
 -   [Docker](https://docs.docker.com/engine/install/ubuntu/)
 -   [Cron](https://www.digitalocean.com/community/tutorials/how-to-use-cron-to-automate-tasks-ubuntu-1804)
 
-3. Update the file called `docker-compose.yml` with correct credentials
+3. Rename the file called `docker-compose-example.yml` to `docker-compose.yml` and update the credentials
 
     Go ahead and run the docker compose file using the following command:
 
