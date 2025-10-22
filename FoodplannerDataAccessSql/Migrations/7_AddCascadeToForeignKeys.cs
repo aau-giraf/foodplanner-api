@@ -3,7 +3,7 @@ using System.Data;
     
     namespace FoodplannerDataAccessSql.Migrations;
     
-    [Migration(6)]
+    [Migration(7)]
     public class AddCascadeToForeignKeys : Migration
     {
         public override void Up()
