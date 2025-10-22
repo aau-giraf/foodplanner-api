@@ -10,10 +10,10 @@ namespace FoodplannerApi.Controller;
 
 public class UsersController : BaseController
 {
-    private readonly UserService _userService;
+    private readonly IUserService _userService;
     private readonly AuthService _authService;
 
-    public UsersController(UserService userService, AuthService authService)
+    public UsersController(IUserService userService, AuthService authService)
     {
         _userService = userService;
         _authService = authService;
