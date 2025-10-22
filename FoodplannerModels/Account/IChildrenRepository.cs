@@ -10,11 +10,15 @@ namespace FoodplannerModels.Account
     {
         Task<IEnumerable<Children>> GetAllAsync();
         Task<IEnumerable<ChildrenGetAllDTO>> GetAllChildrenClassesAsync();
-        Task<Children> GetByParentIdAsync(int id);
-        Task<int> GetChildIdByParentIdAsync(int id);
+        Task<IEnumerable<Children>> GetChildrenByParentIdAsync(int parentId);
+        Task<IEnumerable<User>> GetParentsByChildIdAsync(int childId);
         Task<int> InsertAsync(Children entity);
         Task<int> UpdateAsync(Children entity);
         Task<int> DeleteAsync(int id);
         Task<Children> GetChildByIdAsync(int id);
+        
+        // Junction table methods
+        Task<int> AddParentToChildAsync(int userId, int childId);
+        Task<int> RemoveParentFromChildAsync(int userId, int childId);
     }
 }

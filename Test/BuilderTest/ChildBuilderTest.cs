@@ -1,43 +1,41 @@
 using Test.Builder;
+using FoodplannerModels.Account;
+using Xunit;
 
 namespace Test.BuilderTest;
 
 public class ChildBuilderTest
 {
     [Fact]
-    public void ChildBuilder_ReturnsChild_ThatIsNotNull()
+    public void Build_ShouldCreateChildWithCorrectProperties()
     {
-        //Arrange 
-        var builder = new ChildBuilder();
-        
-        //Act
+        // Arrange
+        var builder = new ChildBuilder()
+            .WithChildId(1)
+            .WithFirstName("John")
+            .WithLastName("Doe")
+            .WithClassId(2);
+
+        // Act
         var child = builder.Build();
-        
-        //Assert
-        Assert.NotNull(child);
+
+        // Assert
+        Assert.Equal(1, child.ChildId);
+        Assert.Equal("John", child.FirstName);
+        Assert.Equal("Doe", child.LastName);
+        Assert.Equal(2, child.classId);
     }
 
-    [Theory]
-    [InlineData(2, "John", "Doe", 2, 3)]
-    [InlineData(1, "Alice", "Smith", 5, 7)]
-    public void ChildBuilder_ReturnsChild_WithExpectedValues(int id, string first, string last, int parentId, int classId)
+    [Fact]
+    public void Build_ShouldCreateChildWithDefaultValues()
     {
-        //Arrange
-        var Builder = new ChildBuilder()
-            .WithId(id)
-            .WithFirstName(first)
-            .WithLastName(last)
-            .WithParentId(parentId)
-            .WithClassId(classId);
-        
-        //Act
-        var child = Builder.Build();
-        
-        //Assert
-        Assert.Equal(id, child.ChildId);
-        Assert.Equal(first, child.FirstName);
-        Assert.Equal(last, child.LastName);
-        Assert.Equal(parentId, child.parentId);
-        Assert.Equal(classId, child.classId);
+        // Arrange & Act
+        var child = new ChildBuilder().Build();
+
+        // Assert
+        Assert.Equal(1, child.ChildId);
+        Assert.Equal("Test", child.FirstName);
+        Assert.Equal("Child", child.LastName);
+        Assert.Equal(1, child.classId);
     }
 }
