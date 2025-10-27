@@ -40,9 +40,9 @@ namespace FoodplannerDataAccessSql.Account
         FROM 
             children
         JOIN 
-            user_children ON children.child_id = user_children.child_id
+            child_relation ON children.child_id = child_relation.child_id
         JOIN 
-            users ON user_children.user_id = users.id
+            users ON child_relation.user_id = users.id
         JOIN 
             classroom ON children.class_id = classroom.class_id
         WHERE 
@@ -60,7 +60,7 @@ namespace FoodplannerDataAccessSql.Account
         public async Task<IEnumerable<User>> GetParentsByChildIdAsync(int childId)
         {
             var sql = @"SELECT u.* FROM users u
-                       JOIN user_children uc ON u.id = uc.user_id
+                       JOIN child_relation uc ON u.id = uc.user_id
                        WHERE uc.child_id = @ChildId";
             using (var connection = _connectionFactory.Create())
             {
@@ -73,7 +73,7 @@ namespace FoodplannerDataAccessSql.Account
         public async Task<IEnumerable<Children>> GetChildrenByParentIdAsync(int parentId)
         {
             var sql = @"SELECT c.* FROM children c
-                       JOIN user_children uc ON c.child_id = uc.child_id
+                       JOIN child_relation uc ON c.child_id = uc.child_id
                        WHERE uc.user_id = @ParentId";
             using (var connection = _connectionFactory.Create())
             {
@@ -141,7 +141,7 @@ namespace FoodplannerDataAccessSql.Account
         
         public async Task<int> AddParentToChildAsync(int userId, int childId)
         {
-            var sql = "INSERT INTO user_children (user_id, child_id) VALUES (@UserId, @ChildId) ON CONFLICT DO NOTHING";
+            var sql = "INSERT INTO child_relation (user_id, child_id) VALUES (@UserId, @ChildId) ON CONFLICT DO NOTHING";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
@@ -152,7 +152,7 @@ namespace FoodplannerDataAccessSql.Account
 
         public async Task<int> RemoveParentFromChildAsync(int userId, int childId)
         {
-            var sql = "DELETE FROM user_children WHERE user_id = @UserId AND child_id = @ChildId";
+            var sql = "DELETE FROM child_relation WHERE user_id = @UserId AND child_id = @ChildId";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
