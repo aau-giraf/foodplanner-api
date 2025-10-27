@@ -4,50 +4,42 @@ namespace Test.Builder;
 
 public class ChildBuilder
 {
-    private int _childId;
-    private string _firstName = "testFirstName";
-    private string _lastName = "testLastName";
-    private int _parentId;
-    private int _classId;
+    private int _childId = 1;
+    private string _firstName = "Test";
+    private string _lastName = "Child";
+    private int _classId = 1;
 
-    public ChildBuilder WithId(int id)
+    public ChildBuilder WithChildId(int childId)
     {
-        _childId = id;
+        _childId = childId;
         return this;
     }
 
-    public ChildBuilder WithFirstName(string value)
+    public ChildBuilder WithFirstName(string firstName)
     {
-        _firstName = value;
+        _firstName = firstName;
         return this;
     }
 
-    public ChildBuilder WithLastName(string value)
+    public ChildBuilder WithLastName(string lastName)
     {
-        _lastName = value;
+        _lastName = lastName;
         return this;
     }
 
-    public ChildBuilder WithParentId(int id)
+    public ChildBuilder WithClassId(int classId)
     {
-        _parentId = id;
-        return this;
-    }
-
-    public ChildBuilder WithClassId(int id)
-    {
-        _classId = id;
+        _classId = classId;
         return this;
     }
 
     public Children Build()
     {
-        return new Children()
+        return new Children
         {
             ChildId = _childId,
             FirstName = _firstName,
             LastName = _lastName,
-            parentId = _parentId,
             classId = _classId
         };
     }

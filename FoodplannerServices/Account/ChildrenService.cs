@@ -7,15 +7,15 @@ namespace FoodplannerServices.Account;
 public class ChildrenService : IChildrenService
 {
     private readonly IChildrenRepository _childrenRepository;
-
+    private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
-
     private readonly AuthService _authService;
 
 
-    public ChildrenService(IChildrenRepository childrenRepository, IMapper mapper, AuthService authService)
+    public ChildrenService(IChildrenRepository childrenRepository, IUserRepository userRepository, IMapper mapper, AuthService authService)
     {
         _childrenRepository = childrenRepository;
+        _userRepository = userRepository;
         _mapper = mapper;
         _authService = authService;
     }
@@ -23,8 +23,14 @@ public class ChildrenService : IChildrenService
     public async Task<int> CreateChildrenAsync(ChildrenCreateParentDTO childrenCreateDTO)
     {
         var children = _mapper.Map<Children>(childrenCreateDTO);
-        return await _childrenRepository.InsertAsync(children);
-
+        var childId = await _childrenRepository.InsertAsync(children);
+        
+        foreach (var parentId in childrenCreateDTO.ParentIds)
+        {
+            await AddParentToChildAsync(parentId, childId);
+        }
+        
+        return childId;
     }
 
     public async Task<IEnumerable<Children>> GetAllChildrenAsync()
@@ -39,10 +45,16 @@ public class ChildrenService : IChildrenService
         return children;
     }
 
-    public async Task<Children> GetChildrenByIdAsync(int id)
+    public async Task<IEnumerable<Children>> GetChildrenByParentIdAsync(int parentId)
     {
-        var children = await _childrenRepository.GetByParentIdAsync(id);
+        var children = await _childrenRepository.GetChildrenByParentIdAsync(parentId);
         return children;
+    }
+
+    public async Task<IEnumerable<User>> GetParentsByChildIdAsync(int childId)
+    {
+        var parents = await _childrenRepository.GetParentsByChildIdAsync(childId);
+        return parents;
     }
 
     public async Task<int> UpdateChildrenAsync(Children children)
@@ -58,6 +70,32 @@ public class ChildrenService : IChildrenService
     public async Task<Children> GetChildFromChildIdAsync(int id)
     {
         return await _childrenRepository.GetChildByIdAsync(id);
+    }
+
+    public async Task<int> AddParentToChildAsync(int userId, int childId)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null)
+        {
+            throw new InvalidOperationException("Bruger ikke fundet");
+        }
+
+        if (user.Role != "Parent")
+        {
+            throw new InvalidOperationException("Kun brugere med rolle 'Parent' kan tilføjes som forældre");
+        }
+
+        if (!user.RoleApproved)
+        {
+            throw new InvalidOperationException("Brugerens rolle er ikke godkendt");
+        }
+
+        return await _childrenRepository.AddParentToChildAsync(userId, childId);
+    }
+
+    public async Task<int> RemoveParentFromChildAsync(int userId, int childId)
+    {
+        return await _childrenRepository.RemoveParentFromChildAsync(userId, childId);
     }
 }
 
