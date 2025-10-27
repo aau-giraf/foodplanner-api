@@ -10,10 +10,10 @@ namespace FoodplannerApi.Controller;
 
 public class UsersController : BaseController
 {
-    private readonly UserService _userService;
+    private readonly IUserService _userService;
     private readonly AuthService _authService;
 
-    public UsersController(UserService userService, AuthService authService)
+    public UsersController(IUserService userService, AuthService authService)
     {
         _userService = userService;
         _authService = authService;
@@ -138,6 +138,21 @@ public class UsersController : BaseController
             return BadRequest(new ErrorResponse { Message = [e.Message] });
         }
     }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> EmailExists([FromQuery] string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return BadRequest(new ErrorResponse { Message = ["Email skal angives"] });
+        }
+
+        var exists = await _userService.UserEmailExistsAsync(email);
+        return Ok(new { EmailExists = exists });
+    }
+
 
     [HttpGet]
     [Authorize(Roles = "Child, Parent")]

@@ -45,7 +45,7 @@ public class ChildrensController : BaseController
         {
             return BadRequest(new ErrorResponse { Message = ["Error"] });
         }
-        var children = await _childrenService.GetChildrenByIdAsync(id);
+        var children = await _childrenService.GetChildrenByParentIdAsync(id);
         return Ok(children);
     }
 
@@ -71,7 +71,7 @@ public class ChildrensController : BaseController
             {
                 FirstName = childrenCreate.FirstName,
                 LastName = childrenCreate.LastName,
-                parentId = parentId,
+                ParentIds = new List<int> { parentId },
                 classId = childrenCreate.classId
             };
 
@@ -111,5 +111,35 @@ public class ChildrensController : BaseController
             return Ok(child);
         }
         return NotFound();
+    }
+
+    [HttpGet("{childId}/parents")]
+    [ProducesResponseType(typeof(IEnumerable<User>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetParentsByChildId(int childId)
+    {
+        var parents = await _childrenService.GetParentsByChildIdAsync(childId);
+        return Ok(parents);
+    }
+
+    [HttpPost("{childId}/parents/{userId}")]
+    public async Task<IActionResult> AddParentToChild(int childId, int userId)
+    {
+        var result = await _childrenService.AddParentToChildAsync(userId, childId);
+        if (result > 0)
+        {
+            return Ok(new { Message = "Forældre tilføjet til barn" });
+        }
+        return BadRequest(new ErrorResponse { Message = new[] { "Kunne ikke tilføje forældre" } });
+    }
+
+    [HttpDelete("{childId}/parents/{userId}")]
+    public async Task<IActionResult> RemoveParentFromChild(int childId, int userId)
+    {
+        var result = await _childrenService.RemoveParentFromChildAsync(userId, childId);
+        if (result > 0)
+        {
+            return NoContent();
+        }
+        return NotFound(new ErrorResponse { Message = new[] { "Forældre ikke fundet" } });
     }
 }

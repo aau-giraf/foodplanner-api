@@ -14,9 +14,6 @@ public class Children {
     [StringLength(100, ErrorMessage = "Efternavn er for langt")]
     public required string LastName { get; set; }
 
-    [ForeignKey("User")]
-    public int parentId { get; set; }
-
     [ForeignKey("Classroom")]
     public int classId { get; set; }
 }
