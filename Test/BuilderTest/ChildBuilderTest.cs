@@ -23,7 +23,7 @@ public class ChildBuilderTest
         Assert.Equal(1, child.ChildId);
         Assert.Equal("John", child.FirstName);
         Assert.Equal("Doe", child.LastName);
-        Assert.Equal(2, child.classId);
+        Assert.Equal(2, child.ClassId);
     }
 
     [Fact]
@@ -36,6 +36,6 @@ public class ChildBuilderTest
         Assert.Equal(1, child.ChildId);
         Assert.Equal("Test", child.FirstName);
         Assert.Equal("Child", child.LastName);
-        Assert.Equal(1, child.classId);
+        Assert.Equal(1, child.ClassId);
     }
 }

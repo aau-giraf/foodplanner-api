@@ -45,8 +45,18 @@ public class UserService : IUserService
 
         user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
         user.RoleApproved = false;
-        return await _userRepository.InsertAsync(user);
-
+        var id =  await _userRepository.InsertAsync(user);
+        if (user.Role == "Child")
+        {
+            var child = new Children()
+            {
+                ChildId = id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+            };
+            await _childrenRepository.InsertAsync(child);
+        }
+        return id;
     }
 
     public async Task<int> UpdateUserAsync(User user)

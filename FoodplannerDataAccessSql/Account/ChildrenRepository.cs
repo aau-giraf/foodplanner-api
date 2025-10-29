@@ -93,7 +93,7 @@ namespace FoodplannerDataAccessSql.Account
                 {
                     FirstName = entity.FirstName,
                     LastName = entity.LastName,
-                    ClassId = entity.classId
+                    ClassId = entity.ClassId
                 });
                 return result;
             }
@@ -110,7 +110,7 @@ namespace FoodplannerDataAccessSql.Account
                     ChildId = entity.ChildId,
                     FirstName = entity.FirstName,
                     LastName = entity.LastName,
-                    ClassId = entity.classId
+                    ClassId = entity.ClassId
                 });
                 return result;
             }
