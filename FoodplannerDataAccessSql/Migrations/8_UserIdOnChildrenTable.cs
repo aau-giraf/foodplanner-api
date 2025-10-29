@@ -8,11 +8,10 @@ public class UserIdOnChildrenTable : Migration
 {
     public override void Up()
     {
-        // rename column
         Rename.Column("child_id").OnTable("children").To("user_id");
         
         Create.ForeignKey("fk_children_child_id")
-            .FromTable("children").ForeignColumn("UserId")
+            .FromTable("children").ForeignColumn("user_id")
             .ToTable("users").PrimaryColumn("id")
             .OnDeleteOrUpdate(Rule.Cascade);    
         
