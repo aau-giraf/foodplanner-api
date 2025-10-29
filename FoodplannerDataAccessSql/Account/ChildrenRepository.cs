@@ -160,5 +160,53 @@ namespace FoodplannerDataAccessSql.Account
                 return result;
             }
         }
+
+        public async Task<int> AddTeacherToChildAsync(int userId, int childId)
+        {
+            var sql = "INSERT INTO child_relation (user_id, child_id) VALUES (@UserId, @ChildId) ON CONFLICT DO NOTHING";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.ExecuteAsync(sql, new { UserId = userId, ChildId = childId });
+                return result;
+            }
+        }
+
+        public async Task<int> RemoveTeacherFromChildAsync(int userId, int childId)
+        {
+            var sql = "DELETE FROM child_relation WHERE user_id = @UserId AND child_id = @ChildId";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.ExecuteAsync(sql, new { UserId = userId, ChildId = childId });
+                return result;
+            }
+        }
+
+        public async Task<IEnumerable<User>> GetTeachersByChildIdAsync(int childId)
+        {
+            var sql = @"SELECT u.* FROM users u
+                       JOIN child_relation uc ON u.id = uc.user_id
+                       WHERE uc.child_id = @ChildId AND u.role = 'Teacher'";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QueryAsync<User>(sql, new { ChildId = childId });
+                return result;
+            }
+        }
+
+        public async Task<IEnumerable<Children>> GetChildrenByTeacherIdAsync(int teacherId)
+        {
+            var sql = @"SELECT c.* FROM children c
+                       JOIN child_relation uc ON c.child_id = uc.child_id
+                       WHERE uc.user_id = @TeacherId";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QueryAsync<Children>(sql, new { TeacherId = teacherId });
+                return result;
+            }
+        }
     }
 }

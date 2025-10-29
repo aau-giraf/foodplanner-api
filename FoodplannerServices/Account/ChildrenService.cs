@@ -97,6 +97,42 @@ public class ChildrenService : IChildrenService
     {
         return await _childrenRepository.RemoveParentFromChildAsync(userId, childId);
     }
+
+    public async Task<int> AddTeacherToChildAsync(int userId, int childId)
+    {
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null)
+        {
+            throw new InvalidOperationException("Bruger ikke fundet");
+        }
+
+        if (user.Role != "Teacher")
+        {
+            throw new InvalidOperationException("Kun brugere med rolle 'Teacher' kan tilføjes som lærere");
+        }
+
+        if (!user.RoleApproved)
+        {
+            throw new InvalidOperationException("Brugerens rolle er ikke godkendt");
+        }
+
+        return await _childrenRepository.AddTeacherToChildAsync(userId, childId);
+    }
+
+    public async Task<int> RemoveTeacherFromChildAsync(int userId, int childId)
+    {
+        return await _childrenRepository.RemoveTeacherFromChildAsync(userId, childId);
+    }
+
+    public async Task<IEnumerable<User>> GetTeachersByChildIdAsync(int childId)
+    {
+        return await _childrenRepository.GetTeachersByChildIdAsync(childId);
+    }
+
+    public async Task<IEnumerable<Children>> GetChildrenByTeacherIdAsync(int teacherId)
+    {
+        return await _childrenRepository.GetChildrenByTeacherIdAsync(teacherId);
+    }
 }
 
 
