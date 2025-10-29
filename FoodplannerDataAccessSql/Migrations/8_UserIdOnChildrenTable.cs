@@ -8,14 +8,17 @@ public class UserIdOnChildrenTable : Migration
 {
     public override void Up()
     {
+        // rename column
+        Rename.Column("child_id").OnTable("children").To("user_id");
+        
         Create.ForeignKey("fk_children_child_id")
-            .FromTable("children").ForeignColumn("child_id")
+            .FromTable("children").ForeignColumn("UserId")
             .ToTable("users").PrimaryColumn("id")
-            .OnDeleteOrUpdate(Rule.Cascade);
+            .OnDeleteOrUpdate(Rule.Cascade);    
         
         Execute.Sql(@"
             UPDATE children c
-            SET child_id = u.id
+            SET user_id = u.id
             FROM users u
             WHERE LOWER(c.first_name) = LOWER(u.first_name)
               AND LOWER(c.last_name) = LOWER(u.last_name);
