@@ -142,4 +142,50 @@ public class ChildrensController : BaseController
         }
         return NotFound(new ErrorResponse { Message = new[] { "Forældre ikke fundet" } });
     }
+
+    [HttpPost("{childId}/teachers/{userId}")]
+    [Authorize(Policy = "TeacherPolicy")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> AddTeacherToChild(int childId, int userId)
+    {
+        var result = await _childrenService.AddTeacherToChildAsync(userId, childId);
+        if (result > 0)
+        {
+            return Ok(new { Message = "Lærer tilføjet til barn" });
+        }
+        return BadRequest(new ErrorResponse { Message = new[] { "Kunne ikke tilføje lærer" } });
+    }
+
+    [HttpDelete("{childId}/teachers/{userId}")]
+    [Authorize(Policy = "TeacherPolicy")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemoveTeacherFromChild(int childId, int userId)
+    {
+        var result = await _childrenService.RemoveTeacherFromChildAsync(userId, childId);
+        if (result > 0)
+        {
+            return NoContent();
+        }
+        return NotFound(new ErrorResponse { Message = new[] { "Lærer ikke fundet" } });
+    }
+
+    [HttpGet("{childId}/teachers")]
+    [Authorize(Policy = "TeacherPolicy")]
+    [ProducesResponseType(typeof(IEnumerable<User>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetTeachersByChildId(int childId)
+    {
+        var teachers = await _childrenService.GetTeachersByChildIdAsync(childId);
+        return Ok(teachers);
+    }
+
+    [HttpGet("by-teacher/{teacherId}")]
+    [Authorize(Policy = "TeacherPolicy")]
+    [ProducesResponseType(typeof(IEnumerable<Children>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetChildrenByTeacherId(int teacherId)
+    {
+        var children = await _childrenService.GetChildrenByTeacherIdAsync(teacherId);
+        return Ok(children);
+    }
 }
