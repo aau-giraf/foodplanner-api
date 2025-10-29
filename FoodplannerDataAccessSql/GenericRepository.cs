@@ -18,7 +18,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         using (var connection = _connectionFactory.Create()){
             connection.Open();
-            var sql = $"SELECT * FROM {typeof(T).Name}s";
+            var sql = $"SELECT * FROM {typeof(T).Name.ToLower()}";
             return await connection.QueryAsync<T>(sql);
         }
     }
@@ -27,7 +27,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         using (var connection = _connectionFactory.Create()){
             connection.Open();
-            var sql = $"SELECT * FROM {typeof(T).Name}s WHERE Id = @Id";
+            var sql = $"SELECT * FROM {typeof(T).Name.ToLower()} WHERE Id = @Id";
             var result = await connection.QuerySingleOrDefaultAsync<T>(sql, new { Id = id });
             if (result == null)
             {
@@ -41,7 +41,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         using (var connection = _connectionFactory.Create()){
             connection.Open();
-            var sql = $"INSERT INTO {typeof(T).Name}s {string.Join(", ", GetProperties(entity))} VALUES ({string.Join(", ", GetProperties(entity, "@"))})";
+            var sql = $"INSERT INTO {typeof(T).Name.ToLower()} {string.Join(", ", GetProperties(entity))} VALUES ({string.Join(", ", GetProperties(entity, "@"))})";
             return await connection.ExecuteAsync(sql, entity);
         }
     }
@@ -50,7 +50,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         using (var connection = _connectionFactory.Create()){
             connection.Open();
-            var sql = $"SELECT * FROM {typeof(T).Name}s SET {string.Join(", ", GetUpdateFields(entity))} WHERE Id = @Id";
+            var sql = $"SELECT * FROM {typeof(T).Name.ToLower()} SET {string.Join(", ", GetUpdateFields(entity))} WHERE Id = @Id";
             return await connection.ExecuteAsync(sql, entity);
         }
     }
@@ -59,7 +59,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         using (var connection = _connectionFactory.Create()){
             connection.Open();
-            var sql = $"DELETE FROM {typeof(T).Name}s WHERE Id = @Id";
+            var sql = $"DELETE FROM {typeof(T).Name.ToLower()} WHERE Id = @Id";
             return await connection.ExecuteAsync(sql, new { Id = id });
         }
     }
