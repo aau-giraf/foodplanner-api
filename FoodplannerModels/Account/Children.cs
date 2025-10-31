@@ -5,13 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 public class Children {
     [Key, ForeignKey("User")]
     public required int ChildId { get; set; }
-
-    [Required(ErrorMessage = "Fornavn er påkrævet")]
-    [StringLength(100, ErrorMessage = "Fornavn er for langt")]
+    
     public required string FirstName { get; set; }
-
-    [Required(ErrorMessage = "Efternavn er påkrævet")]
-    [StringLength(100, ErrorMessage = "Efternavn er for langt")]
+    
     public required string LastName { get; set; }
 
     [ForeignKey("Classroom")]

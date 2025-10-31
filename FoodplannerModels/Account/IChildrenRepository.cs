@@ -12,9 +12,8 @@ namespace FoodplannerModels.Account
         Task<IEnumerable<ChildrenGetAllDTO>> GetAllChildrenClassesAsync();
         Task<IEnumerable<Children>> GetChildrenByParentIdAsync(int parentId);
         Task<IEnumerable<User>> GetParentsByChildIdAsync(int childId);
-        Task<int> InsertAsync(Children entity);
+        Task<int> InsertAsync(ChildrenCreateDTO entity);
         Task<int> UpdateAsync(Children entity);
-        Task<int> DeleteAsync(int id);
         Task<Children> GetChildByIdAsync(int id);
         
         // Junction table methods

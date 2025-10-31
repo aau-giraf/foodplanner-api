@@ -48,7 +48,7 @@ public class UserService : IUserService
         var id =  await _userRepository.InsertAsync(user);
         if (user.Role == "Child")
         {
-            var child = new Children()
+            var child = new ChildrenCreateDTO()
             {
                 ChildId = id,
                 FirstName = user.FirstName,
