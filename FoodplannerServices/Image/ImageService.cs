@@ -7,6 +7,7 @@ namespace FoodplannerServices.Image;
 
 public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger) : IImageService
 {
+    private bool _initialized;
     private static readonly string UserImageBucket = "user-images";
     private static readonly int PresignedExpiry = 604800;
 

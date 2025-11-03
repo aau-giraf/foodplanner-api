@@ -9,14 +9,14 @@ using FoodplannerServices.Image;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using FoodplannerModels.Auth;
+using FoodplannerModels.Account;
 
 namespace FoodplannerApi.Controller;
 
-public class ImagesController(IFoodImageService foodImageService, IAuthService authService) : BaseController
+public class ImagesController(IFoodImageService foodImageService, AuthService authService) : BaseController
 {
     private readonly long _maxFileSize = 2000000000;
-    private readonly IAuthService _authService = authService;
+    private readonly AuthService _authService = authService;
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -67,18 +67,15 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
     {
         if (imageFiles.Any(file => file.Length == 0)) return BadRequest("A file is empty");
         if (imageFiles.Any(file => file.Length >= _maxFileSize)) return BadRequest("a file too big");
-
-        var ids = new List<string>();
-        for (int i = 0; i < imageFiles.Count; i++) 
-        { 
-            var id = await foodImageService.CreateFoodImage(
+        var ids = imageFiles
+            .Select(async file => await foodImageService.CreateFoodImage(
                 userId,
-                imageFiles[i].OpenReadStream(),
-                imageFiles[i].FileName,
-                imageFiles[i].ContentType,
-                imageFiles[i].Length);
-            ids.Add(id.ToString()); 
-        }
+                file.OpenReadStream(),
+                file.FileName,
+                file.ContentType,
+                file.Length))
+            .Select(task => task.Result.ToString());
+
         return Ok(ids);
     }
 
@@ -93,8 +90,7 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
         if (imageIdList == null || !imageIdList.Any())
             return BadRequest("No imageIds provided");
 
-        var tasks = imageIdList.Select(id => foodImageService.DeleteImage(id));
-        await Task.WhenAll(tasks);
+        foodImageIds.ToList().ForEach(id => foodImageService.DeleteImage(id));
 
         return Ok("Images deleted successfully");
     }
@@ -107,7 +103,7 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
     {
         if (foodImageId < 0)
             return BadRequest("Invalid userId");
-        return Ok(await foodImageService.GetFoodImage(foodImageId));
+        return Ok(foodImageService.GetFoodImage(foodImageId));
     }
 
     [HttpGet]
@@ -152,8 +148,6 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
                 }
                 foreach (var foodImageId in foodImageIds)
                 {
-                    if(foodImageId == null) { throw new Exception("FoodImageId is null"); }
-
                     var foodImage = await foodImageService.GetFoodImage(int.Parse(foodImageId));
                     if (userId == foodImage.UserId) continue;
                     context.Result = new UnauthorizedResult();
