@@ -72,16 +72,8 @@ namespace FoodplannerServices.FeedbackChat
         
         public async Task<int> GetChatThreadIdByUserIdAsync(int UserId)
         {
-            // Get all children for this parent
-            var children = await _childrenRepository.GetChildrenByParentIdAsync(UserId);
-            var firstChild = children.FirstOrDefault();
-            
-            if (firstChild == null)
-            {
-                throw new InvalidOperationException("Bruger har ingen børn tilknyttet");
-            }
-            
-            return await GetChatThreadIdByChildIdAsync(firstChild.ChildId);
+            var childId = await _childrenRepository.GetChildIdByParentIdAsync(UserId);
+            return await GetChatThreadIdByChildIdAsync(childId);
         }
     }
 }

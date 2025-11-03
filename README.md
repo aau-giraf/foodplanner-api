@@ -141,7 +141,47 @@ To set this up correctly please follow these steps.
 -   [Docker](https://docs.docker.com/engine/install/ubuntu/)
 -   [Cron](https://www.digitalocean.com/community/tutorials/how-to-use-cron-to-automate-tasks-ubuntu-1804)
 
-3. Rename the file called `docker-compose-example.yml` to `docker-compose.yml` and update the credentials
+3. Create a new file called `docker-compose.yml` and open it using the following command
+
+    ```bash
+    touch docker-compose.yml
+    nano docker-compose.yml
+    ```
+
+    Paste the following code into the file. **Remember to update the variables with your own information.**
+
+    ```yml
+    version: "3.8"
+
+    services:
+        minio:
+            image: minio/minio:latest
+            container_name: minio_giraf
+            restart: unless-stopped
+            ports:
+                - "9000:9000"
+                - "9001:9001"
+            volumes:
+                - ./minio/data:/mnt/data
+            environment:
+                - MINIO_ROOT_USER=<insert here>
+                - MINIO_ROOT_PASSWORD=<insert here>
+                - MINIO_VOLUMES=/mnt/data
+            command: server /mnt/data --console-address ":9001"
+
+        postgres:
+            image: postgres:latest
+            container_name: postgres_giraf
+            restart: unless-stopped
+            ports:
+                - "5432:5432"
+            volumes:
+                - ./postgres/data:/var/lib/postgresql/data
+            environment:
+                - POSTGRES_PASSWORD=<insert here>
+                - POSTGRES_USER=<insert here>
+                - POSTGRES_DB=<insert here>
+    ```
 
     Go ahead and run the docker compose file using the following command:
 
