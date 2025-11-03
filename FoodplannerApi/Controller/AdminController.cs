@@ -74,7 +74,7 @@ public class AdminController : BaseController
 
         var result = await _userService.UserUpdateArchivedAsync(id);
 
-        if (result)
+        if (result != null)
         {
             return Ok(result);
         }
@@ -93,7 +93,7 @@ public class AdminController : BaseController
         }
         var result = await _userService.UserUpdateRoleApprovedAsync(id, userRoleDTO.role_approved);
 
-        if (result)
+        if (result != null)
         {
             return Ok(result);
         }

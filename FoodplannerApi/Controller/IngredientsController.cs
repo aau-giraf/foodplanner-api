@@ -11,10 +11,10 @@ namespace FoodplannerApi.Controller;
 * The IngredientsController class handles CRUD (Create, Read, Update, Delete) operations for the Ingredient entity.
 * It uses the IngredientService to interact with the database and process ingredient-related requests.
 */
-public class IngredientsController(IIngredientService ingredientService, AuthService authService) : BaseController
+public class IngredientsController(IngredientService ingredientService, AuthService authService) : BaseController
 {
     // Private field to hold the injected IngredientService.
-    private readonly IIngredientService _ingredientService = ingredientService;
+    private readonly IngredientService _ingredientService = ingredientService;
     private readonly AuthService _authService = authService;
 
     // Get all ingredients
@@ -109,11 +109,5 @@ public class IngredientsController(IIngredientService ingredientService, AuthSer
             return Ok(ingredient);
         }
         return NotFound(); // Returns 404 if the ingredient was not found
-    }
-
-    public class IngredientContainer
-    {
-        public string Name { get; set; }
-        public int? Image_ref { get; set; }
     }
 }

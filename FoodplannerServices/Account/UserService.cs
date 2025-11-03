@@ -1,6 +1,7 @@
 using AutoMapper;
+using FoodplannerApi.Helpers;
 using FoodplannerModels.Account;
-using FoodplannerModels.Auth;
+using Microsoft.AspNetCore.Identity;
 
 namespace FoodplannerServices.Account;
 
@@ -9,17 +10,15 @@ public class UserService : IUserService
     private readonly IUserRepository _userRepository;
     private readonly IChildrenRepository _childrenRepository;
     private readonly IMapper _mapper;
-    private readonly IAuthService _authService;
-    private readonly IPasswordHandler _passwordHandler;
+    private readonly AuthService _authService;
 
 
-    public UserService(IUserRepository userRepository, IMapper mapper, IAuthService authService, IChildrenRepository childrenRepository, IPasswordHandler passwordHandler)
+    public UserService(IUserRepository userRepository, IMapper mapper, AuthService authService, IChildrenRepository childrenRepository)
     {
         _userRepository = userRepository;
         _mapper = mapper;
         _authService = authService;
         _childrenRepository = childrenRepository;
-        _passwordHandler = passwordHandler;
     }
 
     public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
@@ -44,7 +43,7 @@ public class UserService : IUserService
             throw new InvalidOperationException("Email eksisterer allerede");
         }
 
-        user.Password = _passwordHandler.EncryptPassword(user.Password);
+        user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
         user.RoleApproved = false;
         return await _userRepository.InsertAsync(user);
 
@@ -52,7 +51,7 @@ public class UserService : IUserService
 
     public async Task<int> UpdateUserAsync(User user)
     {
-        user.Password = _passwordHandler.EncryptPassword(user.Password);
+        user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
         return await _userRepository.UpdateAsync(user);
     }
 
@@ -65,7 +64,9 @@ public class UserService : IUserService
     {
         var user = await _userRepository.GetUserByEmailAsync(email);
 
-        if (user == null || _passwordHandler.VerifyPassword(password, user.Password))
+        //bool isPasswordValid = BCrypt.Net.BCrypt.Verify(password, user?.Password);
+
+        if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.Password))
         {
             throw new InvalidOperationException("Forkert brugernavn eller adgangskode");
         }
@@ -89,7 +90,7 @@ public class UserService : IUserService
         {
             throw new InvalidOperationException("Pinkode skal være 4 cifre");
         }
-        pinCode = _passwordHandler.EncryptPassword(pinCode);
+        pinCode = BCrypt.Net.BCrypt.HashPassword(pinCode);
         var pincode = await _userRepository.UpdatePinCodeAsync(pinCode, id);
 
         return pincode;
@@ -102,16 +103,16 @@ public class UserService : IUserService
         {
             throw new InvalidOperationException("Bruger har ikke en pinkode");
         }
-        else if (_passwordHandler.VerifyPassword(pinCode, pincode))
+        else if (!BCrypt.Net.BCrypt.Verify(pinCode, pincode))
         {
             throw new InvalidOperationException("Forkert pinkode");
         }
         var user = await _userRepository.GetByIdAsync(id);
+        user.Id = id;
         if (user == null)
         {
             throw new InvalidOperationException("Bruger ikke fundet");
         }
-        user.Id = id;
 
         var jwt = _authService.GenerateJWTToken(user);
         var userCreds = new UserCredsDTO
@@ -122,6 +123,11 @@ public class UserService : IUserService
         };
 
         return userCreds;
+    }
+
+    public async Task<bool> UserEmailExistsAsync(string Email)
+    {
+        return await _userRepository.EmailExistsAsync(Email);
     }
 
     public async Task<bool> UserHasPinCodeAsync(int id)
@@ -163,7 +169,7 @@ public class UserService : IUserService
 
     public async Task<int> UpdateUserPasswordAsync(string password, int id)
     {
-        password = _passwordHandler.EncryptPassword(password);
+        password = BCrypt.Net.BCrypt.HashPassword(password);
         var _password = await _userRepository.UpdatePasswordAsync(password, id);
         return _password;
     }
