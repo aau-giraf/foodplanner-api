@@ -1,7 +1,6 @@
 using Infisical.Sdk;
-using Microsoft.Extensions.Configuration;
 
-namespace FoodplannerServices.Secret;
+namespace FoodplannerApi;
 
 public static class SecretsLoader
 {

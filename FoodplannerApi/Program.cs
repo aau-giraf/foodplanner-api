@@ -1,5 +1,7 @@
 using System.Security.Claims;
 using System.Text;
+using FoodplannerApi;
+using FoodplannerApi.Controller;
 using Npgsql;
 using FoodplannerDataAccessSql;
 using FoodplannerDataAccessSql.Account;
@@ -16,10 +18,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using FoodplannerApi.Helpers;
 using FluentMigrator.Runner;
+using FluentMigrator.Runner.Initialization;
+using FluentMigrator.Postgres;
 using FoodplannerDataAccessSql.Migrations;
 using FoodplannerModels.FeedbackChat;
 using FoodplannerServices.FeedbackChat;
-using FoodplannerServices.Secret;
 using Microsoft.OpenApi.Models;
 using FoodplannerModels.Auth;
 
@@ -36,7 +39,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
-//Configure and add MinIO service
+//Configre and add MinIO service
 var endpoint = SecretsLoader.GetSecret("MINIO_ENDPOINT");
 var accessKey = SecretsLoader.GetSecret("MINIO_ACCESS");
 var secretKey = SecretsLoader.GetSecret("MINIO_SECRET");
@@ -69,31 +72,31 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
     {
         Title = "Foodplanner API",
         Version = "v1"
     });
 
     // Add JWT authentication to Swagger
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
         Scheme = "Bearer",
         BearerFormat = "JWT",
-        In = ParameterLocation.Header,
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
         Description = "Enter 'Bearer' [space] and then your token in the text input below. Example: \"Bearer 12345abcdef\"",
     });
 
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
     {
         {
-            new OpenApiSecurityScheme
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
                 {
-                    Type = ReferenceType.SecurityScheme,
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
                     Id = "Bearer"
                 }
             },
@@ -139,7 +142,7 @@ builder.Services.AddAuthentication(cfg =>
         ValidAudience = configuration["ApplicationSettings:JWT_Audience"],
         RoleClaimType = ClaimTypes.Role,
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(SecretsLoader.GetSecret("JWT_SECRET"))
+            Encoding.UTF8.GetBytes(configuration["ApplicationSettings:JWT_Secret"])
         ),
         ClockSkew = TimeSpan.Zero
     };
@@ -182,7 +185,6 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMealService, MealService>();
 builder.Services.AddScoped<IIngredientService, IngredientService>();
 builder.Services.AddScoped<IPackedIngredientService, PackedIngredientService>();
-
 builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
 builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepository));
 builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));

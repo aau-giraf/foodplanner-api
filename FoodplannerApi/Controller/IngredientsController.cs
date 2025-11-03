@@ -110,4 +110,10 @@ public class IngredientsController(IIngredientService ingredientService, AuthSer
         }
         return NotFound(); // Returns 404 if the ingredient was not found
     }
+
+    public class IngredientContainer
+    {
+        public string Name { get; set; }
+        public int? Image_ref { get; set; }
+    }
 }
