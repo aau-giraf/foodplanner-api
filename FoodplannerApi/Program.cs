@@ -25,6 +25,7 @@ using FoodplannerModels.FeedbackChat;
 using FoodplannerServices.FeedbackChat;
 using Microsoft.OpenApi.Models;
 using FoodplannerModels.Auth;
+using FoodplannerServices.Secret;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -142,7 +143,7 @@ builder.Services.AddAuthentication(cfg =>
         ValidAudience = configuration["ApplicationSettings:JWT_Audience"],
         RoleClaimType = ClaimTypes.Role,
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(configuration["ApplicationSettings:JWT_Secret"])
+            Encoding.UTF8.GetBytes(SecretsLoader.GetSecret("JWT_SECRET"))
         ),
         ClockSkew = TimeSpan.Zero
     };

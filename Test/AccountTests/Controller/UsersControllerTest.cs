@@ -8,6 +8,7 @@ using FoodplannerServices.Account;
 using FoodplannerModels.Auth;
 using Microsoft.Identity.Client;
 using Microsoft.Extensions.Configuration;
+using FoodplannerServices.Secret;
 
 
 
@@ -19,6 +20,27 @@ public class UsersControllerTests
     [Fact]
     public async Task GetBearerTest_ReturnsOkObjectResult()
     {
+        // Arrange
+        var ClientIdKey = "CLIENT_ID";
+        var ClientSecretKey = "CLIENT_SECRET";
+        var WorkspaceKey = "WORKSPACE";
+        var JWTKey = "JWT_SECRET";
+
+        var ClientIdValue = "TestClientId";
+        var ClientSecretValue = "TestClientSecret";
+        var WorkspaceValue = "TestWorkspace";
+        var JWTValue = "TestJWT";
+
+        var emptyConfig = new ConfigurationBuilder().Build();
+
+        Environment.SetEnvironmentVariable(ClientIdKey, ClientIdValue);
+        Environment.SetEnvironmentVariable(ClientSecretKey, ClientSecretValue);
+        Environment.SetEnvironmentVariable(WorkspaceKey, WorkspaceValue);
+        Environment.SetEnvironmentVariable(JWTKey, JWTValue);
+
+        var environmentString = "TestEnvironment";
+
+        SecretsLoader.Configure(emptyConfig,environmentString);
         //arrange
         var mockUserService = new Mock<IUserService>();
         var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
