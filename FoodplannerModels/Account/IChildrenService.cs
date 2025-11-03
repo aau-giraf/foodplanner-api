@@ -6,18 +6,16 @@ using System.Threading.Tasks;
 
 namespace FoodplannerModels.Account
 {
-    public interface IChildrenRepository
+    public interface IChildrenService
     {
-        Task<IEnumerable<Children>> GetAllAsync();
+        Task<IEnumerable<Children>> GetAllChildrenAsync();
         Task<IEnumerable<ChildrenGetAllDTO>> GetAllChildrenClassesAsync();
         Task<IEnumerable<Children>> GetChildrenByParentIdAsync(int parentId);
         Task<IEnumerable<User>> GetParentsByChildIdAsync(int childId);
-        Task<int> InsertAsync(Children entity);
-        Task<int> UpdateAsync(Children entity);
-        Task<int> DeleteAsync(int id);
-        Task<Children> GetChildByIdAsync(int id);
-        
-        // Junction table methods
+        Task<int> CreateChildrenAsync(ChildrenCreateParentDTO children);
+        Task<int> UpdateChildrenAsync(Children children);
+        Task<int> DeleteChildrenAsync(int id);
+        Task<Children> GetChildFromChildIdAsync(int id);
         Task<int> AddParentToChildAsync(int userId, int childId);
         Task<int> RemoveParentFromChildAsync(int userId, int childId);
         Task<int> AddTeacherToChildAsync(int userId, int childId);

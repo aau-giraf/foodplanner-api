@@ -120,7 +120,7 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
     }
 
     // Retrieves a specific meal by its ID.
-    public async Task<MealDTO?> GetMealByIdAsync(int id)
+    public async Task<MealDTO> GetMealByIdAsync(int id)
     {
         // Fetch the single meal.
         var meal = await _mealRepository.GetByIdAsync(id);
