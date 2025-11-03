@@ -124,6 +124,11 @@ public class UserService : IUserService
         return userCreds;
     }
 
+    public async Task<bool> UserEmailExistsAsync(string Email)
+    {
+        return await _userRepository.EmailExistsAsync(Email);
+    }
+
     public async Task<bool> UserHasPinCodeAsync(int id)
     {
         return await _userRepository.HasPinCodeAsync(id);
