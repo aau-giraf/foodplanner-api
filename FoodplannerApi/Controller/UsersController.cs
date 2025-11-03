@@ -1,5 +1,6 @@
 using FoodplannerApi.Helpers;
 using FoodplannerModels.Account;
+using FoodplannerModels.Auth;
 using FoodplannerServices;
 using FoodplannerServices.Account;
 using Microsoft.AspNetCore.Authorization;
@@ -11,9 +12,9 @@ namespace FoodplannerApi.Controller;
 public class UsersController : BaseController
 {
     private readonly IUserService _userService;
-    private readonly AuthService _authService;
+    private readonly IAuthService _authService;
 
-    public UsersController(IUserService userService, AuthService authService)
+    public UsersController(IUserService userService, IAuthService authService)
     {
         _userService = userService;
         _authService = authService;
@@ -21,7 +22,7 @@ public class UsersController : BaseController
 
     [HttpGet]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetBearerTest()
+    public IActionResult GetBearerTest()
     {
         //Generates a token for development purposes, Status must be Active.
         //Roles can be: Admin, Child, Teacher, Parent
@@ -83,7 +84,7 @@ public class UsersController : BaseController
             }
             return BadRequest(new ErrorResponse { Message = ["Email eller password er forkert"] });
         }
-        catch (InvalidOperationException e)
+        catch
         {
             return BadRequest(new ErrorResponse { Message = ["Email eller password er forkert"] });
         }
@@ -140,21 +141,6 @@ public class UsersController : BaseController
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> EmailExists([FromQuery] string email)
-    {
-        if (string.IsNullOrWhiteSpace(email))
-        {
-            return BadRequest(new ErrorResponse { Message = ["Email skal angives"] });
-        }
-
-        var exists = await _userService.UserEmailExistsAsync(email);
-        return Ok(new { EmailExists = exists });
-    }
-
-
-    [HttpGet]
     [Authorize(Roles = "Child, Parent")]
     public async Task<IActionResult> HasPinCode([FromHeader(Name = "Authorization")] string token)
     {
@@ -174,54 +160,7 @@ public class UsersController : BaseController
         }
     }
 
-    [HttpGet]
-    [Authorize(Roles = "Child, Parent, Teacher, Admin")]
-    public async Task<IActionResult> GetLoggedIn([FromHeader(Name = "Authorization")] string token)
-    {
 
-        var idString = _authService.RetrieveIdFromJwtToken(token);
-        if (!int.TryParse(idString, out int id))
-        {
-            return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
-        }
-        var user = await _userService.GetLoggedInUserAsync(id);
-        return Ok(user);
-    }
 
-    [HttpPut]
-    [Authorize(Roles = "Parent, Child,  Teacher, Admin")]
-    public async Task<IActionResult> UpdateLoggedIn([FromHeader(Name = "Authorization")] string token, [FromBody] UserUpdateDTO user)
-    {
-        var idString = _authService.RetrieveIdFromJwtToken(token);
-        if (!int.TryParse(idString, out int id))
-        {
-            return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
-        }
-
-        var result = await _userService.UpdateUserLoggedInAsync(id, user);
-        if (result > 0)
-        {
-            return Created();
-        }
-        return NotFound();
-    }
-
-    [HttpPut]
-    [Authorize(Roles = "Parent, Child,  Teacher, Admin")]
-    public async Task<IActionResult> UpdatePassword([FromHeader(Name = "Authorization")] string token, [FromBody] Password password)
-    {
-        var idString = _authService.RetrieveIdFromJwtToken(token);
-        if (!int.TryParse(idString, out int id))
-        {
-            return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
-        }
-
-        var result = await _userService.UpdateUserPasswordAsync(password.password, id);
-        if (result > 0)
-        {
-            return Created();
-        }
-        return NotFound();
-    }
 
 }
