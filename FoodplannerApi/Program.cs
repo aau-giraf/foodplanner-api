@@ -14,7 +14,7 @@ using FoodplannerServices.Image;
 using Minio;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using FoodplannerApi.Helpers;
+using FoodplannerServices.Auth;
 using FluentMigrator.Runner;
 using FoodplannerDataAccessSql.Migrations;
 using FoodplannerModels.FeedbackChat;

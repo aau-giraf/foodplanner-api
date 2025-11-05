@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using FoodplannerServices.Secret;
 
-namespace FoodplannerApi.Helpers
+namespace FoodplannerServices.Auth
 {
     public class AuthService
     {
