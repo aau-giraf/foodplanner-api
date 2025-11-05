@@ -21,6 +21,7 @@ using FoodplannerModels.FeedbackChat;
 using FoodplannerServices.FeedbackChat;
 using FoodplannerServices.Secret;
 using Microsoft.OpenApi.Models;
+using FoodplannerModels.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -194,10 +195,11 @@ builder.Services.AddScoped<ChildrenService>();
 builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IPasswordHandler, PasswordHandler>();
 
 builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfile));
 
-builder.Services.AddSingleton<AuthService>();
+builder.Services.AddSingleton<IAuthService, AuthService>();
 
 // Add Automapper
 builder.Services.AddAutoMapper(typeof(UserProfile));

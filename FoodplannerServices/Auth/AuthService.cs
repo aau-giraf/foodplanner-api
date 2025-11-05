@@ -5,10 +5,11 @@ using FoodplannerModels.Account;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using FoodplannerServices.Secret;
+using FoodplannerModels.Auth;
 
 namespace FoodplannerServices.Auth
 {
-    public class AuthService
+    public class AuthService : IAuthService
     {
         private readonly IConfiguration _configuration;
 
