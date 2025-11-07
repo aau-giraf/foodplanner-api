@@ -8,10 +8,10 @@ namespace FoodplannerModels.Account
 {
     public interface IClassroomRepository
     {
-        Task<IEnumerable<Classroom>> GetAllAsync();
-        Task<int> InsertAsync(CreateClassroomDTO createClassroomDTO);
+        Task<IEnumerable<ClassroomDTO>> GetAllAsync();
+        Task<int> InsertAsync(Classroom classroom);
 
-        Task<int> UpdateAsync(CreateClassroomDTO createClassroomDTO, int id);
+        Task<int> UpdateAsync(Classroom classroom, int id);
 
         Task<bool> CheckChildrenInClassroom(int id);
 

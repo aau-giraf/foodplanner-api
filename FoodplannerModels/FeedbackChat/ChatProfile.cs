@@ -9,6 +9,5 @@ public class ChatProfile : Profile
     {
         CreateMap<AddMessageDTO, Message>();
         CreateMap<UpdateMessageDTO, Message>();
-        // add more as we go 
     }
 }

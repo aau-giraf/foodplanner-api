@@ -41,13 +41,13 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<IEnumerable<UserDTO>> GetAllAsync()
+        public async Task<IEnumerable<User>> GetAllAsync()
         {
             var sql = "SELECT id, first_name, last_name, email, role, archived FROM users ORDER BY first_name";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.QueryAsync<UserDTO>(sql);
+                var result = await connection.QueryAsync<User>(sql);
                 return result.ToList();
             }
         }
@@ -75,13 +75,13 @@ namespace FoodplannerDataAccessSql.Account
 
         }
 
-        public async Task<IEnumerable<UserDTO>> GetAllNotApprovedAsync()
+        public async Task<IEnumerable<User>> GetAllNotApprovedAsync()
         {
             var sql = "SELECT id, first_name, last_name, email, role FROM users WHERE role_approved = false";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.QueryAsync<UserDTO>(sql);
+                var result = await connection.QueryAsync<User>(sql);
                 return result.ToList();
             }
         }
@@ -215,13 +215,13 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<UserDTO> GetLoggedInAsync(int id)
+        public async Task<User> GetLoggedInAsync(int id)
         {
             var sql = "SELECT id, first_name, last_name, email, role, role_approved FROM users WHERE id = @Id";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.QueryFirstOrDefaultAsync<UserDTO>(sql, new { Id = id });
+                var result = await connection.QueryFirstOrDefaultAsync<User>(sql, new { Id = id });
                 return result;
             }
         }

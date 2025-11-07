@@ -85,9 +85,9 @@ public class IngredientsController(IngredientService ingredientService, AuthServ
     // Update an existing ingredient
     [HttpPut("{id}")]
     [Authorize(Roles = "Child, Parent")]
-    public async Task<IActionResult> Update([FromBody] Ingredient ingredient, int id)
+    public async Task<IActionResult> Update([FromBody] IngredientDTO ingredientDto, int id)
     {
-        var result = await _ingredientService.UpdateIngredientAsync(ingredient, id); // Calls the service to update the ingredient by ID
+        var result = await _ingredientService.UpdateIngredientAsync(ingredientDto, id); // Calls the service to update the ingredient by ID
         if (result > 0)
         {
             var changedIngredient = await _ingredientService.GetIngredientByIdAsync(id); // Fetch updated ingredient

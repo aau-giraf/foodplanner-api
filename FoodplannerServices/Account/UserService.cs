@@ -38,7 +38,8 @@ public class UserService : IUserService
     public async Task<int> CreateUserAsync(UserCreateDTO userCreateDTO)
     {
         var user = _mapper.Map<User>(userCreateDTO);
-        if (await _userRepository.EmailExistsAsync(user.Email.ToString()))
+
+        if (await _userRepository.EmailExistsAsync(user.Email))
         {
             throw new InvalidOperationException("Email eksisterer allerede");
         }
@@ -46,11 +47,11 @@ public class UserService : IUserService
         user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
         user.RoleApproved = false;
         return await _userRepository.InsertAsync(user);
-
     }
-
-    public async Task<int> UpdateUserAsync(User user)
+    
+    public async Task<int> UpdateUserAsync(UserUpdateDTO userUpdateDto)
     {
+        var user = _mapper.Map<User>(userUpdateDto);
         user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
         return await _userRepository.UpdateAsync(user);
     }
@@ -137,7 +138,8 @@ public class UserService : IUserService
 
     public async Task<IEnumerable<UserDTO>> GetUsersNotApprovedAsync()
     {
-        return await _userRepository.GetAllNotApprovedAsync();
+        var users = await _userRepository.GetAllNotApprovedAsync();
+        return _mapper.Map<IEnumerable<UserDTO>>(users);
     }
 
     public async Task<bool> UserUpdateArchivedAsync(int id)
@@ -158,7 +160,8 @@ public class UserService : IUserService
     public async Task<UserDTO> GetLoggedInUserAsync(int id)
     {
         var user = await _userRepository.GetLoggedInAsync(id);
-        return user;
+        if (user == null) throw new InvalidOperationException("Bruger ikke fundet");
+        return _mapper.Map<UserDTO>(user);
     }
 
     public async Task<int> UpdateUserLoggedInAsync(int id, UserUpdateDTO userUpdateDTO)

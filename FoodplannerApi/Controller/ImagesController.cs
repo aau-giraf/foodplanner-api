@@ -98,7 +98,7 @@ public class ImagesController(IFoodImageService foodImageService, AuthService au
     [HttpGet]
     [Authorize(Roles = "Child, Parent")]
     [AuthorizeImageOwnerFilter]
-    [ProducesResponseType(typeof(FoodImage), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(FoodImageDTO), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetFoodImage(int foodImageId)
     {
         if (foodImageId < 0)

@@ -10,15 +10,13 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
     
 
     // Methods for ChatThread
-    public async Task<ChatThread> GetChatThreadByIdAsync(int ChatThreadId)
+    public async Task<ChatThreadDTO> GetChatThreadByIdAsync(int ChatThreadId)
     {
         const string sql = "SELECT * FROM chat_thread WHERE chat_thread_id = @ChatThreadId";
-        using (var connection = connectionFactory.Create())
-        {
-            connection.Open();
-            var result = await connection.QuerySingleOrDefaultAsync<ChatThread>(sql, new { ChatThreadId });
-            return result;
-        }
+        await using var connection = connectionFactory.Create();
+        connection.Open();
+        var result = await connection.QuerySingleOrDefaultAsync<ChatThreadDTO>(sql, new { ChatThreadId });
+        return result;
     }
 
     public async Task<int> GetChatThreadIdByChildIdAsync(int ChildId)

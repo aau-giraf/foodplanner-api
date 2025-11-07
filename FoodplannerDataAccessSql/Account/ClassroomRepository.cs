@@ -15,17 +15,17 @@ namespace FoodplannerDataAccessSql.Account
         {
             _connectionFactory = connectionFactory;
         }
-        public async Task<IEnumerable<Classroom>> GetAllAsync()
+        public async Task<IEnumerable<ClassroomDTO>> GetAllAsync()
         {
             var sql = "SELECT * FROM classroom ORDER BY class_name";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.QueryAsync<Classroom>(sql);
+                var result = await connection.QueryAsync<ClassroomDTO>(sql);
                 return result.ToList();
             } 
         }
-        public async Task<int> InsertAsync(CreateClassroomDTO entity)
+        public async Task<int> InsertAsync(Classroom entity)
         {
             var sql = "INSERT INTO classroom (class_name) VALUES (@ClassName) RETURNING class_id";
             using (var connection = _connectionFactory.Create())
@@ -38,7 +38,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<int> UpdateAsync(CreateClassroomDTO entity, int id)
+        public async Task<int> UpdateAsync(Classroom entity, int id)
         {
             var sql = "UPDATE classroom SET class_name = @ClassName WHERE class_id = @ClassRoomId RETURNING class_id";
             using (var connection = _connectionFactory.Create())

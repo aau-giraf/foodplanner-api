@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 public class UserUpdateDTO
 {
+    [Required]
+    public required int Id { get; set; }
+    
     [Required(ErrorMessage = "Fornavn er påkrævet")]
     [StringLength(100, ErrorMessage = "Fornavn er for langt")]
     public required string FirstName { get; set; }
