@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using FoodplannerModels.Account;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Test.JwtTest
@@ -16,14 +17,14 @@ namespace Test.JwtTest
         private const string Audience = "TestAudience";
         private const string Secret = "TestSecretKey123456789thisissoverysecretyesindeeeeeeeeeeeeeeed";
 
-        private string GenerateJwtToken(Guid userId, string role, bool roleApproved, DateTime? expiration = null)
+        private string GenerateJwtToken(Guid userId, UserRole role, bool roleApproved, DateTime? expiration = null)
         {
             expiration ??= DateTime.UtcNow.AddDays(30);
 
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-                new Claim(ClaimTypes.Role, role),
+                new Claim(ClaimTypes.Role, role.ToString()),
                 new Claim("RoleApproved", roleApproved.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
@@ -43,11 +44,11 @@ namespace Test.JwtTest
         }
 
         [Theory]
-        [InlineData("Admin")]
-        [InlineData("Parent")]
-        [InlineData("Teacher")]
-        [InlineData("Child")]
-        public void GenerateJwtToken_ShouldIncludeExpectedClaims(string role)
+        [InlineData(UserRole.Admin)]
+        [InlineData(UserRole.Parent)]
+        [InlineData(UserRole.Teacher)]
+        [InlineData(UserRole.Child)]
+        public void GenerateJwtToken_ShouldIncludeExpectedClaims(UserRole role)
         {
             // Arrange
             var userId = Guid.NewGuid();
@@ -61,7 +62,7 @@ namespace Test.JwtTest
             // Assert
             Assert.NotNull(token);
             Assert.Equal(userId.ToString(), jwtToken.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
-            Assert.Equal(role, jwtToken.Claims.First(c => c.Type == ClaimTypes.Role).Value);
+            Assert.Equal(role.ToString(), jwtToken.Claims.First(c => c.Type == ClaimTypes.Role).Value);
             Assert.Equal(roleApproved.ToString(), jwtToken.Claims.First(c => c.Type == "RoleApproved").Value);
         }
 
@@ -69,7 +70,7 @@ namespace Test.JwtTest
         public void ValidateJwtToken_ShouldPass_ForValidToken()
         {
             // Arrange
-            var token = GenerateJwtToken(Guid.NewGuid(), "Admin", true);
+            var token = GenerateJwtToken(Guid.NewGuid(), UserRole.Admin, true);
             var validationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
@@ -95,7 +96,7 @@ namespace Test.JwtTest
         public void ValidateJwtToken_ShouldFail_WhenTokenIsExpired()
         {
             // Arrange
-            var expiredToken = GenerateJwtToken(Guid.NewGuid(), "Admin", true, DateTime.UtcNow.AddMinutes(-1));
+            var expiredToken = GenerateJwtToken(Guid.NewGuid(), UserRole.Admin, true, DateTime.UtcNow.AddMinutes(-1));
             var validationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
@@ -169,7 +170,7 @@ namespace Test.JwtTest
         public void ValidateJwtToken_ShouldFail_ForInvalidIssuerOrAudience()
         {
             // Arrange
-            var token = GenerateJwtToken(Guid.NewGuid(), "Admin", true);
+            var token = GenerateJwtToken(Guid.NewGuid(), UserRole.Admin, true);
             var validationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
@@ -193,7 +194,7 @@ namespace Test.JwtTest
         public void ValidateJwtToken_ShouldFail_ForTamperedToken()
         {
             // Arrange
-            var token = GenerateJwtToken(Guid.NewGuid(), "Admin", true);
+            var token = GenerateJwtToken(Guid.NewGuid(), UserRole.Admin, true);
             var tamperedToken = token.Substring(0, token.Length - 1); // Remove the last character of the token
 
             var validationParameters = new TokenValidationParameters

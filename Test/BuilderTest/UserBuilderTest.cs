@@ -1,3 +1,4 @@
+using FoodplannerModels.Account;
 using Test.Builder;
 
 namespace Test.BuilderTest;
@@ -18,10 +19,10 @@ public class UserBuilderTest
     }
 
     [Theory]
-    [InlineData("Lars", "Larsen", "LarsLarsen@jysk.dk", "Lars1234", "Parent", true, "1234", false)]
-    [InlineData("Anna", "Andersen", "anna.andersen@email.com", "Anna5678", "Person", false, "5678", true)]
+    [InlineData("Lars", "Larsen", "LarsLarsen@jysk.dk", "Lars1234", UserRole.Parent, true, "1234", false)]
+    [InlineData("Anna", "Andersen", "anna.andersen@email.com", "Anna5678", UserRole.Parent, false, "5678", true)]
     public void UserBuilder_ReturnsUser_WithExpectedValues(string firstName, string lastName, string email,
-        string password, string role, bool approved, string pincode, bool archived)
+        string password, UserRole role, bool approved, string pincode, bool archived)
     {
         // Arrange
         var builder = new UserBuilder()
