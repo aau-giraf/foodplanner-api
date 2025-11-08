@@ -8,6 +8,7 @@ using FoodplannerModels.Account;
 using Microsoft.AspNetCore.Builder;
 using FoodplannerModels.Auth;
 
+namespace Test.LunchboxTest.Controller;
 
 public class UsersControllerTests
 {

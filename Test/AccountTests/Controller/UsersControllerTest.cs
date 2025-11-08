@@ -2,16 +2,9 @@ using Moq;
 using FoodplannerApi.Controller;
 using Microsoft.AspNetCore.Mvc;
 using FoodplannerModels.Account;
-using Microsoft.AspNetCore.Builder;
-using FoodplannerServices.Account;
 using FoodplannerModels.Auth;
-using Microsoft.Identity.Client;
-using Microsoft.Extensions.Configuration;
-using FoodplannerServices.Auth;
 
-
-
-namespace Test.Controller;
+namespace Test.AccountTests.Controller;
 
 public class UsersControllerTests
 {
@@ -23,14 +16,18 @@ public class UsersControllerTests
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
 
+        var JWTToken = "Bearer TestToken";
+        authService
+            .Setup(a => a.GenerateJWTToken(It.IsAny<User>()))
+            .Returns(JWTToken);
+
         var controller = new UsersController(mockUserService.Object, authService.Object);
 
-
-        var result = controller.GetBearerTest();
-
         //act
-        var okResult = Assert.IsType<OkObjectResult>(result);
+        var result = await controller.GetBearerTest();
+
         //assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
         Assert.NotNull(okResult.Value);
     }
 
@@ -244,8 +241,7 @@ public class UsersControllerTests
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
 
-
-        var token = authService.Object.GenerateJWTToken(new User
+        var user = new User
         {
             Id = 1,
             FirstName = "Test",
@@ -254,25 +250,26 @@ public class UsersControllerTests
             Password = "passwordTester",
             Role = "Parent",
             RoleApproved = true
-        });
+        };
 
+        var JWTToken = "Bearer TestToken";
+        authService
+            .Setup(a => a.RetrieveIdFromJwtToken(JWTToken))
+            .Returns(user.Id.ToString());
 
         mockUserService
-            .Setup(s => s.UserHasPinCodeAsync(1))
+            .Setup(s => s.UserHasPinCodeAsync(user.Id))
             .ReturnsAsync(false);
 
         var controller = new UsersController(mockUserService.Object, authService.Object);
 
         //act
-        var result = await controller.HasPinCode($"Bearer {token}");
-
-
-        var okResult = Assert.IsType<OkObjectResult>(result);
-
-        var response = okResult.Value as object;
+        var result = await controller.HasPinCode(JWTToken);
 
         //assert
-        Assert.NotNull(response);
+        var okResult = Assert.IsType<OkObjectResult>(result);
+
+        Assert.NotNull(okResult);
         var hasPinCode = (bool)okResult.Value.GetType().GetProperty("HasPinCode").GetValue(okResult.Value, null);
 
         Assert.False(hasPinCode);

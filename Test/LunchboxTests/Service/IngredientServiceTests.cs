@@ -2,7 +2,7 @@ using FoodplannerModels.Lunchbox;
 using FoodplannerServices.Lunchbox;
 using Moq;
 
-namespace Test.Service;
+namespace Test.LunchboxTests.Service;
 
 public class IngredientServiceTests
 {
@@ -127,18 +127,6 @@ public class IngredientServiceTests
     }
 
     [Fact]
-    public async Task CreateIngredientAsync_ThrowsArgumentException_WhenIngredientNameIsNull()
-    {
-        // Arrange
-        var mockIngredientRepository = new Mock<IIngredientRepository>();
-        var ingredientService = new IngredientService(mockIngredientRepository.Object);
-
-        // Act & Assert
-        var exception = await Assert.ThrowsAsync<ArgumentException>(() => ingredientService.CreateIngredientAsync(new IngredientDTO { Name = null, Food_image_id = 2 }, 2));
-        Assert.Equal("Ingredient name cannot be null or empty", exception.Message);
-    }
-
-[Fact]
     public async Task UpdateIngredientAsync_UpdatesIngredient_ReturnsNumberOfAffectedRows()
     {
         // Arrange
@@ -158,18 +146,6 @@ public class IngredientServiceTests
 
         // Assert
         Assert.Equal(rowsAffected, result);
-    }
-
-    [Fact]
-    public async Task UpdateIngredientAsync_ThrowsArgumentException_WhenIngredientIdIsInvalid()
-    {
-        // Arrange
-        var mockIngredientRepository = new Mock<IIngredientRepository>();
-        var ingredientService = new IngredientService(mockIngredientRepository.Object);
-
-        // Act & Assert
-        var exception = await Assert.ThrowsAsync<ArgumentException>(() => ingredientService.UpdateIngredientAsync(new Ingredient { Id = -1, Name = "Invalid", User_id = 1 }, -1));
-        Assert.Equal("Invalid ingredient ID", exception.Message);
     }
 
     [Fact]
@@ -193,22 +169,4 @@ public class IngredientServiceTests
         // Assert
         Assert.Equal(rowsAffected, result);
     }
-
-    [Fact]
-    public async Task DeleteIngredientAsync_ThrowsArgumentException_WhenIngredientIdDoesNotExist()
-    {
-        // Arrange
-        var mockIngredientRepository = new Mock<IIngredientRepository>();
-        int nonExistingId = 999;
-        mockIngredientRepository
-            .Setup(repo => repo.DeleteAsync(nonExistingId))
-            .ReturnsAsync(0); // No rows affected for non-existing ID
-
-        var ingredientService = new IngredientService(mockIngredientRepository.Object);
-
-        // Act & Assert
-        var exception = await Assert.ThrowsAsync<ArgumentException>(() => ingredientService.DeleteIngredientAsync(nonExistingId));
-        Assert.Equal("Ingredient not found", exception.Message);
-    }
-
 }

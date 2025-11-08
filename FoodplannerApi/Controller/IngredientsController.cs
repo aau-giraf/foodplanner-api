@@ -1,9 +1,8 @@
 using FoodplannerModels.Account;
 using FoodplannerModels.Lunchbox;
-using FoodplannerServices.Lunchbox;
-using FoodplannerServices.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using FoodplannerModels.Auth;
 
 namespace FoodplannerApi.Controller;
 
@@ -11,11 +10,11 @@ namespace FoodplannerApi.Controller;
 * The IngredientsController class handles CRUD (Create, Read, Update, Delete) operations for the Ingredient entity.
 * It uses the IngredientService to interact with the database and process ingredient-related requests.
 */
-public class IngredientsController(IIngredientService ingredientService, AuthService authService) : BaseController
+public class IngredientsController(IIngredientService ingredientService, IAuthService authService) : BaseController
 {
     // Private field to hold the injected IngredientService.
     private readonly IIngredientService _ingredientService = ingredientService;
-    private readonly AuthService _authService = authService;
+    private readonly IAuthService _authService = authService;
 
     // Get all ingredients
     [HttpGet]

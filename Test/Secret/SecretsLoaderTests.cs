@@ -1,7 +1,6 @@
 using FoodplannerServices.Secret;
 using Infisical.Sdk;
 using Microsoft.Extensions.Configuration;
-using Moq;
 
 namespace Test.Secret;
 
@@ -31,10 +30,10 @@ public class SecretsLoaderTests
         var environmentString = "TestEnvironment";
 
         // Act
-        var exception = Record.Exception(() => SecretsLoader.Configure(config, environmentString));
+        var secretLoader = new SecretsLoader(config, environmentString);
 
         // Assert
-        Assert.Null(exception);
+        Assert.NotNull(secretLoader);
     }
 
     [Fact]
@@ -58,10 +57,10 @@ public class SecretsLoaderTests
         var environmentString = "TestEnvironment";
 
         // Act
-        var exception = Record.Exception(() => SecretsLoader.Configure(emptyConfig, environmentString));
+        var secretLoader = new SecretsLoader(emptyConfig, environmentString);
 
         // Assert
-        Assert.Null(exception);
+        Assert.NotNull(secretLoader);
 
         // Cleanup
         Environment.SetEnvironmentVariable(ClientIdKey, null);
@@ -77,8 +76,12 @@ public class SecretsLoaderTests
 
         var environmentString = "TestEnvironment";
 
-        // Act + Assert
-        Assert.Throws<ApplicationException>(() => SecretsLoader.Configure(emptyConfig, environmentString));
+        // Act
+        var exception = Record.Exception(() => new SecretsLoader(emptyConfig, environmentString));
+
+        // Assert
+        Assert.NotNull(exception);
+        Assert.IsType<ApplicationException>(exception);
     }
 
     [Fact]
@@ -104,12 +107,12 @@ public class SecretsLoaderTests
 
         var environmentString = "TestEnvironment";
 
-        SecretsLoader.Configure(config, environmentString);
-
         var secretKey = "ClientId";
 
+        var sut = new SecretsLoader(config, environmentString);
+
         // Act
-        var result = SecretsLoader.GetSecret(secretKey);
+        var result = sut.GetSecret(secretKey);
 
         // Assert
         var expectedSecret = "TestClientId";
@@ -139,11 +142,15 @@ public class SecretsLoaderTests
 
         var environmentString = "TestEnvironment";
 
-        SecretsLoader.Configure(config, environmentString);
+        var sut = new SecretsLoader(config, environmentString);
 
         var invalidSecretKey = "InvalidSecretKey";
 
-        // Act + Assert
-        Assert.Throws<InfisicalException>(() => SecretsLoader.GetSecret(invalidSecretKey));
+        // Act
+        var exception = Record.Exception(() => sut.GetSecret(invalidSecretKey));
+
+        // Assert
+        Assert.NotNull(exception);
+        Assert.IsType<InfisicalException>(exception);
     }
 }

@@ -28,7 +28,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 //Add environment variables for Infisical and configure SecretsLoader
 builder.Configuration.AddEnvironmentVariables(prefix: "INFISICAL_");
-SecretsLoader.Configure(builder.Configuration, builder.Environment.EnvironmentName);
+var secretsLoader = new SecretsLoader(builder.Configuration, builder.Environment.EnvironmentName);
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -37,9 +37,9 @@ builder.Services.AddSwaggerGen();
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
 //Configure and add MinIO service
-var endpoint = SecretsLoader.GetSecret("MINIO_ENDPOINT");
-var accessKey = SecretsLoader.GetSecret("MINIO_ACCESS");
-var secretKey = SecretsLoader.GetSecret("MINIO_SECRET");
+var endpoint = secretsLoader.GetSecret("MINIO_ENDPOINT");
+var accessKey = secretsLoader.GetSecret("MINIO_ACCESS");
+var secretKey = secretsLoader.GetSecret("MINIO_SECRET");
 builder.Services.AddMinio(configureClient =>
     configureClient
         .WithEndpoint(endpoint)
@@ -104,11 +104,11 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddSingleton(serviceProvider =>
 {
-    var host = SecretsLoader.GetSecret("DB_HOST");
-    var port = SecretsLoader.GetSecret("DB_PORT");
-    var database = SecretsLoader.GetSecret("DB_NAME");
-    var username = SecretsLoader.GetSecret("DB_USER");
-    var password = SecretsLoader.GetSecret("DB_PASS");
+    var host = secretsLoader.GetSecret("DB_HOST");
+    var port = secretsLoader.GetSecret("DB_PORT");
+    var database = secretsLoader.GetSecret("DB_NAME");
+    var username = secretsLoader.GetSecret("DB_USER");
+    var password = secretsLoader.GetSecret("DB_PASS");
 
     return new PostgreSQLConnectionFactory(host, port, database, username, password);
 });
@@ -139,7 +139,7 @@ builder.Services.AddAuthentication(cfg =>
         ValidAudience = configuration["ApplicationSettings:JWT_Audience"],
         RoleClaimType = ClaimTypes.Role,
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(SecretsLoader.GetSecret("JWT_SECRET"))
+            Encoding.UTF8.GetBytes(secretsLoader.GetSecret("JWT_SECRET"))
         ),
         ClockSkew = TimeSpan.Zero
     };
@@ -196,12 +196,13 @@ builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IPasswordHandler, PasswordHandler>();
+builder.Services.AddSingleton<ISecretLoader, SecretsLoader>(_ => secretsLoader);
 
 builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfile));
 
 builder.Services.AddSingleton<IAuthService, AuthService>();
 
-// Add Automapper
+// Add AutoMapper
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(ChatProfile));
 
@@ -209,11 +210,11 @@ builder.Services.AddAutoMapper(typeof(ChatProfile));
 // Set up connection to database before running migrations
 builder.Services.AddSingleton(serviceProvider =>
 {
-    var host = SecretsLoader.GetSecret("DB_HOST");
-    var port = SecretsLoader.GetSecret("DB_PORT");
-    var database = SecretsLoader.GetSecret("DB_NAME");
-    var username = SecretsLoader.GetSecret("DB_USER");
-    var password = SecretsLoader.GetSecret("DB_PASS");
+    var host = secretsLoader.GetSecret("DB_HOST");
+    var port = secretsLoader.GetSecret("DB_PORT");
+    var database = secretsLoader.GetSecret("DB_NAME");
+    var username = secretsLoader.GetSecret("DB_USER");
+    var password = secretsLoader.GetSecret("DB_PASS");
 
     return new PostgreSQLConnectionFactory(host, port, database, username, password);
 });
@@ -222,11 +223,11 @@ builder.Services.AddFluentMigratorCore()
     .ConfigureRunner(rb => rb
         .AddPostgres()
         .WithGlobalConnectionString(
-            $"Host={SecretsLoader.GetSecret("DB_HOST")};" +
-            $"Port={SecretsLoader.GetSecret("DB_PORT")};" +
-            $"Database={SecretsLoader.GetSecret("DB_NAME")};" +
-            $"Username={SecretsLoader.GetSecret("DB_USER")};" +
-            $"Password={SecretsLoader.GetSecret("DB_PASS")}")
+            $"Host={secretsLoader.GetSecret("DB_HOST")};" +
+            $"Port={secretsLoader.GetSecret("DB_PORT")};" +
+            $"Database={secretsLoader.GetSecret("DB_NAME")};" +
+            $"Username={secretsLoader.GetSecret("DB_USER")};" +
+            $"Password={secretsLoader.GetSecret("DB_PASS")}")
         .ScanIn(typeof(InitTables).Assembly).For.Migrations())
     .AddLogging(lb => lb.AddFluentMigratorConsole()); //Add logging to migrations to see state.
 
@@ -290,7 +291,7 @@ app.MapGet("/test-db-connection", async (PostgreSQLConnectionFactory connectionF
     .WithOpenApi();
 
 // Configure the application to listen on all network interfaces
-var backendPort = SecretsLoader.GetSecret("BACKEND_PORT");
+var backendPort = secretsLoader.GetSecret("BACKEND_PORT");
 app.Urls.Add($"http://0.0.0.0:{backendPort}");
 
 app.Run();

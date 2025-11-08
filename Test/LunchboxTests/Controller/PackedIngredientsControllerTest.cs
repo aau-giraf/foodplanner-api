@@ -1,11 +1,9 @@
 using Moq;
 using FoodplannerModels.Lunchbox;
 using FoodplannerApi.Controller;
-using FoodplannerServices.Auth;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Builder;
 
-namespace Test.Controller;
+namespace Test.LunchboxTests.Controller;
 
 public class PackedPackedIngredientControllerTests
 {
@@ -14,8 +12,7 @@ public class PackedPackedIngredientControllerTests
     {
         // Arrange
         var mockPackedIngredientService = new Mock<IPackedIngredientService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
-
+        
         var packedIngredients = new List<PackedIngredientProperDTO>
         {
             new() { Ingredient_id = 1, Meal_id = 1 },
@@ -26,10 +23,10 @@ public class PackedPackedIngredientControllerTests
             .Setup(repo => repo.GetAllPackedIngredientsAsync())
             .ReturnsAsync(packedIngredients);
 
-        var pakcedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object, authService);
+        var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
 
         // Act
-        var result = await pakcedIngredientController.GetAll();
+        var result = await packedIngredientController.GetAll();
 
         // Assert
         Assert.IsType<OkObjectResult>(result);
@@ -40,7 +37,6 @@ public class PackedPackedIngredientControllerTests
     {
         // Arrange
         var mockPackedIngredientService = new Mock<IPackedIngredientService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
 
         int packedIngredientId = 1;
         PackedIngredient packedIngredient = new() { Id = packedIngredientId, Ingredient_id = 1, Meal_id = 1, order_number = 1 };
@@ -49,7 +45,7 @@ public class PackedPackedIngredientControllerTests
             .Setup(repo => repo.GetPackedIngredientByIdAsync(packedIngredientId))
             .ReturnsAsync(packedIngredient);
 
-        var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object, authService);
+        var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
 
         // Act
         var result = await packedIngredientController.Get(packedIngredientId);
@@ -63,16 +59,15 @@ public class PackedPackedIngredientControllerTests
     {
         // Arrange
         var mockPackedIngredientService = new Mock<IPackedIngredientService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
 
         int packedIngredientId = 1;
-        PackedIngredient? packedIngredient = null;
+        PackedIngredient packedIngredient = null!;
 
         mockPackedIngredientService
             .Setup(repo => repo.GetPackedIngredientByIdAsync(packedIngredientId))
             .ReturnsAsync(packedIngredient);
 
-        var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object, authService);
+        var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
 
         // Act
         var result = await packedIngredientController.Get(packedIngredientId);
@@ -86,7 +81,6 @@ public class PackedPackedIngredientControllerTests
     {
         // Arrange
         var mockPackedIngredientService = new Mock<IPackedIngredientService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
 
         int ingredientId = 1;
         int mealId = 1;
@@ -101,7 +95,7 @@ public class PackedPackedIngredientControllerTests
             .Setup(repo => repo.GetPackedIngredientByIdAsync(packedIngredientId))
             .ReturnsAsync(packedIngredient);
 
-        var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object, authService);
+        var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
 
         // Act
         var result = await packedIngredientController.Create(packedIngredientDTO);
@@ -115,7 +109,6 @@ public class PackedPackedIngredientControllerTests
     {
         // Arrange
         var mockPackedIngredientService = new Mock<IPackedIngredientService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
 
         int ingredientId = 1;
         int mealId = 1;
@@ -125,7 +118,7 @@ public class PackedPackedIngredientControllerTests
             .Setup(repo => repo.CreatePackedIngredientAsync(mealId, ingredientId))
             .ReturnsAsync(0);
 
-        var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object, authService);
+        var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
 
         // Act
         var result = await packedIngredientController.Create(packedIngredientDTO);
@@ -139,7 +132,6 @@ public class PackedPackedIngredientControllerTests
     {
         // Arrange
         var mockPackedIngredientService = new Mock<IPackedIngredientService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
 
         int packedIngredientId = 1;
         PackedIngredient packedIngredient = new() { Id = packedIngredientId, Ingredient_id = 1, Meal_id = 1, order_number = 1 };
@@ -151,7 +143,7 @@ public class PackedPackedIngredientControllerTests
             .Setup(repo => repo.GetPackedIngredientByIdAsync(packedIngredientId))
             .ReturnsAsync(packedIngredient);
 
-        var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object, authService);
+        var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
 
         // Act
         var result = await packedIngredientController.Update(packedIngredient, packedIngredientId);
@@ -165,7 +157,6 @@ public class PackedPackedIngredientControllerTests
     {
         // Arrange
         var mockPackedIngredientService = new Mock<IPackedIngredientService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
 
         int packedIngredientId = 1;
         PackedIngredient packedIngredient = new() { Id = packedIngredientId, Ingredient_id = 1, Meal_id = 1, order_number = 1 };
@@ -174,7 +165,7 @@ public class PackedPackedIngredientControllerTests
             .Setup(repo => repo.UpdatePackedIngredientAsync(packedIngredient, packedIngredientId))
             .ReturnsAsync(0);
 
-        var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object, authService);
+        var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
 
         // Act
         var result = await packedIngredientController.Update(packedIngredient, packedIngredientId);
@@ -188,7 +179,6 @@ public class PackedPackedIngredientControllerTests
     {
         // Arrange
         var mockPackedIngredientService = new Mock<IPackedIngredientService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
 
         int packedIngredientId = 1;
 
@@ -196,7 +186,7 @@ public class PackedPackedIngredientControllerTests
             .Setup(repo => repo.DeletePackedIngredientAsync(packedIngredientId))
             .ReturnsAsync(1);
 
-        var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object, authService);
+        var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
 
         // Act
         var result = await packedIngredientController.Delete(packedIngredientId);
@@ -210,7 +200,6 @@ public class PackedPackedIngredientControllerTests
     {
         // Arrange
         var mockPackedIngredientService = new Mock<IPackedIngredientService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
 
         int packedIngredientId = 1;
 
@@ -218,7 +207,7 @@ public class PackedPackedIngredientControllerTests
             .Setup(repo => repo.DeletePackedIngredientAsync(packedIngredientId))
             .ReturnsAsync(0);
 
-        var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object, authService);
+        var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
 
         // Act
         var result = await packedIngredientController.Delete(packedIngredientId);

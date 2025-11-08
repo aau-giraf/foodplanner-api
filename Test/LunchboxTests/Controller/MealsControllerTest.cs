@@ -1,12 +1,11 @@
 using Moq;
 using FoodplannerModels.Lunchbox;
 using FoodplannerApi.Controller;
-using FoodplannerServices.Auth;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Builder;
 using FoodplannerModels.Account;
+using FoodplannerModels.Auth;
 
-namespace Test.Controller;
+namespace Test.LunchboxTests.Controller;
 
 public class MealsControllerTests
 {
@@ -15,7 +14,7 @@ public class MealsControllerTests
     {
         // Arrange
         var mockMealService = new Mock<IMealService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
+        var mockAuthService = Mock.Of<IAuthService>();
 
         var meals = new List<MealDTO>
         {
@@ -27,7 +26,7 @@ public class MealsControllerTests
             .Setup(repo => repo.GetAllMealsAsync())
             .ReturnsAsync(meals);
 
-        var mealsController = new MealsController(mockMealService.Object, authService);
+        var mealsController = new MealsController(mockMealService.Object, mockAuthService);
 
         // Act
         var result = await mealsController.GetAll();
@@ -41,7 +40,7 @@ public class MealsControllerTests
     {
         // Arrange
         var mockMealService = new Mock<IMealService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
+        var mockAuthService = new Mock<IAuthService>();
 
         string date = "test";
         var meals = new List<MealDTO>
@@ -50,16 +49,21 @@ public class MealsControllerTests
             new() { Id = 2, Name = "Burger", Date = date, Ingredients = [] }
         };
         int userId = 1;
-        var user = new User() {Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true};
+        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
+
+        var JWTToken = "Bearer TestToken";
+        mockAuthService
+            .Setup(auth => auth.RetrieveIdFromJwtToken(JWTToken))
+            .Returns(userId.ToString());
 
         mockMealService
             .Setup(repo => repo.GetAllMealsByUserAsync(userId, date))
             .ReturnsAsync(meals);
 
-        var mealsController = new MealsController(mockMealService.Object, authService);
+        var mealsController = new MealsController(mockMealService.Object, mockAuthService.Object);
 
         // Act
-        var result = await mealsController.GetAllByUser("Bearer " + authService.GenerateJWTToken(user), date);
+        var result = await mealsController.GetAllByUser(JWTToken, date);
 
         // Assert
         Assert.IsType<OkObjectResult>(result);
@@ -70,7 +74,7 @@ public class MealsControllerTests
     {
         // Arrange
         var mockMealService = new Mock<IMealService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
+        var mockAuthService = Mock.Of<IAuthService>();
 
         string date = "test";
         var meals = new List<MealDTO>
@@ -79,13 +83,13 @@ public class MealsControllerTests
             new() { Id = 2, Name = "Burger", Date = date, Ingredients = [] }
         };
         int userId = 1;
-        var user = new User() {Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true};
-
+        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true};
+        
         mockMealService
             .Setup(repo => repo.GetAllMealsByUserAsync(userId, date))
             .ReturnsAsync(meals);
 
-        var mealsController = new MealsController(mockMealService.Object, authService);
+        var mealsController = new MealsController(mockMealService.Object, mockAuthService);
 
         // Act
         var result = await mealsController.TeacherGetUserMeals(date, userId);
@@ -99,7 +103,7 @@ public class MealsControllerTests
     {
         // Arrange
         var mockMealService = new Mock<IMealService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
+        var mockAuthService = Mock.Of<IAuthService>();
 
         int mealId = 1;
         var meal = new MealDTO() { Id = mealId, Name = "Pizza", Date = "test", Ingredients = [] };
@@ -108,7 +112,7 @@ public class MealsControllerTests
             .Setup(repo => repo.GetMealByIdAsync(mealId))
             .ReturnsAsync(meal);
 
-        var mealsController = new MealsController(mockMealService.Object, authService);
+        var mealsController = new MealsController(mockMealService.Object, mockAuthService);
 
         // Act
         var result = await mealsController.Get(mealId);
@@ -122,16 +126,16 @@ public class MealsControllerTests
     {
         // Arrange
         var mockMealService = new Mock<IMealService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
+        var mockAuthService = Mock.Of<IAuthService>();
 
         int mealId = 1;
-        MealDTO? meal = null;
+        MealDTO meal = null!;
 
         mockMealService
             .Setup(repo => repo.GetMealByIdAsync(mealId))
             .ReturnsAsync(meal);
 
-        var mealsController = new MealsController(mockMealService.Object, authService);
+        var mealsController = new MealsController(mockMealService.Object, mockAuthService);
 
         // Act
         var result = await mealsController.Get(mealId);
@@ -145,13 +149,18 @@ public class MealsControllerTests
     {
         // Arrange
         var mockMealService = new Mock<IMealService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
+        var mockAuthService = new Mock<IAuthService>();
 
         int mealId = 1;
         MealCreateDTO mealDTO = new() {Name = "Pizza", Date = "test"};
         MealDTO meal = new() { Id = mealId, Name = "Pizza", Date = "test", Ingredients = [] };
         int userId = 1;
-        var user = new User() {Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true};
+        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
+
+        var JWTToken = "Bearer TestToken";
+        mockAuthService
+            .Setup(auth => auth.RetrieveIdFromJwtToken(JWTToken))
+            .Returns(userId.ToString());
 
         mockMealService
             .Setup(repo => repo.CreateMealAsync(mealDTO, userId))
@@ -160,10 +169,10 @@ public class MealsControllerTests
             .Setup(repo => repo.GetMealByIdAsync(mealId))
             .ReturnsAsync(meal);
 
-        var mealsController = new MealsController(mockMealService.Object, authService);
+        var mealsController = new MealsController(mockMealService.Object, mockAuthService.Object);
 
         // Act
-        var result = await mealsController.Create("Bearer " + authService.GenerateJWTToken(user), mealDTO);
+        var result = await mealsController.Create(JWTToken, mealDTO);
 
         // Assert
         Assert.IsType<CreatedAtActionResult>(result);
@@ -174,20 +183,25 @@ public class MealsControllerTests
     {
         // Arrange
         var mockMealService = new Mock<IMealService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
+        var mockAuthService = new Mock<IAuthService>();
 
         MealCreateDTO mealDTO = new() {Name = "Pizza", Date = "test"};
         int userId = 1;
-        var user = new User() {Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true};
+        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
+
+        var JWTToken = "Bearer TestToken";
+        mockAuthService
+            .Setup(auth => auth.RetrieveIdFromJwtToken(JWTToken))
+            .Returns(userId.ToString());
 
         mockMealService
             .Setup(repo => repo.CreateMealAsync(mealDTO, userId))
             .ReturnsAsync(0);
 
-        var mealsController = new MealsController(mockMealService.Object, authService);
+        var mealsController = new MealsController(mockMealService.Object, mockAuthService.Object);
 
         // Act
-        var result = await mealsController.Create("Bearer " + authService.GenerateJWTToken(user), mealDTO);
+        var result = await mealsController.Create(JWTToken, mealDTO);
 
         // Assert
         Assert.IsType<BadRequestResult>(result);
@@ -198,12 +212,17 @@ public class MealsControllerTests
     {
         // Arrange
         var mockMealService = new Mock<IMealService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
+        var mockAuthService = new Mock<IAuthService>();
 
         int mealId = 1;
         Meal meal = new() { Id = mealId, Name = "Pizza", Date = "test"};
         MealDTO mealDTO = new() { Id = mealId, Name = "Pizza", Date = "test", Ingredients = [] };
-        var user = new User() {Id = 1, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true};
+        var user = new User() { Id = 1, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
+
+        var JWTToken = "Bearer TestToken";
+        mockAuthService
+            .Setup(auth => auth.RetrieveIdFromJwtToken(JWTToken))
+            .Returns(user.Id.ToString());
 
         mockMealService
             .Setup(repo => repo.UpdateMealAsync(meal, mealId))
@@ -212,10 +231,10 @@ public class MealsControllerTests
             .Setup(repo => repo.GetMealByIdAsync(mealId))
             .ReturnsAsync(mealDTO);
 
-        var mealsController = new MealsController(mockMealService.Object, authService);
+        var mealsController = new MealsController(mockMealService.Object, mockAuthService.Object);
 
         // Act
-        var result = await mealsController.Update("Bearer " + authService.GenerateJWTToken(user), meal, mealId);
+        var result = await mealsController.Update(JWTToken, meal, mealId);
 
         // Assert
         Assert.IsType<OkObjectResult>(result);
@@ -226,20 +245,25 @@ public class MealsControllerTests
     {
         // Arrange
         var mockMealService = new Mock<IMealService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
+        var mockAuthService = new Mock<IAuthService>();
 
         int mealId = 1;
         Meal meal = new() { Id = mealId, Name = "Pizza", Date = "test"};
-        var user = new User() {Id = 1, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true};
+        var user = new User() { Id = 1, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
+
+        var JWTToken = "Bearer TestToken";
+        mockAuthService
+            .Setup(auth => auth.RetrieveIdFromJwtToken(JWTToken))
+            .Returns(user.Id.ToString());
 
         mockMealService
             .Setup(repo => repo.UpdateMealAsync(meal, mealId))
             .ReturnsAsync(0);
 
-        var mealsController = new MealsController(mockMealService.Object, authService);
+        var mealsController = new MealsController(mockMealService.Object, mockAuthService.Object);
 
         // Act
-        var result = await mealsController.Update("Bearer " + authService.GenerateJWTToken(user), meal, mealId);
+        var result = await mealsController.Update(JWTToken, meal, mealId);
 
         // Assert
         Assert.IsType<BadRequestResult>(result);
@@ -250,8 +274,8 @@ public class MealsControllerTests
     {
         // Arrange
         var mockMealService = new Mock<IMealService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
-
+        var mockAuthService = Mock.Of<IAuthService>();
+        
         int mealId = 1;
         MealDTO meal = new() { Id = mealId, Name = "Pizza", Date = "test", Ingredients = [] };
 
@@ -262,7 +286,7 @@ public class MealsControllerTests
             .Setup(repo => repo.DeleteMealAsync(mealId))
             .ReturnsAsync(1);
 
-        var mealsController = new MealsController(mockMealService.Object, authService);
+        var mealsController = new MealsController(mockMealService.Object, mockAuthService);
 
         // Act
         var result = await mealsController.Delete(mealId);
@@ -276,10 +300,10 @@ public class MealsControllerTests
     {
         // Arrange
         var mockMealService = new Mock<IMealService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
+        var mockAuthService = new Mock<IAuthService>();
 
         int mealId = 1;
-        MealDTO? meal = null;
+        MealDTO meal = null!;
 
         mockMealService
             .Setup(repo => repo.GetMealByIdAsync(mealId))
@@ -288,7 +312,7 @@ public class MealsControllerTests
             .Setup(repo => repo.DeleteMealAsync(mealId))
             .ReturnsAsync(0);
 
-        var mealsController = new MealsController(mockMealService.Object, authService);
+        var mealsController = new MealsController(mockMealService.Object, mockAuthService.Object);
 
         // Act
         var result = await mealsController.Delete(mealId);

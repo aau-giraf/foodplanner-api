@@ -12,10 +12,12 @@ namespace FoodplannerServices.Auth
     public class AuthService : IAuthService
     {
         private readonly IConfiguration _configuration;
+      private readonly ISecretLoader _secretsLoader;
 
-        public AuthService(IConfiguration configuration)
+      public AuthService(IConfiguration configuration, ISecretLoader secretsLoader)
         {
             _configuration = configuration;
+            _secretsLoader = secretsLoader;
         }
 
         public string GenerateJWTToken(User user)
@@ -27,7 +29,7 @@ namespace FoodplannerServices.Auth
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretsLoader.GetSecret("JWT_SECRET")));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretsLoader.GetSecret("JWT_SECRET")));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(

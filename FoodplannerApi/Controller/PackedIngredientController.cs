@@ -1,6 +1,4 @@
-using FoodplannerServices.Auth;
 using FoodplannerModels.Lunchbox;
-using FoodplannerServices.Lunchbox;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,10 +7,9 @@ namespace FoodplannerApi.Controller
     /**
     * The controller for the PackedIngredient class.
     */
-    public class PackedIngredientController(IPackedIngredientService packedIngredientService, AuthService authService) : BaseController
+    public class PackedIngredientController(IPackedIngredientService packedIngredientService) : BaseController
     {
         private readonly IPackedIngredientService _packedIngredientService = packedIngredientService;
-        private readonly AuthService _authService = authService;
 
         // Get all packed ingredients
         [HttpGet]
