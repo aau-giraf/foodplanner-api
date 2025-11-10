@@ -21,6 +21,7 @@ using FoodplannerModels.FeedbackChat;
 using FoodplannerServices.FeedbackChat;
 using FoodplannerServices.Secret;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using FoodplannerModels.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -100,6 +101,11 @@ builder.Services.AddSwaggerGen(options =>
             new string[] {}
         }
     });
+
+    options.SchemaGeneratorOptions = new SchemaGeneratorOptions
+    {
+        UseInlineDefinitionsForEnums = false
+    };
 });
 
 builder.Services.AddSingleton(serviceProvider =>

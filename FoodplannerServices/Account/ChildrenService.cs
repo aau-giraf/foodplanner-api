@@ -80,7 +80,7 @@ public class ChildrenService : IChildrenService
             throw new InvalidOperationException("Bruger ikke fundet");
         }
 
-        if (user.Role != "Parent")
+        if (!user.Role.HasFlag(UserRole.Parent))
         {
             throw new InvalidOperationException("Kun brugere med rolle 'Parent' kan tilføjes som forældre");
         }
@@ -106,7 +106,7 @@ public class ChildrenService : IChildrenService
             throw new InvalidOperationException("Bruger ikke fundet");
         }
 
-        if (user.Role != "Teacher")
+        if (!user.Role.HasFlag(UserRole.Teacher))
         {
             throw new InvalidOperationException("Kun brugere med rolle 'Teacher' kan tilføjes som lærere");
         }

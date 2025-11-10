@@ -111,7 +111,7 @@ namespace FoodplannerDataAccessSql.Account
                     LastName = entity.LastName,
                     Email = entity.Email,
                     Password = entity.Password,
-                    role = entity.Role,
+                    role = entity.Role.ToString(),
                     RoleApproved = entity.RoleApproved
                 });
                 return result;
@@ -132,7 +132,7 @@ namespace FoodplannerDataAccessSql.Account
                     LastName = entity.LastName,
                     Email = entity.Email,
                     Password = entity.Password,
-                    Role = entity.Role,
+                    Role = entity.Role.ToString(),
                     RoleApproved = entity.RoleApproved,
                     Id = entity.Id,
                     Archived = entity.Archived

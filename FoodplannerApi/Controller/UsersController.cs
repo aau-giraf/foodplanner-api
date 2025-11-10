@@ -33,7 +33,7 @@ public class UsersController : BaseController
             LastName = "test",
             Email = "user@test.com",
             Password = "test",
-            Role = "Teacher",
+            Role = UserRole.Teacher,
             RoleApproved = true
         };
 
