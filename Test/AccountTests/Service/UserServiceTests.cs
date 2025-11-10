@@ -39,8 +39,8 @@ public class UserServiceTests
         // Arrange
         var expectedUsers = new List<UserDTO>
         {
-            new UserDTO { Id = 1, First_name = "niels", Last_name = "nielsen", Email = "nielsen@example.com", Role = "Teacher", Archived = true },
-            new UserDTO { Id = 2, First_name = "ole", Last_name = "olsen", Email = "olsen@example.com", Role = "Parent", Archived = true },
+            new UserDTO { Id = 1, First_name = "niels", Last_name = "nielsen", Email = "nielsen@example.com", Role = UserRole.Teacher, Archived = true },
+            new UserDTO { Id = 2, First_name = "ole", Last_name = "olsen", Email = "olsen@example.com", Role =UserRole.Parent, Archived = true },
         };
         _mockUserRepository
             .Setup(repo => repo.GetAllAsync())
@@ -69,7 +69,7 @@ public class UserServiceTests
     public async Task GetUserByIdAsync_ReturnsAUser_WhenIdIsValid()
     {
         // Arrange
-        var expectedUser = new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role = "Teacher", RoleApproved = true };
+        var expectedUser = new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role =UserRole.Teacher, RoleApproved = true };
         _mockUserRepository
             .Setup(repo => repo.GetByIdAsync(expectedUser.Id))
             .ReturnsAsync(expectedUser);
@@ -88,8 +88,8 @@ public class UserServiceTests
         // Arrange
         var expectedId = 1;
         var mail = "nielsen@example.com";
-        var newUser = new UserCreateDTO { FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role = "Teacher" };
-        var mappedUser = new User { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role = "Teacher", RoleApproved = true };
+        var newUser = new UserCreateDTO { FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role =UserRole.Teacher };
+        var mappedUser = new User { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role =UserRole.Teacher, RoleApproved = true };
         
         _mockMapper
             .Setup(mapper => mapper.Map<User>(newUser))
@@ -114,8 +114,8 @@ public class UserServiceTests
         // Arrange
         var expectedId = 1;
         var mail = "nielsen@example.com";
-        var newUser = new UserCreateDTO { FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role = "Teacher" };
-        var mappedUser = new User { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role = "Teacher", RoleApproved = true };
+        var newUser = new UserCreateDTO { FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role =UserRole.Teacher };
+        var mappedUser = new User { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role =UserRole.Teacher, RoleApproved = true };
         
         _mockMapper
             .Setup(mapper => mapper.Map<User>(newUser))
@@ -136,7 +136,7 @@ public class UserServiceTests
     {
         // Arrange
         var expectedId = 1;
-        var inputUser = new User { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role = "Teacher", RoleApproved = true };
+        var inputUser = new User { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role =UserRole.Teacher, RoleApproved = true };
 
         _mockUserRepository
             .Setup(repo => repo.UpdateAsync(inputUser))
@@ -154,7 +154,7 @@ public class UserServiceTests
     {
         // Arrange
         var expectedId = 1;
-        var inputUser = new User { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role = "Teacher", RoleApproved = true };
+        var inputUser = new User { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role =UserRole.Teacher, RoleApproved = true };
         var encodedUser = new User { Id = inputUser.Id, FirstName = inputUser.FirstName, LastName = inputUser.LastName, Email = inputUser.Email, Password = BCrypt.Net.BCrypt.HashPassword(inputUser.Password), Role = inputUser.Role, RoleApproved = inputUser.RoleApproved };
 
         _mockUserRepository
@@ -174,7 +174,7 @@ public class UserServiceTests
         // Arrange
         var expectedJWT = "jwtToken";
         var password = "password";
-        var inputUser = new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "encrypted password", Role = "Teacher", RoleApproved = true };
+        var inputUser = new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "encrypted password", Role =UserRole.Teacher, RoleApproved = true };
         var expectedCreds = new UserCredsDTO { JWT = expectedJWT, Role = inputUser.Role, RoleApproved = inputUser.RoleApproved };
         
         _mockUserRepository
@@ -198,15 +198,15 @@ public class UserServiceTests
     }
 
     [Theory]
-    [InlineData("Parent")]
-    [InlineData("Child")]
-    public async Task GetJWTByEmailAndPasswordAsync_ReturnsUser_WithChildCredentials(string inputUserRole)
+    [InlineData(UserRole.Parent)]
+    [InlineData(UserRole.Child)]
+    public async Task GetJWTByEmailAndPasswordAsync_ReturnsUser_WithChildCredentials(UserRole inputUserRole)
     {
         // Arrange
         var expectedJWT = "jwtToken";
         var password = "password";
         var inputUser = new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "encrypted password", Role = inputUserRole, RoleApproved = true };
-        var expectedCreds = new UserCredsDTO { JWT = expectedJWT, Role = "Child", RoleApproved = inputUser.RoleApproved };
+        var expectedCreds = new UserCredsDTO { JWT = expectedJWT, Role = UserRole.Child, RoleApproved = inputUser.RoleApproved };
         
         _mockUserRepository
             .Setup(repo => repo.GetUserByEmailAsync(inputUser.Email))
@@ -233,7 +233,7 @@ public class UserServiceTests
     {
         // Arrange
         var expectedJWT = "jwtToken";
-        var inputUser = new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role = "Teacher", RoleApproved = true };
+        var inputUser = new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role =UserRole.Teacher, RoleApproved = true };
         var expectedCreds = new UserCredsDTO { JWT = expectedJWT, Role = inputUser.Role, RoleApproved = inputUser.RoleApproved };
         
         _mockUserRepository
@@ -294,7 +294,7 @@ public class UserServiceTests
         var pin = "1234";
         var encryptedPin = "encrypted";
         var token = "jwtToken";
-        var inputUser = new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role = "Teacher", RoleApproved = true };
+        var inputUser = new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role =UserRole.Teacher, RoleApproved = true };
         var expectedCreds = new UserCredsDTO { JWT = token, Role = inputUser.Role, RoleApproved = inputUser.RoleApproved };
         
         _mockUserRepository
@@ -343,8 +343,8 @@ public class UserServiceTests
         // Arrange
         var expectedUsers = new List<UserDTO>
         {
-            new UserDTO { Id = 1, First_name = "niels", Last_name = "nielsen", Email = "nielsen@example.com", Role = "Teacher", Archived = true },
-            new UserDTO { Id = 2, First_name = "ole", Last_name = "olsen", Email = "olsen@example.com", Role = "Parent", Archived = true },
+            new UserDTO { Id = 1, First_name = "niels", Last_name = "nielsen", Email = "nielsen@example.com", Role =UserRole.Teacher, Archived = true },
+            new UserDTO { Id = 2, First_name = "ole", Last_name = "olsen", Email = "olsen@example.com", Role = UserRole.Parent, Archived = true },
         };
         _mockUserRepository
             .Setup(repo => repo.GetAllNotApprovedAsync())
@@ -406,8 +406,8 @@ public class UserServiceTests
         // Arrange
         var expectedUsers = new List<User>
         {
-            new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role = "Teacher", RoleApproved = true },
-            new User { Id = 2, FirstName = "ole", LastName = "olsen", Email = "olsen@example.com", Password = "password", Role = "Parent", RoleApproved = true },
+            new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role =UserRole.Teacher, RoleApproved = true },
+            new User { Id = 2, FirstName = "ole", LastName = "olsen", Email = "olsen@example.com", Password = "password", Role =UserRole.Parent, RoleApproved = true },
         };
         _mockUserRepository
             .Setup(repo => repo.SelectAllNotArchivedAsync())
@@ -433,7 +433,7 @@ public class UserServiceTests
     public async Task GetLoggedInUserAsync_ReturnsAUser()
     {
         // Arrange
-        var expectedUser = new UserDTO { Id = 1, First_name = "niels", Last_name = "nielsen", Email = "nielsen@example.com", Role = "Teacher", Archived = true };
+        var expectedUser = new UserDTO { Id = 1, First_name = "niels", Last_name = "nielsen", Email = "nielsen@example.com", Role =UserRole.Teacher, Archived = true };
         _mockUserRepository
             .Setup(repo => repo.GetLoggedInAsync(expectedUser.Id))
             .ReturnsAsync(expectedUser);

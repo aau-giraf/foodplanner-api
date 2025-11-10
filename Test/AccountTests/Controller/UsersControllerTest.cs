@@ -42,7 +42,7 @@ public class UsersControllerTests
             LastName = "test",
             Email = "user@test.com",
             Password = "test",
-            Role = "Teacher",
+            Role = UserRole.Teacher,
         };
 
         mockUserService
@@ -73,7 +73,7 @@ public class UsersControllerTests
             LastName = "test",
             Email = "user@test.com",
             Password = "test",
-            Role = "Teacher",
+            Role = UserRole.Teacher,
         };
 
         mockUserService
@@ -102,7 +102,7 @@ public class UsersControllerTests
             LastName = "User",
             Email = "test@example.com",
             Password = "password123",
-            Role = "Parent",
+            Role = UserRole.Parent,
         };
 
         mockUserService
@@ -138,7 +138,7 @@ public class UsersControllerTests
             .ReturnsAsync(new UserCredsDTO
             {
                 JWT = "jwt-token",
-                Role = "Teacher",
+                Role = UserRole.Teacher,
                 RoleApproved = true
             });
 
@@ -248,7 +248,7 @@ public class UsersControllerTests
             LastName = "User",
             Email = "test@example.com",
             Password = "passwordTester",
-            Role = "Parent",
+            Role = UserRole.Parent,
             RoleApproved = true
         };
 
@@ -291,7 +291,7 @@ public class UsersControllerTests
         var userCredsDTO = new UserCredsDTO
         {
             JWT = "jwt-token",
-            Role = "Child",
+            Role = UserRole.Child,
             RoleApproved = true
         };
 
