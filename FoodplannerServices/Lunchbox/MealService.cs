@@ -170,8 +170,9 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
     }
     // Updates an existing meal in the repository by ID.
 
-    public async Task<int> UpdateMealAsync(Meal meal, int id)
+    public async Task<int> UpdateMealAsync(MealDTO mealDto, int id)
     {
+        var meal = _mapper.Map<Meal>(mealDto);
         return await _mealRepository.UpdateAsync(meal, id);
     }
     // Deletes an meal from the repository by ID.

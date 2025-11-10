@@ -1,0 +1,21 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace FoodplannerModels.Account;
+
+public class ChildrenDTO
+{
+    public int ChildId { get; set; }
+
+    [Required(ErrorMessage = "Fornavn er påkrævet")]
+    [StringLength(100, ErrorMessage = "Fornavn er for langt")]
+    public required string FirstName { get; set; }
+
+    [Required(ErrorMessage = "Efternavn er påkrævet")]
+    [StringLength(100, ErrorMessage = "Efternavn er for langt")]
+    public required string LastName { get; set; }
+
+    public int parentId { get; set; }
+
+    public int classId { get; set; }
+}

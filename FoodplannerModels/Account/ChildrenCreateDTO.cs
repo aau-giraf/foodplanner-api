@@ -19,6 +19,5 @@ namespace FoodplannerModels.Account
         
         [Required(ErrorMessage = "KlasseId er påkrævet")]
         public int classId { get; set; }
-        
     }
 }

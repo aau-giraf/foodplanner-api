@@ -12,7 +12,8 @@ public class ChildrenService : IChildrenService
     private readonly AuthService _authService;
 
 
-    public ChildrenService(IChildrenRepository childrenRepository, IUserRepository userRepository, IMapper mapper, AuthService authService)
+    public ChildrenService(IChildrenRepository childrenRepository, IUserRepository userRepository, IMapper mapper,
+        AuthService authService)
     {
         _childrenRepository = childrenRepository;
         _userRepository = userRepository;
@@ -24,19 +25,19 @@ public class ChildrenService : IChildrenService
     {
         var children = _mapper.Map<Children>(childrenCreateDTO);
         var childId = await _childrenRepository.InsertAsync(children);
-        
+
         foreach (var parentId in childrenCreateDTO.ParentIds)
         {
             await AddParentToChildAsync(parentId, childId);
         }
-        
+
         return childId;
     }
 
-    public async Task<IEnumerable<Children>> GetAllChildrenAsync()
+    public async Task<IEnumerable<ChildrenDTO>> GetAllChildrenAsync()
     {
         var children = await _childrenRepository.GetAllAsync();
-        return children;
+        return _mapper.Map<IEnumerable<ChildrenDTO>>(children);
     }
 
     public async Task<IEnumerable<ChildrenGetAllDTO>> GetAllChildrenClassesAsync()
@@ -45,20 +46,21 @@ public class ChildrenService : IChildrenService
         return children;
     }
 
-    public async Task<IEnumerable<Children>> GetChildrenByParentIdAsync(int parentId)
+    public async Task<IEnumerable<ChildrenDTO>> GetChildrenByParentIdAsync(int parentId)
     {
         var children = await _childrenRepository.GetChildrenByParentIdAsync(parentId);
-        return children;
+        return _mapper.Map<IEnumerable<ChildrenDTO>>(children);
     }
 
-    public async Task<IEnumerable<User>> GetParentsByChildIdAsync(int childId)
+    public async Task<IEnumerable<UserDTO>> GetParentsByChildIdAsync(int childId)
     {
         var parents = await _childrenRepository.GetParentsByChildIdAsync(childId);
-        return parents;
+        return _mapper.Map<IEnumerable<UserDTO>>(parents);
     }
 
-    public async Task<int> UpdateChildrenAsync(Children children)
+    public async Task<int> UpdateChildrenAsync(ChildrenDTO childrenDto)
     {
+        var children = _mapper.Map<Children>(childrenDto);
         return await _childrenRepository.UpdateAsync(children);
     }
 
@@ -67,9 +69,10 @@ public class ChildrenService : IChildrenService
         return await _childrenRepository.DeleteAsync(id);
     }
 
-    public async Task<Children> GetChildFromChildIdAsync(int id)
+    public async Task<ChildrenDTO> GetChildFromChildIdAsync(int id)
     {
-        return await _childrenRepository.GetChildByIdAsync(id);
+        var children = await _childrenRepository.GetChildByIdAsync(id);
+        return _mapper.Map<ChildrenDTO>(children);
     }
 
     public async Task<int> AddParentToChildAsync(int userId, int childId)
@@ -124,16 +127,15 @@ public class ChildrenService : IChildrenService
         return await _childrenRepository.RemoveTeacherFromChildAsync(userId, childId);
     }
 
-    public async Task<IEnumerable<User>> GetTeachersByChildIdAsync(int childId)
+    public async Task<IEnumerable<UserDTO>> GetTeachersByChildIdAsync(int childId)
     {
-        return await _childrenRepository.GetTeachersByChildIdAsync(childId);
+        var teachers = await _childrenRepository.GetTeachersByChildIdAsync(childId);
+        return _mapper.Map<IEnumerable<UserDTO>>(teachers);
     }
 
-    public async Task<IEnumerable<Children>> GetChildrenByTeacherIdAsync(int teacherId)
+    public async Task<IEnumerable<ChildrenDTO>> GetChildrenByTeacherIdAsync(int teacherId)
     {
-        return await _childrenRepository.GetChildrenByTeacherIdAsync(teacherId);
+        var children = await _childrenRepository.GetChildrenByTeacherIdAsync(teacherId);
+        return _mapper.Map<IEnumerable<ChildrenDTO>>(children);
     }
 }
-
-
-
