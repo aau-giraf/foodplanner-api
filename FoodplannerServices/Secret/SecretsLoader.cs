@@ -3,16 +3,16 @@ using Microsoft.Extensions.Configuration;
 
 namespace FoodplannerServices.Secret;
 
-public static class SecretsLoader
+public class SecretsLoader : ISecretLoader
 {
-    private static IConfiguration _localConfiguration = null!;
+    private readonly IConfiguration _localConfiguration;
     private record Configuration(string environmentSlug, string workspaceId, InfisicalClient Client);
-    private static Configuration _configuration = null!;
+    private readonly Configuration _configuration;
 
     /// Method <c>Configure</c> initialises the SecretsLoader. It reads from appsettings.{environment}.json,
     /// but will fall back to environment variables. <br />
     /// Run this before reading secrets.
-    public static void Configure(IConfiguration config, string environment)
+    public SecretsLoader(IConfiguration config, string environment)
     {
         _localConfiguration = config;
         var clientId = config.GetValue<string>("Infisical:ClientId") ?? Environment.GetEnvironmentVariable("CLIENT_ID");
@@ -40,7 +40,7 @@ public static class SecretsLoader
         _configuration = new Configuration(MapEnvironmentToSlug(environment), workspaceId, new InfisicalClient(settings));
     }
 
-    public static string GetSecret(string secretName, string path = "/")
+    public string GetSecret(string secretName, string path = "/")
     {
         if (_configuration == null)
         {
@@ -64,7 +64,7 @@ public static class SecretsLoader
         return _configuration.Client.GetSecret(getSecretOptions).SecretValue;
     }
 
-    private static string MapEnvironmentToSlug(string environment) => environment switch
+    private string MapEnvironmentToSlug(string environment) => environment switch
     {
         "Development" => "dev",
         "Staging" => "staging",

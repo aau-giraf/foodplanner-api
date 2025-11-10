@@ -1,19 +1,20 @@
-using FoodplannerApi.Helpers;
 using FoodplannerModels.Account;
 using FoodplannerServices;
 using FoodplannerServices.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using FoodplannerServices.Auth;
+using FoodplannerModels.Auth;
 
 namespace FoodplannerApi.Controller;
 
 public class UsersController : BaseController
 {
     private readonly IUserService _userService;
-    private readonly AuthService _authService;
+    private readonly IAuthService _authService;
 
-    public UsersController(IUserService userService, AuthService authService)
+    public UsersController(IUserService userService, IAuthService authService)
     {
         _userService = userService;
         _authService = authService;
