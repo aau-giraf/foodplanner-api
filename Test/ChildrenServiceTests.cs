@@ -3,7 +3,7 @@ using Xunit;
 using AutoMapper;
 using FoodplannerModels.Account;
 using FoodplannerServices.Account;
-using FoodplannerApi.Helpers;
+using FoodplannerModels.Auth;
 using Test.Builder;
 
 namespace Test;
@@ -13,7 +13,7 @@ public class ChildrenServiceTests
     private readonly Mock<IChildrenRepository> _mockChildrenRepository;
     private readonly Mock<IUserRepository> _mockUserRepository;
     private readonly Mock<IMapper> _mockMapper;
-    private readonly AuthService _authService;
+    private readonly Mock<IAuthService> _authService;
     private readonly ChildrenService _childrenService;
 
     public ChildrenServiceTests()
@@ -24,13 +24,13 @@ public class ChildrenServiceTests
         
         // Create a real AuthService instance with a mock configuration
         var mockConfiguration = new Mock<Microsoft.Extensions.Configuration.IConfiguration>();
-        _authService = new AuthService(mockConfiguration.Object);
+        _authService = new Mock<IAuthService>();
         
         _childrenService = new ChildrenService(
             _mockChildrenRepository.Object,
             _mockUserRepository.Object,
             _mockMapper.Object,
-            _authService
+            _authService.Object
         );
     }
 
