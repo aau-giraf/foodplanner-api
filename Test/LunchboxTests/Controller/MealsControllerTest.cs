@@ -215,8 +215,14 @@ public class MealsControllerTests
         var mockAuthService = new Mock<IAuthService>();
 
         int mealId = 1;
-        Meal meal = new() { Id = mealId, Name = "Pizza", Date = "test"};
-        MealDTO mealDTO = new() { Id = mealId, Name = "Pizza", Date = "test", Ingredients = [] };
+        MealDTO meal = new()
+        {
+            Id = mealId,
+            Name = "Pizza",
+            Date = "test",
+            Ingredients = null
+        };
+        MealDTO mealDto = new() { Id = mealId, Name = "Pizza", Date = "test", Ingredients = [] };
         var user = new User() { Id = 1, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
 
         var JWTToken = "Bearer TestToken";
@@ -229,7 +235,7 @@ public class MealsControllerTests
             .ReturnsAsync(mealId);
         mockMealService
             .Setup(repo => repo.GetMealByIdAsync(mealId))
-            .ReturnsAsync(mealDTO);
+            .ReturnsAsync(mealDto);
 
         var mealsController = new MealsController(mockMealService.Object, mockAuthService.Object);
 
@@ -248,7 +254,13 @@ public class MealsControllerTests
         var mockAuthService = new Mock<IAuthService>();
 
         int mealId = 1;
-        Meal meal = new() { Id = mealId, Name = "Pizza", Date = "test"};
+        MealDTO mealDto = new()
+        {
+            Id = mealId,
+            Name = "Pizza",
+            Date = "test",
+            Ingredients = null
+        };
         var user = new User() { Id = 1, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
 
         var JWTToken = "Bearer TestToken";
@@ -257,13 +269,13 @@ public class MealsControllerTests
             .Returns(user.Id.ToString());
 
         mockMealService
-            .Setup(repo => repo.UpdateMealAsync(meal, mealId))
+            .Setup(repo => repo.UpdateMealAsync(mealDto, mealId))
             .ReturnsAsync(0);
 
         var mealsController = new MealsController(mockMealService.Object, mockAuthService.Object);
 
         // Act
-        var result = await mealsController.Update(JWTToken, meal, mealId);
+        var result = await mealsController.Update(JWTToken, mealDto, mealId);
 
         // Assert
         Assert.IsType<BadRequestResult>(result);

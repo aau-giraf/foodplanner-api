@@ -132,8 +132,10 @@ public class MealServiceTests
         _mockMealRepository.Setup(repo => repo.UpdateAsync(mealToUpdate, mealToUpdate.Id))
             .ReturnsAsync(rowsAffected);
 
+        var mealDto = _mockMapper.Object.Map<MealDTO>(mealToUpdate);
+
         // Act
-        var result = await _mealService.UpdateMealAsync(mealToUpdate, mealToUpdate.Id);
+        var result = await _mealService.UpdateMealAsync(mealDto, mealToUpdate.Id);
 
         // Assert
         Assert.Equal(rowsAffected, result);

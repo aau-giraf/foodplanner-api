@@ -191,7 +191,7 @@ public class UsersController : BaseController
 
     [HttpPut]
     [Authorize(Roles = "Parent, Child,  Teacher, Admin")]
-    public async Task<IActionResult> UpdateLoggedIn([FromHeader(Name = "Authorization")] string token, [FromBody] UserUpdateDTO user)
+    public async Task<IActionResult> UpdateLoggedIn([FromHeader(Name = "Authorization")] string token, [FromBody] UserUpdateLoggedInDTO user)
     {
         var idString = _authService.RetrieveIdFromJwtToken(token);
         if (!int.TryParse(idString, out int id))

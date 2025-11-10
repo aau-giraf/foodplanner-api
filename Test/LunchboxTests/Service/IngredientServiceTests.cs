@@ -1,11 +1,14 @@
+using AutoMapper;
 using FoodplannerModels.Lunchbox;
 using FoodplannerServices.Lunchbox;
 using Moq;
+using Test.Builder;
 
 namespace Test.LunchboxTests.Service;
 
 public class IngredientServiceTests
 {
+    private readonly IMapper _mapper;
     [Fact]
     public async Task GetAllIngredientsAsync_ReturnsAllIngredients()
     {
@@ -14,10 +17,9 @@ public class IngredientServiceTests
 
         var expectedIngredients = new List<Ingredient>
         {
-            new Ingredient { Id = 1, Name = "Tomato", User_id = 2 },
-            new Ingredient { Id = 2, Name = "Cheese", User_id = 1}
+            new IngredientBuilder().WithId(1).WithName("Tomato").WithUserId(2).Build(),
+            new IngredientBuilder().WithId(2).WithName("Cheese").WithUserId(1).Build()
         };
-
         mockIngredientRepository
             .Setup(repo => repo.GetAllAsync())
             .ReturnsAsync(expectedIngredients);
@@ -25,7 +27,8 @@ public class IngredientServiceTests
         var ingredientService = new IngredientService(mockIngredientRepository.Object);
 
         // Act
-        var result = await ingredientService.GetAllIngredientsAsync();
+        var ingredients = await ingredientService.GetAllIngredientsAsync();
+        var result = _mapper.Map<IEnumerable<Ingredient>>(ingredients);
 
         // Assert
         Assert.NotNull(result);
@@ -120,7 +123,13 @@ public class IngredientServiceTests
         var ingredientService = new IngredientService(mockIngredientRepository.Object);
 
         // Act
-        var result = await ingredientService.CreateIngredientAsync(new IngredientDTO { Name = "Onion", Food_image_id = 2 }, 2);
+        var result = await ingredientService.CreateIngredientAsync(new IngredientDTO
+        {
+            Name = "Onion",
+            Food_image_id = 2,
+            Id = 0,
+            User_id = 0
+        }, 2);
 
         // Assert
         Assert.Equal(newIngredientId, result);
@@ -141,8 +150,10 @@ public class IngredientServiceTests
 
         var ingredientService = new IngredientService(mockIngredientRepository.Object);
 
+        var ingredientDto = _mapper.Map<IngredientDTO>(ingredientToUpdate);
+
         // Act
-        var result = await ingredientService.UpdateIngredientAsync(ingredientToUpdate, ingredientToUpdate.Id);
+        var result = await ingredientService.UpdateIngredientAsync(ingredientDto, ingredientToUpdate.Id);
 
         // Assert
         Assert.Equal(rowsAffected, result);

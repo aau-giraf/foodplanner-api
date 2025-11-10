@@ -103,8 +103,12 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
     {
         if (foodImageId < 0)
             return BadRequest("Invalid userId");
-        return Ok(foodImageService.GetFoodImage(foodImageId));
+
+        var image = await foodImageService.GetFoodImage(foodImageId);
+        if (image == null) return NotFound();
+        return Ok(image);
     }
+
 
     [HttpGet]
     [Authorize(Roles = "Parent, Child, Teacher, Admin")]

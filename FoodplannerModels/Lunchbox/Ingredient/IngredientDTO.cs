@@ -8,8 +8,16 @@ namespace FoodplannerModels.Lunchbox;
 public class IngredientDTO
 {
     [Required]
+    public required int Id { get; set; }
+    
+    [Required]
     public required string Name { get; set; }
     
     [Required]
+    public required int User_id {get; set;}
+    
+    [Required]
     public int? Food_image_id { get; set; }
+    
+    
 }

@@ -1,3 +1,4 @@
+using AutoMapper;
 using FoodplannerApi.Controller;
 using FoodplannerModels.Account;
 using FoodplannerModels.Auth;
@@ -12,6 +13,7 @@ public class ChildrenControllerTest
     private readonly Mock<IChildrenService> _mockChildrenService;
     private readonly Mock<IAuthService> _mockAuthService;
     private readonly ChildrensController _childrenController;
+    private readonly IMapper _mapper;
 
     public ChildrenControllerTest()
     {
@@ -47,15 +49,14 @@ public class ChildrenControllerTest
     public async Task GetAll_ReturnsOkObjectResult()
     {
         // Arrange
-        var childrenDtos = new List<ChildrenDTO>
+        var childrenDto = new List<ChildrenDTO>
         {
-            new ChildBuilder().WithChildId(1).WithFirstName("Niels").WithLastName("Nielsen").Build(),
-            new ChildBuilder().WithChildId(2).WithFirstName("Ole").WithLastName("Olesen").Build()
+            new ChildrenDTO { ChildId = 1, FirstName = "Niels", LastName = "Nielsen" },
+            new ChildrenDTO { ChildId = 2, FirstName = "Ole", LastName = "Olesen" }
         };
-        
         _mockChildrenService
             .Setup(repo => repo.GetAllChildrenAsync())
-            .ReturnsAsync(children);
+            .ReturnsAsync(childrenDto);
 
         // Act
         var result = await _childrenController.GetAll();

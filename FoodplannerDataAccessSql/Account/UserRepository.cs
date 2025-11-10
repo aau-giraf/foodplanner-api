@@ -226,7 +226,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<int> UpdateLoggedInAsync(int id, UserUpdateDTO userUpdateDTO)
+        public async Task<int> UpdateLoggedInAsync(int id, UserUpdateLoggedInDTO userUpdateLoggedInDto)
         {
             var sql = "UPDATE users SET first_name = @FirstName, last_name = @LastName, email = @Email WHERE id = @Id RETURNING id";
             using (var connection = _connectionFactory.Create())
@@ -235,9 +235,9 @@ namespace FoodplannerDataAccessSql.Account
                 var result = await connection.ExecuteAsync(sql, new
                 {
                     Id = id,
-                    FirstName = userUpdateDTO.FirstName,
-                    LastName = userUpdateDTO.LastName,
-                    Email = userUpdateDTO.Email,
+                    FirstName = userUpdateLoggedInDto.FirstName,
+                    LastName = userUpdateLoggedInDto.LastName,
+                    Email = userUpdateLoggedInDto.Email,
                 });
                 return result;
             }

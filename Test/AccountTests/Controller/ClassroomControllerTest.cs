@@ -28,7 +28,13 @@ public class ClassroomControllerTest
             new ClassroomBuilder().WithClassId(1).WithClassName("1.A").Build(),
             new ClassroomBuilder().WithClassId(2).WithClassName("1.B").Build(),
         };
-        var classroomDtos = _mapper.Map<List<ClassroomDTO>>(classrooms);
+
+        var classroomDtos = new List<ClassroomDTO>
+        {
+            new ClassroomDTO { ClassId = 1, ClassName = "1.A" },
+            new ClassroomDTO { ClassId = 2, ClassName = "1.B" },
+        };
+
         _mockClassroomService
             .Setup(repo => repo.GetAllClassroomAsync())
             .ReturnsAsync(classroomDtos);

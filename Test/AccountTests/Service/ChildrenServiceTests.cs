@@ -65,7 +65,8 @@ public class ChildrenServiceTests
             .ReturnsAsync(expectedId);
         
         // Act
-        var result = await _childrenService.UpdateChildrenAsync(createChildren);
+        var createChildrenDto = _mockMapper.Object.Map<ChildrenDTO>(createChildren);
+        var result = await _childrenService.UpdateChildrenAsync(createChildrenDto);
 
         // Assert
         Assert.Equal(expectedId, result);

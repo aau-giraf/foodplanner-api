@@ -143,7 +143,7 @@ public class ImagesControllerTests
 
         var mockFoodImageService = new Mock<IFoodImageService>();
 
-        var expectedImage = new FoodImage
+        var expectedImage = new FoodImageDTO
         {
             Id = foodImageId,
             UserId = userId,
@@ -160,8 +160,9 @@ public class ImagesControllerTests
         var okResult = Assert.IsType<OkObjectResult>(result);
         Assert.Equal(200, okResult.StatusCode);
 
-        var returnedImage = await Assert.IsType<Task<FoodImage>>(okResult.Value);
+        var returnedImage = Assert.IsAssignableFrom<FoodImageDTO>(okResult.Value);
         Assert.Equal(expectedImage.Id, returnedImage.Id);
+        Assert.Equal(expectedImage.UserId, returnedImage.UserId);
     }
 
     [Fact]

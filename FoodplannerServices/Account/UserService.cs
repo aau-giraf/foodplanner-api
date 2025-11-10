@@ -158,9 +158,9 @@ public class UserService : IUserService
         return _mapper.Map<UserDTO>(user);
     }
 
-    public async Task<int> UpdateUserLoggedInAsync(int id, UserUpdateDTO userUpdateDTO)
+    public async Task<int> UpdateUserLoggedInAsync(int id, UserUpdateLoggedInDTO userUpdateLoggedInDto)
     {
-        var user = await _userRepository.UpdateLoggedInAsync(id, userUpdateDTO);
+        var user = await _userRepository.UpdateLoggedInAsync(id, userUpdateLoggedInDto);
         return user;
     }
 

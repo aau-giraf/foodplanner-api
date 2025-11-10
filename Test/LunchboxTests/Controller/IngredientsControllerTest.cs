@@ -16,7 +16,7 @@ public class IngredientsControllerTests
         var mockIngredientService = new Mock<IIngredientService>();
         var mockAuthService = Mock.Of<IAuthService>();
 
-        var ingredients = new List<Ingredient>
+        var ingredientDtos = new List<IngredientDTO>
         {
             new() { Id = 1, Name = "Cheese", User_id = 1 },
             new() { Id = 2, Name = "Bread", User_id = 1 }
@@ -24,7 +24,7 @@ public class IngredientsControllerTests
 
         mockIngredientService
             .Setup(repo => repo.GetAllIngredientsAsync())
-            .ReturnsAsync(ingredients);
+            .ReturnsAsync(ingredientDtos);
 
         var ingredientsController = new IngredientsController(mockIngredientService.Object, mockAuthService);
 
@@ -43,7 +43,7 @@ public class IngredientsControllerTests
         var mockAuthService = new Mock<IAuthService>();
 
         int userId = 1;
-        var ingredients = new List<Ingredient>
+        var ingredientsDto = new List<IngredientDTO>
         {
             new() { Id = 1, Name = "Cheese", User_id = userId },
             new() { Id = 2, Name = "Bread", User_id = userId }
@@ -57,7 +57,7 @@ public class IngredientsControllerTests
 
         mockIngredientService
             .Setup(repo => repo.GetAllIngredientsByUserAsync(userId))
-            .ReturnsAsync(ingredients);
+            .ReturnsAsync(ingredientsDto);
 
         var ingredientsController = new IngredientsController(mockIngredientService.Object, mockAuthService.Object);
 
@@ -76,11 +76,11 @@ public class IngredientsControllerTests
         var mockAuthService = Mock.Of<IAuthService>();
 
         int ingredientId = 1;
-        Ingredient ingredient = new() { Id = ingredientId, Name = "Cheese", User_id = 1 };
+        IngredientDTO ingredientDto = new() { Id = ingredientId, Name = "Cheese", User_id = 1 };
 
         mockIngredientService
             .Setup(repo => repo.GetIngredientByIdAsync(ingredientId))
-            .ReturnsAsync(ingredient);
+            .ReturnsAsync(ingredientDto);
 
         var ingredientsController = new IngredientsController(mockIngredientService.Object, mockAuthService);
 
@@ -99,11 +99,11 @@ public class IngredientsControllerTests
         var mockAuthService = Mock.Of<IAuthService>();
 
         int ingredientId = 1;
-        Ingredient ingredient = null!;
+        IngredientDTO ingredientDto = null!;
 
         mockIngredientService
             .Setup(repo => repo.GetIngredientByIdAsync(ingredientId))
-            .ReturnsAsync(ingredient);
+            .ReturnsAsync(ingredientDto);
 
         var ingredientsController = new IngredientsController(mockIngredientService.Object, mockAuthService);
 
@@ -123,8 +123,13 @@ public class IngredientsControllerTests
 
         int ingredientId = 1;
         int userId = 1;
-        IngredientDTO ingredientDTO = new() { Name = "test"};
-        Ingredient ingredient = new() { Id = ingredientId, Name = "Cheese", User_id = userId };
+        IngredientDTO ingredientDTO = new()
+        {
+            Name = "test",
+            Id = 0,
+            User_id = 0
+        };
+        IngredientDTO ingredientDto = new() { Id = ingredientId, Name = "Cheese", User_id = userId };
         var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
         
         var JWTToken = "Bearer TestToken";
@@ -137,7 +142,7 @@ public class IngredientsControllerTests
             .ReturnsAsync(ingredientId);
         mockIngredientService
             .Setup(repo => repo.GetIngredientByIdAsync(ingredientId))
-            .ReturnsAsync(ingredient);
+            .ReturnsAsync(ingredientDto);
 
         var ingredientsController = new IngredientsController(mockIngredientService.Object, mockAuthService.Object);
 
@@ -156,7 +161,12 @@ public class IngredientsControllerTests
         var mockAuthService = new Mock<IAuthService>();
 
         int userId = 1;
-        IngredientDTO ingredientDTO = new() { Name = "test"};
+        IngredientDTO ingredientDTO = new()
+        {
+            Name = "test",
+            Id = 0,
+            User_id = 0
+        };
         var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
 
         var JWTToken = "Bearer TestToken";
@@ -185,21 +195,21 @@ public class IngredientsControllerTests
         var mockAuthService = Mock.Of<IAuthService>();
 
         int ingredientId = 1;
-        Ingredient ingredient = new() { Id = ingredientId, Name = "Cheese", User_id = 1 };
+        IngredientDTO ingredientDto = new() { Id = ingredientId, Name = "Cheese", User_id = 1 };
 
         mockIngredientService
-            .Setup(repo => repo.UpdateIngredientAsync(ingredient, ingredientId))
+            .Setup(repo => repo.UpdateIngredientAsync(ingredientDto, ingredientId))
             .ReturnsAsync(ingredientId);
         mockIngredientService
             .Setup(repo => repo.GetIngredientByIdAsync(ingredientId))
-            .ReturnsAsync(ingredient);
+            .ReturnsAsync(ingredientDto);
 
         var ingredientsController = new IngredientsController(mockIngredientService.Object, mockAuthService);
 
         // Act
-        var result = await ingredientsController.Update(ingredient, ingredientId);
+        var result = await ingredientsController.Update(ingredientDto, ingredientId);
 
-        // Assert
+        // Assertd
         Assert.IsType<OkObjectResult>(result);
     }
 
@@ -211,16 +221,16 @@ public class IngredientsControllerTests
         var mockAuthService = Mock.Of<IAuthService>();
 
         int ingredientId = 1;
-        Ingredient ingredient = new() { Id = ingredientId, Name = "Cheese", User_id = 1 };
+        IngredientDTO ingredientDto = new() { Id = ingredientId, Name = "Cheese", User_id = 1 };
 
         mockIngredientService
-            .Setup(repo => repo.UpdateIngredientAsync(ingredient, ingredientId))
+            .Setup(repo => repo.UpdateIngredientAsync(ingredientDto, ingredientId))
             .ReturnsAsync(0);
 
         var ingredientsController = new IngredientsController(mockIngredientService.Object, mockAuthService);
 
         // Act
-        var result = await ingredientsController.Update(ingredient, ingredientId);
+        var result = await ingredientsController.Update(ingredientDto, ingredientId);
 
         // Assert
         Assert.IsType<BadRequestResult>(result);
@@ -234,14 +244,14 @@ public class IngredientsControllerTests
         var mockAuthService = Mock.Of<IAuthService>();
 
         int ingredientId = 1;
-        Ingredient ingredient = new() { Id = ingredientId, Name = "Cheese", User_id = 1 };
+        IngredientDTO ingredientDto = new() { Id = ingredientId, Name = "Cheese", User_id = 1 };
 
         mockIngredientService
             .Setup(repo => repo.DeleteIngredientAsync(ingredientId))
             .ReturnsAsync(1);
         mockIngredientService
             .Setup(repo => repo.GetIngredientByIdAsync(ingredientId))
-            .ReturnsAsync(ingredient);
+            .ReturnsAsync(ingredientDto);
 
         var ingredientsController = new IngredientsController(mockIngredientService.Object, mockAuthService);
 
@@ -260,14 +270,14 @@ public class IngredientsControllerTests
         var mockAuthService = Mock.Of<IAuthService>();
 
         int ingredientId = 1;
-        Ingredient ingredient = null!;
+        IngredientDTO ingredientDto = null!;
 
         mockIngredientService
             .Setup(repo => repo.DeleteIngredientAsync(ingredientId))
             .ReturnsAsync(0);
         mockIngredientService
             .Setup(repo => repo.GetIngredientByIdAsync(ingredientId))
-            .ReturnsAsync(ingredient);
+            .ReturnsAsync(ingredientDto);
 
         var ingredientsController = new IngredientsController(mockIngredientService.Object, mockAuthService);
 
