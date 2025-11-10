@@ -5,16 +5,19 @@ using FoodplannerModels.Account;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using FoodplannerServices.Secret;
+using FoodplannerModels.Auth;
 
-namespace FoodplannerApi.Helpers
+namespace FoodplannerServices.Auth
 {
-    public class AuthService
+    public class AuthService : IAuthService
     {
         private readonly IConfiguration _configuration;
+      private readonly ISecretLoader _secretsLoader;
 
-        public AuthService(IConfiguration configuration)
+      public AuthService(IConfiguration configuration, ISecretLoader secretsLoader)
         {
             _configuration = configuration;
+            _secretsLoader = secretsLoader;
         }
 
         public string GenerateJWTToken(User user)
@@ -26,7 +29,7 @@ namespace FoodplannerApi.Helpers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretsLoader.GetSecret("JWT_SECRET")));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretsLoader.GetSecret("JWT_SECRET")));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(

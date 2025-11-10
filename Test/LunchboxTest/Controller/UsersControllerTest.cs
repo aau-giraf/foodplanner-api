@@ -2,11 +2,13 @@ using Moq;
 using Xunit;
 using Microsoft.AspNetCore.Mvc;
 using FoodplannerApi.Controller;
-using FoodplannerApi.Helpers;
+using FoodplannerServices.Auth;
 using FoodplannerServices.Account;
 using FoodplannerModels.Account;
 using Microsoft.AspNetCore.Builder;
+using FoodplannerModels.Auth;
 
+namespace Test.LunchboxTest.Controller;
 
 public class UsersControllerTests
 {
@@ -21,9 +23,9 @@ public class UsersControllerTests
             .Setup(s => s.UserEmailExistsAsync(email))
             .ReturnsAsync(true);
 
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
+        var authService = new Mock<IAuthService>();
 
-        var usersController = new UsersController(mockUserService.Object, authService);
+        var usersController = new UsersController(mockUserService.Object, authService.Object);
 
         // Act
         var result = await usersController.EmailExists(email);
@@ -43,9 +45,9 @@ public class UsersControllerTests
         string email = ""; // could also test null
 
         var mockUserService = new Mock<IUserService>();
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
+        var authService = new Mock<IAuthService>();
 
-        var usersController = new UsersController(mockUserService.Object, authService);
+        var usersController = new UsersController(mockUserService.Object, authService.Object);
 
         // Act
         var result = await usersController.EmailExists(email);
@@ -68,9 +70,9 @@ public class UsersControllerTests
             .Setup(s => s.UserEmailExistsAsync(email))
             .ReturnsAsync(false);
 
-        var authService = new AuthService(WebApplication.CreateBuilder().Configuration);
+        var authService = new Mock<IAuthService>();
 
-        var usersController = new UsersController(mockUserService.Object, authService);
+        var usersController = new UsersController(mockUserService.Object, authService.Object);
 
         // Act
         var result = await usersController.EmailExists(email);

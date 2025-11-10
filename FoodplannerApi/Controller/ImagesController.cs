@@ -1,6 +1,5 @@
 using System.Runtime.InteropServices.JavaScript;
 using System.Security.Claims;
-using FoodplannerApi.Helpers;
 using System.ComponentModel.DataAnnotations;
 using FoodplannerDataAccessSql.Account;
 using FoodplannerModels.Account;
@@ -9,14 +8,15 @@ using FoodplannerServices.Image;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using FoodplannerModels.Account;
+using FoodplannerServices.Auth;
+using FoodplannerModels.Auth;
 
 namespace FoodplannerApi.Controller;
 
-public class ImagesController(IFoodImageService foodImageService, AuthService authService) : BaseController
+public class ImagesController(IFoodImageService foodImageService, IAuthService authService) : BaseController
 {
     private readonly long _maxFileSize = 2000000000;
-    private readonly AuthService _authService = authService;
+    private readonly IAuthService _authService = authService;
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
