@@ -123,9 +123,9 @@ public class AdminController : BaseController
     }
 
     [HttpPut]
-    public async Task<IActionResult> UpdateChild([FromBody] Children children)
+    public async Task<IActionResult> UpdateChild([FromBody] ChildrenDTO childrenDto)
     {
-        var result = await _childrenService.UpdateChildrenAsync(children);
+        var result = await _childrenService.UpdateChildrenAsync(childrenDto);
         if (result > 0)
         {
             return NoContent();

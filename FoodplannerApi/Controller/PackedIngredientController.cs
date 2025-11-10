@@ -1,3 +1,4 @@
+using AutoMapper;
 using FoodplannerApi.Helpers;
 using FoodplannerModels.Lunchbox;
 using FoodplannerServices.Lunchbox;
@@ -13,6 +14,7 @@ namespace FoodplannerApi.Controller
     {
         private readonly PackedIngredientService _packedIngredientService = packedIngredientService;
         private readonly AuthService _authService = authService;
+        private readonly IMapper _mapper;
 
         // Get all packed ingredients
         [HttpGet]
@@ -58,9 +60,10 @@ namespace FoodplannerApi.Controller
         // Update an existing packed ingredient
         [HttpPut("{id}")]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<IActionResult> Update([FromBody] PackedIngredient packedIngredient, int id)
+        
+        public async Task<IActionResult> Update([FromBody] PackedIngredientDTO packedIngredientDto, int id)
         {
-            var result = await _packedIngredientService.UpdatePackedIngredientAsync(packedIngredient, id);
+            var result = await _packedIngredientService.UpdatePackedIngredientAsync(packedIngredientDto, id);
             if (result > 0)
             {
                 var changedPackedIngredient = await _packedIngredientService.GetPackedIngredientByIdAsync(id);
@@ -85,9 +88,9 @@ namespace FoodplannerApi.Controller
 
         [HttpPut]
         [Authorize(Roles = "Child, Parent")]
-        public async Task<IActionResult> UpdateOrder([FromBody] List<PackedIngredient> packedIngredients)
+        public async Task<IActionResult> UpdateOrder([FromBody] List<PackedIngredientDTO> packedIngredientsDto)
         {
-            var result = await _packedIngredientService.UpdatePackedIngredientOrderAsync(packedIngredients);
+            var result = await _packedIngredientService.UpdatePackedIngredientOrderAsync(packedIngredientsDto);
             if (result)
             {
                 return Ok();

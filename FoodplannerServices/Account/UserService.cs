@@ -23,7 +23,6 @@ public class UserService : IUserService
 
     public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
     {
-
         var user = await _userRepository.GetAllAsync();
         var userDTO = _mapper.Map<IEnumerable<UserDTO>>(user);
         return userDTO;
