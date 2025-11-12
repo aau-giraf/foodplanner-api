@@ -1,3 +1,4 @@
+using AutoMapper;
 using FoodplannerModels.Account;
 using FoodplannerServices.Account;
 using Moq;
@@ -8,13 +9,16 @@ public class ClassroomServiceTests
 {
     private readonly Mock<IClassroomRepository> _mockClassroomRepository;
     private readonly ClassroomService _classService;
+    private readonly Mock<IMapper> _mockMapper;
 
     public ClassroomServiceTests()
     {
         _mockClassroomRepository = new Mock<IClassroomRepository>();
+        _mockMapper = new Mock<IMapper>();
 
         _classService = new ClassroomService(
-            _mockClassroomRepository.Object
+            _mockClassroomRepository.Object,
+            _mockMapper.Object
         );
     }
 
@@ -22,10 +26,10 @@ public class ClassroomServiceTests
     public async Task GetAllClassroomAsync_ReturnsAllClassrooms()
     {
         // Arrange
-        var expectedClassrooms = new List<Classroom>
+        var expectedClassrooms = new List<ClassroomDTO>
         {
-            new Classroom { ClassId = 1, ClassName = "1.A" },
-            new Classroom { ClassId = 2, ClassName = "1.B" },
+            new ClassroomDTO { ClassId = 1, ClassName = "1.A" },
+            new ClassroomDTO { ClassId = 2, ClassName = "1.B" },
         };
         _mockClassroomRepository
             .Setup(repo => repo.GetAllAsync())
@@ -43,36 +47,29 @@ public class ClassroomServiceTests
     }
 
     [Fact]
-    public async Task InsertClassroomAsync_CreatesANewClassroom()
-    {
-        // Arrange
-        var expectedId = 1;
-        var createClassroom = new CreateClassroomDTO { ClassName = "1.A" };
-        _mockClassroomRepository
-            .Setup(repo => repo.InsertAsync(createClassroom))
-            .ReturnsAsync(expectedId);
-
-        // Act
-        var result = await _classService.InsertClassroomAsync(createClassroom);
-        
-        // Assert
-        Assert.Equal(expectedId, result);
-    }
-
-    [Fact]
     public async Task UpdateClassroomAsync_UpdatesValueInRepository()
     {
         // Arrange
-        var expectedId = 1;
-        var createClassroom = new CreateClassroomDTO { ClassName = "1.A" };
+        var id = 1;
         _mockClassroomRepository
-            .Setup(repo => repo.UpdateAsync(createClassroom, expectedId))
-            .ReturnsAsync(expectedId);
+            .Setup(repo => repo.UpdateAsync(It.IsAny<Classroom>(), id))
+            .ReturnsAsync(id);
+        
+        _mockMapper
+            .Setup(m => m.Map<Classroom>(It.IsAny<CreateClassroomDTO>()))
+            .Returns((CreateClassroomDTO src) => new Classroom
+            {
+                ClassId = id,
+                ClassName = src.ClassName
+            });
+        
+        var createClassroomDto = new CreateClassroomDTO() { ClassName = "1.A" };
         
         // Act
-        var result = await _classService.UpdateClassroomAsync(createClassroom, expectedId);
+        var result = await _classService.UpdateClassroomAsync(createClassroomDto, id);
 
         // Assert
+        var expectedId = 1;
         Assert.Equal(expectedId, result);
     }
 

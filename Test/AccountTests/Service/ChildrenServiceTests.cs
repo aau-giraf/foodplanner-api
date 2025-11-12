@@ -18,8 +18,8 @@ public class ChildrenServiceTests
     {
         _mockChildrenRepository = new Mock<IChildrenRepository>();
         _mockAuthService = new Mock<IAuthService>();
-        _mockMapper = new Mock<IMapper>();
         _mockUserRepository = new Mock<IUserRepository>();
+        _mockMapper = new Mock<IMapper>();
 
         _childrenService = new ChildrenService(
             _mockChildrenRepository.Object,
@@ -42,6 +42,14 @@ public class ChildrenServiceTests
             .Setup(repo => repo.GetAllAsync())
             .ReturnsAsync(expectedChildren);
         
+        _mockMapper.Setup(m => m.Map<ChildrenDTO>(It.IsAny<Children>()))
+            .Returns((Children src) => new ChildrenDTO
+            {
+                ChildId = src.ChildId,
+                FirstName = src.FirstName,
+                LastName = src.LastName
+            });
+                
         // Act
         var result = await _childrenService.GetAllChildrenAsync();
 
@@ -59,14 +67,21 @@ public class ChildrenServiceTests
     {
         // Arrange
         var expectedId = 1;
-        var createChildren = new Children { ChildId = expectedId, FirstName = "niels", LastName = "nielsen" };
         _mockChildrenRepository
-            .Setup(repo => repo.UpdateAsync(createChildren))
+            .Setup(repo => repo.UpdateAsync(It.IsAny<Children>()))
             .ReturnsAsync(expectedId);
         
+        _mockMapper.Setup(m => m.Map<Children>(It.IsAny<ChildrenDTO>()))
+            .Returns((ChildrenDTO src) => new Children
+            {
+                ChildId = src.ChildId,
+                FirstName = src.FirstName,
+                LastName = src.LastName
+            });
+        var updateChildDto = new ChildrenDTO() { ChildId = expectedId, FirstName = "frederik", LastName = "nielsen" };
+        
         // Act
-        var createChildrenDto = _mockMapper.Object.Map<ChildrenDTO>(createChildren);
-        var result = await _childrenService.UpdateChildrenAsync(createChildrenDto);
+        var result = await _childrenService.UpdateChildrenAsync(updateChildDto);
 
         // Assert
         Assert.Equal(expectedId, result);

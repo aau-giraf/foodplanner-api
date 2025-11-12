@@ -36,7 +36,8 @@ public class ChildrenService : IChildrenService
     public async Task<IEnumerable<ChildrenDTO>> GetAllChildrenAsync()
     {
         var children = await _childrenRepository.GetAllAsync();
-        return _mapper.Map<IEnumerable<ChildrenDTO>>(children);
+        var childrenDto = children.Select(child => _mapper.Map<ChildrenDTO>(child));
+        return childrenDto;
     }
 
     public async Task<IEnumerable<ChildrenGetAllDTO>> GetAllChildrenClassesAsync()
@@ -60,7 +61,8 @@ public class ChildrenService : IChildrenService
     public async Task<int> UpdateChildrenAsync(ChildrenDTO childrenDto)
     {
         var children = _mapper.Map<Children>(childrenDto);
-        return await _childrenRepository.UpdateAsync(children);
+        var result = await _childrenRepository.UpdateAsync(children);
+        return result;
     }
 
     public async Task<int> DeleteChildrenAsync(int id)

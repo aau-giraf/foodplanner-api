@@ -8,8 +8,9 @@ public class ClassroomService : IClassroomService {
     private readonly IClassroomRepository _classroomRepository;
     private readonly IMapper _mapper;
 
-    public ClassroomService(IClassroomRepository classroomRepository) {
+    public ClassroomService(IClassroomRepository classroomRepository, IMapper mapper){
        _classroomRepository = classroomRepository;
+       _mapper = mapper;
     }
 
     public async Task<IEnumerable<ClassroomDTO>> GetAllClassroomAsync()
@@ -27,8 +28,8 @@ public class ClassroomService : IClassroomService {
     public async Task<int> UpdateClassroomAsync(CreateClassroomDTO createClassroomDto, int id)
     {
         var classroom = _mapper.Map<Classroom>(createClassroomDto);
-        var _id = await _classroomRepository.UpdateAsync(classroom, id);
-        return _id;
+        var resultId = await _classroomRepository.UpdateAsync(classroom, id);
+        return resultId;
     }
 
     public async Task<bool> CheckChildrenInClassroom(int id)

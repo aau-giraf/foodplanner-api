@@ -6,28 +6,38 @@ namespace FoodplannerServices.Lunchbox;
 /**
 * The service for the Ingredient class.
 */
-public class IngredientService(IIngredientRepository ingredientRepository) : IIngredientService
+public class IngredientService : IIngredientService
 {
     private readonly IMapper _mapper;
     // Dependency injection of the ingredient repository.
-    private readonly IIngredientRepository _ingredientRepository = ingredientRepository;
+    private readonly IIngredientRepository _ingredientRepository;
     // Retrieves all ingredients from the repository.
+    
+    public IngredientService (IIngredientRepository ingredientRepository, IMapper mapper)
+    {
+        _ingredientRepository = ingredientRepository;
+        _mapper = mapper;
+    }
     public async Task<IEnumerable<IngredientDTO>> GetAllIngredientsAsync()
     { 
         var ingredients = await _ingredientRepository.GetAllAsync();
-        return _mapper.Map<IEnumerable<IngredientDTO>>(ingredients);
+        var ingredientDto = ingredients.Select(ingredient => _mapper.Map<IngredientDTO>(ingredient));
+        return ingredientDto;
     }
     // Retrieves all ingredients by user.
     public async Task<IEnumerable<IngredientDTO>> GetAllIngredientsByUserAsync(int userId)
     {
         var ingredients = await _ingredientRepository.GetAllByUserAsync(userId);
-        return _mapper.Map<IEnumerable<IngredientDTO>>(ingredients).ToList();
+        var ingredientDto = ingredients.Select(ingredient => _mapper.Map<IngredientDTO>(ingredient));
+        return ingredientDto;
     }
     // Retrieves a specific ingredient by its ID.
     public async Task<IngredientDTO> GetIngredientByIdAsync(int id)
     {
         var ingredient = await _ingredientRepository.GetByIdAsync(id);
-        return _mapper.Map<IngredientDTO>(ingredient);
+        var ingredientDto = _mapper.Map<IngredientDTO>(ingredient);
+
+        return ingredientDto;
     }
     // Creates a new ingredient in the repository.
     public async Task<int> CreateIngredientAsync(IngredientDTO ingredientDto, int id)
