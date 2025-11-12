@@ -1,9 +1,8 @@
-using FoodplannerApi.Helpers;
 using FoodplannerModels.Account;
 using FoodplannerModels.Lunchbox;
-using FoodplannerServices.Lunchbox;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using FoodplannerModels.Auth;
 
 namespace FoodplannerApi.Controller;
 
@@ -11,11 +10,11 @@ namespace FoodplannerApi.Controller;
 * The MealsController class handles CRUD (Create, Read, Update, Delete) operations for the Meal entity.
 * It uses the MealService to interact with the database and process meal-related requests.
 */
-public class MealsController(MealService mealService, AuthService authService) : BaseController
+public class MealsController(IMealService mealService, IAuthService authService) : BaseController
 {
     // Private field to hold the injected MealService.
-    private readonly MealService _mealService = mealService;
-    private readonly AuthService _authService = authService;
+    private readonly IMealService _mealService = mealService;
+    private readonly IAuthService _authService = authService;
 
     // Get all meals
     [HttpGet]

@@ -19,5 +19,9 @@ namespace FoodplannerModels.Account
         // Junction table methods
         Task<int> AddParentToChildAsync(int userId, int childId);
         Task<int> RemoveParentFromChildAsync(int userId, int childId);
+        Task<int> AddTeacherToChildAsync(int userId, int childId);
+        Task<int> RemoveTeacherFromChildAsync(int userId, int childId);
+        Task<IEnumerable<User>> GetTeachersByChildIdAsync(int childId);
+        Task<IEnumerable<Children>> GetChildrenByTeacherIdAsync(int teacherId);
     }
 }

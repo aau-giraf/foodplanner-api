@@ -1,4 +1,4 @@
-﻿using FoodplannerApi.Helpers;
+﻿using FoodplannerServices.Auth;
 using FoodplannerModels.Account;
 using FoodplannerModels.FeedbackChat;
 using Microsoft.AspNetCore.Authorization;

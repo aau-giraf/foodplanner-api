@@ -27,6 +27,6 @@ namespace FoodplannerModels.Account
         public required string Password { get; set; }
 
         [Required(ErrorMessage = "Role er påkrævet")]
-        public required string Role { get; set; }
+        public required UserRole Role { get; set; }
     }
 }

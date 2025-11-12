@@ -1,19 +1,20 @@
-using FoodplannerApi.Helpers;
 using FoodplannerModels.Account;
 using FoodplannerServices;
 using FoodplannerServices.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using FoodplannerServices.Auth;
+using FoodplannerModels.Auth;
 
 namespace FoodplannerApi.Controller;
 
 public class UsersController : BaseController
 {
-    private readonly UserService _userService;
-    private readonly AuthService _authService;
+    private readonly IUserService _userService;
+    private readonly IAuthService _authService;
 
-    public UsersController(UserService userService, AuthService authService)
+    public UsersController(IUserService userService, IAuthService authService)
     {
         _userService = userService;
         _authService = authService;
@@ -32,7 +33,7 @@ public class UsersController : BaseController
             LastName = "test",
             Email = "user@test.com",
             Password = "test",
-            Role = "Teacher",
+            Role = UserRole.Teacher,
             RoleApproved = true
         };
 
@@ -138,6 +139,21 @@ public class UsersController : BaseController
             return BadRequest(new ErrorResponse { Message = [e.Message] });
         }
     }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> EmailExists([FromQuery] string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return BadRequest(new ErrorResponse { Message = ["Email skal angives"] });
+        }
+
+        var exists = await _userService.UserEmailExistsAsync(email);
+        return Ok(new { EmailExists = exists });
+    }
+
 
     [HttpGet]
     [Authorize(Roles = "Child, Parent")]
