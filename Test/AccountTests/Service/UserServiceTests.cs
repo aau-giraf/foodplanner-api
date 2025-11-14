@@ -88,7 +88,7 @@ public class UserServiceTests
         // Arrange
         var expectedId = 1;
         var mail = "nielsen@example.com";
-        var newUser = new UserCreateDTO { FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role =UserRole.Teacher };
+        var newUser = new UserCreateDTO { FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role ="Teacher" };
         var mappedUser = new User { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role =UserRole.Teacher, RoleApproved = true };
         
         _mockMapper
@@ -114,7 +114,7 @@ public class UserServiceTests
         // Arrange
         var expectedId = 1;
         var mail = "nielsen@example.com";
-        var newUser = new UserCreateDTO { FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role =UserRole.Teacher };
+        var newUser = new UserCreateDTO { FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role ="Teacher" };
         var mappedUser = new User { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role =UserRole.Teacher, RoleApproved = true };
         
         _mockMapper
