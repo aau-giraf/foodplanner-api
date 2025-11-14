@@ -65,7 +65,7 @@ public class UserService : IUserService
     {
         var user = await _userRepository.GetUserByEmailAsync(email);
 
-        if (user == null || _passwordHandler.VerifyPassword(password, user.Password))
+        if (user == null || !_passwordHandler.VerifyPassword(password, user.Password))
         {
             throw new InvalidOperationException("Forkert brugernavn eller adgangskode");
         }
