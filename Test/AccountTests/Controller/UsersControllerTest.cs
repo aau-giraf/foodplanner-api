@@ -42,7 +42,7 @@ public class UsersControllerTests
             LastName = "test",
             Email = "user@test.com",
             Password = "test",
-            Role = UserRole.Teacher,
+            Role = "Teacher",
         };
 
         mockUserService
@@ -73,7 +73,7 @@ public class UsersControllerTests
             LastName = "test",
             Email = "user@test.com",
             Password = "test",
-            Role = UserRole.Teacher,
+            Role = "Teacher",
         };
 
         mockUserService
@@ -102,7 +102,7 @@ public class UsersControllerTests
             LastName = "User",
             Email = "test@example.com",
             Password = "password123",
-            Role = UserRole.Parent,
+            Role = "Parent",
         };
 
         mockUserService
