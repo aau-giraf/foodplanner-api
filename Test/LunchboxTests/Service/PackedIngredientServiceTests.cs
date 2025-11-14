@@ -65,8 +65,8 @@
         
                 var packedIngredientDTOs = new List<PackedIngredientDTO>
                 {
-                    new PackedIngredientDTO { Id = 1, Meal_id = mealId, Ingredient_id = new Ingredient{ Id = 1, Name = "jbsfljbatest", User_id = 2 }, order_number = 1 },
-                    new PackedIngredientDTO { Id = 2, Meal_id = mealId, Ingredient_id = new Ingredient{ Id = 1, Name = "rottests", User_id = 2 }, order_number = 2 }
+                    new PackedIngredientDTO { Id = 1, Meal_id = mealId, Ingredient_id = 1, order_number = 1 },
+                    new PackedIngredientDTO { Id = 2, Meal_id = mealId, Ingredient_id = 1, order_number = 2 }
                 };
         
                 mockPackedIngredientRepository
@@ -106,12 +106,7 @@
                 {
                     Id = packedIngredient.Id,
                     Meal_id = packedIngredient.Meal_id,
-                    Ingredient_id = new Ingredient
-                    {
-                        Id = packedIngredient.Ingredient_id,
-                        Name = "testIngredient",
-                        User_id = 0
-                    },
+                    Ingredient_id = packedIngredient.Id,
                     order_number = packedIngredient.order_number
                 };
         
@@ -129,7 +124,7 @@
                 Assert.Equal(packedIngredient.Id, result.Id);
                 Assert.Equal(packedIngredient.Meal_id, result.Meal_id);
                 // Compare the DTO's Ingredient.Id to the entity's Ingredient_id
-                Assert.Equal(packedIngredient.Ingredient_id, result.Ingredient_id.Id);
+                Assert.Equal(packedIngredient.Ingredient_id, result.Ingredient_id);
             }
         
             [Fact]
@@ -170,12 +165,7 @@
                 {
                     Id = packedIngredient.Id,
                     Meal_id = packedIngredient.Meal_id,
-                    Ingredient_id = new Ingredient
-                    {
-                        Id = packedIngredient.Ingredient_id,
-                        Name = "Test Ingredient",
-                        User_id = 0
-                    },
+                    Ingredient_id = packedIngredient.Id,
                     order_number = packedIngredient.order_number
                 };
         

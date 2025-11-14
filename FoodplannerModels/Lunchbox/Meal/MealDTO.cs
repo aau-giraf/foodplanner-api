@@ -16,5 +16,5 @@ public class MealDTO
     // Date accosiated with the meal
     public required string Date { get; set; }
     //List of ingredients in the meal
-    public required List<PackedIngredientDTO> Ingredients { get; set; }
+    public required IEnumerable<PackedIngredientDTO> Ingredients { get; set; }
 }

@@ -34,8 +34,20 @@ public class MealServiceTests
         // Arrange
         var expectedMeals = new List<Meal>
         {
-            new Meal { Id = 1, Name = "Pizza", Date = "18/11/2022" },
-            new Meal { Id = 2, Name = "Burger", Date = "19/01/2013" }
+            new Meal
+            {
+                Id = 1,
+                Name = "Pizza",
+                Date = "18/11/2022",
+                Ingredients = []
+            },
+            new Meal
+            {
+                Id = 2,
+                Name = "Burger",
+                Date = "19/01/2013",
+                Ingredients = []
+            }
         };
 
         _mockMealRepository.Setup(repo => repo.GetAllAsync())
@@ -67,7 +79,13 @@ public class MealServiceTests
     public async Task GetMealByIdAsync_ReturnsMeal_WhenMealExists()
     {
         // Arrange
-        var expectedMeal = new Meal { Id = 1, Name = "Pasta", Date = "20/03/2022" };
+        var expectedMeal = new Meal
+        {
+            Id = 1,
+            Name = "Pasta",
+            Date = "20/03/2022",
+            Ingredients = []
+        };
         _mockMealRepository.Setup(repo => repo.GetByIdAsync(expectedMeal.Id))
             .ReturnsAsync(expectedMeal);
 
@@ -110,7 +128,13 @@ public class MealServiceTests
         var newMealId = 42;
 
         _mockMapper.Setup(m => m.Map<Meal>(It.IsAny<MealCreateDTO>()))
-            .Returns(new Meal { Id = newMealId, Name = "Salad", Date = "21/03/2023" });
+            .Returns(new Meal
+            {
+                Id = newMealId,
+                Name = "Salad",
+                Date = "21/03/2023",
+                Ingredients = []
+            });
 
         _mockMealRepository.Setup(repo => repo.InsertAsync(It.IsAny<Meal>(), It.IsAny<int>()))
             .ReturnsAsync(newMealId);
@@ -126,14 +150,72 @@ public class MealServiceTests
     public async Task UpdateMealAsync_ReturnsNumberOfAffectedRows()
     {
         // Arrange
-        var mealToUpdate = new Meal { Id = 1, Name = "Updated Salad", Date = "22/03/2023" };
+        var mealToUpdate = new Meal
+        {
+            Id = 1,
+            Name = "Updated Salad",
+            Date = "22/03/2023",
+            Ingredients = [new PackedIngredient
+                {
+                    Id = 0,
+                    Ingredient_id = 0,
+                    Meal_id = 0,
+                    order_number = 0
+                }
+            ],
+        };
         int rowsAffected = 1;
 
         _mockMealRepository.Setup(repo => repo.UpdateAsync(mealToUpdate, mealToUpdate.Id))
             .ReturnsAsync(rowsAffected);
 
-        var mealDto = _mockMapper.Object.Map<MealDTO>(mealToUpdate);
+        _mockMapper.Setup(m => m.Map<Meal>(It.IsAny<MealDTO>()))
+            .Returns((MealDTO src) => new Meal
+            {
+                Id = src.Id,
+                Food_image_id = src.Food_image_id,
+                Name = src.Name,
+                Date = src.Date,
+                Ingredients = src.Ingredients
+                    .Select(piDto => _mockMapper.Object.Map<PackedIngredient>(piDto))
+                    .ToList()
+            });
 
+        _mockMapper.Setup(m => m.Map<PackedIngredient>(It.IsAny<PackedIngredientDTO>()))
+            .Returns((PackedIngredientDTO src) => new PackedIngredient
+            {
+                Id = src.Id,
+                Meal_id = src.Meal_id,
+                Ingredient_id = src.Ingredient_id,
+                order_number = src.order_number
+            });
+        
+        _mockMapper.Setup(m => m.Map<Meal>(It.IsAny<MealCreateDTO>()))
+            .Returns((MealCreateDTO src) => new Meal
+            {
+                Food_image_id = src.Food_image_id,
+                Name = src.Name,
+                Date = src.Date,
+                Ingredients = [],
+                Id = 0
+            });
+
+        
+        var mealDto = new MealDTO()
+        {
+            Id = 1,
+            Name = "Updated Salad",
+            Date = "22/03/2023",
+            Ingredients = [new PackedIngredientDTO()
+                {
+                    Id = 0,
+                    Ingredient_id = 0,
+                    Meal_id = 0,
+                    order_number = 0
+                }
+            ],
+        };
+        
         // Act
         var result = await _mealService.UpdateMealAsync(mealDto, mealToUpdate.Id);
 

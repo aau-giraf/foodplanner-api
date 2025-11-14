@@ -238,7 +238,6 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
-
     if (runner.HasMigrationsToApplyUp())
     {
         runner.ListMigrations();
