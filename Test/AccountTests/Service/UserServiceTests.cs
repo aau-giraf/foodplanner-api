@@ -188,7 +188,7 @@ public class UserServiceTests
             .Returns(expectedJWT);
         
         // Act
-        var result = await _userService.GetJWTByEmailAndPasswordAsync(inputUser.Email, inputUser.Password);
+        var result = await _userService.GetJWTByEmailAndPasswordAsync(inputUser.Email, password);
 
         // Assert
         Assert.NotNull(result);
@@ -219,7 +219,7 @@ public class UserServiceTests
             .Returns(expectedJWT);
         
         // Act
-        var result = await _userService.GetJWTByEmailAndPasswordAsync(inputUser.Email, inputUser.Password);
+        var result = await _userService.GetJWTByEmailAndPasswordAsync(inputUser.Email, password);
 
         // Assert
         Assert.NotNull(result);
