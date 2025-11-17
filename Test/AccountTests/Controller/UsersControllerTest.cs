@@ -138,7 +138,7 @@ public class UsersControllerTests
             .ReturnsAsync(new UserCredsDTO
             {
                 JWT = "jwt-token",
-                Role = UserRole.Teacher,
+                Role = UserRole.Teacher.ToString(),
                 RoleApproved = true
             });
 
@@ -291,7 +291,7 @@ public class UsersControllerTests
         var userCredsDTO = new UserCredsDTO
         {
             JWT = "jwt-token",
-            Role = UserRole.Child,
+            Role = UserRole.Child.ToString(),
             RoleApproved = true
         };
 
