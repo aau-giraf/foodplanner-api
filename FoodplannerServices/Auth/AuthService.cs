@@ -64,23 +64,18 @@ namespace FoodplannerServices.Auth
 
         private JwtSecurityToken ParseToken(string token)
         {
-            // Ensure the token starts with "Bearer "
-            if (string.IsNullOrEmpty(token) || !token.StartsWith("Bearer "))
-            {
-                throw new ArgumentException("The token must be prefixed with 'Bearer '.");
-            }
+            if (string.IsNullOrEmpty(token))
+                throw new ArgumentException("Token cannot be null or empty.");
 
-            // Remove the "Bearer " part from the token
-            token = token.Substring(7);
+            // Fjern 'Bearer ' hvis det ER der, men kræv det ikke
+            if (token.StartsWith("Bearer "))
+                token = token.Substring(7);
 
             var handler = new JwtSecurityTokenHandler();
-    
-            // Validate if the token is in proper JWT format
+
             if (!handler.CanReadToken(token))
-            {
                 throw new ArgumentException("The token is not in a valid JWT format.");
-            }
-            
+
             return handler.ReadJwtToken(token);
         }
     }
