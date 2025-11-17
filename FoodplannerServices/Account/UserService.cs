@@ -76,7 +76,7 @@ public class UserService : IUserService
         var userCreds = new UserCredsDTO
         {
             JWT = jwt,
-            Role = user.Role,
+            Role = user.Role.ToString(),
             RoleApproved = user.RoleApproved
         };
 
@@ -117,7 +117,7 @@ public class UserService : IUserService
         var userCreds = new UserCredsDTO
         {
             JWT = jwt,
-            Role = user.Role,
+            Role = user.Role.ToString(),
             RoleApproved = user.RoleApproved
         };
 
