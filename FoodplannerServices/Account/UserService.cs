@@ -49,7 +49,7 @@ public class UserService : IUserService
         var id =  await _userRepository.InsertAsync(user);
         if (user.Role.HasFlag(UserRole.Child))
         {
-            var child = new ChildrenCreateDTO()
+            var child = new Children()
             {
                 ChildId = id,
                 FirstName = user.FirstName,

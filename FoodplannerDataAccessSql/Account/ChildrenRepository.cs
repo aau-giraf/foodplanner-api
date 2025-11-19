@@ -83,7 +83,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<int> InsertAsync(ChildrenCreateDTO entity)
+        public async Task<int> InsertAsync(Children entity)
         {
             var sql = "INSERT INTO children (child_id, first_name, last_name, class_id) VALUES (@child_id, @FirstName, @LastName, @ClassId) RETURNING child_id";
             using (var connection = _connectionFactory.Create())
@@ -116,7 +116,6 @@ namespace FoodplannerDataAccessSql.Account
                 return result;
             }
         }
-
 
         public async Task<int> DeleteAsync(int id)
         {
