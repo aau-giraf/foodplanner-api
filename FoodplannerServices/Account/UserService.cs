@@ -75,18 +75,17 @@ public class UserService : IUserService
     {
         var user = await _userRepository.GetUserByEmailAsync(email);
 
-        if (user == null || _passwordHandler.VerifyPassword(password, user.Password))
+        if (user == null || !_passwordHandler.VerifyPassword(password, user.Password))
         {
             throw new InvalidOperationException("Forkert brugernavn eller adgangskode");
         }
 
-        user.Role = user.Role.HasFlag(UserRole.Parent) ? UserRole.Child : user.Role;
 
         var jwt = _authService.GenerateJWTToken(user);
         var userCreds = new UserCredsDTO
         {
             JWT = jwt,
-            Role = user.Role,
+            Role = user.Role.ToString(),
             RoleApproved = user.RoleApproved
         };
 
@@ -127,7 +126,7 @@ public class UserService : IUserService
         var userCreds = new UserCredsDTO
         {
             JWT = jwt,
-            Role = user.Role,
+            Role = user.Role.ToString(),
             RoleApproved = user.RoleApproved
         };
 

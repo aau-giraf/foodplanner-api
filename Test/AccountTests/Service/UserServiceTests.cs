@@ -88,7 +88,7 @@ public class UserServiceTests
         // Arrange
         var expectedId = 1;
         var mail = "nielsen@example.com";
-        var newUser = new UserCreateDTO { FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role =UserRole.Teacher };
+        var newUser = new UserCreateDTO { FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role ="Teacher" };
         var mappedUser = new User { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role =UserRole.Teacher, RoleApproved = true };
         
         _mockMapper
@@ -114,7 +114,7 @@ public class UserServiceTests
         // Arrange
         var expectedId = 1;
         var mail = "nielsen@example.com";
-        var newUser = new UserCreateDTO { FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role =UserRole.Teacher };
+        var newUser = new UserCreateDTO { FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role ="Teacher" };
         var mappedUser = new User { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = mail, Password = "password", Role =UserRole.Teacher, RoleApproved = true };
         
         _mockMapper
@@ -175,7 +175,7 @@ public class UserServiceTests
         var expectedJWT = "jwtToken";
         var password = "password";
         var inputUser = new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "encrypted password", Role =UserRole.Teacher, RoleApproved = true };
-        var expectedCreds = new UserCredsDTO { JWT = expectedJWT, Role = inputUser.Role, RoleApproved = inputUser.RoleApproved };
+        var expectedCreds = new UserCredsDTO { JWT = expectedJWT, Role = inputUser.Role.ToString(), RoleApproved = inputUser.RoleApproved };
         
         _mockUserRepository
             .Setup(repo => repo.GetUserByEmailAsync(inputUser.Email))
@@ -188,7 +188,7 @@ public class UserServiceTests
             .Returns(expectedJWT);
         
         // Act
-        var result = await _userService.GetJWTByEmailAndPasswordAsync(inputUser.Email, inputUser.Password);
+        var result = await _userService.GetJWTByEmailAndPasswordAsync(inputUser.Email, password);
 
         // Assert
         Assert.NotNull(result);
@@ -206,7 +206,7 @@ public class UserServiceTests
         var expectedJWT = "jwtToken";
         var password = "password";
         var inputUser = new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "encrypted password", Role = inputUserRole, RoleApproved = true };
-        var expectedCreds = new UserCredsDTO { JWT = expectedJWT, Role = UserRole.Child, RoleApproved = inputUser.RoleApproved };
+        var expectedCreds = new UserCredsDTO { JWT = expectedJWT, Role = inputUserRole.ToString(), RoleApproved = inputUser.RoleApproved };
         
         _mockUserRepository
             .Setup(repo => repo.GetUserByEmailAsync(inputUser.Email))
@@ -219,7 +219,7 @@ public class UserServiceTests
             .Returns(expectedJWT);
         
         // Act
-        var result = await _userService.GetJWTByEmailAndPasswordAsync(inputUser.Email, inputUser.Password);
+        var result = await _userService.GetJWTByEmailAndPasswordAsync(inputUser.Email, password);
 
         // Assert
         Assert.NotNull(result);
@@ -234,7 +234,7 @@ public class UserServiceTests
         // Arrange
         var expectedJWT = "jwtToken";
         var inputUser = new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role =UserRole.Teacher, RoleApproved = true };
-        var expectedCreds = new UserCredsDTO { JWT = expectedJWT, Role = inputUser.Role, RoleApproved = inputUser.RoleApproved };
+        var expectedCreds = new UserCredsDTO { JWT = expectedJWT, Role = inputUser.Role.ToString(), RoleApproved = inputUser.RoleApproved };
         
         _mockUserRepository
             .Setup(repo => repo.GetUserByEmailAsync(null))
@@ -295,7 +295,7 @@ public class UserServiceTests
         var encryptedPin = "encrypted";
         var token = "jwtToken";
         var inputUser = new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role =UserRole.Teacher, RoleApproved = true };
-        var expectedCreds = new UserCredsDTO { JWT = token, Role = inputUser.Role, RoleApproved = inputUser.RoleApproved };
+        var expectedCreds = new UserCredsDTO { JWT = token, Role = inputUser.Role.ToString(), RoleApproved = inputUser.RoleApproved };
         
         _mockUserRepository
             .Setup(repo => repo.GetPinCodeByIdAsync(inputUser.Id))
