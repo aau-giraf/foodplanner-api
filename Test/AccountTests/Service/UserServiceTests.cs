@@ -486,6 +486,39 @@ public class UserServiceTests
         // Assert
         Assert.Equal(expectedId, result);
     }
-
     
+    [Fact]
+    public async Task CreateUserAsync_CreatesChild_WhenRoleIsChild()
+    {
+        // Arrange
+        var expectedId = 1;
+        var mail = "child@example.com";
+        var newUser = new UserCreateDTO { FirstName = "lisa", LastName = "child", Email = mail, Password = "password", Role = "Child" };
+        var mappedUser = new User { Id = 0, FirstName = "lisa", LastName = "child", Email = mail, Password = "password", Role = UserRole.Child, RoleApproved = true };
+
+        _mockMapper
+            .Setup(mapper => mapper.Map<User>(newUser))
+            .Returns(mappedUser);
+        _mockUserRepository
+            .Setup(repo => repo.EmailExistsAsync(mail))
+            .ReturnsAsync(false);
+        _mockUserRepository
+            .Setup(repo => repo.InsertAsync(mappedUser))
+            .ReturnsAsync(expectedId);
+        _mockChildrenRepository
+            .Setup(repo => repo.InsertAsync(It.IsAny<Children>()))
+            .ReturnsAsync(expectedId);
+
+        // Act
+        var result = await _userService.CreateUserAsync(newUser);
+
+        // Assert
+        Assert.Equal(expectedId, result);
+        _mockChildrenRepository.Verify(repo =>
+            repo.InsertAsync(It.Is<Children>(c =>
+                c.ChildId == expectedId &&
+                c.FirstName == mappedUser.FirstName &&
+                c.LastName == mappedUser.LastName
+            )), Times.Once);
+    }
 }
