@@ -17,29 +17,28 @@ namespace FoodplannerDataAccessSql.Account
 
         public async Task<int> DeleteAsync(int id)
         {
-            var deleteChildrenSql = "DELETE FROM children WHERE parent_id = @Id";
+            var deleteChildrenSql = "DELETE FROM child_relation WHERE user_id = @Id";
             var deleteUserSql = "DELETE FROM users WHERE id = @Id";
 
-            using (var connection = _connectionFactory.Create())
+            using var connection = _connectionFactory.Create();
+            connection.Open();
+
+            using var transaction = connection.BeginTransaction();
+            try
             {
-                connection.Open();
-                using (var transaction = connection.BeginTransaction())
-                {
-                    try
-                    {
-                        await connection.ExecuteAsync(deleteChildrenSql, new { Id = id }, transaction);
-                        var result = await connection.ExecuteAsync(deleteUserSql, new { Id = id }, transaction);
-                        transaction.Commit();
-                        return result;
-                    }
-                    catch
-                    {
-                        transaction.Rollback();
-                        throw;
-                    }
-                }
+                await connection.ExecuteAsync(deleteChildrenSql, new { Id = id }, transaction);
+                var result = await connection.ExecuteAsync(deleteUserSql, new { Id = id }, transaction);
+
+                transaction.Commit();
+                return result;
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
             }
         }
+
 
         public async Task<IEnumerable<UserDTO>> GetAllAsync()
         {
