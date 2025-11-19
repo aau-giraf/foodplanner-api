@@ -55,7 +55,7 @@ public class ChildrensController : BaseController
                 FirstName = childrenCreate.FirstName,
                 LastName = childrenCreate.LastName,
                 ParentIds = new List<int> { parentId },
-                classId = childrenCreate.classId
+                classId = childrenCreate.ClassId
             };
 
             var id = await _childrenService.CreateChildrenAsync(childToCreate);
