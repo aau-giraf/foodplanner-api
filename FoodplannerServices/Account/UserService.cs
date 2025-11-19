@@ -47,7 +47,7 @@ public class UserService : IUserService
         user.Password = _passwordHandler.EncryptPassword(user.Password);
         user.RoleApproved = false;
         var id =  await _userRepository.InsertAsync(user);
-        if (user.Role == "Child")
+        if (user.Role.HasFlag(UserRole.Child))
         {
             var child = new ChildrenCreateDTO()
             {

@@ -85,12 +85,13 @@ namespace FoodplannerDataAccessSql.Account
 
         public async Task<int> InsertAsync(ChildrenCreateDTO entity)
         {
-            var sql = "INSERT INTO children (first_name, last_name, class_id) VALUES (@FirstName, @LastName, @ClassId) RETURNING child_id";
+            var sql = "INSERT INTO children (child_id, first_name, last_name, class_id) VALUES (@child_id, @FirstName, @LastName, @ClassId) RETURNING child_id";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
                 var result = await connection.QuerySingleAsync<int>(sql, new
                 {
+                    child_id = entity.ChildId,
                     FirstName = entity.FirstName,
                     LastName = entity.LastName,
                     ClassId = entity.ClassId
