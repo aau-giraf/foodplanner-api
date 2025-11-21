@@ -166,7 +166,7 @@ public class MealServiceTests
         };
         int rowsAffected = 1;
 
-        _mockMealRepository.Setup(repo => repo.UpdateAsync(mealToUpdate, mealToUpdate.Id))
+        _mockMealRepository.Setup(repo => repo.UpdateAsync(It.Is<Meal>(meal =>  meal.Name == mealToUpdate.Name), mealToUpdate.Id))
             .ReturnsAsync(rowsAffected);
 
         _mockMapper.Setup(m => m.Map<Meal>(It.IsAny<MealDTO>()))
@@ -178,29 +178,8 @@ public class MealServiceTests
                 Date = src.Date,
                 Ingredients = src.Ingredients
                     .Select(piDto => _mockMapper.Object.Map<PackedIngredient>(piDto))
-                    .ToList()
             });
-
-        _mockMapper.Setup(m => m.Map<PackedIngredient>(It.IsAny<PackedIngredientDTO>()))
-            .Returns((PackedIngredientDTO src) => new PackedIngredient
-            {
-                Id = src.Id,
-                Meal_id = src.Meal_id,
-                Ingredient_id = src.Ingredient_id,
-                order_number = src.order_number
-            });
-        
-        _mockMapper.Setup(m => m.Map<Meal>(It.IsAny<MealCreateDTO>()))
-            .Returns((MealCreateDTO src) => new Meal
-            {
-                Food_image_id = src.Food_image_id,
-                Name = src.Name,
-                Date = src.Date,
-                Ingredients = [],
-                Id = 0
-            });
-
-        
+            
         var mealDto = new MealDTO()
         {
             Id = 1,

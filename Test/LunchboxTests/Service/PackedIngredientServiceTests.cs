@@ -106,7 +106,7 @@
                 {
                     Id = packedIngredient.Id,
                     Meal_id = packedIngredient.Meal_id,
-                    Ingredient_id = packedIngredient.Id,
+                    Ingredient_id = packedIngredient.Ingredient_id,
                     order_number = packedIngredient.order_number
                 };
         

@@ -68,16 +68,41 @@ public class UserServiceTests
             .Setup(repo => repo.GetAllAsync())
             .ReturnsAsync(expectedUsers);
     
-
-        _mockMapper.Setup(lu => lu.Map<IEnumerable<User>>(It.IsAny<List<User>>()))
-            .Returns(expectedUsers);
+        var userDTOs = new List<UserDTO>
+        {
+            new UserDTO
+            {
+                Id = 1,
+                FirstName = "niels",
+                LastName = "nielsen",
+                Email = "nielsen@example.com",
+                Role = "Teacher",
+                Archived = true,
+                Password = "",
+                RoleApproved = false
+            },
+            
+            new UserDTO
+            {
+                Id = 2,
+                FirstName = "ole",
+                LastName = "olsen",
+                Email = "olsen@example.com",
+                Role = "Parent",
+                Archived = true,
+                Password = "",
+                RoleApproved = false
+            },
+        };
+        _mockMapper.Setup(lu => lu.Map<IEnumerable<UserDTO>>(It.IsAny<IEnumerable<User>>()))
+            .Returns(userDTOs);
         
         // Act
         var result = await _userService.GetAllUsersAsync();
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(expectedUsers.Count, result.Count());
+        Assert.Equal(expectedUsers.Count(), result.Count());
         Assert.All(result, user => Assert.Contains(expectedUsers, 
                                                     u => u.Id == user.Id && 
                                                     u.FirstName == user.FirstName && 
@@ -158,13 +183,18 @@ public class UserServiceTests
     {
         // Arrange
         var expectedId = 1;
-        var inputUser = new User { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role = "Teacher", RoleApproved = true };
+        var user = new User { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role = "Teacher", RoleApproved = true };
 
         _mockUserRepository
-            .Setup(repo => repo.UpdateAsync(inputUser))
+            .Setup(repo => repo.UpdateAsync(user))
             .ReturnsAsync(expectedId);
         
-        var userUpdateDto = _mockMapper.Object.Map<UserUpdateDTO>(inputUser);
+        var userUpdateDto = new UserUpdateDTO { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com" };
+
+        _mockMapper
+            .Setup(mapper => mapper.Map<User>(userUpdateDto))
+            .Returns(user);
+
         // Act
         var result = await _userService.UpdateUserAsync(userUpdateDto);
         
@@ -176,19 +206,19 @@ public class UserServiceTests
     public async Task DeleteUserAsync_UpdatesValueInRepository()
     {
         // Arrange
-        var expectedId = 1;
-        var inputUser = new User { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role = "Teacher", RoleApproved = true };
-        var encodedUser = new User { Id = inputUser.Id, FirstName = inputUser.FirstName, LastName = inputUser.LastName, Email = inputUser.Email, Password = BCrypt.Net.BCrypt.HashPassword(inputUser.Password), Role = inputUser.Role, RoleApproved = inputUser.RoleApproved };
+        var id = 1;
+        var rowsAffected = 1;
 
         _mockUserRepository
-            .Setup(repo => repo.UpdateAsync(inputUser))
-            .ReturnsAsync(expectedId);
-        var userUpdateDto = _mockMapper.Object.Map<UserUpdateDTO>(inputUser);
+            .Setup(repo => repo.DeleteAsync(id))
+            .ReturnsAsync(rowsAffected);
+
         // Act
-        var result = await _userService.UpdateUserAsync(userUpdateDto);
+        var result = await _userService.DeleteUserAsync(id);
         
         // Assert
-        Assert.Equal(expectedId, result);
+        var expectedRowsChanged = 1;
+        Assert.Equal(expectedRowsChanged, result);
     }
 
     [Fact]
@@ -364,7 +394,7 @@ public class UserServiceTests
     public async Task GetUsersNotApprovedAsync_ReturnsUsers()
     {
         // Arrange
-        var expectedUsers = new List<User>
+        var users = new List<User>
         {
             new User
             {
@@ -389,17 +419,47 @@ public class UserServiceTests
                 RoleApproved = false
             },
         };
+
         _mockUserRepository
             .Setup(repo => repo.GetAllNotApprovedAsync())
-            .ReturnsAsync(expectedUsers);
+            .ReturnsAsync(users);
 
+        var userDTOs = new List<UserDTO>
+        {
+            new UserDTO
+            {
+                Id = 1,
+                FirstName = "niels",
+                LastName = "nielsen",
+                Email = "nielsen@example.com",
+                Password = "",
+                Role = "Teacher",
+                RoleApproved = false,
+                Archived = true,
+            },
+            new UserDTO
+            {
+                Id = 2,
+                FirstName = "ole",
+                LastName = "olsen",
+                Email = "olsen@example.com",
+                Password = "",
+                Role = "Parent",
+                RoleApproved = false,
+                Archived = true,
+            }
+        };
+
+        _mockMapper.Setup(lu => lu.Map<IEnumerable<UserDTO>>(users))
+            .Returns(userDTOs);
+        
         // Act
         var result = await _userService.GetUsersNotApprovedAsync();
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(expectedUsers.Count, result.Count());
-        Assert.All(result, user => Assert.Contains(expectedUsers, 
+        Assert.Equal(users.Count(), result.Count());
+        Assert.All(result, user => Assert.Contains(users, 
                                                     u => u.Id == user.Id && 
                                                     u.FirstName == user.FirstName && 
                                                     u.LastName == user.LastName &&
@@ -461,7 +521,7 @@ public class UserServiceTests
         
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(expectedUsers.Count, result.Count());
+        Assert.Equal(expectedUsers.Count(), result.Count());
         Assert.All(result, user => Assert.Contains(expectedUsers, 
                                                     u => u.Id == user.Id && 
                                                     u.FirstName == user.FirstName && 
@@ -490,6 +550,22 @@ public class UserServiceTests
         _mockUserRepository
             .Setup(repo => repo.GetLoggedInAsync(expectedUser.Id))
             .ReturnsAsync(expectedUser);
+
+        var userDTO = new UserDTO
+        {
+            Id = 1,
+            FirstName = "niels",
+            LastName = "nielsen",
+            Email = "nielsen@example.com",
+            Role = "Teacher",
+            Archived = true,
+            Password = "",
+            RoleApproved = false
+        };
+
+        _mockMapper
+            .Setup(mapper => mapper.Map<UserDTO>(expectedUser))
+            .Returns(userDTO);
         
         // Act
         var result = await _userService.GetLoggedInUserAsync(1);
