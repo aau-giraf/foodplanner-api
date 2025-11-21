@@ -39,8 +39,8 @@ public class UserServiceTests
         // Arrange
         var expectedUsers = new List<UserDTO>
         {
-            new UserDTO { Id = 1, First_name = "niels", Last_name = "nielsen", Email = "nielsen@example.com", Role = UserRole.Teacher, Archived = true },
-            new UserDTO { Id = 2, First_name = "ole", Last_name = "olsen", Email = "olsen@example.com", Role =UserRole.Parent, Archived = true },
+            new UserDTO { Id = 1, First_name = "niels", Last_name = "nielsen", Email = "nielsen@example.com", Role = "Teacher", Archived = true },
+            new UserDTO { Id = 2, First_name = "ole", Last_name = "olsen", Email = "olsen@example.com", Role ="Parent", Archived = true },
         };
         _mockUserRepository
             .Setup(repo => repo.GetAllAsync())
@@ -343,8 +343,8 @@ public class UserServiceTests
         // Arrange
         var expectedUsers = new List<UserDTO>
         {
-            new UserDTO { Id = 1, First_name = "niels", Last_name = "nielsen", Email = "nielsen@example.com", Role =UserRole.Teacher, Archived = true },
-            new UserDTO { Id = 2, First_name = "ole", Last_name = "olsen", Email = "olsen@example.com", Role = UserRole.Parent, Archived = true },
+            new UserDTO { Id = 1, First_name = "niels", Last_name = "nielsen", Email = "nielsen@example.com", Role ="Teacher", Archived = true },
+            new UserDTO { Id = 2, First_name = "ole", Last_name = "olsen", Email = "olsen@example.com", Role = "Parent", Archived = true },
         };
         _mockUserRepository
             .Setup(repo => repo.GetAllNotApprovedAsync())
@@ -433,7 +433,7 @@ public class UserServiceTests
     public async Task GetLoggedInUserAsync_ReturnsAUser()
     {
         // Arrange
-        var expectedUser = new UserDTO { Id = 1, First_name = "niels", Last_name = "nielsen", Email = "nielsen@example.com", Role =UserRole.Teacher, Archived = true };
+        var expectedUser = new UserDTO { Id = 1, First_name = "niels", Last_name = "nielsen", Email = "nielsen@example.com", Role ="Teacher", Archived = true };
         _mockUserRepository
             .Setup(repo => repo.GetLoggedInAsync(expectedUser.Id))
             .ReturnsAsync(expectedUser);
