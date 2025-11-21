@@ -19,24 +19,23 @@ public class ChildrenService : IChildrenService
         _mapper = mapper;
         _authService = authService;
     }
-
-    public async Task<int> CreateChildrenAsync(ChildrenCreateParentDTO childrenCreateDTO)
+    public async Task<IEnumerable<Children>> GetAllChildrenAsync()
     {
-        var children = _mapper.Map<Children>(childrenCreateDTO);
+        var children = await _childrenRepository.GetAllAsync();
+        return children;
+    }
+    
+    public async Task<int> CreateChildrenAsync(ChildrenCreateParentDTO childrenCreateDto)
+    {
+        var children = _mapper.Map<Children>(childrenCreateDto);
         var childId = await _childrenRepository.InsertAsync(children);
         
-        foreach (var parentId in childrenCreateDTO.ParentIds)
+        foreach (var parentId in childrenCreateDto.ParentIds)
         {
             await AddParentToChildAsync(parentId, childId);
         }
         
         return childId;
-    }
-
-    public async Task<IEnumerable<Children>> GetAllChildrenAsync()
-    {
-        var children = await _childrenRepository.GetAllAsync();
-        return children;
     }
 
     public async Task<IEnumerable<ChildrenGetAllDTO>> GetAllChildrenClassesAsync()
@@ -66,7 +65,7 @@ public class ChildrenService : IChildrenService
     {
         return await _childrenRepository.DeleteAsync(id);
     }
-
+    
     public async Task<Children> GetChildFromChildIdAsync(int id)
     {
         return await _childrenRepository.GetChildByIdAsync(id);

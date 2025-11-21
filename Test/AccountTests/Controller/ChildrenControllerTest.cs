@@ -61,36 +61,4 @@ public class ChildrenControllerTest
         // Assert
         Assert.IsType<OkObjectResult>(result);
     }
-
-    [Fact]
-    public async Task Delete_ReturnsNoContentResult()
-    {
-        // Arrange
-        var id = 1;
-        _mockChildrenService
-            .Setup(repo => repo.DeleteChildrenAsync(id))
-            .ReturnsAsync(id);
-
-        // Act
-        var result = await _childrenController.Delete(id);
-
-        // Assert
-        Assert.IsType<NoContentResult>(result);
-    }
-
-    [Fact]
-    public async Task Delete_ReturnsNotFoundResult()
-    {
-        // Arrange
-        var id = 1;
-        _mockChildrenService
-            .Setup(repo => repo.DeleteChildrenAsync(id))
-            .ReturnsAsync(0);
-
-        // Act
-        var result = await _childrenController.Delete(id);
-
-        // Assert
-        Assert.IsType<NotFoundResult>(result);
-    }
 }

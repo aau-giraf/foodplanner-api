@@ -46,8 +46,18 @@ public class UserService : IUserService
 
         user.Password = _passwordHandler.EncryptPassword(user.Password);
         user.RoleApproved = false;
-        return await _userRepository.InsertAsync(user);
-
+        var id =  await _userRepository.InsertAsync(user);
+        if (user.Role.HasFlag(UserRole.Child))
+        {
+            var child = new Children()
+            {
+                ChildId = id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+            };
+            await _childrenRepository.InsertAsync(child);
+        }
+        return id;
     }
 
     public async Task<int> UpdateUserAsync(User user)
