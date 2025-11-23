@@ -7,6 +7,8 @@ namespace FoodplannerModels.Lunchbox
     {
         public MealProfile()
         {
+            CreateMap<Meal, MealDTO>();
+            CreateMap<MealDTO, Meal>();
             CreateMap<Meal, MealCreateDTO>();
             CreateMap<MealCreateDTO, Meal>();
         }

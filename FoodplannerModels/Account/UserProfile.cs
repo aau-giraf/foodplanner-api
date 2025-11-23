@@ -13,6 +13,21 @@ namespace FoodplannerModels.Account
         {
             CreateMap<User, UserCreateDTO>();
             CreateMap<UserCreateDTO, User>();
+            
+            CreateMap<User, UserArchivedDTO>();
+            CreateMap<UserArchivedDTO, User>();
+            
+            CreateMap<User, UserCredsDTO>();
+            CreateMap<UserCredsDTO, User>();
+
+            CreateMap<User, UserRoleDTO>();
+            CreateMap<UserRoleDTO, User>();
+
+            CreateMap<User, UserUpdateDTO>();
+            CreateMap<UserUpdateDTO, User>();
+
+            CreateMap<User, UserUpdateLoggedInDTO>();
+            CreateMap<UserUpdateLoggedInDTO, User>();
         }
     }
 }

@@ -198,13 +198,14 @@ builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IPasswordHandler, PasswordHandler>();
 builder.Services.AddSingleton<ISecretLoader, SecretsLoader>(_ => secretsLoader);
 
-builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfile));
 
 builder.Services.AddSingleton<IAuthService, AuthService>();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(ChatProfile));
+builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfile));
+builder.Services.AddAutoMapper(typeof(IngredientProfile));
 
 
 // Set up connection to database before running migrations
