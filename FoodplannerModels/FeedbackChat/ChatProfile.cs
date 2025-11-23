@@ -12,5 +12,8 @@ public class ChatProfile : Profile
         
         CreateMap<Message, UpdateMessageDTO>();
         CreateMap<UpdateMessageDTO, Message>();
+        
+        CreateMap<ChatThread, ChatThreadDTO>();
+        CreateMap<ChatThreadDTO, ChatThread>();
     }
 }

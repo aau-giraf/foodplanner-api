@@ -22,6 +22,7 @@ using FoodplannerServices.FeedbackChat;
 using FoodplannerServices.Secret;
 using Microsoft.OpenApi.Models;
 using FoodplannerModels.Auth;
+using FoodplannerModels.Image;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -204,8 +205,13 @@ builder.Services.AddSingleton<IAuthService, AuthService>();
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(ChatProfile));
-builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfile));
+builder.Services.AddAutoMapper(typeof(PackedIngredientProfile));
 builder.Services.AddAutoMapper(typeof(IngredientProfile));
+builder.Services.AddAutoMapper(typeof(MealProfile));
+builder.Services.AddAutoMapper(typeof(ChildrenProfile));
+builder.Services.AddAutoMapper(typeof(ClassroomProfile));
+builder.Services.AddAutoMapper(typeof(ImageProfile));
+
 
 
 // Set up connection to database before running migrations
