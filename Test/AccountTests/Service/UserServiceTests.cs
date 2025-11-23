@@ -39,8 +39,8 @@ public class UserServiceTests
         // Arrange
         var expectedUsers = new List<UserDTO>
         {
-            new UserDTO { Id = 1, First_name = "niels", Last_name = "nielsen", Email = "nielsen@example.com", Role = UserRole.Teacher, Archived = true },
-            new UserDTO { Id = 2, First_name = "ole", Last_name = "olsen", Email = "olsen@example.com", Role =UserRole.Parent, Archived = true },
+            new UserDTO { Id = 1, First_name = "niels", Last_name = "nielsen", Email = "nielsen@example.com", Role = "Teacher", Archived = true },
+            new UserDTO { Id = 2, First_name = "ole", Last_name = "olsen", Email = "olsen@example.com", Role ="Parent", Archived = true },
         };
         _mockUserRepository
             .Setup(repo => repo.GetAllAsync())
@@ -343,8 +343,8 @@ public class UserServiceTests
         // Arrange
         var expectedUsers = new List<UserDTO>
         {
-            new UserDTO { Id = 1, First_name = "niels", Last_name = "nielsen", Email = "nielsen@example.com", Role =UserRole.Teacher, Archived = true },
-            new UserDTO { Id = 2, First_name = "ole", Last_name = "olsen", Email = "olsen@example.com", Role = UserRole.Parent, Archived = true },
+            new UserDTO { Id = 1, First_name = "niels", Last_name = "nielsen", Email = "nielsen@example.com", Role ="Teacher", Archived = true },
+            new UserDTO { Id = 2, First_name = "ole", Last_name = "olsen", Email = "olsen@example.com", Role = "Parent", Archived = true },
         };
         _mockUserRepository
             .Setup(repo => repo.GetAllNotApprovedAsync())
@@ -433,7 +433,7 @@ public class UserServiceTests
     public async Task GetLoggedInUserAsync_ReturnsAUser()
     {
         // Arrange
-        var expectedUser = new UserDTO { Id = 1, First_name = "niels", Last_name = "nielsen", Email = "nielsen@example.com", Role =UserRole.Teacher, Archived = true };
+        var expectedUser = new UserDTO { Id = 1, First_name = "niels", Last_name = "nielsen", Email = "nielsen@example.com", Role ="Teacher", Archived = true };
         _mockUserRepository
             .Setup(repo => repo.GetLoggedInAsync(expectedUser.Id))
             .ReturnsAsync(expectedUser);
@@ -486,6 +486,39 @@ public class UserServiceTests
         // Assert
         Assert.Equal(expectedId, result);
     }
-
     
+    [Fact]
+    public async Task CreateUserAsync_CreatesChild_WhenRoleIsChild()
+    {
+        // Arrange
+        var expectedId = 1;
+        var mail = "child@example.com";
+        var newUser = new UserCreateDTO { FirstName = "lisa", LastName = "child", Email = mail, Password = "password", Role = "Child" };
+        var mappedUser = new User { Id = 0, FirstName = "lisa", LastName = "child", Email = mail, Password = "password", Role = UserRole.Child, RoleApproved = true };
+
+        _mockMapper
+            .Setup(mapper => mapper.Map<User>(newUser))
+            .Returns(mappedUser);
+        _mockUserRepository
+            .Setup(repo => repo.EmailExistsAsync(mail))
+            .ReturnsAsync(false);
+        _mockUserRepository
+            .Setup(repo => repo.InsertAsync(mappedUser))
+            .ReturnsAsync(expectedId);
+        _mockChildrenRepository
+            .Setup(repo => repo.InsertAsync(It.IsAny<Children>()))
+            .ReturnsAsync(expectedId);
+
+        // Act
+        var result = await _userService.CreateUserAsync(newUser);
+
+        // Assert
+        Assert.Equal(expectedId, result);
+        _mockChildrenRepository.Verify(repo =>
+            repo.InsertAsync(It.Is<Children>(c =>
+                c.ChildId == expectedId &&
+                c.FirstName == mappedUser.FirstName &&
+                c.LastName == mappedUser.LastName
+            )), Times.Once);
+    }
 }
