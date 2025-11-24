@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 public class OneTimePassword
 {
     [Key]
-    public int Id {  get; set; }
+    public int CodeId {  get; set; }
 
     public int GeneratedBy {  get; set; }
 

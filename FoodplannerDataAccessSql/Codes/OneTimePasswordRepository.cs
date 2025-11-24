@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Dapper;
 using FoodplannerModels.Account;
 using FoodplannerModels.Codes;
+using static System.Net.WebRequestMethods;
 
 namespace FoodplannerDataAccessSql.Codes
 {
@@ -18,16 +19,17 @@ namespace FoodplannerDataAccessSql.Codes
             _connectionFactory = connectionFactory;
         }
 
-        public async Task<OneTimePassword> GetFromCodeAsync(string code)
+        public async Task<OneTimePassword?> GetFromCodeAsync(string code)
         {
-            var sql = "SELECT * from one_time_password WHERE code = @Code";
-            using (var connection = _connectionFactory.Create())
-            {
-                connection.Open();
-                var result = await connection.QuerySingleAsync<OneTimePassword>(sql, new { Code = code});
-                return result;
-            }
+            const string sql = "SELECT * FROM one_time_password WHERE code = @Code";
+
+            using var connection = _connectionFactory.Create();
+            connection.Open();
+            var result = await connection.QuerySingleOrDefaultAsync<OneTimePassword>(sql, new { Code = code });
+            Console.WriteLine(result.CreatedOn);
+            return result;
         }
+
 
         public async Task<int> InsertAsync(OneTimePassword createOTP)
         {
@@ -49,24 +51,36 @@ namespace FoodplannerDataAccessSql.Codes
             }
         }
 
-        public Task<int> UpdateAsync(OneTimePassword OTP)
+        public async Task<int> UpdateAsync(OneTimePassword OTP)
         {
-            var sql = "UPDATE one_time_password SET generated_by = @GeneratedBy, code = @Code, created_on = @CreatedOn, expires_on = @ExpiresOn, used = @Used, used_by_user = @UsedByUser WHERE code_id = @Id";
+            var sql = @"
+        UPDATE one_time_password 
+        SET 
+            generated_by = @GeneratedBy,
+            code = @Code,
+            created_on = @CreatedOn,
+            expires_on = @ExpiresOn,
+            used = @Used,
+            used_by_user = @UsedByUser
+        WHERE code_id = @CodeId;
+    ";
+
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = connection.Execute(sql, new
+                var result = await connection.ExecuteAsync(sql, new
                 {
+                    CodeId = OTP.CodeId,
                     GeneratedBy = OTP.GeneratedBy,
                     Code = OTP.Code,
                     CreatedOn = OTP.CreatedOn,
                     ExpiresOn = OTP.ExpiresOn,
                     Used = OTP.Used,
-                    UsedByUser = OTP.UsedByUser,
-                    Id = OTP.Id
+                    UsedByUser = OTP.UsedByUser
                 });
-                return Task.FromResult(result);
+                return result;
             }
         }
+
     }
 }

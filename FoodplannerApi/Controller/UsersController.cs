@@ -83,7 +83,6 @@ public class UsersController : BaseController
             var result = await _userService.GetJWTByEmailAndPasswordAsync(user.Email, user.Password);
             if (!string.IsNullOrEmpty(user.Code) && result != null)
             {
-                Console.WriteLine("PLEASE");
                 var code = await _oneTimePasswordService.GetOneTimePassword(user.Code);
                 code.Used = true;
                 code.UsedByUser = int.Parse(_authService.RetrieveIdFromJwtTokenNoBearer(result.JWT));

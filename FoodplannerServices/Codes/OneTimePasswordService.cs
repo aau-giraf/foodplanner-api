@@ -7,11 +7,11 @@ namespace FoodplannerServices.Codes;
 public class OneTimePasswordService : IOneTimePasswordService
 {
     private readonly IOneTimePasswordRepository _oneTimePasswordRepository;
-    private readonly IChildrenService _childrenService;
-    public OneTimePasswordService(IOneTimePasswordRepository oneTimePasswordRepository, IChildrenService childrenService) 
+    private readonly IChildrenRepository _childrenRepository;
+    public OneTimePasswordService(IOneTimePasswordRepository oneTimePasswordRepository, IChildrenRepository childrenRepository) 
     {
         _oneTimePasswordRepository = oneTimePasswordRepository;
-        _childrenService = childrenService;
+        _childrenRepository = childrenRepository;
     }
 
     public async Task<int> CreateOneTimePassword(int userID)
@@ -38,7 +38,7 @@ public class OneTimePasswordService : IOneTimePasswordService
     public async Task<int> RedeemOneTimePassword(string code)
     {
         var OTP = await GetOneTimePassword(code);
-        var result = await _childrenService.AddParentToChildAsync(OTP.GeneratedBy, OTP.UsedByUser.Value);
+        var result = await _childrenRepository.AddParentToChildAsync(OTP.GeneratedBy,OTP.UsedByUser.Value);
         return result;
     }
 
