@@ -181,7 +181,7 @@ builder.Services.AddScoped(typeof(IIngredientRepository), typeof(IngredientRepos
 builder.Services.AddScoped(typeof(IPackedIngredientRepository), typeof(PackedIngredientRepository));
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<MealService>();
-builder.Services.AddScoped<IngredientService>();
+// Register the service against its interface so controllers can resolve IIngredientService
 builder.Services.AddScoped<PackedIngredientService>();
 builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
 builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepository));
@@ -197,9 +197,10 @@ builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IPasswordHandler, PasswordHandler>();
+builder.Services.AddScoped<IIngredientService, IngredientService>();
+builder.Services.AddScoped<IMealService, MealService>();
+builder.Services.AddScoped<IPackedIngredientService, PackedIngredientService>();
 builder.Services.AddSingleton<ISecretLoader, SecretsLoader>(_ => secretsLoader);
-
-
 builder.Services.AddSingleton<IAuthService, AuthService>();
 
 // Add AutoMapper
