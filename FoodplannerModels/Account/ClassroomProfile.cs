@@ -8,5 +8,8 @@ public class ClassroomProfile : Profile
     {
         CreateMap<Classroom, ClassroomProfile>();
         CreateMap<ClassroomProfile, Classroom>();
+
+        CreateMap<Classroom, CreateClassroomDTO>();
+        CreateMap<CreateClassroomDTO, Classroom>();
     }
 }

@@ -10,9 +10,6 @@ namespace FoodplannerModels.Account
     public class UserRoleDTO
     {
         [Required]
-        public int id { get; set; }
-        
-        [Required]
         public bool role_approved { get; set; }
     }
 }

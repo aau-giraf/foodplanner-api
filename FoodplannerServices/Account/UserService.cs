@@ -30,9 +30,10 @@ public class UserService : IUserService
         return userDTO;
     }
 
-    public async Task<User?> GetUserByIdAsync(int id)
+    public async Task<UserDTO?> GetUserByIdAsync(int id)
     {
-        return await _userRepository.GetByIdAsync(id);
+        var user = await _userRepository.GetByIdAsync(id);
+        return _mapper.Map<UserDTO?>(user);
     }
 
 
@@ -50,9 +51,10 @@ public class UserService : IUserService
         return await _userRepository.InsertAsync(user);
     }
     
-    public async Task<int> UpdateUserAsync(UserUpdateDTO userUpdateDto)
+    public async Task<int> UpdateUserAsync(UserUpdateDTO userUpdateDto, int id)
     {
         var user = _mapper.Map<User>(userUpdateDto);
+        user.Id = id;
         user.Password = _passwordHandler.EncryptPassword(user.Password);
         return await _userRepository.UpdateAsync(user);
     }

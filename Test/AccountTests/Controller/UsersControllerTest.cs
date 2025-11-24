@@ -127,7 +127,7 @@ public class UsersControllerTests
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
 
-        var login = new Login
+        var login = new LoginDTO()
         {
             Email = "test1234@123456789.com",
             Password = "wrongPassword"
@@ -158,7 +158,7 @@ public class UsersControllerTests
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
 
-        var loginDto = new Login
+        var loginDto = new LoginDTO()
         {
             Email = "invalid@example.com",
             Password = "wrongpassword"
@@ -186,7 +186,7 @@ public class UsersControllerTests
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
 
-        var loginDto = new Login
+        var loginDto = new LoginDTO()
         {
             Email = "test@example.com",
             Password = "password123"

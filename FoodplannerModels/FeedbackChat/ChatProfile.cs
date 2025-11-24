@@ -10,6 +10,9 @@ public class ChatProfile : Profile
         CreateMap<Message, AddMessageDTO>();
         CreateMap<AddMessageDTO, Message>();
         
+        CreateMap<Message, UserNameFeedbackChatDTO>();
+        CreateMap<UserNameFeedbackChatDTO, Message>();
+        
         CreateMap<Message, UpdateMessageDTO>();
         CreateMap<UpdateMessageDTO, Message>();
         

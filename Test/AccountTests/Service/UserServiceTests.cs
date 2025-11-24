@@ -78,7 +78,6 @@ public class UserServiceTests
                 Email = "nielsen@example.com",
                 Role = "Teacher",
                 Archived = true,
-                Password = "",
                 RoleApproved = false
             },
             
@@ -90,7 +89,6 @@ public class UserServiceTests
                 Email = "olsen@example.com",
                 Role = "Parent",
                 Archived = true,
-                Password = "",
                 RoleApproved = false
             },
         };
@@ -116,17 +114,28 @@ public class UserServiceTests
     public async Task GetUserByIdAsync_ReturnsAUser_WhenIdIsValid()
     {
         // Arrange
-        var expectedUser = new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role = "Teacher", RoleApproved = true };
+        var expectedId = 1;
+        var mail = "nielsen@example.com";
+        var userDto = new UserDTO() { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = mail, Role = "Teacher", RoleApproved = true };
+        var user = new User { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = mail, Password = "", Role = "Teacher", RoleApproved = true };
+        _mockMapper
+            .Setup(mapper => mapper.Map<User>(userDto))
+            .Returns(user);
+        
+        _mockMapper
+            .Setup(mapper => mapper.Map<UserDTO>(user))
+            .Returns(userDto);
+        
         _mockUserRepository
-            .Setup(repo => repo.GetByIdAsync(expectedUser.Id))
-            .ReturnsAsync(expectedUser);
+            .Setup(repo => repo.GetByIdAsync(userDto.Id))
+            .ReturnsAsync(user);
         
         // Act
         var result = await _userService.GetUserByIdAsync(1);
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(expectedUser, result);
+        Assert.Equal(userDto, result);
     }
 
     [Fact]
@@ -182,24 +191,30 @@ public class UserServiceTests
     public async Task UpdateUserAsync_UpdatesValueInRepository()
     {
         // Arrange
-        var expectedId = 1;
-        var user = new User { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role = "Teacher", RoleApproved = true };
+        var id = 1;
+        var user = new User { Id = id, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role = "Teacher", RoleApproved = true };
 
         _mockUserRepository
             .Setup(repo => repo.UpdateAsync(user))
-            .ReturnsAsync(expectedId);
+            .ReturnsAsync(id);
         
-        var userUpdateDto = new UserUpdateDTO { Id = expectedId, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com" };
+        var userUpdateDto = new UserUpdateDTO
+        {
+            FirstName = "niels",
+            LastName = "nielsen",
+            Email = "nielsen@example.com",
+            Password = "password"
+        };
 
         _mockMapper
             .Setup(mapper => mapper.Map<User>(userUpdateDto))
             .Returns(user);
 
         // Act
-        var result = await _userService.UpdateUserAsync(userUpdateDto);
+        var result = await _userService.UpdateUserAsync(userUpdateDto, id);
         
         // Assert
-        Assert.Equal(expectedId, result);
+        Assert.Equal(id, result);
     }
 
     [Fact]
@@ -432,7 +447,6 @@ public class UserServiceTests
                 FirstName = "niels",
                 LastName = "nielsen",
                 Email = "nielsen@example.com",
-                Password = "",
                 Role = "Teacher",
                 RoleApproved = false,
                 Archived = true,
@@ -443,7 +457,6 @@ public class UserServiceTests
                 FirstName = "ole",
                 LastName = "olsen",
                 Email = "olsen@example.com",
-                Password = "",
                 Role = "Parent",
                 RoleApproved = false,
                 Archived = true,
@@ -559,7 +572,6 @@ public class UserServiceTests
             Email = "nielsen@example.com",
             Role = "Teacher",
             Archived = true,
-            Password = "",
             RoleApproved = false
         };
 

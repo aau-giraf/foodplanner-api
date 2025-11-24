@@ -10,9 +10,6 @@ namespace FoodplannerModels.Account
     public class UserArchivedDTO
     {
         [Required]
-        public required int id { get; set; }
-        
-        [Required]
         public required bool Archived { get; set; }
     }
 }

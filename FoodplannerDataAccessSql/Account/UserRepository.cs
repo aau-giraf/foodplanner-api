@@ -122,20 +122,17 @@ namespace FoodplannerDataAccessSql.Account
 
         public Task<int> UpdateAsync(User entity)
         {
-            var sql = "UPDATE users SET first_name = @FirstName, last_name = @LastName, email = @Email, password = @Password, role = @Role, role_approved = @RoleApproved, archived = @Archived WHERE id = @Id";
+            var sql = "UPDATE users SET first_name = @FirstName, last_name = @LastName, email = @Email, password = @Password WHERE id = @Id";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
                 var result = connection.Execute(sql, new
                 {
+                    Id = entity.Id,
                     FirstName = entity.FirstName,
                     LastName = entity.LastName,
                     Email = entity.Email,
                     Password = entity.Password,
-                    Role = entity.Role,
-                    RoleApproved = entity.RoleApproved,
-                    Id = entity.Id,
-                    Archived = entity.Archived
                 });
                 return Task.FromResult(result);
             }

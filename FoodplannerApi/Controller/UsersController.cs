@@ -33,7 +33,7 @@ public class UsersController : BaseController
             LastName = "test",
             Email = "user@test.com",
             Password = "test",
-            Role = "Parent",
+            Role = "Admin",
             RoleApproved = true
         };
 
@@ -69,7 +69,7 @@ public class UsersController : BaseController
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Login([FromBody] Login user)
+    public async Task<IActionResult> Login([FromBody] LoginDTO login)
     {
         if (!ModelState.IsValid)
         {
@@ -77,7 +77,7 @@ public class UsersController : BaseController
         }
         try
         {
-            var result = await _userService.GetJWTByEmailAndPasswordAsync(user.Email, user.Password);
+            var result = await _userService.GetJWTByEmailAndPasswordAsync(login.Email, login.Password);
             if (result != null)
             {
                 return Ok(result);

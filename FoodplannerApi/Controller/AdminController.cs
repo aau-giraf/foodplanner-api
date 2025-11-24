@@ -56,11 +56,7 @@ public class AdminController : BaseController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(int id, [FromBody] UserUpdateDTO user)
     {
-        if (id != user.Id)
-        {
-            return BadRequest();
-        }
-        var result = await _userService.UpdateUserAsync(user);
+        var result = await _userService.UpdateUserAsync(user, id);
         if (result > 0)
         {
             return NoContent();
@@ -87,10 +83,6 @@ public class AdminController : BaseController
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateRoleApproved(int id, [FromBody] UserRoleDTO userRoleDTO)
     {
-        if (id != userRoleDTO.id)
-        {
-            return BadRequest();
-        }
         var result = await _userService.UserUpdateRoleApprovedAsync(id, userRoleDTO.role_approved);
 
         if (result != null)
@@ -100,14 +92,7 @@ public class AdminController : BaseController
 
         return NotFound();
     }
-
-    [HttpGet]
-    public async Task<IActionResult> GetNotApproved()
-    {
-        var users = await _userService.GetUsersNotApprovedAsync();
-        return Ok(users);
-    }
-
+    
     [HttpGet]
     public async Task<IActionResult> GetNotArchived()
     {
