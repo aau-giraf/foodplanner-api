@@ -9,5 +9,7 @@ namespace FoodplannerModels.Codes
     public interface IOneTimePasswordRepository
     {
         Task<int> InsertAsync(OneTimePassword createOTP);
+        Task<int> UpdateAsync(OneTimePassword createOTP);
+        Task<OneTimePassword> GetFromCodeAsync(string code);
     }
 }

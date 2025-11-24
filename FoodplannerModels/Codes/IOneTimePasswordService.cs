@@ -3,5 +3,8 @@
     public interface IOneTimePasswordService
     {
          Task<int> CreateOneTimePassword(int userID);
+        Task<OneTimePassword> GetOneTimePassword(string code);
+        Task<int> UpdateOneTimePassword(OneTimePassword OTP);
+        Task<int> RedeemOneTimePassword(string code);
     }
 }

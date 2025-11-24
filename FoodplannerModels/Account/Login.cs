@@ -12,4 +12,7 @@ namespace FoodplannerModels.Account;
         [Required(ErrorMessage = "Password er påkrævet")]
         [StringLength(100)]
         public required string Password { get; set; }
+
+        [StringLength(6)]
+        public string? Code { get; set; }
     }

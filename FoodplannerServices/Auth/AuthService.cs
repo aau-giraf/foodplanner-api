@@ -59,6 +59,16 @@ namespace FoodplannerServices.Auth
             return idClaim != null ? idClaim.Value : "Id claim not found.";
         }
 
+        public string RetrieveIdFromJwtTokenNoBearer(string token)
+        {
+            var jwtToken = ParseTokenNoBearer(token);
+            // Retrieve the Id claim
+            var idClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+
+            // Return the Id claim value or a message if not found
+            return idClaim != null ? idClaim.Value : "Id claim not found.";
+        }
+
         public string RetrieveRoleFromJwtToken(string token)
         {
             var jwtToken = ParseToken(token);
@@ -88,6 +98,19 @@ namespace FoodplannerServices.Auth
                 throw new ArgumentException("The token is not in a valid JWT format.");
             }
             
+            return handler.ReadJwtToken(token);
+        }
+
+        private JwtSecurityToken ParseTokenNoBearer(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+
+            // Validate if the token is in proper JWT format
+            if (!handler.CanReadToken(token))
+            {
+                throw new ArgumentException("The token is not in a valid JWT format.");
+            }
+
             return handler.ReadJwtToken(token);
         }
     }

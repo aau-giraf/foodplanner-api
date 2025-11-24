@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using FoodplannerServices.Auth;
 using FoodplannerModels.Auth;
+using FoodplannerModels.Codes;
 
 namespace FoodplannerApi.Controller;
 
@@ -13,11 +14,13 @@ public class UsersController : BaseController
 {
     private readonly IUserService _userService;
     private readonly IAuthService _authService;
+    private readonly IOneTimePasswordService _oneTimePasswordService;
 
-    public UsersController(IUserService userService, IAuthService authService)
+    public UsersController(IUserService userService, IAuthService authService, IOneTimePasswordService oneTimePasswordService)
     {
         _userService = userService;
         _authService = authService;
+        _oneTimePasswordService = oneTimePasswordService;
     }
 
     [HttpGet]
@@ -78,6 +81,17 @@ public class UsersController : BaseController
         try
         {
             var result = await _userService.GetJWTByEmailAndPasswordAsync(user.Email, user.Password);
+            if (!string.IsNullOrEmpty(user.Code) && result != null)
+            {
+                Console.WriteLine("PLEASE");
+                var code = await _oneTimePasswordService.GetOneTimePassword(user.Code);
+                code.Used = true;
+                code.UsedByUser = int.Parse(_authService.RetrieveIdFromJwtTokenNoBearer(result.JWT));
+
+                await _oneTimePasswordService.UpdateOneTimePassword(code);
+                await _oneTimePasswordService.RedeemOneTimePassword(code.Code);
+            }
+
             if (result != null)
             {
                 return Ok(result);
