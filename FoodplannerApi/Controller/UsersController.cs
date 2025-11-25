@@ -64,6 +64,30 @@ public class UsersController : BaseController
             return BadRequest(new ErrorResponse { Email = [e.Message] });
         }
     }
+    
+    [HttpPost]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateUserChildren([FromBody] UserCreateChildDTO userCreateChildDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        try
+        {
+            var id = await _userService.CreateChildrenUserAsync(userCreateChildDto);
+         
+            if (id > 0)
+            {
+                return Created(string.Empty, id);
+            }
+            return BadRequest();
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new ErrorResponse { Email = [e.Message] });
+        }
+    }
 
     [HttpPost]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
