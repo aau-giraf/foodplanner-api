@@ -44,15 +44,20 @@ public class UsersController : BaseController
 
     [HttpPost]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Create([FromBody] UserCreateDTO userCreate)
+    public async Task<IActionResult> Create([FromBody] UserCreateDTO userCreateDto)
     {
+        if (Enum.TryParse<UserRole>(userCreateDto.Role, true, out var parsedRole) && parsedRole == UserRole.Child)
+        {
+            return BadRequest(new ErrorResponse { Message = ["Child user can not be created at this endpoint, use CreateUserChildren instead "] });
+        }
+        
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
         try
         {
-            var id = await _userService.CreateUserAsync(userCreate);
+            var id = await _userService.CreateUserAsync(userCreateDto);
             if (id > 0)
             {
                 return Created(string.Empty, id);
