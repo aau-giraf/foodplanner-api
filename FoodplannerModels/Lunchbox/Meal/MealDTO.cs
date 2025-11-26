@@ -15,6 +15,7 @@ public class MealDTO
     public required string Name { get; set; }
     // Date accosiated with the meal
     public required string Date { get; set; }
+    public bool Template { get; set; }
     //List of ingredients in the meal
     public required List<PackedIngredientDTO> Ingredients { get; set; }
 }

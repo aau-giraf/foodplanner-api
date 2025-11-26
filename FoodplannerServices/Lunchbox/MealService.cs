@@ -180,4 +180,106 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
     {
         return await _mealRepository.DeleteAsync(id);
     }
+
+    public async Task<IEnumerable<MealDTO>> GetAllTemplatesByUserAsync(int userId)
+    {
+        var meals = await _mealRepository.GetAllTemplatesByUserAsync(userId);
+
+        var packedIngredientsByMeal = await Task.WhenAll(
+            meals.Select(async meal =>
+            {
+                var packedIngredients = await _packedIngredientRepository.GetAllByMealIdAsync(meal.Id);
+                return new { meal.Id, PackedIngredients = packedIngredients };
+            })
+        );
+
+        var allPackedIngredients = packedIngredientsByMeal.SelectMany(m => m.PackedIngredients).ToList();
+        var allIngredientIds = allPackedIngredients.Select(p => p.Ingredient_id).Distinct().ToList();
+        var ingredientsById = (await Task.WhenAll(
+            allIngredientIds.Select(async id =>
+            {
+                var ingredient = await _ingredientRepository.GetByIdAsync(id);
+                return new { Id = id, Ingredient = ingredient };
+            })
+        )).ToDictionary(i => i.Id, i => i.Ingredient);
+
+        var output = meals.Select(meal =>
+        {
+            var packedIngredients = packedIngredientsByMeal
+                .First(m => m.Id == meal.Id).PackedIngredients
+                .Select(p => new PackedIngredientDTO
+                {
+                    Id = p.Id,
+                    Meal_id = p.Meal_id,
+                    Ingredient_id = ingredientsById[p.Ingredient_id],
+                    order_number = p.order_number
+                }).ToList();
+
+            return new MealDTO
+            {
+                Id = meal.Id,
+                Food_image_id = meal.Food_image_id,
+                Name = meal.Name,
+                Date = meal.Date,
+                Template = meal.Template,
+                Ingredients = packedIngredients
+            };
+        }).ToList();
+
+        return output;
+    }
+
+    // Update this method with ownership verification:
+    public async Task<int> UpdateTemplateStatusAsync(int id, bool template, int userId)
+    {
+        // Verify ownership
+        var meal = await _mealRepository.GetByIdAsync(id);
+        if (meal == null)
+        {
+            throw new InvalidOperationException("Måltid ikke fundet");
+        }
+        
+        if (meal.User_id != userId)
+        {
+            throw new InvalidOperationException("Du har ikke tilladelse til at ændre dette måltid");
+        }
+        
+        return await _mealRepository.UpdateTemplateStatusAsync(id, template);
+    }
+
+    // Update this method with ownership verification:
+    public async Task<IEnumerable<Ingredient>> GetUniqueIngredientsFromMealsAsync(List<int> mealIds, int userId)
+    {
+        // Verify all meals belong to the user
+        foreach (var mealId in mealIds)
+        {
+            var meal = await _mealRepository.GetByIdAsync(mealId);
+            if (meal == null || meal.User_id != userId)
+            {
+                throw new InvalidOperationException("Du har ikke tilladelse til at få adgang til alle de angivne måltider");
+            }
+        }
+
+        var allIngredients = new Dictionary<int, Ingredient>();
+
+        foreach (var mealId in mealIds)
+        {
+            var packedIngredients = await _packedIngredientRepository.GetAllByMealIdAsync(mealId);
+            
+            foreach (var packedIngredient in packedIngredients)
+            {
+                if (!allIngredients.ContainsKey(packedIngredient.Ingredient_id))
+                {
+                    var ingredient = await _ingredientRepository.GetByIdAsync(packedIngredient.Ingredient_id);
+                    if (ingredient != null)
+                    {
+                        allIngredients[packedIngredient.Ingredient_id] = ingredient;
+                    }
+                }
+            }
+        }
+
+        return allIngredients.Values;
+    }
+
 }

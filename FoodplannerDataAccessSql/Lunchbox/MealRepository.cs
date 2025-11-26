@@ -49,17 +49,17 @@ public class MealRepository(PostgreSQLConnectionFactory connectionFactory) : IMe
     // Asynchronously inserts a new meal into the database and returns its Id.
     public async Task<int> InsertAsync(Meal entity, int id)
     {
-        var sql = "INSERT INTO meals (name, user_id, food_image_id, date) VALUES (@Name, @UserId, @FoodImageId, @Date) RETURNING id";
+        var sql = "INSERT INTO meals (name, user_id, food_image_id, date, template) VALUES (@Name, @UserId, @FoodImageId, @Date, @Template) RETURNING id";
         using (var connection = _connectionFactory.Create())
         {
             connection.Open();
-            //Since food_image_id is nullable in the database, we cast it as a nullable object in a null-coalescing operator in order to return the correct form of null to the database.
             return await connection.QuerySingleAsync<int>(sql, new
             {
                 Name = entity.Name,
                 UserId = id,
                 FoodImageId = entity.Food_image_id ?? (object)DBNull.Value,
-                Date = entity.Date
+                Date = entity.Date,
+                Template = entity.Template
             });
         }
     }
@@ -67,7 +67,7 @@ public class MealRepository(PostgreSQLConnectionFactory connectionFactory) : IMe
     // Asynchronously updates an existing meal in the database.
     public async Task<int> UpdateAsync(Meal entity, int id)
     {
-        var sql = "UPDATE meals SET name = @Name, user_id = @UserId, food_image_id = @FoodImageId, date = @Date WHERE id = @Id";
+        var sql = "UPDATE meals SET name = @Name, user_id = @UserId, food_image_id = @FoodImageId, date = @Date, template = @Template WHERE id = @Id";
         using (var connection = _connectionFactory.Create())
         {
             connection.Open();
@@ -77,7 +77,8 @@ public class MealRepository(PostgreSQLConnectionFactory connectionFactory) : IMe
                 Name = entity.Name,
                 UserId = entity.User_id,
                 FoodImageId = entity.Food_image_id ?? (object)DBNull.Value,
-                Date = entity.Date
+                Date = entity.Date,
+                Template = entity.Template
             });
         }
     }
@@ -92,4 +93,28 @@ public class MealRepository(PostgreSQLConnectionFactory connectionFactory) : IMe
             return await connection.ExecuteAsync(sql, new { Id = id });
         }
     }
+
+    // Gets all meals where template is set to 1
+    public async Task<IEnumerable<Meal>> GetAllTemplatesByUserAsync(int userId)
+    {
+        var sql = "SELECT * FROM meals WHERE template = true AND user_id = @UserId";
+        using (var connection = _connectionFactory.Create())
+        {
+            connection.Open();
+            return await connection.QueryAsync<Meal>(sql, new { UserId = userId });
+        }
+    }
+
+
+    // Update a meals template status via its ID
+    public async Task<int> UpdateTemplateStatusAsync(int id, bool template)
+    {
+        var sql = "UPDATE meals SET template = @template WHERE id = @Id";
+        using (var connection = _connectionFactory.Create())
+        {
+            connection.Open();
+            return await connection.ExecuteAsync(sql, new { Id = id, Template = template });
+        }
+    }
+
 }
