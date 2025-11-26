@@ -16,6 +16,9 @@ namespace FoodplannerModels.Account
             
             CreateMap<UserCreateDTO, User>()
                 .ForMember(dest => dest.Role, opt => opt.MapFrom(src => ParseUserRole(src.Role)));
+
+            CreateMap<User, UserCreateChildDTO>();
+            CreateMap<UserCreateChildDTO, User>();
         }
 
         private static UserRole ParseUserRole(string roleString)
