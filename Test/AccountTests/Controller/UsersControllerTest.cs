@@ -330,4 +330,38 @@ public class UsersControllerTests
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
         Assert.Equal(400, badRequestResult.StatusCode);
     }
+    
+    [Fact]
+    public async Task CreateUserChildren_ReturnsCreatedResult_WhenChildIsValid()
+    {
+        // Arrange
+        var mockUserService = new Mock<IUserService>();
+        var mockAuthService = new Mock<IAuthService>();
+
+        var childDto = new UserCreateChildDTO
+        {
+            FirstName = "lisa",
+            LastName = "child",
+            Email = "child@example.com",
+            Password = "password",
+            ParentIds = new System.Collections.Generic.List<int> { 2, 3 }
+        };
+
+        mockUserService
+            .Setup(s => s.CreateChildrenUserAsync(It.Is<UserCreateChildDTO>(d =>
+                d.Email == childDto.Email &&
+                d.FirstName == childDto.FirstName &&
+                d.LastName == childDto.LastName)))
+            .ReturnsAsync(1);
+
+        var controller = new UsersController(mockUserService.Object, mockAuthService.Object);
+
+        // Act
+        var result = await controller.CreateUserChildren(childDto);
+
+        // Assert
+        var createdResult = Assert.IsType<CreatedResult>(result);
+        Assert.Equal(1, createdResult.Value);
+        mockUserService.Verify(s => s.CreateChildrenUserAsync(It.IsAny<UserCreateChildDTO>()), Times.Once);
+    }
 }
