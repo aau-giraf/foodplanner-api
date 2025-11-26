@@ -149,7 +149,7 @@ public class MealsController(IMealService mealService, IAuthService authService)
                 return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
             }
 
-            var templates = await _mealService.GetAllTemplatesByUserAsync(userId);
+            var templates = await _mealService.GetAllTemplatesByUserAsync(id);
             return Ok(templates);
         }
         catch (InvalidOperationException e)
