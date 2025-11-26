@@ -133,4 +133,81 @@ public class MealsController(IMealService mealService, IAuthService authService)
         }
         return NotFound();
     }
+
+
+
+    // Get all template meals for the logged-in user
+    [HttpGet]
+    [Authorize(Roles = "Child, Parent")]
+    public async Task<IActionResult> GetAllTemplates([FromHeader(Name = "Authorization")] string token)
+    {
+        try
+        {
+            var idString = _authService.RetrieveIdFromJwtToken(token);
+            if (!int.TryParse(idString, out int id))
+            {
+                return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+            }
+
+            var templates = await _mealService.GetAllTemplatesByUserAsync(userId);
+            return Ok(templates);
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new ErrorResponse { Message = [e.Message] });
+        }
+    }
+
+    // Update template status with ownership verification
+    [HttpPut("{id}/template")]
+    [Authorize(Roles = "Child, Parent")]
+    public async Task<IActionResult> UpdateTemplateStatus([FromHeader(Name = "Authorization")] string token, int id, [FromBody] bool template)
+    {
+        try
+        {
+            var idString = _authService.RetrieveIdFromJwtToken(token);
+            if (!int.TryParse(idString, out int userId))
+            {
+                return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+            }
+
+            var result = await _mealService.UpdateTemplateStatusAsync(id, template, userId);
+            if (result > 0)
+            {
+                return Ok(new { Message = "Skabelonstatus opdateret med succes" });
+            }
+            return BadRequest(new ErrorResponse { Message = new[] { "Kunne ikke opdatere skabelonstatus" } });
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new ErrorResponse { Message = [e.Message] });
+        }
+    }
+
+    // Get unique ingredients from user's meals only
+    [HttpPost]
+    [Authorize(Roles = "Child, Parent")]
+    public async Task<IActionResult> GetUniqueIngredientsFromMeals([FromHeader(Name = "Authorization")] string token, [FromBody] List<int> mealIds)
+    {
+        try
+        {
+            var idString = _authService.RetrieveIdFromJwtToken(token);
+            if (!int.TryParse(idString, out int userId))
+            {
+                return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+            }
+
+            if (mealIds == null || !mealIds.Any())
+            {
+                return BadRequest(new ErrorResponse { Message = new[] { "Måltids-ID'er er påkrævet" } });
+            }
+
+            var ingredients = await _mealService.GetUniqueIngredientsFromMealsAsync(mealIds, userId);
+            return Ok(ingredients);
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new ErrorResponse { Message = [e.Message] });
+        }
+    }
 }

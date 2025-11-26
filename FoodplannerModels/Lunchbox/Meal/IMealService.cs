@@ -17,4 +17,10 @@ public interface IMealService
     Task<int> UpdateMealAsync(MealDTO mealDto, int id);
     // Deletes an meal by ID asynchronously.
     Task<int> DeleteMealAsync(int id);
+    // get all meals where template is 1
+    Task<IEnumerable<MealDTO>> GetAllTemplatesByUserAsync(int userId);
+    // Update a meals template status via its ID
+    Task<int> UpdateTemplateStatusAsync(int id, bool template, int userId);
+    // Get unique ingredients by a list of meal IDs and return ingredients
+    Task<IEnumerable<Ingredient>> GetUniqueIngredientsFromMealsAsync(List<int> mealIds, int userId); // Add userId
 }
