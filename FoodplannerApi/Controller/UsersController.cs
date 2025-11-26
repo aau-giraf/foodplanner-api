@@ -48,7 +48,7 @@ public class UsersController : BaseController
     {
         if (Enum.TryParse<UserRole>(userCreateDto.Role, true, out var parsedRole) && parsedRole == UserRole.Child)
         {
-            return BadRequest(new ErrorResponse { Message = ["Child user can not be created at this endpoint, use CreateUserChildren instead "] });
+            return BadRequest(new ErrorResponse { Message = ["Børn må ikke laves med dette endpoint, istedet skal CreateUserChildren bruges."] });
         }
         
         if (!ModelState.IsValid)
