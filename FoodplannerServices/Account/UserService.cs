@@ -70,6 +70,7 @@ public class UserService : IUserService
             ChildId = id,
             FirstName = user.FirstName,
             LastName = user.LastName,
+            ClassId = userCreateChildDto.ClassId
         };
         await _childrenRepository.InsertAsync(child);
 
