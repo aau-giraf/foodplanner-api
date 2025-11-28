@@ -50,18 +50,22 @@ public class UserService : IUserService
         return id;
     }
 
-    public async Task<int> CreateChildrenUserAsync(UserCreateChildDTO userCreateChildDto)
+    public async Task<int> CreateChildrenUserAsync(UserCreateChildDTO userCreateChildDto, int parentId)
     {
         var user = _mapper.Map<User>(userCreateChildDto);
-        var parentIds = userCreateChildDto.ParentIds;
-
+        var parentUser = await _userRepository.GetByIdAsync(parentId);
+        if (parentUser == null  || (parentUser.Role != UserRole.Parent))
+        {
+            throw new InvalidOperationException("Forælder ikke fundet eller ugyldig rolle");
+        }
+        
         if (await _userRepository.EmailExistsAsync(user.Email.ToString()))
         {
             throw new InvalidOperationException("Email eksisterer allerede");
         }
 
         user.Password = _passwordHandler.EncryptPassword(user.Password);
-        user.RoleApproved = false;
+        user.RoleApproved = parentUser.RoleApproved;
         user.Role = UserRole.Child;
         var id = await _userRepository.InsertAsync(user);
 
@@ -73,11 +77,7 @@ public class UserService : IUserService
             ClassId = userCreateChildDto.ClassId
         };
         await _childrenRepository.InsertAsync(child);
-
-        foreach (var parentId in parentIds)
-        {
-            await _childrenRepository.AddParentToChildAsync(parentId, child.ChildId);
-        }
+        await _childrenRepository.AddParentToChildAsync(parentId, child.ChildId);
 
         return id;
     }

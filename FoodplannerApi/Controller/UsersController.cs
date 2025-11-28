@@ -72,7 +72,8 @@ public class UsersController : BaseController
     
     [HttpPost]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    public async Task<IActionResult> CreateUserChildren([FromBody] UserCreateChildDTO userCreateChildDto)
+    [Authorize(Roles = "Parent")]
+    public async Task<IActionResult> CreateUserChildren([FromHeader(Name = "Authorization")] string token, [FromBody] UserCreateChildDTO userCreateChildDto)
     {
         if (!ModelState.IsValid)
         {
@@ -80,7 +81,13 @@ public class UsersController : BaseController
         }
         try
         {
-            var id = await _userService.CreateChildrenUserAsync(userCreateChildDto);
+            var idString = _authService.RetrieveIdFromJwtToken(token);
+            if (!int.TryParse(idString, out int parentId))
+            {
+                return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+            }
+            
+            var id = await _userService.CreateChildrenUserAsync(userCreateChildDto, parentId);
          
             if (id > 0)
             {
@@ -90,7 +97,7 @@ public class UsersController : BaseController
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new ErrorResponse { Email = [e.Message] });
+            return BadRequest(new ErrorResponse { Email = new[] { e.Message } });
         }
     }
 
