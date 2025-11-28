@@ -1,3 +1,4 @@
+using System.Runtime.ExceptionServices;
 using AutoMapper;
 using FoodplannerModels.Account;
 using FoodplannerModels.Auth;
@@ -13,7 +14,8 @@ public class UserService : IUserService
     private readonly IPasswordHandler _passwordHandler;
 
 
-    public UserService(IUserRepository userRepository, IMapper mapper, IAuthService authService, IChildrenRepository childrenRepository, IPasswordHandler passwordHandler)
+    public UserService(IUserRepository userRepository, IMapper mapper, IAuthService authService,
+        IChildrenRepository childrenRepository, IPasswordHandler passwordHandler)
     {
         _userRepository = userRepository;
         _mapper = mapper;
@@ -24,7 +26,6 @@ public class UserService : IUserService
 
     public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
     {
-
         var user = await _userRepository.GetAllAsync();
         var userDTO = _mapper.Map<IEnumerable<UserDTO>>(user);
         return userDTO;
@@ -34,7 +35,6 @@ public class UserService : IUserService
     {
         return await _userRepository.GetByIdAsync(id);
     }
-
 
     public async Task<int> CreateUserAsync(UserCreateDTO userCreateDTO)
     {
@@ -46,8 +46,39 @@ public class UserService : IUserService
 
         user.Password = _passwordHandler.EncryptPassword(user.Password);
         user.RoleApproved = false;
-        return await _userRepository.InsertAsync(user);
+        var id = await _userRepository.InsertAsync(user);
+        return id;
+    }
 
+    public async Task<int> CreateChildrenUserAsync(UserCreateChildDTO userCreateChildDto)
+    {
+        var user = _mapper.Map<User>(userCreateChildDto);
+        var parentIds = userCreateChildDto.ParentIds;
+
+        if (await _userRepository.EmailExistsAsync(user.Email.ToString()))
+        {
+            throw new InvalidOperationException("Email eksisterer allerede");
+        }
+
+        user.Password = _passwordHandler.EncryptPassword(user.Password);
+        user.RoleApproved = false;
+        user.Role = UserRole.Admin;
+        var id = await _userRepository.InsertAsync(user);
+
+        var child = new Children()
+        {
+            ChildId = id,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+        };
+        await _childrenRepository.InsertAsync(child);
+
+        foreach (var parentId in parentIds)
+        {
+            await _childrenRepository.AddParentToChildAsync(parentId, child.ChildId);
+        }
+
+        return id;
     }
 
     public async Task<int> UpdateUserAsync(User user)
@@ -65,18 +96,17 @@ public class UserService : IUserService
     {
         var user = await _userRepository.GetUserByEmailAsync(email);
 
-        if (user == null || _passwordHandler.VerifyPassword(password, user.Password))
+        if (user == null || !_passwordHandler.VerifyPassword(password, user.Password))
         {
             throw new InvalidOperationException("Forkert brugernavn eller adgangskode");
         }
 
-        user.Role = user.Role == "Parent" ? "Child" : user.Role;
 
         var jwt = _authService.GenerateJWTToken(user);
         var userCreds = new UserCredsDTO
         {
             JWT = jwt,
-            Role = user.Role,
+            Role = user.Role.ToString(),
             RoleApproved = user.RoleApproved
         };
 
@@ -89,6 +119,7 @@ public class UserService : IUserService
         {
             throw new InvalidOperationException("Pinkode skal være 4 cifre");
         }
+
         pinCode = _passwordHandler.EncryptPassword(pinCode);
         var pincode = await _userRepository.UpdatePinCodeAsync(pinCode, id);
 
@@ -106,18 +137,20 @@ public class UserService : IUserService
         {
             throw new InvalidOperationException("Forkert pinkode");
         }
+
         var user = await _userRepository.GetByIdAsync(id);
         if (user == null)
         {
             throw new InvalidOperationException("Bruger ikke fundet");
         }
+
         user.Id = id;
 
         var jwt = _authService.GenerateJWTToken(user);
         var userCreds = new UserCredsDTO
         {
             JWT = jwt,
-            Role = user.Role,
+            Role = user.Role.ToString(),
             RoleApproved = user.RoleApproved
         };
 
@@ -174,6 +207,3 @@ public class UserService : IUserService
         return _email;
     }
 }
-
-
-

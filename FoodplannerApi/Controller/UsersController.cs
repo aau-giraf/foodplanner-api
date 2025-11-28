@@ -33,7 +33,7 @@ public class UsersController : BaseController
             LastName = "test",
             Email = "user@test.com",
             Password = "test",
-            Role = "Teacher",
+            Role = UserRole.Admin,
             RoleApproved = true
         };
 
@@ -44,7 +44,35 @@ public class UsersController : BaseController
 
     [HttpPost]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Create([FromBody] UserCreateDTO userCreate)
+    public async Task<IActionResult> Create([FromBody] UserCreateDTO userCreateDto)
+    {
+        if (Enum.TryParse<UserRole>(userCreateDto.Role, true, out var parsedRole) && parsedRole == UserRole.Child)
+        {
+            return BadRequest(new ErrorResponse { Message = ["Børn må ikke laves med dette endpoint, istedet skal CreateUserChildren bruges."] });
+        }
+        
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        try
+        {
+            var id = await _userService.CreateUserAsync(userCreateDto);
+            if (id > 0)
+            {
+                return Created(string.Empty, id);
+            }
+            return BadRequest();
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new ErrorResponse { Email = [e.Message] });
+        }
+    }
+    
+    [HttpPost]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateUserChildren([FromBody] UserCreateChildDTO userCreateChildDto)
     {
         if (!ModelState.IsValid)
         {
@@ -52,7 +80,8 @@ public class UsersController : BaseController
         }
         try
         {
-            var id = await _userService.CreateUserAsync(userCreate);
+            var id = await _userService.CreateChildrenUserAsync(userCreateChildDto);
+         
             if (id > 0)
             {
                 return Created(string.Empty, id);
@@ -221,6 +250,27 @@ public class UsersController : BaseController
         if (result > 0)
         {
             return Created();
+        }
+        return NotFound();
+    }
+
+    [HttpDelete]
+    [Authorize(Roles = "Parent, Child, Teacher, Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteLoggedInUser([FromHeader(Name = "Authorization")] string token)
+    {
+        var idString = _authService.RetrieveIdFromJwtToken(token);
+        if (!int.TryParse(idString, out int id))
+        {
+            return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+        }
+
+        int result = await _userService.DeleteUserAsync(id);
+
+        if (result > 0)
+        {
+            return NoContent();
         }
         return NotFound();
     }

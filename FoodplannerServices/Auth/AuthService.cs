@@ -24,10 +24,17 @@ namespace FoodplannerServices.Auth
         {
             var claims = new List<Claim> {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Role, user.Role),
                 new Claim("RoleApproved", user.RoleApproved.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
+
+            foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
+            {
+                if (user.Role.HasFlag(role))
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role.ToString()));
+                }
+            }
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretsLoader.GetSecret("JWT_SECRET")));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -42,6 +49,7 @@ namespace FoodplannerServices.Auth
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
         public string RetrieveIdFromJwtToken(string token)
         {
             var jwtToken = ParseToken(token);

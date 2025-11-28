@@ -48,7 +48,7 @@ public class IngredientsControllerTests
             new() { Id = 1, Name = "Cheese", User_id = userId },
             new() { Id = 2, Name = "Bread", User_id = userId }
         };
-        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
+        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = UserRole.Parent, RoleApproved = true };
 
         var JWTToken = "Bearer TestToken";
         mockAuthService
@@ -125,7 +125,7 @@ public class IngredientsControllerTests
         int userId = 1;
         IngredientDTO ingredientDTO = new() { Name = "test"};
         Ingredient ingredient = new() { Id = ingredientId, Name = "Cheese", User_id = userId };
-        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
+        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = UserRole.Parent, RoleApproved = true };
         
         var JWTToken = "Bearer TestToken";
         mockAuthService
@@ -157,7 +157,7 @@ public class IngredientsControllerTests
 
         int userId = 1;
         IngredientDTO ingredientDTO = new() { Name = "test"};
-        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
+        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = UserRole.Parent, RoleApproved = true };
 
         var JWTToken = "Bearer TestToken";
         mockAuthService

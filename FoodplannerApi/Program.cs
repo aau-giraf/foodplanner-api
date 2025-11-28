@@ -21,6 +21,7 @@ using FoodplannerModels.FeedbackChat;
 using FoodplannerServices.FeedbackChat;
 using FoodplannerServices.Secret;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using FoodplannerModels.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -100,6 +101,11 @@ builder.Services.AddSwaggerGen(options =>
             new string[] {}
         }
     });
+
+    options.SchemaGeneratorOptions = new SchemaGeneratorOptions
+    {
+        UseInlineDefinitionsForEnums = false
+    };
 });
 
 builder.Services.AddSingleton(serviceProvider =>
@@ -179,9 +185,9 @@ builder.Services.AddScoped(typeof(IMealRepository), typeof(MealRepository));
 builder.Services.AddScoped(typeof(IIngredientRepository), typeof(IngredientRepository));
 builder.Services.AddScoped(typeof(IPackedIngredientRepository), typeof(PackedIngredientRepository));
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<MealService>();
-builder.Services.AddScoped<IngredientService>();
-builder.Services.AddScoped<PackedIngredientService>();
+builder.Services.AddScoped<IIngredientService, IngredientService>();
+builder.Services.AddScoped<IMealService, MealService>();
+builder.Services.AddScoped<IPackedIngredientService, PackedIngredientService>();
 builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
 builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepository));
 builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));

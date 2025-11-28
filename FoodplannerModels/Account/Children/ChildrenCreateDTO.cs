@@ -9,6 +9,9 @@ namespace FoodplannerModels.Account
 {
     public class ChildrenCreateDTO
     {
+        [Required(ErrorMessage = "Id fra user er påkrævet")]
+        public required int ChildId { get; set; }
+
         [Required(ErrorMessage = "Fornavn er påkrævet")]
         [StringLength(100, ErrorMessage = "Fornavn er for langt")]
         public required string FirstName { get; set; }
@@ -17,8 +20,7 @@ namespace FoodplannerModels.Account
         [StringLength(100, ErrorMessage = "Efternavn er for langt")]
         public required string LastName { get; set; }
         
-        [Required(ErrorMessage = "KlasseId er påkrævet")]
-        public int classId { get; set; }
+        public int? ClassId { get; set; }
         
     }
 }
