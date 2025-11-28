@@ -26,14 +26,22 @@ public class ClassroomServiceTests
     public async Task GetAllClassroomAsync_ReturnsAllClassrooms()
     {
         // Arrange
-        var expectedClassrooms = new List<ClassroomDTO>
+        var expectedClassrooms = new List<Classroom>
         {
-            new ClassroomDTO { ClassId = 1, ClassName = "1.A" },
-            new ClassroomDTO { ClassId = 2, ClassName = "1.B" },
+            new Classroom() { ClassId = 1, ClassName = "1.A" },
+            new Classroom() { ClassId = 2, ClassName = "1.B" },
         };
         _mockClassroomRepository
             .Setup(repo => repo.GetAllAsync())
             .ReturnsAsync(expectedClassrooms);
+        
+        _mockMapper
+            .Setup(m => m.Map<ClassroomDTO>(It.IsAny<Classroom>()))
+            .Returns((Classroom src) => new ClassroomDTO()
+            {
+                ClassId = src.ClassId,
+                ClassName = src.ClassName
+            });
         
         // Act
         var result = await _classService.GetAllClassroomAsync();

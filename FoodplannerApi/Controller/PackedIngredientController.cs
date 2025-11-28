@@ -11,7 +11,6 @@ namespace FoodplannerApi.Controller
     public class PackedIngredientController(IPackedIngredientService packedIngredientService) : BaseController
     {
         private readonly IPackedIngredientService _packedIngredientService = packedIngredientService;
-        private readonly IMapper _mapper;
         
         // Get all packed ingredients
         [HttpGet]
@@ -57,7 +56,6 @@ namespace FoodplannerApi.Controller
         // Update an existing packed ingredient
         [HttpPut("{id}")]
         [Authorize(Policy = "AdminPolicy")]
-        
         public async Task<IActionResult> Update([FromBody] PackedIngredientDTO packedIngredientDto, int id)
         {
             var result = await _packedIngredientService.UpdatePackedIngredientAsync(packedIngredientDto, id);

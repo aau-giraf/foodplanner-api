@@ -60,6 +60,7 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
                 Food_image_id = meal.Food_image_id,
                 Name = meal.Name,
                 Date = meal.Date,
+                UserId = meal.User_id,
                 Ingredients = packedIngredients
             };
         }).ToList();
@@ -112,6 +113,7 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
                 Food_image_id = meal.Food_image_id,
                 Name = meal.Name,
                 Date = meal.Date,
+                UserId = meal.User_id,
                 Ingredients = packedIngredients
             };
         }).ToList();
@@ -156,6 +158,7 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
             Food_image_id = meal.Food_image_id,
             Name = meal.Name,
             Date = meal.Date,
+            UserId = meal.User_id,
             Ingredients = packedIngredientDTOs
         };
     }

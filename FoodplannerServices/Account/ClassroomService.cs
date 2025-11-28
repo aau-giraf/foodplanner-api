@@ -16,7 +16,7 @@ public class ClassroomService : IClassroomService {
     public async Task<IEnumerable<ClassroomDTO>> GetAllClassroomAsync()
     {
         var classroom = await _classroomRepository.GetAllAsync();
-        return classroom;
+        return classroom.Select(m => _mapper.Map<ClassroomDTO>(m));
     }
     public async Task<int> InsertClassroomAsync(CreateClassroomDTO createClassroomDto)
     {

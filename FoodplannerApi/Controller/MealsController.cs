@@ -105,7 +105,7 @@ public class MealsController(IMealService mealService, IAuthService authService)
             {
                 return BadRequest(new ErrorResponse { Message = new[] { "Id er ikke et tal" } });
             }
-            mealDto.Id = user_id;
+            mealDto.UserId = user_id;
             var result = await _mealService.UpdateMealAsync(mealDto, id);
             if (result > 0)
             { // Returns the updated meal with a 200 OK status

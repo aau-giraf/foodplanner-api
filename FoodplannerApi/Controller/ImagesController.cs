@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices.JavaScript;
+    using System.Runtime.InteropServices.JavaScript;
 using System.Security.Claims;
 using System.ComponentModel.DataAnnotations;
 using FoodplannerDataAccessSql.Account;
@@ -105,7 +105,7 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
             return BadRequest("Invalid userId");
 
         var image = await foodImageService.GetFoodImage(foodImageId);
-        if (image == null) return NotFound();
+        if (image is null) return NotFound();
         return Ok(image);
     }
 

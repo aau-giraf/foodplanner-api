@@ -193,6 +193,7 @@ public class MealServiceTests
                     order_number = 0
                 }
             ],
+            UserId = 0
         };
         
         // Act

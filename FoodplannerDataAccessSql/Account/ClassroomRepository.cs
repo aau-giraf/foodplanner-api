@@ -15,13 +15,13 @@ namespace FoodplannerDataAccessSql.Account
         {
             _connectionFactory = connectionFactory;
         }
-        public async Task<IEnumerable<ClassroomDTO>> GetAllAsync()
+        public async Task<IEnumerable<Classroom>> GetAllAsync()
         {
             var sql = "SELECT * FROM classroom ORDER BY class_name";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.QueryAsync<ClassroomDTO>(sql);
+                var result = await connection.QueryAsync<Classroom>(sql);
                 return result.ToList();
             } 
         }

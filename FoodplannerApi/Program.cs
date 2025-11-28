@@ -179,8 +179,6 @@ builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
 builder.Services.AddScoped(typeof(IMealRepository), typeof(MealRepository));
 builder.Services.AddScoped(typeof(IIngredientRepository), typeof(IngredientRepository));
 builder.Services.AddScoped(typeof(IPackedIngredientRepository), typeof(PackedIngredientRepository));
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<MealService>();
 // Register the service against its interface so controllers can resolve IIngredientService
 builder.Services.AddScoped<PackedIngredientService>();
 builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
