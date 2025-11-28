@@ -62,7 +62,7 @@ public class UserService : IUserService
 
         user.Password = _passwordHandler.EncryptPassword(user.Password);
         user.RoleApproved = false;
-        user.Role = UserRole.Admin;
+        user.Role = UserRole.Child;
         var id = await _userRepository.InsertAsync(user);
 
         var child = new Children()
