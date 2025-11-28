@@ -49,6 +49,7 @@ namespace FoodplannerServices.Auth
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
         public string RetrieveIdFromJwtToken(string token)
         {
             var jwtToken = ParseToken(token);

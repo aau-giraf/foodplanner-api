@@ -254,4 +254,25 @@ public class UsersController : BaseController
         return NotFound();
     }
 
+    [HttpDelete]
+    [Authorize(Roles = "Parent, Child, Teacher, Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteLoggedInUser([FromHeader(Name = "Authorization")] string token)
+    {
+        var idString = _authService.RetrieveIdFromJwtToken(token);
+        if (!int.TryParse(idString, out int id))
+        {
+            return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+        }
+
+        int result = await _userService.DeleteUserAsync(id);
+
+        if (result > 0)
+        {
+            return NoContent();
+        }
+        return NotFound();
+    }
+
 }
