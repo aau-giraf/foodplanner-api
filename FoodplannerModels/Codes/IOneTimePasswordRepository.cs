@@ -10,6 +10,9 @@ namespace FoodplannerModels.Codes
     {
         Task<int> InsertAsync(OneTimePassword createOTP);
         Task<int> UpdateAsync(OneTimePassword createOTP);
+        Task<int> DeleteAsync(string code);
         Task<OneTimePassword> GetFromCodeAsync(string code);
+        Task<bool> CheckIfCodeExistsAsync(string code);
+        Task<bool> CheckIfCodeExpiredAsync(string code);
     }
 }

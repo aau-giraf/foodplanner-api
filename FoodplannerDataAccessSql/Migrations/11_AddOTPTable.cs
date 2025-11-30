@@ -1,7 +1,7 @@
 ﻿using FluentMigrator;
 namespace FoodplannerDataAccessSql.Migrations
 {
-    [Migration(10)]
+    [Migration(11)]
     public class AddOTPTable : Migration
     {
         public override void Up()

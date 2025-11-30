@@ -338,6 +338,7 @@ public class UsersControllerTests
         // Arrange
         var mockUserService = new Mock<IUserService>();
         var mockAuthService = new Mock<IAuthService>();
+        var mockOneTimePassword = new Mock<IOneTimePasswordService>();
 
         var childDto = new UserCreateChildDTO
         {
@@ -355,7 +356,7 @@ public class UsersControllerTests
                 d.LastName == childDto.LastName)))
             .ReturnsAsync(1);
 
-        var controller = new UsersController(mockUserService.Object, mockAuthService.Object);
+        var controller = new UsersController(mockUserService.Object, mockAuthService.Object, mockOneTimePassword.Object);
 
         // Act
         var result = await controller.CreateUserChildren(childDto);

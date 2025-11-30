@@ -1,5 +1,5 @@
-﻿using AutoMapper;
-using FoodplannerModels.Account;
+﻿using FoodplannerModels.Account;
+using FoodplannerServices.Codes;
 using FoodplannerModels.Codes;
 
 namespace FoodplannerServices.Codes;
@@ -8,42 +8,76 @@ public class OneTimePasswordService : IOneTimePasswordService
 {
     private readonly IOneTimePasswordRepository _oneTimePasswordRepository;
     private readonly IChildrenRepository _childrenRepository;
-    public OneTimePasswordService(IOneTimePasswordRepository oneTimePasswordRepository, IChildrenRepository childrenRepository) 
+    private readonly Random _random = new();
+
+    public OneTimePasswordService(
+        IOneTimePasswordRepository oneTimePasswordRepository,
+        IChildrenRepository childrenRepository)
     {
         _oneTimePasswordRepository = oneTimePasswordRepository;
         _childrenRepository = childrenRepository;
     }
 
+    public Task<bool> CheckIfCodeAlreadyExists(string code) =>
+        _oneTimePasswordRepository.CheckIfCodeExistsAsync(code);
+
     public async Task<int> CreateOneTimePassword(int userID)
     {
-        var OTP = new OneTimePassword();
+        var otp = new OneTimePassword
+        {
+            GeneratedBy = userID,
+            CreatedOn = DateTime.Now,
+            ExpiresOn = DateTime.Now.AddDays(1),
+            Used = false,
+            UsedByUser = null,
+            Code = await GenerateUniqueSixDigitCodeAsync()
+        };
 
-        OTP.GeneratedBy = userID;
-        OTP.Code = "123456";
-        OTP.CreatedOn = DateTime.Now;
-        OTP.ExpiresOn = OTP.CreatedOn.AddDays(1);
-        OTP.Used = false;
-        OTP.UsedByUser = null;
-
-        var id = await _oneTimePasswordRepository.InsertAsync(OTP);
-
-        return id;
+        return await _oneTimePasswordRepository.InsertAsync(otp);
     }
 
-    public async Task<OneTimePassword> GetOneTimePassword(string code)
-    {
-        return await _oneTimePasswordRepository.GetFromCodeAsync(code);
-    }
+    public Task<OneTimePassword> GetOneTimePassword(string code) =>
+        _oneTimePasswordRepository.GetFromCodeAsync(code);
 
     public async Task<int> RedeemOneTimePassword(string code)
     {
-        var OTP = await GetOneTimePassword(code);
-        var result = await _childrenRepository.AddParentToChildAsync(OTP.GeneratedBy,OTP.UsedByUser.Value);
-        return result;
+        if (await _oneTimePasswordRepository.CheckIfCodeExpiredAsync(code))
+            return 0;
+
+        var otp = await GetOneTimePassword(code);
+        if (otp == null)
+            return 0;
+
+        if (otp.UsedByUser == null)
+            return 0;
+
+        await _oneTimePasswordRepository.DeleteAsync(code);
+        return await _childrenRepository.AddParentToChildAsync(
+            otp.GeneratedBy,
+            otp.UsedByUser.Value
+        );
     }
 
-    public async Task<int> UpdateOneTimePassword(OneTimePassword OTP)
+    public async Task<int> UpdateOneTimePassword(OneTimePassword otp)
     {
-        return await _oneTimePasswordRepository.UpdateAsync(OTP);
+        if (await CheckIfCodeAlreadyExists(otp.Code))
+            return await _oneTimePasswordRepository.UpdateAsync(otp);
+
+        return 0;
+    }
+
+    private async Task<string> GenerateUniqueSixDigitCodeAsync()
+    {
+        int code = _random.Next(100000, 1000000);
+
+        while (await CheckIfCodeAlreadyExists(code.ToString()))
+        {
+            code++;
+
+            if (code > 999999)
+                code = 100000;
+        }
+
+        return code.ToString();
     }
 }

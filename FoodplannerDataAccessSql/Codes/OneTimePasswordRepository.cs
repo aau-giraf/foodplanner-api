@@ -19,6 +19,47 @@ namespace FoodplannerDataAccessSql.Codes
             _connectionFactory = connectionFactory;
         }
 
+        public async Task<bool> CheckIfCodeExistsAsync(string code)
+        {
+            const string sql = "SELECT code_id FROM one_time_password WHERE code = @Code";
+            using var connection = _connectionFactory.Create();
+            connection.Open();
+
+            var result = await connection.QuerySingleOrDefaultAsync<int?>(sql, new { Code = code });
+
+            if(result == null)
+                return false;
+            else
+                return true;
+        }
+
+        public async Task<bool> CheckIfCodeExpiredAsync(string code)
+        {
+            const string sql = "SELECT expires_on FROM one_time_password WHERE code = @Code";
+            using var connection = _connectionFactory.Create();
+            connection.Open();
+
+            var result = await connection.QuerySingleOrDefaultAsync<DateTime?>(sql, new { Code = code });
+
+            // We assume if none found it is an expired code
+            if (result == null)
+                return true;
+
+            return result <= DateTime.UtcNow;
+        }
+
+        public async Task<int> DeleteAsync(string code)
+        {
+            const string sql = "DELETE FROM one_time_password WHERE code = @Code";
+
+            using var connection = _connectionFactory.Create();
+            connection.Open();
+
+            var rowsAffected = await connection.ExecuteAsync(sql, new { Code = code });
+
+            return rowsAffected;
+        }
+
         public async Task<OneTimePassword?> GetFromCodeAsync(string code)
         {
             const string sql = "SELECT * FROM one_time_password WHERE code = @Code";
@@ -26,7 +67,6 @@ namespace FoodplannerDataAccessSql.Codes
             using var connection = _connectionFactory.Create();
             connection.Open();
             var result = await connection.QuerySingleOrDefaultAsync<OneTimePassword>(sql, new { Code = code });
-            Console.WriteLine(result.CreatedOn);
             return result;
         }
 

@@ -62,7 +62,7 @@ public class UserService : IUserService
 
         user.Password = _passwordHandler.EncryptPassword(user.Password);
         user.RoleApproved = false;
-        user.Role = UserRole.Admin;
+        user.Role = UserRole.Child;
         var id = await _userRepository.InsertAsync(user);
 
         var child = new Children()
@@ -99,6 +99,27 @@ public class UserService : IUserService
         if (user == null || !_passwordHandler.VerifyPassword(password, user.Password))
         {
             throw new InvalidOperationException("Forkert brugernavn eller adgangskode");
+        }
+
+
+        var jwt = _authService.GenerateJWTToken(user);
+        var userCreds = new UserCredsDTO
+        {
+            JWT = jwt,
+            Role = user.Role.ToString(),
+            RoleApproved = user.RoleApproved
+        };
+
+        return userCreds;
+    }
+
+    public async Task<UserCredsDTO?> GetJWTByEmailAsync(string email)
+    {
+        var user = await _userRepository.GetUserByEmailAsync(email);
+
+        if (user == null)
+        {
+            throw new InvalidOperationException("Forkert email");
         }
 
 
