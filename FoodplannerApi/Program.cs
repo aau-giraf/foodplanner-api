@@ -203,6 +203,8 @@ builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepositor
 builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));
 builder.Services.AddScoped(typeof(IChatRepository), typeof(ChatRepository));
 builder.Services.AddScoped(typeof(IOneTimePasswordRepository), typeof(OneTimePasswordRepository));
+builder.Services.AddScoped<ISubIngredientRepository, SubIngredientRepository>();
+builder.Services.AddScoped<ISubIngredientRelationRepository, SubIngredientRelationRepository>();
 
 // Add Services
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
@@ -211,6 +213,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<ISubIngredientService, SubIngredientService>();
+builder.Services.AddScoped<ISubIngredientRelationService, SubIngredientRelationService>();
 builder.Services.AddScoped<IPasswordHandler, PasswordHandler>();
 builder.Services.AddScoped<IIngredientService, IngredientService>();
 builder.Services.AddScoped<IMealService, MealService>();
@@ -228,6 +232,7 @@ builder.Services.AddAutoMapper(typeof(MealProfile));
 builder.Services.AddAutoMapper(typeof(ChildrenProfile));
 builder.Services.AddAutoMapper(typeof(ClassroomProfile));
 builder.Services.AddAutoMapper(typeof(ImageProfile));
+builder.Services.AddAutoMapper(typeof(SubIngredientProfile));
 
 
 
