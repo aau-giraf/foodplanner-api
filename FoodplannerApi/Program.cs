@@ -192,6 +192,8 @@ builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageReposit
 builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepository));
 builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));
 builder.Services.AddScoped(typeof(IChatRepository), typeof(ChatRepository));
+builder.Services.AddScoped<ISubIngredientRepository, SubIngredientRepository>();
+builder.Services.AddScoped<ISubIngredientRelationRepository, SubIngredientRelationRepository>();
 
 // Add Services
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
@@ -201,10 +203,13 @@ builder.Services.AddScoped<ChildrenService>();
 builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<ISubIngredientService, SubIngredientService>();
+builder.Services.AddScoped<ISubIngredientRelationService, SubIngredientRelationService>();
 builder.Services.AddScoped<IPasswordHandler, PasswordHandler>();
 builder.Services.AddSingleton<ISecretLoader, SecretsLoader>(_ => secretsLoader);
 
 builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfile));
+builder.Services.AddAutoMapper(typeof(SubIngredientProfile));
 
 builder.Services.AddSingleton<IAuthService, AuthService>();
 
