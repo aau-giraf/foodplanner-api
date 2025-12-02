@@ -133,11 +133,11 @@ public class UsersController : BaseController
             {
                 return Ok(result);
             }
-            return BadRequest("Email or password is wrong");
+            return BadRequest(new ErrorResponse { Message = ["Email or password is wrong"] });
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest("Email or password is wrong");
+            return BadRequest(new ErrorResponse { Message = ["Email or password is wrong"] });
         }
     }
 

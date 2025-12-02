@@ -177,7 +177,7 @@ public class UsersControllerTests
         // Assert
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
         var errorResponse = Assert.IsType<ErrorResponse>(badRequestResult.Value);
-        Assert.Equal("Email eller password er forkert", errorResponse.Message[0]);
+        Assert.Equal("Email or password is wrong", errorResponse.Message[0]);
     }
 
 
@@ -203,7 +203,7 @@ public class UsersControllerTests
 
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
         var errorResponse = Assert.IsType<ErrorResponse>(badRequestResult.Value);
-        Assert.Equal("Email eller password er forkert", errorResponse.Message[0]);
+        Assert.Equal("Email or password is wrong", errorResponse.Message[0]);
     }
 
     [Fact]
