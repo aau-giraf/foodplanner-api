@@ -22,4 +22,6 @@ public class UserCreateChildDTO
     public required string Password { get; set; }
     
     public List<int> ParentIds { get; set; }
+
+    public int ClassId { get; set; }
 }
