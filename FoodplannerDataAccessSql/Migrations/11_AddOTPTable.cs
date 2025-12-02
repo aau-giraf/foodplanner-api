@@ -17,7 +17,10 @@ namespace FoodplannerDataAccessSql.Migrations
                 .WithColumn("used").AsBoolean().NotNullable()
                     .WithDefaultValue(false)
                 .WithColumn("used_by_user").AsInt32().Nullable()
+                    .ForeignKey("users", "id")
+                .WithColumn("child_user").AsInt32().Nullable()
                     .ForeignKey("users", "id");
+                    
         }
 
         public override void Down()

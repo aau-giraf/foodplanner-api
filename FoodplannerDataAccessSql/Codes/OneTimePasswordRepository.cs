@@ -73,7 +73,7 @@ namespace FoodplannerDataAccessSql.Codes
 
         public async Task<int> InsertAsync(OneTimePassword createOTP)
         {
-            var sql = "INSERT INTO one_time_password (generated_by, code, created_on, expires_on, used, used_by_user) VALUES (@GeneratedBy, @Code, @CreatedOn, @ExpiresOn, @Used, @UsedByUser) RETURNING code_id";
+            var sql = "INSERT INTO one_time_password (generated_by, code, created_on, expires_on, used, used_by_user, child_user) VALUES (@GeneratedBy, @Code, @CreatedOn, @ExpiresOn, @Used, @UsedByUser, @ChildUser) RETURNING code_id";
 
             using (var connection = _connectionFactory.Create())
             {
@@ -86,6 +86,7 @@ namespace FoodplannerDataAccessSql.Codes
                     ExpiresOn = createOTP.ExpiresOn,
                     Used = createOTP.Used,
                     UsedByUser = createOTP.UsedByUser,
+                    ChildUser = createOTP.ChildUser
                 });
                 return result;
             }
@@ -94,16 +95,17 @@ namespace FoodplannerDataAccessSql.Codes
         public async Task<int> UpdateAsync(OneTimePassword OTP)
         {
             var sql = @"
-        UPDATE one_time_password 
-        SET 
-            generated_by = @GeneratedBy,
-            code = @Code,
-            created_on = @CreatedOn,
-            expires_on = @ExpiresOn,
-            used = @Used,
-            used_by_user = @UsedByUser
-        WHERE code_id = @CodeId;
-    ";
+    UPDATE one_time_password 
+    SET 
+        generated_by = @GeneratedBy,
+        code = @Code,
+        created_on = @CreatedOn,
+        expires_on = @ExpiresOn,
+        used = @Used,
+        used_by_user = @UsedByUser,
+        child_user = @ChildUser
+    WHERE code_id = @CodeId;
+";
 
             using (var connection = _connectionFactory.Create())
             {
@@ -116,7 +118,8 @@ namespace FoodplannerDataAccessSql.Codes
                     CreatedOn = OTP.CreatedOn,
                     ExpiresOn = OTP.ExpiresOn,
                     Used = OTP.Used,
-                    UsedByUser = OTP.UsedByUser
+                    UsedByUser = OTP.UsedByUser,
+                    ChildUser = OTP.ChildUser
                 });
                 return result;
             }

@@ -14,6 +14,7 @@ public class OneTimePassword
     public DateTime ExpiresOn { get; set; }
     public bool Used {  get; set; } 
     public int? UsedByUser { get; set; }
+    public int? ChildUser { get; set; }
 
     public OneTimePassword()
     {

@@ -21,7 +21,7 @@ public class OneTimePasswordService : IOneTimePasswordService
     public Task<bool> CheckIfCodeAlreadyExists(string code) =>
         _oneTimePasswordRepository.CheckIfCodeExistsAsync(code);
 
-    public async Task<int> CreateOneTimePassword(int userID)
+    public async Task<int> CreateOneTimePassword(int userID, int? childUser)
     {
         var otp = new OneTimePassword
         {
@@ -30,6 +30,7 @@ public class OneTimePasswordService : IOneTimePasswordService
             ExpiresOn = DateTime.Now.AddDays(1),
             Used = false,
             UsedByUser = null,
+            ChildUser = childUser,
             Code = await GenerateUniqueSixDigitCodeAsync()
         };
 
@@ -40,23 +41,36 @@ public class OneTimePasswordService : IOneTimePasswordService
         _oneTimePasswordRepository.GetFromCodeAsync(code);
 
     public async Task<int> RedeemOneTimePassword(string code)
+{
+    if (await _oneTimePasswordRepository.CheckIfCodeExpiredAsync(code))
+        return 0;
+
+    var otp = await GetOneTimePassword(code);
+    if (otp == null)
+        return 0;
+
+    if (otp.UsedByUser == null)
+        return 0;
+    
+    // Child is being added to parent
+    if (otp.ChildUser == null)
     {
-        if (await _oneTimePasswordRepository.CheckIfCodeExpiredAsync(code))
-            return 0;
-
-        var otp = await GetOneTimePassword(code);
-        if (otp == null)
-            return 0;
-
-        if (otp.UsedByUser == null)
-            return 0;
-
         await _oneTimePasswordRepository.DeleteAsync(code);
         return await _childrenRepository.AddParentToChildAsync(
             otp.GeneratedBy,
             otp.UsedByUser.Value
         );
     }
+    // Parent is being added to child
+    else
+    {
+        await _oneTimePasswordRepository.DeleteAsync(code);
+        return await _childrenRepository.AddParentToChildAsync(
+            otp.UsedByUser.Value,
+            otp.ChildUser.Value
+        );
+    }
+}
 
     public async Task<int> UpdateOneTimePassword(OneTimePassword otp)
     {

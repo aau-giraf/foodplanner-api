@@ -55,7 +55,7 @@ namespace Test.Codes
                 .ReturnsAsync(expectedId);
 
             // Act
-            var id = await _otpService.CreateOneTimePassword(10);
+            var id = await _otpService.CreateOneTimePassword(10, null);
 
             // Assert
             Assert.Equal(expectedId, id);
@@ -81,7 +81,7 @@ namespace Test.Codes
                 .ReturnsAsync(1);
 
             // Act
-            await _otpService.CreateOneTimePassword(10);
+            await _otpService.CreateOneTimePassword(10, null);
 
             // Assert
             // Must check at least twice (first collision, then unique)
@@ -187,6 +187,74 @@ namespace Test.Codes
 
             // Assert
             Assert.Equal(0, result);
+        }
+
+        [Fact]
+        public async Task RedeemOneTimePassword_ParentInvitesChild_BindsParentToChild()
+        {
+            // Arrange: Parent invites a child (ChildUser is set)
+            var otp = new OneTimePassword
+            {
+                Code = "222222",
+                GeneratedBy = 1,      // Parent
+                UsedByUser = 2,       // Another parent
+                Used = true,
+                ChildUser = 3         // Child
+            };
+
+            _mockOtpRepository
+                .Setup(r => r.CheckIfCodeExpiredAsync("222222"))
+                .ReturnsAsync(false);
+
+            _mockOtpRepository
+                .Setup(r => r.GetFromCodeAsync("222222"))
+                .ReturnsAsync(otp);
+
+            _mockChildrenRepository
+                .Setup(r => r.AddParentToChildAsync(2, 3))
+                .ReturnsAsync(123);
+
+            // Act
+            var result = await _otpService.RedeemOneTimePassword("222222");
+
+            // Assert
+            Assert.Equal(123, result);
+            _mockOtpRepository.Verify(r => r.DeleteAsync("222222"), Times.Once);
+            _mockChildrenRepository.Verify(r => r.AddParentToChildAsync(2, 3), Times.Once);
+        }
+
+        [Fact]
+        public async Task RedeemOneTimePassword_ParentInvitesParent_BindsChildToParent()
+        {
+            // Arrange
+            var otp = new OneTimePassword
+            {
+                Code = "333333",
+                GeneratedBy = 1,
+                UsedByUser = 2,
+                Used = true,
+                ChildUser = null
+            };
+
+            _mockOtpRepository
+                .Setup(r => r.CheckIfCodeExpiredAsync("333333"))
+                .ReturnsAsync(false);
+
+            _mockOtpRepository
+                .Setup(r => r.GetFromCodeAsync("333333"))
+                .ReturnsAsync(otp);
+
+            _mockChildrenRepository
+                .Setup(r => r.AddParentToChildAsync(1, 2))
+                .ReturnsAsync(456);
+
+            // Act
+            var result = await _otpService.RedeemOneTimePassword("333333");
+
+            // Assert
+            Assert.Equal(456, result);
+            _mockOtpRepository.Verify(r => r.DeleteAsync("333333"), Times.Once);
+            _mockChildrenRepository.Verify(r => r.AddParentToChildAsync(1, 2), Times.Once);
         }
     }
 }

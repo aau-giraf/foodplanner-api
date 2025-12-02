@@ -156,10 +156,14 @@ public class UsersController : BaseController
             var result = await _userService.GetJWTByEmailAsync(user.Email);
             if (!string.IsNullOrEmpty(user.Code) && result != null)
             {
+                
+
                 var code = await _oneTimePasswordService.GetOneTimePassword(user.Code);
+                if (code.ChildUser != null)
+                    return BadRequest("Only parents can redeem this code.");
+                
                 code.Used = true;
                 code.UsedByUser = int.Parse(_authService.RetrieveIdFromJwtTokenNoBearer(result.JWT));
-
                 if (await _oneTimePasswordService.UpdateOneTimePassword(code) == 0)
                     return BadRequest(new ErrorResponse { Message = ["Fejlede i at opdatere engangskode"] });
                 if (await _oneTimePasswordService.RedeemOneTimePassword(code.Code) == 0)
