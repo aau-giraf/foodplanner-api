@@ -27,6 +27,8 @@ namespace FoodplannerDataAccessSql.Codes
 
             var result = await connection.QuerySingleOrDefaultAsync<int?>(sql, new { Code = code });
 
+            connection.Close();
+
             if(result == null)
                 return false;
             else
@@ -40,6 +42,8 @@ namespace FoodplannerDataAccessSql.Codes
             connection.Open();
 
             var result = await connection.QuerySingleOrDefaultAsync<DateTime?>(sql, new { Code = code });
+
+            connection.Close();
 
             // We assume if none found it is an expired code
             if (result == null)
@@ -57,6 +61,8 @@ namespace FoodplannerDataAccessSql.Codes
 
             var rowsAffected = await connection.ExecuteAsync(sql, new { Code = code });
 
+            connection.Close();
+
             return rowsAffected;
         }
 
@@ -67,6 +73,8 @@ namespace FoodplannerDataAccessSql.Codes
             using var connection = _connectionFactory.Create();
             connection.Open();
             var result = await connection.QuerySingleOrDefaultAsync<OneTimePassword>(sql, new { Code = code });
+            connection.Close();
+
             return result;
         }
 
@@ -88,6 +96,7 @@ namespace FoodplannerDataAccessSql.Codes
                     UsedByUser = createOTP.UsedByUser,
                     ChildUser = createOTP.ChildUser
                 });
+                connection.Close();
                 return result;
             }
         }
@@ -121,6 +130,7 @@ namespace FoodplannerDataAccessSql.Codes
                     UsedByUser = OTP.UsedByUser,
                     ChildUser = OTP.ChildUser
                 });
+                connection.Close();
                 return result;
             }
         }

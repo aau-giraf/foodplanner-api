@@ -41,7 +41,7 @@ public class OneTimePasswordService : IOneTimePasswordService
         _oneTimePasswordRepository.GetFromCodeAsync(code);
 
     public async Task<int> RedeemOneTimePassword(string code)
-{
+    {
     if (await _oneTimePasswordRepository.CheckIfCodeExpiredAsync(code))
         return 0;
 

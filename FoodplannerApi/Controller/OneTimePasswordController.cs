@@ -34,7 +34,6 @@ namespace FoodplannerApi.Controller
                     return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
                 }
 
-
                 // If a childUser is specified, check if the parent has a relation to this child
                 if (childUser != null)
                 {
@@ -47,7 +46,6 @@ namespace FoodplannerApi.Controller
 
                 int result = await _passwordService.CreateOneTimePassword(id, childUser);
 
-
                 if (result > 0)
                 {
                     return Created(string.Empty, result);
@@ -58,7 +56,6 @@ namespace FoodplannerApi.Controller
             {
                 return BadRequest("Most likely not logged in or a parent");
             }
-            
         }
 
         [HttpPost]
@@ -69,7 +66,7 @@ namespace FoodplannerApi.Controller
             {
                 var idString = _authService.RetrieveIdFromJwtToken(token);
                 if (!int.TryParse(idString, out int id))
-                    return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+                    return BadRequest("Id is not a number");
 
                 var otp = await _passwordService.GetOneTimePassword(code);
                 if (otp == null)

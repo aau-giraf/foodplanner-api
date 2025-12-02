@@ -26,6 +26,7 @@ namespace Test.Codes
                 _mockChildrenRepository.Object
             );
         }
+        
         [Fact]
         public async Task CheckIfCodeAlreadyExists_ReturnsExpectedValue()
         {
@@ -40,6 +41,7 @@ namespace Test.Codes
             // Assert
             Assert.True(result);
         }
+        
         [Fact]
         public async Task CreateOneTimePassword_InsertsOtpAndReturnsId()
         {
@@ -73,7 +75,7 @@ namespace Test.Codes
                 .ReturnsAsync(() =>
                 {
                     callCount++;
-                    return callCount == 1; // first time returns true → simulate collision
+                    return callCount == 1; // first time returns true -> simulate collision
                 });
 
             _mockOtpRepository
@@ -87,6 +89,7 @@ namespace Test.Codes
             // Must check at least twice (first collision, then unique)
             Assert.True(callCount >= 2);
         }
+        
         [Fact]
         public async Task GetOneTimePassword_ReturnsOtp()
         {
@@ -104,6 +107,7 @@ namespace Test.Codes
             Assert.NotNull(result);
             Assert.Equal("123456", result.Code);
         }
+        
         [Fact]
         public async Task RedeemOneTimePassword_WhenExpired_Returns0()
         {
@@ -151,6 +155,7 @@ namespace Test.Codes
             _mockOtpRepository.Verify(r => r.DeleteAsync("111111"), Times.Once);
             _mockChildrenRepository.Verify(r => r.AddParentToChildAsync(10, 20), Times.Once);
         }
+        
         [Fact]
         public async Task UpdateOneTimePassword_WhenCodeExists_UpdatesOtp()
         {
