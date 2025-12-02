@@ -114,6 +114,27 @@ public class UserService : IUserService
         return userCreds;
     }
 
+    public async Task<UserCredsDTO?> GetJWTByEmailAsync(string email)
+    {
+        var user = await _userRepository.GetUserByEmailAsync(email);
+
+        if (user == null)
+        {
+            throw new InvalidOperationException("Forkert email");
+        }
+
+
+        var jwt = _authService.GenerateJWTToken(user);
+        var userCreds = new UserCredsDTO
+        {
+            JWT = jwt,
+            Role = user.Role.ToString(),
+            RoleApproved = user.RoleApproved
+        };
+
+        return userCreds;
+    }
+
     public async Task<string> UpdateUserPinCodeAsync(string pinCode, int id)
     {
         if (pinCode.ToString().Length != 4)

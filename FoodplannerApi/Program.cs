@@ -23,6 +23,9 @@ using FoodplannerServices.Secret;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using FoodplannerModels.Auth;
+using FoodplannerModels.Codes;
+using FoodplannerDataAccessSql.Codes;
+using FoodplannerServices.Codes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -191,6 +194,7 @@ builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageReposit
 builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepository));
 builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));
 builder.Services.AddScoped(typeof(IChatRepository), typeof(ChatRepository));
+builder.Services.AddScoped(typeof(IOneTimePasswordRepository), typeof(OneTimePasswordRepository));
 
 // Add Services
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
@@ -200,6 +204,7 @@ builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IPasswordHandler, PasswordHandler>();
+builder.Services.AddScoped<IOneTimePasswordService, OneTimePasswordService>();
 builder.Services.AddSingleton<ISecretLoader, SecretsLoader>(_ => secretsLoader);
 
 builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfile));

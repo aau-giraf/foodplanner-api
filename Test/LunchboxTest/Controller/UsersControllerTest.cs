@@ -25,7 +25,7 @@ public class UsersControllerTests
 
         var authService = new Mock<IAuthService>();
 
-        var usersController = new UsersController(mockUserService.Object, authService.Object);
+        var usersController = new UsersController(mockUserService.Object, authService.Object, null);
 
         // Act
         var result = await usersController.EmailExists(email);
@@ -47,7 +47,7 @@ public class UsersControllerTests
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
 
-        var usersController = new UsersController(mockUserService.Object, authService.Object);
+        var usersController = new UsersController(mockUserService.Object, authService.Object, null);
 
         // Act
         var result = await usersController.EmailExists(email);
@@ -72,7 +72,7 @@ public class UsersControllerTests
 
         var authService = new Mock<IAuthService>();
 
-        var usersController = new UsersController(mockUserService.Object, authService.Object);
+        var usersController = new UsersController(mockUserService.Object, authService.Object, null);
 
         // Act
         var result = await usersController.EmailExists(email);

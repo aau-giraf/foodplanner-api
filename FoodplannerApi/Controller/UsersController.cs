@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using FoodplannerServices.Auth;
 using FoodplannerModels.Auth;
+using FoodplannerModels.Codes;
 
 namespace FoodplannerApi.Controller;
 
@@ -13,11 +14,13 @@ public class UsersController : BaseController
 {
     private readonly IUserService _userService;
     private readonly IAuthService _authService;
+    private readonly IOneTimePasswordService _oneTimePasswordService;
 
-    public UsersController(IUserService userService, IAuthService authService)
+    public UsersController(IUserService userService, IAuthService authService, IOneTimePasswordService oneTimePasswordService)
     {
         _userService = userService;
         _authService = authService;
+        _oneTimePasswordService = oneTimePasswordService;
     }
 
     [HttpGet]
@@ -100,6 +103,7 @@ public class UsersController : BaseController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Login([FromBody] Login user)
     {
+
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
@@ -107,6 +111,63 @@ public class UsersController : BaseController
         try
         {
             var result = await _userService.GetJWTByEmailAndPasswordAsync(user.Email, user.Password);
+            
+            //TODO: Handle usecase for parent using one time password
+            /*if (!string.IsNullOrEmpty(user.Code) && result != null)
+            {
+                if (Enum.TryParse<UserRole>(result.Role, true, out var parsedRole) && parsedRole == UserRole.Child)
+                {
+                    return BadRequest(new ErrorResponse { Message = ["Børn må ikke laves med dette endpoint, istedet skal LoginChild bruges."] });
+                }
+                var code = await _oneTimePasswordService.GetOneTimePassword(user.Code);
+                code.Used = true;
+                code.UsedByUser = int.Parse(_authService.RetrieveIdFromJwtTokenNoBearer(result.JWT));
+
+                if (await _oneTimePasswordService.UpdateOneTimePassword(code) == 0)
+                    return BadRequest(new ErrorResponse { Message = ["Fejlede i at opdatere engangskode"] });
+                if (await _oneTimePasswordService.RedeemOneTimePassword(code.Code) == 0)
+                    return BadRequest(new ErrorResponse{ Message = ["Fejlede i at indløse engangskode"] });
+            }*/
+
+            if (result != null)
+            {
+                return Ok(result);
+            }
+            return BadRequest(new ErrorResponse { Message = ["Email or password is wrong"] });
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new ErrorResponse { Message = ["Email or password is wrong"] });
+        }
+    }
+
+    [HttpPost]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> LoginChild([FromBody] LoginChild user)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        try
+        {
+            var result = await _userService.GetJWTByEmailAsync(user.Email);
+            if (!string.IsNullOrEmpty(user.Code) && result != null)
+            {
+                var code = await _oneTimePasswordService.GetOneTimePassword(user.Code);
+                if (code.ChildUser != null)
+                    return BadRequest("Only parents can redeem this code.");
+                
+                code.Used = true;
+                code.UsedByUser = int.Parse(_authService.RetrieveIdFromJwtTokenNoBearer(result.JWT));
+                if (await _oneTimePasswordService.UpdateOneTimePassword(code) == 0)
+                    return BadRequest("Failed while updating the one time code");
+                if (await _oneTimePasswordService.RedeemOneTimePassword(code.Code) == 0)
+                    return BadRequest("Failed while trying to redeem the one time code");
+            }
+
             if (result != null)
             {
                 return Ok(result);
