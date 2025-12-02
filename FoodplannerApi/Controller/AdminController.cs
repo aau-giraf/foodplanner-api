@@ -8,10 +8,10 @@ namespace FoodplannerApi.Controller;
 [Authorize(Policy = "AdminPolicy")]
 public class AdminController : BaseController
 {
-    private readonly UserService _userService;
-    private readonly ChildrenService _childrenService;
+    private readonly IUserService _userService;
+    private readonly IChildrenService _childrenService;
 
-    public AdminController(UserService userService, ChildrenService childrenService)
+    public AdminController(IUserService userService, IChildrenService childrenService)
     {
         _userService = userService;
         _childrenService = childrenService;
