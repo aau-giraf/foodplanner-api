@@ -11,12 +11,14 @@ namespace FoodplannerApi.Controller
         private readonly IOneTimePasswordService _passwordService;
         private readonly IAuthService _authService;
         private readonly IUserService _userService;
+        private readonly IChildrenService _childrenService;
 
-        public OneTimePasswordController(IOneTimePasswordService passwordService, IAuthService authService, IUserService userService)
+        public OneTimePasswordController(IOneTimePasswordService passwordService, IAuthService authService, IUserService userService, IChildrenService childrenService)
         {
             _passwordService = passwordService;
             _authService = authService;
             _userService = userService;
+            _childrenService = childrenService;
         }
 
         [HttpPost]
@@ -31,15 +33,20 @@ namespace FoodplannerApi.Controller
                 {
                     return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
                 }
-                int result;
-                if(childUser != null)
+
+
+                // If a childUser is specified, check if the parent has a relation to this child
+                if (childUser != null)
                 {
-                    result = await _passwordService.CreateOneTimePassword(id, childUser);
+                    var children = await _childrenService.GetChildrenByParentIdAsync(id);
+                    if (!children.Any(c => c.ChildId == childUser.Value))
+                    {
+                        return BadRequest("You do not have a relation to this child.");
+                    }
                 }
-                else
-                {
-                    result = await _passwordService.CreateOneTimePassword(id, null);
-                }
+
+                int result = await _passwordService.CreateOneTimePassword(id, childUser);
+
 
                 if (result > 0)
                 {
