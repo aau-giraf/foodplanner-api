@@ -159,7 +159,8 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
             Name = meal.Name,
             Date = meal.Date,
             UserId = meal.User_id,
-            Ingredients = packedIngredientDTOs
+            Ingredients = packedIngredientDTOs,
+            Template = meal.Template
         };
     }
 
