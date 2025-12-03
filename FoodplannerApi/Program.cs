@@ -214,6 +214,7 @@ builder.Services.AddSingleton<IAuthService, AuthService>();
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(ChatProfile));
+builder.Services.AddAutoMapper(typeof(ClassroomProfile));
 
 
 // Set up connection to database before running migrations
