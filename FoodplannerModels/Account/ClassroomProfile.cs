@@ -11,5 +11,8 @@ public class ClassroomProfile : Profile
 
         CreateMap<Classroom, CreateClassroomDTO>();
         CreateMap<CreateClassroomDTO, Classroom>();
+        
+        CreateMap<Classroom, ClassroomDTO>();
+        CreateMap<ClassroomDTO, Classroom>();
     }
 }
