@@ -120,6 +120,8 @@ namespace Test.Codes
             var otp = new OneTimePassword
             {
                 Code = "111111",
+                CreatedOn = DateTime.UtcNow,
+                ExpiresOn = DateTime.UtcNow.AddDays(1),
                 GeneratedBy = 10,
                 UsedByUser = 20,
                 Used = false
@@ -150,7 +152,15 @@ namespace Test.Codes
         public async Task UpdateOneTimePassword_WhenCodeExists_UpdatesOtp()
         {
             // Arrange
-            var otp = new OneTimePassword { Code = "123456" };
+            var otp = new OneTimePassword
+            {
+                Code = "123456",
+                CreatedOn = DateTime.UtcNow,
+                ExpiresOn = DateTime.UtcNow.AddDays(1),
+                GeneratedBy = 10,
+                UsedByUser = 20,
+                Used = false
+            };
 
             _mockOtpRepository
                 .Setup(r => r.CheckIfCodeExistsAsync("123456"))
@@ -171,7 +181,15 @@ namespace Test.Codes
         public async Task UpdateOneTimePassword_WhenCodeDoesNotExist_Returns0()
         {
             // Arrange
-            var otp = new OneTimePassword { Code = "123456" };
+            var otp = new OneTimePassword
+            {
+                Code = "123456",
+                CreatedOn = DateTime.UtcNow,
+                ExpiresOn = DateTime.UtcNow.AddDays(1),
+                GeneratedBy = 10,
+                UsedByUser = 20,
+                Used = false
+            };
 
             _mockOtpRepository
                 .Setup(r => r.CheckIfCodeExistsAsync("123456"))
@@ -191,8 +209,11 @@ namespace Test.Codes
             var otp = new OneTimePassword
             {
                 Code = "222222",
+                CreatedOn = DateTime.UtcNow,
+                ExpiresOn = DateTime.UtcNow.AddDays(1),
+                Used = false,
                 GeneratedBy = 1,
-                UsedByUser = null,   // overwritten anyway
+                UsedByUser = null,
                 ChildUser = 3
             };
 
@@ -228,6 +249,9 @@ namespace Test.Codes
             var otp = new OneTimePassword
             {
                 Code = "333333",
+                CreatedOn = DateTime.UtcNow,
+                ExpiresOn = DateTime.UtcNow.AddDays(1),
+                Used = false,
                 GeneratedBy = 1,
                 UsedByUser = null,   // overwritten
                 ChildUser = null

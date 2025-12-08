@@ -5,14 +5,14 @@ public class OneTimePassword
     [Key]
     public int CodeId {  get; set; }
 
-    public int GeneratedBy {  get; set; }
+    required public int GeneratedBy {  get; set; }
 
     [StringLength(6)]
-    public string Code { get; set; }
+    required public string Code { get; set; }
 
-    public DateTime CreatedOn { get; set; }
-    public DateTime ExpiresOn { get; set; }
-    public bool Used {  get; set; } 
+    required public DateTime CreatedOn { get; set; }
+    required public DateTime ExpiresOn { get; set; }
+    required public bool Used {  get; set; } 
     public int? UsedByUser { get; set; }
     public int? ChildUser { get; set; }
 
