@@ -56,11 +56,6 @@ public class OneTimePasswordService : IOneTimePasswordService
 
         if (otp.UsedByUser == null)
             return 0;
-        Console.WriteLine($"OTP CodeId: {otp.CodeId}");
-        Console.WriteLine($"OTP ChildUser: {otp.UsedByUser}");
-        Console.WriteLine($"OTP GeneratedBy: {otp.GeneratedBy}");
-        Console.WriteLine($"OTP ChildUser: {otp.ChildUser}");
-        
     
         // Child is being added to parent
         if (otp.ChildUser == null)
