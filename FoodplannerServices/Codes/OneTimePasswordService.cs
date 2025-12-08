@@ -23,6 +23,12 @@ public class OneTimePasswordService : IOneTimePasswordService
 
     public async Task<int> CreateOneTimePassword(int userID, int? childUser)
     {
+        if(childUser != null)
+        {
+            var child = await _childrenRepository.GetChildByIdAsync(childUser.Value);
+            if(child == null)
+                throw new Exception("Id given is not for a child");
+        }
         var otp = new OneTimePassword
         {
             GeneratedBy = userID,
@@ -33,8 +39,11 @@ public class OneTimePasswordService : IOneTimePasswordService
             ChildUser = childUser,
             Code = await GenerateUniqueSixDigitCodeAsync()
         };
+        var status = await _oneTimePasswordRepository.InsertAsync(otp);
+        if (status == 0)
+            throw new Exception("One Time Password failed creation");
 
-        return await _oneTimePasswordRepository.InsertAsync(otp);
+        return int.Parse(otp.Code);
     }
 
     public Task<OneTimePassword> GetOneTimePassword(string code) =>
