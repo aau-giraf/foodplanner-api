@@ -1,6 +1,7 @@
-﻿using FoodplannerModels.Account;
-using FoodplannerServices.Codes;
+﻿using System.Collections.Concurrent;
+using FoodplannerModels.Account;
 using FoodplannerModels.Codes;
+using FoodplannerServices.Codes;
 
 namespace FoodplannerServices.Codes;
 
@@ -99,4 +100,5 @@ public class OneTimePasswordService : IOneTimePasswordService
 
         return code.ToString();
     }
+
 }
