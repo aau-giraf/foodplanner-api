@@ -205,14 +205,13 @@ namespace Test.Codes
         [Fact]
         public async Task RedeemOneTimePassword_ParentInvitesChild_BindsParentToChild()
         {
-            // Arrange: Parent invites a child (ChildUser is set)
+            // Arrange: ChildUser is set → parent is being added to child
             var otp = new OneTimePassword
             {
                 Code = "222222",
-                GeneratedBy = 1,      // Parent
-                UsedByUser = 2,       // Another parent
-                Used = true,
-                ChildUser = 3         // Child
+                GeneratedBy = 1,
+                UsedByUser = null,   // overwritten anyway
+                ChildUser = 3
             };
 
             _mockOtpRepository
@@ -223,8 +222,11 @@ namespace Test.Codes
                 .Setup(r => r.GetFromCodeAsync("222222"))
                 .ReturnsAsync(otp);
 
+            // Since ChildUser != null:
+            // AddParentToChildAsync(UsedByUser, ChildUser)
+            // UsedByUser is overwritten to 20 during method call.
             _mockChildrenRepository
-                .Setup(r => r.AddParentToChildAsync(2, 3))
+                .Setup(r => r.AddParentToChildAsync(20, 3))
                 .ReturnsAsync(123);
 
             // Act
@@ -233,19 +235,19 @@ namespace Test.Codes
             // Assert
             Assert.Equal(123, result);
             _mockOtpRepository.Verify(r => r.DeleteAsync("222222"), Times.Once);
-            _mockChildrenRepository.Verify(r => r.AddParentToChildAsync(2, 3), Times.Once);
+            _mockChildrenRepository.Verify(r => r.AddParentToChildAsync(20, 3), Times.Once);
         }
+
 
         [Fact]
         public async Task RedeemOneTimePassword_ParentInvitesParent_BindsChildToParent()
         {
-            // Arrange
+            // Arrange: ChildUser null → child is being added to parent
             var otp = new OneTimePassword
             {
                 Code = "333333",
                 GeneratedBy = 1,
-                UsedByUser = 2,
-                Used = true,
+                UsedByUser = null,   // overwritten
                 ChildUser = null
             };
 
@@ -257,8 +259,11 @@ namespace Test.Codes
                 .Setup(r => r.GetFromCodeAsync("333333"))
                 .ReturnsAsync(otp);
 
+            // ChildUser == null:
+            // AddParentToChildAsync(GeneratedBy, UsedByUser)
+            // UsedByUser becomes 20
             _mockChildrenRepository
-                .Setup(r => r.AddParentToChildAsync(1, 2))
+                .Setup(r => r.AddParentToChildAsync(1, 20))
                 .ReturnsAsync(456);
 
             // Act
@@ -267,7 +272,8 @@ namespace Test.Codes
             // Assert
             Assert.Equal(456, result);
             _mockOtpRepository.Verify(r => r.DeleteAsync("333333"), Times.Once);
-            _mockChildrenRepository.Verify(r => r.AddParentToChildAsync(1, 2), Times.Once);
+            _mockChildrenRepository.Verify(r => r.AddParentToChildAsync(1, 20), Times.Once);
         }
+
     }
 }

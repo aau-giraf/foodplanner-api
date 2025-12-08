@@ -60,25 +60,25 @@ public class OneTimePasswordService : IOneTimePasswordService
         await _oneTimePasswordRepository.UpdateAsync(otp);
 
     
-    // Child is being added to parent
-    if (otp.ChildUser == null)
-    {
-        await _oneTimePasswordRepository.DeleteAsync(code);
-        return await _childrenRepository.AddParentToChildAsync(
-            otp.GeneratedBy,
-            otp.UsedByUser.Value
-        );
+        // Child is being added to parent
+        if (otp.ChildUser == null)
+        {
+            await _oneTimePasswordRepository.DeleteAsync(code);
+            return await _childrenRepository.AddParentToChildAsync(
+                otp.GeneratedBy,
+                otp.UsedByUser.Value
+            );
+        }
+        // Parent is being added to child
+        else
+        {
+            await _oneTimePasswordRepository.DeleteAsync(code);
+            return await _childrenRepository.AddParentToChildAsync(
+                otp.UsedByUser.Value,
+                otp.ChildUser.Value
+            );
+        }
     }
-    // Parent is being added to child
-    else
-    {
-        await _oneTimePasswordRepository.DeleteAsync(code);
-        return await _childrenRepository.AddParentToChildAsync(
-            otp.UsedByUser.Value,
-            otp.ChildUser.Value
-        );
-    }
-}
 
     public async Task<int> UpdateOneTimePassword(OneTimePassword otp)
     {
