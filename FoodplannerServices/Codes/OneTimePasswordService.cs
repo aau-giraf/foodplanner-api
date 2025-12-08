@@ -89,7 +89,7 @@ public class OneTimePasswordService : IOneTimePasswordService
         return 0;
     }
 
-    private async Task<string> GenerateUniqueSixDigitCodeAsync()
+    public async Task<string> GenerateUniqueSixDigitCodeAsync()
     {
         int code = _random.Next(100000, 1000000);
 

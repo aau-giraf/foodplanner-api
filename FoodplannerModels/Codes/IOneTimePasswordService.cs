@@ -8,5 +8,6 @@
         Task<bool> CheckIfCodeAlreadyExists(string code);
         
         Task<int> RedeemOneTimePassword(string code);
+        Task<string> GenerateUniqueSixDigitCodeAsync();
     }
 }

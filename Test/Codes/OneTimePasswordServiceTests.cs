@@ -14,12 +14,14 @@ namespace Test.Codes
     {
         private readonly Mock<IOneTimePasswordRepository> _mockOtpRepository;
         private readonly Mock<IChildrenRepository> _mockChildrenRepository;
+        private readonly Mock<IOneTimePasswordService> _mockOTPService;
         private readonly OneTimePasswordService _otpService;
 
         public OneTimePasswordServiceTests()
         {
             _mockOtpRepository = new Mock<IOneTimePasswordRepository>();
             _mockChildrenRepository = new Mock<IChildrenRepository>();
+            _mockOTPService = new Mock<IOneTimePasswordService>();
 
             _otpService = new OneTimePasswordService(
                 _mockOtpRepository.Object,
@@ -41,28 +43,34 @@ namespace Test.Codes
             // Assert
             Assert.True(result);
         }
-        
+
         [Fact]
-        public async Task CreateOneTimePassword_InsertsOtpAndReturnsId()
+        public async Task CreateOneTimePassword_InsertsOtpAndReturnsGeneratedCode()
         {
             // Arrange
-            int expectedId = 42;
+            OneTimePassword capturedOtp = null;
 
             _mockOtpRepository
                 .Setup(r => r.CheckIfCodeExistsAsync(It.IsAny<string>()))
-                .ReturnsAsync(false); // First generated code is unique
+                .ReturnsAsync(false);
 
             _mockOtpRepository
                 .Setup(r => r.InsertAsync(It.IsAny<OneTimePassword>()))
-                .ReturnsAsync(expectedId);
+                .Callback<OneTimePassword>(otp => capturedOtp = otp) // Capture inserted OTP
+                .ReturnsAsync(1);
 
             // Act
-            var id = await _otpService.CreateOneTimePassword(10, null);
+            var result = await _otpService.CreateOneTimePassword(10, null);
 
             // Assert
-            Assert.Equal(expectedId, id);
+            Assert.NotNull(capturedOtp);
+            Assert.False(string.IsNullOrEmpty(capturedOtp.Code));
+            Assert.Equal(int.Parse(capturedOtp.Code), result);
+
             _mockOtpRepository.Verify(r => r.InsertAsync(It.IsAny<OneTimePassword>()), Times.Once);
         }
+
+
 
         [Fact]
         public async Task CreateOneTimePassword_LoopsUntilUniqueCodeFound()
