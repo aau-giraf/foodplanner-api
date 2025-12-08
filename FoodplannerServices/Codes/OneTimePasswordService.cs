@@ -49,14 +49,17 @@ public class OneTimePasswordService : IOneTimePasswordService
 
         var otp = await _oneTimePasswordRepository.GetFromCodeAsync(code);
         otp.UsedByUser = usedByUser;
+        await _oneTimePasswordRepository.UpdateAsync(otp);
 
         if (otp == null)
             return 0;
 
         if (otp.UsedByUser == null)
             return 0;
-
-        await _oneTimePasswordRepository.UpdateAsync(otp);
+        Console.WriteLine($"OTP CodeId: {otp.CodeId}");
+        Console.WriteLine($"OTP ChildUser: {otp.UsedByUser}");
+        Console.WriteLine($"OTP GeneratedBy: {otp.GeneratedBy}");
+        Console.WriteLine($"OTP ChildUser: {otp.ChildUser}");
         
     
         // Child is being added to parent
@@ -77,14 +80,6 @@ public class OneTimePasswordService : IOneTimePasswordService
                 otp.ChildUser.Value
             );
         }
-    }
-
-    public async Task<int> UpdateOneTimePassword(OneTimePassword otp)
-    {
-        if (await CheckIfCodeAlreadyExists(otp.Code))
-            return await _oneTimePasswordRepository.UpdateAsync(otp);
-
-        return 0;
     }
 
     public async Task<string> GenerateUniqueSixDigitCodeAsync()

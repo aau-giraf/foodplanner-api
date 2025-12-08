@@ -66,13 +66,13 @@ namespace FoodplannerDataAccessSql.Codes
             return rowsAffected;
         }
 
-        public async Task<OneTimePassword?> GetFromCodeAsync(string code)
+        public async Task<OneTimePasswordDTO?> GetFromCodeAsync(string code)
         {
-            const string sql = "SELECT * FROM one_time_password WHERE code = @Code";
+            const string sql = "SELECT code_id, generated_by, used, used_by_user, child_user FROM one_time_password WHERE code = @Code";
 
             using var connection = _connectionFactory.Create();
             connection.Open();
-            var result = await connection.QuerySingleOrDefaultAsync<OneTimePassword>(sql, new { Code = code });
+            var result = await connection.QuerySingleOrDefaultAsync<OneTimePasswordDTO>(sql, new { Code = code });
             connection.Close();
 
             return result;
@@ -101,15 +101,12 @@ namespace FoodplannerDataAccessSql.Codes
             }
         }
 
-        public async Task<int> UpdateAsync(OneTimePassword OTP)
+        public async Task<int> UpdateAsync(OneTimePasswordDTO OTP)
         {
             var sql = @"
     UPDATE one_time_password 
     SET 
         generated_by = @GeneratedBy,
-        code = @Code,
-        created_on = @CreatedOn,
-        expires_on = @ExpiresOn,
         used = @Used,
         used_by_user = @UsedByUser,
         child_user = @ChildUser
@@ -123,9 +120,6 @@ namespace FoodplannerDataAccessSql.Codes
                 {
                     CodeId = OTP.CodeId,
                     GeneratedBy = OTP.GeneratedBy,
-                    Code = OTP.Code,
-                    CreatedOn = OTP.CreatedOn,
-                    ExpiresOn = OTP.ExpiresOn,
                     Used = OTP.Used,
                     UsedByUser = OTP.UsedByUser,
                     ChildUser = OTP.ChildUser
