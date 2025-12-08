@@ -90,9 +90,9 @@ public class OneTimePasswordService : IOneTimePasswordService
     public async Task<string> GenerateUniqueSixDigitCodeAsync()
     {
         int code = _random.Next(100000, 1000000);
-
         while (await CheckIfCodeAlreadyExists(code.ToString()))
         {
+            // Increment code by 1 and wrap around if necessary
             code++;
             if (code > 999999)
                 code = 100000;
