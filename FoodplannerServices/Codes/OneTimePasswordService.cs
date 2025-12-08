@@ -23,12 +23,6 @@ public class OneTimePasswordService : IOneTimePasswordService
 
     public async Task<int> CreateOneTimePassword(int userID, int? childUser)
     {
-        if(childUser != null)
-        {
-            var child = await _childrenRepository.GetChildByIdAsync(childUser.Value);
-            if(child == null)
-                throw new Exception("Id given is not for a child");
-        }
         var otp = new OneTimePassword
         {
             GeneratedBy = userID,
@@ -49,17 +43,22 @@ public class OneTimePasswordService : IOneTimePasswordService
     public Task<OneTimePassword> GetOneTimePassword(string code) =>
         _oneTimePasswordRepository.GetFromCodeAsync(code);
 
-    public async Task<int> RedeemOneTimePassword(string code)
+    public async Task<int> RedeemOneTimePassword(string code, int usedByUser)
     {
-    if (await _oneTimePasswordRepository.CheckIfCodeExpiredAsync(code))
-        return 0;
+        if (await _oneTimePasswordRepository.CheckIfCodeExpiredAsync(code))
+            return 0;
 
-    var otp = await GetOneTimePassword(code);
-    if (otp == null)
-        return 0;
+        var otp = await GetOneTimePassword(code);
+        otp.UsedByUser = usedByUser;
 
-    if (otp.UsedByUser == null)
-        return 0;
+        if (otp == null)
+            return 0;
+
+        if (otp.UsedByUser == null)
+            return 0;
+
+        await _oneTimePasswordRepository.UpdateAsync(otp);
+
     
     // Child is being added to parent
     if (otp.ChildUser == null)
@@ -96,7 +95,6 @@ public class OneTimePasswordService : IOneTimePasswordService
         while (await CheckIfCodeAlreadyExists(code.ToString()))
         {
             code++;
-
             if (code > 999999)
                 code = 100000;
         }

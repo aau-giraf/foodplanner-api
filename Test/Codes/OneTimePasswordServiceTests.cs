@@ -125,7 +125,7 @@ namespace Test.Codes
                 .ReturnsAsync(true);
 
             // Act
-            var result = await _otpService.RedeemOneTimePassword("111111");
+            var result = await _otpService.RedeemOneTimePassword("111111", 20);
 
             // Assert
             Assert.Equal(0, result);
@@ -156,7 +156,7 @@ namespace Test.Codes
                 .ReturnsAsync(99);
 
             // Act
-            var result = await _otpService.RedeemOneTimePassword("111111");
+            var result = await _otpService.RedeemOneTimePassword("111111",20);
 
             // Assert
             Assert.Equal(99, result);
@@ -228,7 +228,7 @@ namespace Test.Codes
                 .ReturnsAsync(123);
 
             // Act
-            var result = await _otpService.RedeemOneTimePassword("222222");
+            var result = await _otpService.RedeemOneTimePassword("222222", 20);
 
             // Assert
             Assert.Equal(123, result);
@@ -262,7 +262,7 @@ namespace Test.Codes
                 .ReturnsAsync(456);
 
             // Act
-            var result = await _otpService.RedeemOneTimePassword("333333");
+            var result = await _otpService.RedeemOneTimePassword("333333", 20);
 
             // Assert
             Assert.Equal(456, result);
