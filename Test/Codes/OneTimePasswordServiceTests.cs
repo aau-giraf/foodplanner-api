@@ -99,24 +99,6 @@ namespace Test.Codes
         }
         
         [Fact]
-        public async Task GetOneTimePassword_ReturnsOtp()
-        {
-            // Arrange
-            var otp = new OneTimePassword { Code = "123456" };
-
-            _mockOtpRepository
-                .Setup(r => r.GetFromCodeAsync("123456"))
-                .ReturnsAsync(otp);
-
-            // Act
-            var result = await _otpService.GetOneTimePassword("123456");
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal("123456", result.Code);
-        }
-        
-        [Fact]
         public async Task RedeemOneTimePassword_WhenExpired_Returns0()
         {
             // Arrange

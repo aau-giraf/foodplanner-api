@@ -40,15 +40,13 @@ public class OneTimePasswordService : IOneTimePasswordService
         return int.Parse(otp.Code);
     }
 
-    public Task<OneTimePassword> GetOneTimePassword(string code) =>
-        _oneTimePasswordRepository.GetFromCodeAsync(code);
 
     public async Task<int> RedeemOneTimePassword(string code, int usedByUser)
     {
         if (await _oneTimePasswordRepository.CheckIfCodeExpiredAsync(code))
             return 0;
 
-        var otp = await GetOneTimePassword(code);
+        var otp = await _oneTimePasswordRepository.GetFromCodeAsync(code);
         otp.UsedByUser = usedByUser;
 
         if (otp == null)
@@ -58,7 +56,7 @@ public class OneTimePasswordService : IOneTimePasswordService
             return 0;
 
         await _oneTimePasswordRepository.UpdateAsync(otp);
-
+        
     
         // Child is being added to parent
         if (otp.ChildUser == null)
