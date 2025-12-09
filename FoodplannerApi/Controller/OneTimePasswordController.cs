@@ -29,7 +29,8 @@ namespace FoodplannerApi.Controller
             try
             {
                 var idString = _authService.RetrieveIdFromJwtToken(token);
-                if (!int.TryParse(idString, out int id))
+                int id;
+                if (!int.TryParse(idString, out id))
                 {
                     return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
                 }
@@ -68,19 +69,10 @@ namespace FoodplannerApi.Controller
                 if (!int.TryParse(idString, out int id))
                     return BadRequest("Id is not a number");
 
-                var otp = await _passwordService.GetOneTimePassword(code);
-                if (otp == null)
-                    return NotFound("Code not found");
 
                 var userRole = _authService.RetrieveRoleFromJwtToken(token);
 
-                if (otp.ChildUser == null)
-                    return BadRequest("This code is meant for logging in a child user.");
-
-                otp.UsedByUser = id;
-                await _passwordService.UpdateOneTimePassword(otp);
-
-                var result = await _passwordService.RedeemOneTimePassword(code);
+                var result = await _passwordService.RedeemOneTimePassword(code, id);
 
                 if (result > 0)
                     return Ok("Code redeemed successfully.");
