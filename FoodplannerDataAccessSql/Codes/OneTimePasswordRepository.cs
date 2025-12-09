@@ -35,6 +35,16 @@ namespace FoodplannerDataAccessSql.Codes
                 return true;
         }
 
+        public async Task<IEnumerable<string>> GetListOfCodes()
+        {
+            var sql = @"SELECT code FROM one_time_password";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QueryAsync<string>(sql);
+                return result;
+            }
+        }
         public async Task<bool> CheckIfCodeExpiredAsync(string code)
         {
             const string sql = "SELECT expires_on FROM one_time_password WHERE code = @Code";

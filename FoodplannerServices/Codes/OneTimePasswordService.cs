@@ -19,9 +19,6 @@ public class OneTimePasswordService : IOneTimePasswordService
         _childrenRepository = childrenRepository;
     }
 
-    public Task<bool> CheckIfCodeAlreadyExists(string code) =>
-        _oneTimePasswordRepository.CheckIfCodeExistsAsync(code);
-
     public async Task<int> CreateOneTimePassword(int userID, int? childUser)
     {
         var otp = new OneTimePassword
@@ -40,7 +37,6 @@ public class OneTimePasswordService : IOneTimePasswordService
 
         return int.Parse(otp.Code);
     }
-
 
     public async Task<int> RedeemOneTimePassword(string code, int usedByUser)
     {
@@ -80,9 +76,12 @@ public class OneTimePasswordService : IOneTimePasswordService
     public async Task<string> GenerateUniqueSixDigitCodeAsync()
     {
         int code = _random.Next(100000, 1000000);
-        while (await CheckIfCodeAlreadyExists(code.ToString()))
+
+        var codes = await _oneTimePasswordRepository.GetListOfCodes();
+
+        //Iterate code with linear probing until no collision (if it happens at all)
+        while (codes.Contains(code.ToString()))
         {
-            // Increment code by 1 and wrap around if necessary
             code++;
             if (code > 999999)
                 code = 100000;
@@ -90,5 +89,4 @@ public class OneTimePasswordService : IOneTimePasswordService
 
         return code.ToString();
     }
-
 }

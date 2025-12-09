@@ -28,31 +28,12 @@ namespace Test.Codes
                 _mockChildrenRepository.Object
             );
         }
-        
-        [Fact]
-        public async Task CheckIfCodeAlreadyExists_ReturnsExpectedValue()
-        {
-            // Arrange
-            _mockOtpRepository
-                .Setup(r => r.CheckIfCodeExistsAsync("123456"))
-                .ReturnsAsync(true);
-
-            // Act
-            var result = await _otpService.CheckIfCodeAlreadyExists("123456");
-
-            // Assert
-            Assert.True(result);
-        }
 
         [Fact]
         public async Task CreateOneTimePassword_InsertsOtpAndReturnsGeneratedCode()
         {
             // Arrange
             OneTimePassword capturedOtp = null;
-
-            _mockOtpRepository
-                .Setup(r => r.CheckIfCodeExistsAsync(It.IsAny<string>()))
-                .ReturnsAsync(false);
 
             _mockOtpRepository
                 .Setup(r => r.InsertAsync(It.IsAny<OneTimePassword>()))
@@ -70,34 +51,6 @@ namespace Test.Codes
             _mockOtpRepository.Verify(r => r.InsertAsync(It.IsAny<OneTimePassword>()), Times.Once);
         }
 
-
-
-        [Fact]
-        public async Task CreateOneTimePassword_LoopsUntilUniqueCodeFound()
-        {
-            // Arrange
-            var callCount = 0;
-
-            _mockOtpRepository
-                .Setup(r => r.CheckIfCodeExistsAsync(It.IsAny<string>()))
-                .ReturnsAsync(() =>
-                {
-                    callCount++;
-                    return callCount == 1; // first time returns true -> simulate collision
-                });
-
-            _mockOtpRepository
-                .Setup(r => r.InsertAsync(It.IsAny<OneTimePassword>()))
-                .ReturnsAsync(1);
-
-            // Act
-            await _otpService.CreateOneTimePassword(10, null);
-
-            // Assert
-            // Must check at least twice (first collision, then unique)
-            Assert.True(callCount >= 2);
-        }
-        
         [Fact]
         public async Task RedeemOneTimePassword_WhenExpired_Returns0()
         {

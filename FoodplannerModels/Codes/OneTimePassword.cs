@@ -4,7 +4,6 @@ public class OneTimePassword
 {
     [Key]
     public int CodeId {  get; set; }
-
     required public int GeneratedBy {  get; set; }
     required public string Code { get; set; }
 
