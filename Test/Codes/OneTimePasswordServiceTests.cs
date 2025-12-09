@@ -117,11 +117,9 @@ namespace Test.Codes
         public async Task RedeemOneTimePassword_ValidCode_AddsParentAndDeletesOtp()
         {
             // Arrange
-            var otp = new OneTimePassword
+            var otp = new OneTimePasswordDTO
             {
-                Code = "111111",
-                CreatedOn = DateTime.UtcNow,
-                ExpiresOn = DateTime.UtcNow.AddDays(1),
+                CodeId = 1,
                 GeneratedBy = 10,
                 UsedByUser = 20,
                 Used = false
@@ -147,73 +145,17 @@ namespace Test.Codes
             _mockOtpRepository.Verify(r => r.DeleteAsync("111111"), Times.Once);
             _mockChildrenRepository.Verify(r => r.AddParentToChildAsync(10, 20), Times.Once);
         }
-        
-        [Fact]
-        public async Task UpdateOneTimePassword_WhenCodeExists_UpdatesOtp()
-        {
-            // Arrange
-            var otp = new OneTimePassword
-            {
-                Code = "123456",
-                CreatedOn = DateTime.UtcNow,
-                ExpiresOn = DateTime.UtcNow.AddDays(1),
-                GeneratedBy = 10,
-                UsedByUser = 20,
-                Used = false
-            };
-
-            _mockOtpRepository
-                .Setup(r => r.CheckIfCodeExistsAsync("123456"))
-                .ReturnsAsync(true);
-
-            _mockOtpRepository
-                .Setup(r => r.UpdateAsync(otp))
-                .ReturnsAsync(1);
-
-            // Act
-            var result = await _otpService.UpdateOneTimePassword(otp);
-
-            // Assert
-            Assert.Equal(1, result);
-        }
-
-        [Fact]
-        public async Task UpdateOneTimePassword_WhenCodeDoesNotExist_Returns0()
-        {
-            // Arrange
-            var otp = new OneTimePassword
-            {
-                Code = "123456",
-                CreatedOn = DateTime.UtcNow,
-                ExpiresOn = DateTime.UtcNow.AddDays(1),
-                GeneratedBy = 10,
-                UsedByUser = 20,
-                Used = false
-            };
-
-            _mockOtpRepository
-                .Setup(r => r.CheckIfCodeExistsAsync("123456"))
-                .ReturnsAsync(false);
-
-            // Act
-            var result = await _otpService.UpdateOneTimePassword(otp);
-
-            // Assert
-            Assert.Equal(0, result);
-        }
 
         [Fact]
         public async Task RedeemOneTimePassword_ParentInvitesChild_BindsParentToChild()
         {
             // Arrange: ChildUser is set → parent is being added to child
-            var otp = new OneTimePassword
+            var otp = new OneTimePasswordDTO
             {
-                Code = "222222",
-                CreatedOn = DateTime.UtcNow,
-                ExpiresOn = DateTime.UtcNow.AddDays(1),
+                CodeId = 1,
                 Used = false,
                 GeneratedBy = 1,
-                UsedByUser = null,
+                UsedByUser = null,   // overwritten
                 ChildUser = 3
             };
 
@@ -246,11 +188,9 @@ namespace Test.Codes
         public async Task RedeemOneTimePassword_ParentInvitesParent_BindsChildToParent()
         {
             // Arrange: ChildUser null → child is being added to parent
-            var otp = new OneTimePassword
+            var otp = new OneTimePasswordDTO
             {
-                Code = "333333",
-                CreatedOn = DateTime.UtcNow,
-                ExpiresOn = DateTime.UtcNow.AddDays(1),
+                CodeId = 1,
                 Used = false,
                 GeneratedBy = 1,
                 UsedByUser = null,   // overwritten

@@ -6,8 +6,6 @@ public class OneTimePassword
     public int CodeId {  get; set; }
 
     required public int GeneratedBy {  get; set; }
-
-    [StringLength(6)]
     required public string Code { get; set; }
 
     required public DateTime CreatedOn { get; set; }
@@ -15,9 +13,4 @@ public class OneTimePassword
     required public bool Used {  get; set; } 
     public int? UsedByUser { get; set; }
     public int? ChildUser { get; set; }
-
-    public OneTimePassword()
-    {
-        Code = "";
-    }
 }
