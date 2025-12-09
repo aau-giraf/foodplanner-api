@@ -1,6 +1,7 @@
-﻿using FoodplannerModels.Account;
-using FoodplannerServices.Codes;
+﻿using System.Collections.Concurrent;
+using FoodplannerModels.Account;
 using FoodplannerModels.Codes;
+using FoodplannerServices.Codes;
 
 namespace FoodplannerServices.Codes;
 
@@ -18,9 +19,6 @@ public class OneTimePasswordService : IOneTimePasswordService
         _childrenRepository = childrenRepository;
     }
 
-    public Task<bool> CheckIfCodeAlreadyExists(string code) =>
-        _oneTimePasswordRepository.CheckIfCodeExistsAsync(code);
-
     public async Task<int> CreateOneTimePassword(int userID, int? childUser)
     {
         var otp = new OneTimePassword
@@ -33,61 +31,58 @@ public class OneTimePasswordService : IOneTimePasswordService
             ChildUser = childUser,
             Code = await GenerateUniqueSixDigitCodeAsync()
         };
+        var status = await _oneTimePasswordRepository.InsertAsync(otp);
+        if (status == 0)
+            throw new Exception("One Time Password failed creation");
 
-        return await _oneTimePasswordRepository.InsertAsync(otp);
+        return int.Parse(otp.Code);
     }
 
-    public Task<OneTimePassword> GetOneTimePassword(string code) =>
-        _oneTimePasswordRepository.GetFromCodeAsync(code);
-
-    public async Task<int> RedeemOneTimePassword(string code)
+    public async Task<int> RedeemOneTimePassword(string code, int usedByUser)
     {
-    if (await _oneTimePasswordRepository.CheckIfCodeExpiredAsync(code))
-        return 0;
+        if (await _oneTimePasswordRepository.CheckIfCodeExpiredAsync(code))
+            return 0;
 
-    var otp = await GetOneTimePassword(code);
-    if (otp == null)
-        return 0;
+        var otp = await _oneTimePasswordRepository.GetFromCodeAsync(code);
+        otp.UsedByUser = usedByUser;
+        await _oneTimePasswordRepository.UpdateAsync(otp);
 
-    if (otp.UsedByUser == null)
-        return 0;
+        if (otp == null)
+            return 0;
+
+        if (otp.UsedByUser == null)
+            return 0;
     
-    // Child is being added to parent
-    if (otp.ChildUser == null)
-    {
-        await _oneTimePasswordRepository.DeleteAsync(code);
-        return await _childrenRepository.AddParentToChildAsync(
-            otp.GeneratedBy,
-            otp.UsedByUser.Value
-        );
-    }
-    // Parent is being added to child
-    else
-    {
-        await _oneTimePasswordRepository.DeleteAsync(code);
-        return await _childrenRepository.AddParentToChildAsync(
-            otp.UsedByUser.Value,
-            otp.ChildUser.Value
-        );
-    }
-}
-
-    public async Task<int> UpdateOneTimePassword(OneTimePassword otp)
-    {
-        if (await CheckIfCodeAlreadyExists(otp.Code))
-            return await _oneTimePasswordRepository.UpdateAsync(otp);
-
-        return 0;
+        // Child is being added to parent
+        if (otp.ChildUser == null)
+        {
+            await _oneTimePasswordRepository.DeleteAsync(code);
+            return await _childrenRepository.AddParentToChildAsync(
+                otp.GeneratedBy,
+                otp.UsedByUser.Value
+            );
+        }
+        // Parent is being added to child
+        else
+        {
+            await _oneTimePasswordRepository.DeleteAsync(code);
+            return await _childrenRepository.AddParentToChildAsync(
+                otp.UsedByUser.Value,
+                otp.ChildUser.Value
+            );
+        }
     }
 
-    private async Task<string> GenerateUniqueSixDigitCodeAsync()
+    public async Task<string> GenerateUniqueSixDigitCodeAsync()
     {
         int code = _random.Next(100000, 1000000);
 
-        while (await CheckIfCodeAlreadyExists(code.ToString()))
+        var codes = await _oneTimePasswordRepository.GetListOfCodes();
+
+        //Iterate code with linear probing until no collision (if it happens at all)
+        while (codes.Contains(code.ToString()))
         {
             code++;
-
             if (code > 999999)
                 code = 100000;
         }
