@@ -23,6 +23,9 @@ using FoodplannerServices.Secret;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using FoodplannerModels.Auth;
+using FoodplannerModels.Codes;
+using FoodplannerDataAccessSql.Codes;
+using FoodplannerServices.Codes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -173,6 +176,7 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ChildPolicy", policy => policy.RequireRole("Child"));
     options.AddPolicy("ParentPolicy", policy => policy.RequireRole("Parent"));
+    options.AddPolicy("TeacherChildPolicy", policy => policy.RequireRole("Child", "Teacher"));
     options.AddPolicy("TeacherPolicy", policy => policy.RequireRole("Teacher", "Admin"));
     options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
 });
@@ -184,7 +188,6 @@ builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
 builder.Services.AddScoped(typeof(IMealRepository), typeof(MealRepository));
 builder.Services.AddScoped(typeof(IIngredientRepository), typeof(IngredientRepository));
 builder.Services.AddScoped(typeof(IPackedIngredientRepository), typeof(PackedIngredientRepository));
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IIngredientService, IngredientService>();
 builder.Services.AddScoped<IMealService, MealService>();
 builder.Services.AddScoped<IPackedIngredientService, PackedIngredientService>();
@@ -194,18 +197,19 @@ builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomReposit
 builder.Services.AddScoped(typeof(IChatRepository), typeof(ChatRepository));
 builder.Services.AddScoped<ISubIngredientRepository, SubIngredientRepository>();
 builder.Services.AddScoped<ISubIngredientRelationRepository, SubIngredientRelationRepository>();
+builder.Services.AddScoped(typeof(IOneTimePasswordRepository), typeof(OneTimePasswordRepository));
 
 // Add Services
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
 builder.Services.AddScoped<IClassroomService, ClassroomService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ChildrenService>();
 builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<ISubIngredientService, SubIngredientService>();
 builder.Services.AddScoped<ISubIngredientRelationService, SubIngredientRelationService>();
 builder.Services.AddScoped<IPasswordHandler, PasswordHandler>();
+builder.Services.AddScoped<IOneTimePasswordService, OneTimePasswordService>();
 builder.Services.AddSingleton<ISecretLoader, SecretsLoader>(_ => secretsLoader);
 
 builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfile));
@@ -216,6 +220,7 @@ builder.Services.AddSingleton<IAuthService, AuthService>();
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(ChatProfile));
+builder.Services.AddAutoMapper(typeof(ClassroomProfile));
 
 
 // Set up connection to database before running migrations
