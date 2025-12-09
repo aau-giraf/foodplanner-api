@@ -5,19 +5,33 @@ using Npgsql;
 
 namespace FoodplannerDataAccessSql.Account
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : GenericRepository<User>, IUserRepository
     {
 
         private readonly PostgreSQLConnectionFactory _connectionFactory;
 
         public UserRepository(PostgreSQLConnectionFactory connectionFactory)
+            : base(connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
 
+
+public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
+        {
+            var sql = "SELECT id, first_name, last_name, email, role, archived FROM users ORDER BY first_name";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QueryAsync<UserDTO>(sql);
+                return result.ToList();
+            }
+        }
+
+
+/*
         public async Task<int> DeleteAsync(int id)
         {
-            var deleteChildrenSql = "DELETE FROM children WHERE parent_id = @Id";
             var deleteUserSql = "DELETE FROM users WHERE id = @Id";
 
             using (var connection = _connectionFactory.Create())
@@ -27,7 +41,6 @@ namespace FoodplannerDataAccessSql.Account
                 {
                     try
                     {
-                        await connection.ExecuteAsync(deleteChildrenSql, new { Id = id }, transaction);
                         var result = await connection.ExecuteAsync(deleteUserSql, new { Id = id }, transaction);
                         transaction.Commit();
                         return result;
@@ -41,16 +54,70 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<IEnumerable<UserDTO>> GetAllAsync()
+        
+
+
+        public async Task<int> InsertAsync(User entity)
+                {
+                    var sql = "INSERT INTO users (first_name, last_name, email, password, role, role_approved) VALUES (@FirstName, @LastName, @Email, @Password, @role, @RoleApproved) RETURNING id";
+
+                    using (var connection = _connectionFactory.Create())
+                    {
+
+                        connection.Open();
+                        var result = await connection.QuerySingleAsync<int>(sql, new
+                        {
+                            FirstName = entity.FirstName,
+                            LastName = entity.LastName,
+                            Email = entity.Email,
+                            Password = entity.Password,
+                            role = entity.Role,
+                            RoleApproved = entity.RoleApproved
+                        });
+                        return result;
+
+                    }
+                }
+
+        public Task<int> UpdateAsync(User entity)
         {
-            var sql = "SELECT id, first_name, last_name, email, role, archived FROM users ORDER BY first_name";
+            var sql = "UPDATE users SET first_name = @FirstName, last_name = @LastName, email = @Email, password = @Password, role = @Role, role_approved = @RoleApproved, archived = @Archived WHERE id = @Id";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.QueryAsync<UserDTO>(sql);
-                return result.ToList();
+                var result = connection.Execute(sql, new
+                {
+                    FirstName = entity.FirstName,
+                    LastName = entity.LastName,
+                    Email = entity.Email,
+                    Password = entity.Password,
+                    Role = entity.Role,
+                    RoleApproved = entity.RoleApproved,
+                    Id = entity.Id,
+                    Archived = entity.Archived
+                });
+                return Task.FromResult(result);
             }
         }
+
+
+
+
+
+*/
+
+        public async Task<User?> GetByUserIdAsync(int id)   //might not work on genrepo 4 sum reason, keep extra eye on??
+                {
+                    var sql = "SELECT id, first_name, last_name, email, role, role_approved FROM users WHERE id = @Id";
+                    using (var connection = _connectionFactory.Create())
+                    {
+                        connection.Open();
+                        var result = await connection.QueryFirstOrDefaultAsync<User>(sql, new { Id = id });
+                        return result;
+                    }
+
+                }
+
 
         public async Task<User?> GetUserByEmailAsync(string email)
         {
@@ -63,17 +130,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<User?> GetByIdAsync(int id)
-        {
-            var sql = "SELECT id, first_name, last_name, email, role, role_approved FROM users WHERE id = @Id";
-            using (var connection = _connectionFactory.Create())
-            {
-                connection.Open();
-                var result = await connection.QueryFirstOrDefaultAsync<User>(sql, new { Id = id });
-                return result;
-            }
-
-        }
+        
 
         public async Task<IEnumerable<UserDTO>> GetAllNotApprovedAsync()
         {
@@ -97,49 +154,10 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<int> InsertAsync(User entity)
-        {
-            var sql = "INSERT INTO users (first_name, last_name, email, password, role, role_approved) VALUES (@FirstName, @LastName, @Email, @Password, @role, @RoleApproved) RETURNING id";
-
-            using (var connection = _connectionFactory.Create())
-            {
-
-                connection.Open();
-                var result = await connection.QuerySingleAsync<int>(sql, new
-                {
-                    FirstName = entity.FirstName,
-                    LastName = entity.LastName,
-                    Email = entity.Email,
-                    Password = entity.Password,
-                    role = entity.Role,
-                    RoleApproved = entity.RoleApproved
-                });
-                return result;
-
-            }
-        }
+        
 
 
-        public Task<int> UpdateAsync(User entity)
-        {
-            var sql = "UPDATE users SET first_name = @FirstName, last_name = @LastName, email = @Email, password = @Password, role = @Role, role_approved = @RoleApproved, archived = @Archived WHERE id = @Id";
-            using (var connection = _connectionFactory.Create())
-            {
-                connection.Open();
-                var result = connection.Execute(sql, new
-                {
-                    FirstName = entity.FirstName,
-                    LastName = entity.LastName,
-                    Email = entity.Email,
-                    Password = entity.Password,
-                    Role = entity.Role,
-                    RoleApproved = entity.RoleApproved,
-                    Id = entity.Id,
-                    Archived = entity.Archived
-                });
-                return Task.FromResult(result);
-            }
-        }
+
 
         public async Task<string> UpdatePinCodeAsync(string pinCode, int id)
         {

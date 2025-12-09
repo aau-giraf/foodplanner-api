@@ -10,6 +10,7 @@ namespace FoodplannerDataAccessSql.Account
     {
 
         private readonly PostgreSQLConnectionFactory _connectionFactory;
+        protected override string entityId => "ChildId";
 
         public ChildrenRepository(PostgreSQLConnectionFactory connectionFactory)
             : base(connectionFactory)

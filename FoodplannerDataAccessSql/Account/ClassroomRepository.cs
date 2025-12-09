@@ -6,16 +6,18 @@ using Npgsql;
 
 namespace FoodplannerDataAccessSql.Account
 {
-    public class ClassroomRepository : IClassroomRepository
+    public class ClassroomRepository : GenericRepository<Classroom>, IClassroomRepository
     {
 
         private readonly PostgreSQLConnectionFactory _connectionFactory;
+        protected override string entityId => "ClassId";
 
-        public ClassroomRepository(PostgreSQLConnectionFactory connectionFactory)
+
+        public ClassroomRepository(PostgreSQLConnectionFactory connectionFactory) : base(connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
-        public async Task<IEnumerable<Classroom>> GetAllAsync()
+        public async Task<IEnumerable<Classroom>> GetAllByClassAsync()
         {
             var sql = "SELECT * FROM classroom ORDER BY class_name";
             using (var connection = _connectionFactory.Create())
@@ -24,7 +26,7 @@ namespace FoodplannerDataAccessSql.Account
                 var result = await connection.QueryAsync<Classroom>(sql);
                 return result.ToList();
             } 
-        }
+        }/*
         public async Task<int> InsertAsync(CreateClassroomDTO entity)
         {
             var sql = "INSERT INTO classroom (class_name) VALUES (@ClassName) RETURNING class_id";
@@ -52,17 +54,6 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<bool> CheckChildrenInClassroom(int id)
-        {
-            var sql = "SELECT COUNT(*) FROM children WHERE class_id = @Id";
-            using (var connection = _connectionFactory.Create())
-            {
-                connection.Open();
-                var result = await connection.QuerySingleAsync<int>(sql, new { Id = id });
-                return result > 0;
-            }
-        }
-
         public async Task<int> DeleteAsync(int id)
         {
             var sql = "DELETE FROM classroom WHERE class_id = @Id";
@@ -71,6 +62,17 @@ namespace FoodplannerDataAccessSql.Account
                 connection.Open();
                 var result = await connection.ExecuteAsync(sql, new { Id = id });
                 return result;
+            }
+        }*/
+
+        public async Task<bool> CheckChildrenInClassroom(int id)
+        {
+            var sql = "SELECT COUNT(*) FROM children WHERE class_id = @Id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QuerySingleAsync<int>(sql, new { Id = id });
+                return result > 0;
             }
         }
     }

@@ -24,14 +24,14 @@ public class UserService : IUserService
     public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
     {
 
-        var user = await _userRepository.GetAllAsync();
+        var user = await _userRepository.GetAllUsersAsync();
         var userDTO = _mapper.Map<IEnumerable<UserDTO>>(user);
         return userDTO;
     }
 
     public async Task<User?> GetUserByIdAsync(int id)
     {
-        return await _userRepository.GetByIdAsync(id);
+        return await _userRepository.GetByUserIdAsync(id);
     }
 
 
@@ -107,7 +107,7 @@ public class UserService : IUserService
         {
             throw new InvalidOperationException("Forkert pinkode");
         }
-        var user = await _userRepository.GetByIdAsync(id);
+        var user = await _userRepository.GetByUserIdAsync(id);
         user.Id = id;
         if (user == null)
         {
