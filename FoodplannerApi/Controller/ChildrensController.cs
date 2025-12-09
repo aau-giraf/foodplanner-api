@@ -48,7 +48,7 @@ public class ChildrensController : BaseController
         return Ok(children);
     }
 
-    [Authorize(Policy = "TeacherPolicy")]
+    [Authorize(Policy = "TeacherChildPolicy")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetChildFromChildId(int id)
     {
