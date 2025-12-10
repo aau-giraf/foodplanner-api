@@ -95,7 +95,7 @@ Console.WriteLine("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
         using (var connection = _connectionFactory.Create()){
             connection.Open();
             var props = typeof(T).GetProperties().Skip(1);
-            var sql = $"UPDATE {typeof(T).Name.ToLower()} SET ({string.Join(", ", props.Select(p => EntityDbTranslation.ToDb(p.Name)))}) = ({string.Join(", ", props.Select(p => "@" + p.Name))}) WHERE {EntityDbTranslation.ToDb(entityId)} = @{entityId}";
+            var sql = $"UPDATE {typeof(T).Name.ToLower()} SET ({string.Join(", ", props.Select(p => $"{EntityDbTranslation.ToDb(p.Name)} = @{p.Name}"))}) WHERE {EntityDbTranslation.ToDb(entityId)} = @{entityId}";
             
 // temp
 var propsss = typeof(T).GetProperties()

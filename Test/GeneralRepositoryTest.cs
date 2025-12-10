@@ -35,7 +35,7 @@ public class RepositoryTests
         };
 
         var UserInsertResult = await _userRepository.InsertAsync(user);
-        Assert.Equal(user.Id, UserInsertResult);
+        Assert.NotEqual(0, UserInsertResult);
 
     }
 
@@ -59,7 +59,7 @@ public class RepositoryTests
     public async Task UserRepository_DeleteAsync()
     {
         
-        int idToDelete = 20; //take from insert maybe? makes it depend on it but still
+        int idToDelete = 20;
 
         var UserDeleteResult = await _userRepository.DeleteAsync(idToDelete);
         Assert.Equal(1, UserDeleteResult);
@@ -85,7 +85,7 @@ public class RepositoryTests
         };
 
         var result = await _childrenRepository.InsertAsync(child);
-        Assert.Equal(child.ChildId, result);
+        Assert.NotEqual(0, result);
         
 
 
@@ -143,9 +143,7 @@ public class RepositoryTests
         
         
         var result = await _classroomRepository.InsertAsync(classroom);
-        Assert.Equal(classroom.ClassId, result);
-
-
+        Assert.NotEqual(0, result);
 
     }
 
