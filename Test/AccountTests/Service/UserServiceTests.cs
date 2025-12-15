@@ -493,14 +493,13 @@ public class UserServiceTests
         // Arrange
         var expectedId = 1;
         var mail = "child@example.com";
-        var parentIds = new List<int> { 2, 3 };
+        var parentId = 2;
         var newUser = new UserCreateChildDTO
         {
             FirstName = "lisa",
             LastName = "child",
             Email = mail,
             Password = "password",
-            ParentIds = parentIds
         };
         var mappedUser = new User
         {
@@ -510,6 +509,17 @@ public class UserServiceTests
             Email = mail,
             Password = "password",
             Role = UserRole.Child,
+            RoleApproved = true
+        };
+
+        var parentUser = new User
+        {
+            Id = parentId,
+            FirstName = "parent",
+            LastName = "parent",
+            Email = "parent@example.com",
+            Password = "password",
+            Role = UserRole.Parent,
             RoleApproved = true
         };
 
@@ -528,9 +538,13 @@ public class UserServiceTests
         _mockChildrenRepository
             .Setup(repo => repo.AddParentToChildAsync(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(1);
+        // The service now requires a parentId; mock the parent lookup
+        _mockUserRepository
+            .Setup(repo => repo.GetByIdAsync(parentId))
+            .ReturnsAsync(parentUser);
 
         // Act
-        var result = await _userService.CreateChildrenUserAsync(newUser);
+        var result = await _userService.CreateChildrenUserAsync(newUser, parentId);
 
         // Assert
         Assert.Equal(expectedId, result);
@@ -541,11 +555,9 @@ public class UserServiceTests
                 c.LastName == mappedUser.LastName
             )), Times.Once);
 
-        foreach (var pid in parentIds)
-        {
-            _mockChildrenRepository.Verify(repo => repo.AddParentToChildAsync(pid, expectedId), Times.Once);
-        }
+        _mockChildrenRepository.Verify(repo => repo.AddParentToChildAsync(parentId, expectedId), Times.Once);
     }
+
 
     [Fact]
     public async Task CreateChildrenUserAsync_NoParents_CreatesChildOnly()
@@ -553,49 +565,46 @@ public class UserServiceTests
         // Arrange
         var expectedId = 1;
         var mail = "child@example.com";
-        var parentIds = new List<int>(); // no parents
+        // service requires a parentId; if parent is missing the service should throw
+        var invalidParentId = 999;
         var newUser = new UserCreateChildDTO
         {
             FirstName = "lisa",
             LastName = "child",
             Email = mail,
             Password = "password",
-            ParentIds = parentIds
-        };
-        var mappedUser = new User
-        {
-            Id = 0,
-            FirstName = "lisa",
-            LastName = "child",
-            Email = mail,
-            Password = "password",
-            Role = UserRole.Child,
-            RoleApproved = true
-        };
+            // no ParentIds property used by service anymore
+         };
+         var mappedUser = new User
+         {
+             Id = 0,
+             FirstName = "lisa",
+             LastName = "child",
+             Email = mail,
+             Password = "password",
+             Role = UserRole.Child,
+             RoleApproved = true
+         };
 
-        _mockMapper
-            .Setup(mapper => mapper.Map<User>(It.IsAny<UserCreateChildDTO>()))
-            .Returns(mappedUser);
+         _mockMapper
+             .Setup(mapper => mapper.Map<User>(It.IsAny<UserCreateChildDTO>()))
+             .Returns(mappedUser);
+         _mockUserRepository
+             .Setup(repo => repo.EmailExistsAsync(mail))
+             .ReturnsAsync(false);
+         _mockUserRepository
+             .Setup(repo => repo.InsertAsync(mappedUser))
+             .ReturnsAsync(expectedId);
+         _mockChildrenRepository
+             .Setup(repo => repo.InsertAsync(It.IsAny<Children>()))
+             .ReturnsAsync(expectedId);
+
+        // Simulate missing parent
         _mockUserRepository
-            .Setup(repo => repo.EmailExistsAsync(mail))
-            .ReturnsAsync(false);
-        _mockUserRepository
-            .Setup(repo => repo.InsertAsync(mappedUser))
-            .ReturnsAsync(expectedId);
-        _mockChildrenRepository
-            .Setup(repo => repo.InsertAsync(It.IsAny<Children>()))
-            .ReturnsAsync(expectedId);
+            .Setup(repo => repo.GetByIdAsync(invalidParentId))
+            .ReturnsAsync((User)null);
 
-        // Act
-        var result = await _userService.CreateChildrenUserAsync(newUser);
-
-        // Assert
-        Assert.Equal(expectedId, result);
-        _mockChildrenRepository.Verify(repo =>
-            repo.InsertAsync(It.Is<Children>(c =>
-                c.ChildId == expectedId &&
-                c.FirstName == mappedUser.FirstName &&
-                c.LastName == mappedUser.LastName
-            )), Times.Once);
+        // Act & Assert: missing parent should cause an InvalidOperationException
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _userService.CreateChildrenUserAsync(newUser, invalidParentId));
     }
 }
