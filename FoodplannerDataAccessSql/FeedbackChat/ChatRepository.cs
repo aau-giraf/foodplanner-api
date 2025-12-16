@@ -13,12 +13,10 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
     public async Task<ChatThread> GetChatThreadByIdAsync(int ChatThreadId)
     {
         const string sql = "SELECT * FROM chat_thread WHERE chat_thread_id = @ChatThreadId";
-        using (var connection = connectionFactory.Create())
-        {
-            connection.Open();
-            var result = await connection.QuerySingleOrDefaultAsync<ChatThread>(sql, new { ChatThreadId });
-            return result;
-        }
+        await using var connection = connectionFactory.Create();
+        connection.Open();
+        var result = await connection.QuerySingleOrDefaultAsync<ChatThread>(sql, new { ChatThreadId });
+        return result;
     }
 
     public async Task<int> GetChatThreadIdByChildIdAsync(int ChildId)
@@ -70,7 +68,7 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
     //     }
     // }
     
-    public async Task<IEnumerable<UserNameFeedbackChatDTO>> GetMessagesByChatThreadIdAsync(int chatThreadId)
+    public async Task<IEnumerable<Message>> GetMessagesByChatThreadIdAsync(int chatThreadId)
     {
         const string sql = @"
                                 SELECT message.*, users.first_name
@@ -82,7 +80,7 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
         using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            var result = await connection.QueryAsync<UserNameFeedbackChatDTO>(sql, new{ chatThreadId });
+            var result = await connection.QueryAsync<Message>(sql, new{ chatThreadId });
             return result;
         }
     }

@@ -37,15 +37,13 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-
-
-        public async Task<IEnumerable<UserDTO>> GetAllAsync()
+        public async Task<IEnumerable<User>> GetAllAsync()
         {
             var sql = "SELECT id, first_name, last_name, email, role, archived FROM users ORDER BY first_name";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.QueryAsync<UserDTO>(sql);
+                var result = await connection.QueryAsync<User>(sql);
                 return result.ToList();
             }
         }
@@ -73,13 +71,13 @@ namespace FoodplannerDataAccessSql.Account
 
         }
 
-        public async Task<IEnumerable<UserDTO>> GetAllNotApprovedAsync()
+        public async Task<IEnumerable<User>> GetAllNotApprovedAsync()
         {
             var sql = "SELECT id, first_name, last_name, email, role FROM users WHERE role_approved = false";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.QueryAsync<UserDTO>(sql);
+                var result = await connection.QueryAsync<User>(sql);
                 return result.ToList();
             }
         }
@@ -120,19 +118,19 @@ namespace FoodplannerDataAccessSql.Account
 
         public Task<int> UpdateAsync(User entity)
         {
-            var sql = "UPDATE users SET first_name = @FirstName, last_name = @LastName, email = @Email, password = @Password, role = @Role, role_approved = @RoleApproved, archived = @Archived WHERE id = @Id";
+            var sql = "UPDATE users SET first_name = @FirstName, last_name = @LastName, email = @Email, password = @Password WHERE id = @Id";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
                 var result = connection.Execute(sql, new
                 {
+                    Id = entity.Id,
                     FirstName = entity.FirstName,
                     LastName = entity.LastName,
                     Email = entity.Email,
                     Password = entity.Password,
                     Role = entity.Role.ToString(),
                     RoleApproved = entity.RoleApproved,
-                    Id = entity.Id,
                     Archived = entity.Archived
                 });
                 return Task.FromResult(result);
@@ -213,18 +211,18 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<UserDTO> GetLoggedInAsync(int id)
+        public async Task<User> GetLoggedInAsync(int id)
         {
             var sql = "SELECT id, first_name, last_name, email, role, role_approved FROM users WHERE id = @Id";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.QueryFirstOrDefaultAsync<UserDTO>(sql, new { Id = id });
+                var result = await connection.QueryFirstOrDefaultAsync<User>(sql, new { Id = id });
                 return result;
             }
         }
 
-        public async Task<int> UpdateLoggedInAsync(int id, UserUpdateDTO userUpdateDTO)
+        public async Task<int> UpdateLoggedInAsync(int id, UserUpdateLoggedInDTO userUpdateLoggedInDto)
         {
             var sql = "UPDATE users SET first_name = @FirstName, last_name = @LastName, email = @Email WHERE id = @Id RETURNING id";
             using (var connection = _connectionFactory.Create())
@@ -233,9 +231,9 @@ namespace FoodplannerDataAccessSql.Account
                 var result = await connection.ExecuteAsync(sql, new
                 {
                     Id = id,
-                    FirstName = userUpdateDTO.FirstName,
-                    LastName = userUpdateDTO.LastName,
-                    Email = userUpdateDTO.Email,
+                    FirstName = userUpdateLoggedInDto.FirstName,
+                    LastName = userUpdateLoggedInDto.LastName,
+                    Email = userUpdateLoggedInDto.Email,
                 });
                 return result;
             }

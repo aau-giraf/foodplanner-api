@@ -50,7 +50,7 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
                 {
                     Id = p.Id,
                     Meal_id = p.Meal_id,
-                    Ingredient_id = ingredientsById[p.Ingredient_id],
+                    Ingredient_id = p.Ingredient_id,
                     order_number = p.order_number
                 }).ToList();
 
@@ -60,6 +60,7 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
                 Food_image_id = meal.Food_image_id,
                 Name = meal.Name,
                 Date = meal.Date,
+                UserId = meal.User_id,
                 Ingredients = packedIngredients
             };
         }).ToList();
@@ -102,7 +103,7 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
                 {
                     Id = p.Id,
                     Meal_id = p.Meal_id,
-                    Ingredient_id = ingredientsById[p.Ingredient_id],
+                    Ingredient_id = p.Ingredient_id,
                     order_number = p.order_number
                 }).ToList();
 
@@ -112,6 +113,7 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
                 Food_image_id = meal.Food_image_id,
                 Name = meal.Name,
                 Date = meal.Date,
+                UserId = meal.User_id,
                 Ingredients = packedIngredients
             };
         }).ToList();
@@ -145,7 +147,7 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
         {
             Id = p.Id,
             Meal_id = p.Meal_id,
-            Ingredient_id = ingredientsById[p.Ingredient_id],
+            Ingredient_id = p.Ingredient_id,
             order_number = p.order_number
         }).ToList();
 
@@ -156,6 +158,7 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
             Food_image_id = meal.Food_image_id,
             Name = meal.Name,
             Date = meal.Date,
+            UserId = meal.User_id,
             Ingredients = packedIngredientDTOs
         };
     }
@@ -170,9 +173,12 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
     }
     // Updates an existing meal in the repository by ID.
 
-    public async Task<int> UpdateMealAsync(Meal meal, int id)
+    public async Task<int> UpdateMealAsync(MealDTO mealDto, int id)
     {
-        return await _mealRepository.UpdateAsync(meal, id);
+        var meal = _mapper.Map<Meal>(mealDto);
+        var result = _mealRepository.UpdateAsync(meal, id);
+        
+        return await result;
     }
     // Deletes an meal from the repository by ID.
 

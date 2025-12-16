@@ -23,6 +23,7 @@ using FoodplannerServices.Secret;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using FoodplannerModels.Auth;
+using FoodplannerModels.Image;
 using FoodplannerModels.Codes;
 using FoodplannerDataAccessSql.Codes;
 using FoodplannerServices.Codes;
@@ -205,17 +206,23 @@ builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IPasswordHandler, PasswordHandler>();
+builder.Services.AddScoped<IIngredientService, IngredientService>();
+builder.Services.AddScoped<IMealService, MealService>();
+builder.Services.AddScoped<IPackedIngredientService, PackedIngredientService>();
 builder.Services.AddScoped<IOneTimePasswordService, OneTimePasswordService>();
 builder.Services.AddSingleton<ISecretLoader, SecretsLoader>(_ => secretsLoader);
-
-builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfile));
-
 builder.Services.AddSingleton<IAuthService, AuthService>();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(ChatProfile));
+builder.Services.AddAutoMapper(typeof(PackedIngredientProfile));
+builder.Services.AddAutoMapper(typeof(IngredientProfile));
+builder.Services.AddAutoMapper(typeof(MealProfile));
+builder.Services.AddAutoMapper(typeof(ChildrenProfile));
 builder.Services.AddAutoMapper(typeof(ClassroomProfile));
+builder.Services.AddAutoMapper(typeof(ImageProfile));
+
 
 
 // Set up connection to database before running migrations
@@ -249,7 +256,6 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
-
     if (runner.HasMigrationsToApplyUp())
     {
         runner.ListMigrations();

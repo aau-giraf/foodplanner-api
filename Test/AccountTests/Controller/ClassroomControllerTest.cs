@@ -1,7 +1,9 @@
+using AutoMapper;
 using FoodplannerApi.Controller;
 using FoodplannerModels.Account;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Test.Builder;
 
 namespace Test.Controller;
 
@@ -9,6 +11,7 @@ public class ClassroomControllerTest
 {
     private readonly Mock<IClassroomService> _mockClassroomService;
     private readonly ClassroomsController  _classroomController;
+    private readonly IMapper _mapper;
 
     public ClassroomControllerTest()
     {
@@ -22,12 +25,19 @@ public class ClassroomControllerTest
         // Arrange
         var classrooms = new List<Classroom>
         {
-            new Classroom { ClassId = 1, ClassName = "1.A" },
-            new Classroom { ClassId = 2, ClassName = "1.B" },
+            new ClassroomBuilder().WithClassId(1).WithClassName("1.A").Build(),
+            new ClassroomBuilder().WithClassId(2).WithClassName("1.B").Build(),
         };
+
+        var classroomDtos = new List<ClassroomDTO>
+        {
+            new ClassroomDTO { ClassId = 1, ClassName = "1.A" },
+            new ClassroomDTO { ClassId = 2, ClassName = "1.B" },
+        };
+
         _mockClassroomService
             .Setup(repo => repo.GetAllClassroomAsync())
-            .ReturnsAsync(classrooms);
+            .ReturnsAsync(classroomDtos);
 
         // Act
         var result = await _classroomController.GetAll();

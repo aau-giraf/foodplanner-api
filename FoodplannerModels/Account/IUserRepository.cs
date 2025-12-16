@@ -8,8 +8,8 @@ namespace FoodplannerModels.Account
 {
     public interface IUserRepository
     {
-        Task<IEnumerable<UserDTO>> GetAllAsync();
-        Task<IEnumerable<UserDTO>> GetAllNotApprovedAsync();
+        Task<IEnumerable<User>> GetAllAsync();
+        Task<IEnumerable<User>> GetAllNotApprovedAsync();
         Task<User?> GetByIdAsync(int id);
         Task<string> GetPinCodeByIdAsync(int id);
         Task<bool> EmailExistsAsync(string email);
@@ -22,9 +22,9 @@ namespace FoodplannerModels.Account
         Task<bool> UpdateArchivedAsync(int id);
         Task<bool> UpdateRoleApprovedAsync(int id, bool roleApproved);
         Task<IEnumerable<User?>> SelectAllNotArchivedAsync();
-        Task<UserDTO> GetLoggedInAsync(int id);
+        Task<User> GetLoggedInAsync(int id);
 
-        Task<int> UpdateLoggedInAsync(int id, UserUpdateDTO userUpdate);
+        Task<int> UpdateLoggedInAsync(int id, UserUpdateLoggedInDTO userUpdateLoggedInDto);
         Task<int> UpdatePasswordAsync(string password, int id);
     }
 }

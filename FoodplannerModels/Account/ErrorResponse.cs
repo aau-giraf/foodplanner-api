@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 namespace FoodplannerModels.Account
 {
    public class ErrorResponse
-   
    {
         [JsonPropertyName("Message")]
         public String[] Message { get; set; }

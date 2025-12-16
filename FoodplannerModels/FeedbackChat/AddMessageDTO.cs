@@ -1,7 +1,12 @@
-﻿namespace FoodplannerModels.FeedbackChat;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace FoodplannerModels.FeedbackChat;
 
 public class AddMessageDTO
 {
-    public int ChatThreadId { get; set; }
-    public string Content { get; set; }
+    [Required]
+    public required int ChatThreadId { get; set; }
+    
+    [Required]
+    public required string Content { get; set; }
 }

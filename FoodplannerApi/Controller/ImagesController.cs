@@ -98,13 +98,17 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
     [HttpGet]
     [Authorize(Roles = "Child, Parent")]
     [AuthorizeImageOwnerFilter]
-    [ProducesResponseType(typeof(FoodImage), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(FoodImageDTO), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetFoodImage(int foodImageId)
     {
         if (foodImageId < 0)
             return BadRequest("Invalid userId");
-        return Ok(foodImageService.GetFoodImage(foodImageId));
+
+        var image = await foodImageService.GetFoodImage(foodImageId);
+        if (image is null) return NotFound();
+        return Ok(image);
     }
+
 
     [HttpGet]
     [Authorize(Roles = "Parent, Child, Teacher, Admin")]

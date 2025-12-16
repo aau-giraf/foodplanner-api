@@ -9,7 +9,7 @@ public class Children {
     public required string FirstName { get; set; }
     
     public required string LastName { get; set; }
-
+    
     [ForeignKey("Classroom")]
     public int? ClassId { get; set; }
 }

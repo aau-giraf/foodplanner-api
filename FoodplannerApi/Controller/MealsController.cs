@@ -96,17 +96,17 @@ public class MealsController(IMealService mealService, IAuthService authService)
     // Update an existing meal
     [HttpPut("{id}")]
     [Authorize(Roles = "Child, Parent")]
-    public async Task<IActionResult> Update([FromHeader(Name = "Authorization")] string token, [FromBody] Meal meal, int id)
+    public async Task<IActionResult> Update([FromHeader(Name = "Authorization")] string token, [FromBody] MealDTO mealDto, int id)
     {
         try
         {
             var idString = _authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int user_id))
             {
-                return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+                return BadRequest(new ErrorResponse { Message = new[] { "Id er ikke et tal" } });
             }
-            meal.User_id = user_id;
-            var result = await _mealService.UpdateMealAsync(meal, id);
+            mealDto.UserId = user_id;
+            var result = await _mealService.UpdateMealAsync(mealDto, id);
             if (result > 0)
             { // Returns the updated meal with a 200 OK status
                 var changedMeal = await _mealService.GetMealByIdAsync(id);
@@ -116,7 +116,7 @@ public class MealsController(IMealService mealService, IAuthService authService)
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new ErrorResponse { Message = [e.Message] });
+            return BadRequest(new ErrorResponse { Message = new[] { e.Message } });
         }
     }
 

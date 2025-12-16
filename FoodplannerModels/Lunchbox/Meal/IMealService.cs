@@ -14,7 +14,7 @@ public interface IMealService
     // Creates a new meal asynchronously.
     Task<int> CreateMealAsync(MealCreateDTO meal, int id);
     // Updates an existing meal asynchronously.
-    Task<int> UpdateMealAsync(Meal meal, int id);
+    Task<int> UpdateMealAsync(MealDTO mealDto, int id);
     // Deletes an meal by ID asynchronously.
     Task<int> DeleteMealAsync(int id);
 }

@@ -7,6 +7,9 @@ namespace FoodplannerModels.Lunchbox
     {
         public PackedIngredientProfile()
         {
+            CreateMap<PackedIngredient, PackedIngredientDTO>();
+            CreateMap<PackedIngredientDTO, PackedIngredient>();
+            
             CreateMap<PackedIngredient, PackedIngredientProperDTO>();
             CreateMap<PackedIngredientProperDTO, PackedIngredient>();
         }

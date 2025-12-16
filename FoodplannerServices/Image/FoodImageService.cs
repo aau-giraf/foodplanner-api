@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using AutoMapper;
 using FoodplannerDataAccessSql.Image;
 using FoodplannerModels.Account;
 using FoodplannerModels.Image;
@@ -6,7 +7,7 @@ using FoodplannerModels.Image;
 
 namespace FoodplannerServices.Image;
 
-public class FoodImageService(IImageService imageService, IFoodImageRepository foodImageRepository) : IFoodImageService
+public class FoodImageService(IImageService imageService, IFoodImageRepository foodImageRepository, IMapper _mapper) : IFoodImageService
 {
     public async Task<int> CreateFoodImage(int userid, Stream imageStream, string imageName, string imageType, long imageFileSize)
     {
@@ -20,11 +21,11 @@ public class FoodImageService(IImageService imageService, IFoodImageRepository f
         
         return foodImageId;
     }
-
-    public async Task<FoodImage> GetFoodImage(int foodImageId)
+    
+    public async Task<FoodImageDTO> GetFoodImage(int foodImageId)
     {
         var foodImage = await foodImageRepository.GetImageByIdAsync(foodImageId);
-        return foodImage;
+        return _mapper.Map<FoodImageDTO>(foodImage);
     }
 
     public async Task<string> GetFoodImageLink(int foodImageId)

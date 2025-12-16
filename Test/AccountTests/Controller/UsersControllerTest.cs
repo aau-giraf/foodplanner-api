@@ -128,7 +128,7 @@ public class UsersControllerTests
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
 
-        var login = new Login
+        var login = new LoginDTO()
         {
             Email = "test1234@123456789.com",
             Password = "wrongPassword"
@@ -159,7 +159,7 @@ public class UsersControllerTests
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
 
-        var loginDto = new Login
+        var loginDto = new LoginDTO()
         {
             Email = "invalid@example.com",
             Password = "wrongpassword"
@@ -187,7 +187,7 @@ public class UsersControllerTests
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
 
-        var loginDto = new Login
+        var loginDto = new LoginDTO()
         {
             Email = "test@example.com",
             Password = "password123"
@@ -346,24 +346,28 @@ public class UsersControllerTests
             LastName = "child",
             Email = "child@example.com",
             Password = "password",
-            ParentIds = new System.Collections.Generic.List<int> { 2, 3 }
         };
 
         mockUserService
             .Setup(s => s.CreateChildrenUserAsync(It.Is<UserCreateChildDTO>(d =>
-                d.Email == childDto.Email &&
-                d.FirstName == childDto.FirstName &&
-                d.LastName == childDto.LastName)))
+                    d.Email == childDto.Email &&
+                    d.FirstName == childDto.FirstName &&
+                    d.LastName == childDto.LastName),
+                It.IsAny<int>()))
             .ReturnsAsync(1);
-
+        var parentId = 42;
+        var token = "valid-token";
+        mockAuthService
+            .Setup(a => a.RetrieveIdFromJwtToken(token))
+            .Returns(parentId.ToString());
         var controller = new UsersController(mockUserService.Object, mockAuthService.Object, mockOneTimePassword.Object);
 
         // Act
-        var result = await controller.CreateUserChildren(childDto);
+        var result = await controller.CreateUserChildren(token, childDto);
 
         // Assert
         var createdResult = Assert.IsType<CreatedResult>(result);
         Assert.Equal(1, createdResult.Value);
-        mockUserService.Verify(s => s.CreateChildrenUserAsync(It.IsAny<UserCreateChildDTO>()), Times.Once);
+        mockUserService.Verify(s => s.CreateChildrenUserAsync(It.IsAny<UserCreateChildDTO>(), It.IsAny<int>()), Times.Once);
     }
 }
