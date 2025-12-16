@@ -68,7 +68,7 @@ public class ChildrenService : IChildrenService
     
     public async Task<Children> GetChildFromChildIdAsync(int id)
     {
-        return await _childrenRepository.GetChildByIdAsync(id);
+        return await _childrenRepository.GetByIdAsync(id);
     }
 
     public async Task<int> AddParentToChildAsync(int userId, int childId)

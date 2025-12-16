@@ -15,7 +15,7 @@ namespace FoodplannerModels.Account
         Task<int> InsertAsync(Children entity);
         Task<int> UpdateAsync(Children entity);
         Task<int> DeleteAsync(int id);
-        Task<Children> GetChildByIdAsync(int id);
+        Task<Children> GetByIdAsync(int id);
         
         // Junction table methods
         Task<int> AddParentToChildAsync(int userId, int childId);

@@ -1,12 +1,13 @@
 
 using Dapper;
+using FoodplannerModels;
 using FoodplannerModels.Account;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Npgsql;
 
 namespace FoodplannerDataAccessSql.Account
 {
-    public class ChildrenRepository : IChildrenRepository
+    public class ChildrenRepository : IChildrenRepository, IGenericRepository<Children>
     {
 
         private readonly PostgreSQLConnectionFactory _connectionFactory;
@@ -127,7 +128,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<Children> GetChildByIdAsync(int id)
+        public async Task<Children> GetByIdAsync(int id)
         {
             var sql = "SELECT * FROM children WHERE child_id = @Id";
             using (var connection = _connectionFactory.Create())
