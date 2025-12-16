@@ -42,13 +42,14 @@ public class IngredientService : IIngredientService
     // Creates a new ingredient in the repository.
     public async Task<int> CreateIngredientAsync(IngredientDTO ingredientDto, int id)
     {
-        return await _ingredientRepository.InsertAsync(ingredientDto, id);
+        var ingredient = _mapper.Map<Ingredient>(ingredientDto);
+        return await _ingredientRepository.InsertAsync(ingredient);
     }
     // Updates an existing ingredient in the repository by ID.
     public async Task<int> UpdateIngredientAsync(IngredientDTO ingredientDto, int id)
     {
         var ingredient = _mapper.Map<Ingredient>(ingredientDto);
-        return await _ingredientRepository.UpdateAsync(ingredient, id);
+        return await _ingredientRepository.UpdateAsync(ingredient);
     }
     // Deletes an ingredient from the repository by ID.
     public async Task<int> DeleteIngredientAsync(int id)

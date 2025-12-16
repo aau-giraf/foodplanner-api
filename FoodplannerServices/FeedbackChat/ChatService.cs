@@ -27,7 +27,7 @@ namespace FoodplannerServices.FeedbackChat
             message.Date = System.DateTime.Now;
             message.UserId = userId;
             
-            await _chatRepository.AddMessageAsync(message);
+            await _chatRepository.InsertAsync(message);
             return true;
         }
 
@@ -51,7 +51,7 @@ namespace FoodplannerServices.FeedbackChat
         {
             var _message = _mapper.Map<Message>(message);
             
-            await _chatRepository.UpdateMessageAsync(_message);
+            await _chatRepository.UpdateAsync(_message);
             return true;
         }
 

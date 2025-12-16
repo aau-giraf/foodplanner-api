@@ -136,7 +136,7 @@ public class MealServiceTests
                 Ingredients = []
             });
 
-        _mockMealRepository.Setup(repo => repo.InsertAsync(It.IsAny<Meal>(), It.IsAny<int>()))
+        _mockMealRepository.Setup(repo => repo.InsertAsync(It.IsAny<Meal>()))
             .ReturnsAsync(newMealId);
 
         // Act
@@ -166,7 +166,7 @@ public class MealServiceTests
         };
         int rowsAffected = 1;
 
-        _mockMealRepository.Setup(repo => repo.UpdateAsync(It.Is<Meal>(meal =>  meal.Name == mealToUpdate.Name), mealToUpdate.Id))
+        _mockMealRepository.Setup(repo => repo.UpdateAsync(It.Is<Meal>(meal => meal.Name == mealToUpdate.Name)))
             .ReturnsAsync(rowsAffected);
 
         _mockMapper.Setup(m => m.Map<Meal>(It.IsAny<MealDTO>()))

@@ -72,7 +72,7 @@ public class ChildrenService : IChildrenService
 
     public async Task<ChildrenDTO> GetChildFromChildIdAsync(int id)
     {
-        var children = await _childrenRepository.GetChildByIdAsync(id);
+        var children = await _childrenRepository.GetByIdAsync(id);
         return _mapper.Map<ChildrenDTO>(children);
     }
 

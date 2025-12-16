@@ -60,7 +60,7 @@ public class ClassroomServiceTests
         // Arrange
         var id = 1;
         _mockClassroomRepository
-            .Setup(repo => repo.UpdateAsync(It.IsAny<Classroom>(), id))
+            .Setup(repo => repo.UpdateAsync(It.IsAny<Classroom>()))
             .ReturnsAsync(id);
         
         _mockMapper
