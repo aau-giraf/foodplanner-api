@@ -8,7 +8,7 @@ public class UserBuilder
     private string _lastName = "testLastName";
     private string _email = "test@gtesting.com";
     private string _password = "Test123!";
-    private string _role = "Parent";
+    private UserRole _role = UserRole.Parent;
     private bool _roleApproved;
     private string? _pinCode;
     private bool _archived;
@@ -37,7 +37,7 @@ public class UserBuilder
         return this;
     }
 
-    public UserBuilder WithRole(string role)
+    public UserBuilder WithRole(UserRole role)
     {
         _role = role;
         return this;

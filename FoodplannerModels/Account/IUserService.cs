@@ -13,8 +13,10 @@ namespace FoodplannerModels.Account
         Task<UserDTO?> GetUserByIdAsync(int id);
         Task<int> CreateUserAsync(UserCreateDTO userCreate);
         Task<int> UpdateUserAsync(UserUpdateDTO user, int id);
+        Task<int> CreateChildrenUserAsync(UserCreateChildDTO userCreateChildDto);
         Task<int> DeleteUserAsync(int id);
         Task<UserCredsDTO?> GetJWTByEmailAndPasswordAsync(string email, string password);
+        Task<UserCredsDTO?> GetJWTByEmailAsync(string email);
         Task<UserCredsDTO> GetUserByIdAndPinCodeAsync(int id, string pinCode);
         Task<string> UpdateUserPinCodeAsync(string pinCode, int id);
         Task<bool> UserHasPinCodeAsync(int id);

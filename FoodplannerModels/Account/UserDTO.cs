@@ -26,7 +26,8 @@ namespace FoodplannerModels.Account
         public required string Email { get; set; }
 
         [Required(ErrorMessage = "Role er påkrævet")]
-        public required string Role { get; set; }
+        public required UserRole Role { get; set; }
+
         public required bool RoleApproved { get; set; }
         
         public bool Archived { get; set; }

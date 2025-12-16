@@ -72,9 +72,8 @@ namespace FoodplannerDataAccessSql.Account
 
         public async Task<IEnumerable<Children>> GetChildrenByParentIdAsync(int parentId)
         {
-            var sql = @"SELECT c.* FROM children c
-                       JOIN child_relation uc ON c.child_id = uc.child_id
-                       WHERE uc.user_id = @ParentId";
+            var sql = @"SELECT child_id FROM child_relation c
+                       WHERE c.user_id = @ParentId";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
@@ -85,15 +84,16 @@ namespace FoodplannerDataAccessSql.Account
 
         public async Task<int> InsertAsync(Children entity)
         {
-            var sql = "INSERT INTO children (first_name, last_name, class_id) VALUES (@FirstName, @LastName, @ClassId) RETURNING child_id";
+            var sql = "INSERT INTO children (child_id, first_name, last_name, class_id) VALUES (@child_id, @FirstName, @LastName, @ClassId) RETURNING child_id";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
                 var result = await connection.QuerySingleAsync<int>(sql, new
                 {
+                    child_id = entity.ChildId,
                     FirstName = entity.FirstName,
                     LastName = entity.LastName,
-                    ClassId = entity.classId
+                    ClassId = entity.ClassId
                 });
                 return result;
             }
@@ -110,12 +110,11 @@ namespace FoodplannerDataAccessSql.Account
                     ChildId = entity.ChildId,
                     FirstName = entity.FirstName,
                     LastName = entity.LastName,
-                    ClassId = entity.classId
+                    ClassId = entity.ClassId
                 });
                 return result;
             }
         }
-
 
         public async Task<int> DeleteAsync(int id)
         {

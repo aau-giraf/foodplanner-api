@@ -20,12 +20,12 @@ public class ChildrenService : IChildrenService
         _authService = authService;
     }
 
-    public async Task<int> CreateChildrenAsync(ChildrenCreateParentDTO childrenCreateDTO)
+    public async Task<int> CreateChildrenAsync(ChildrenCreateParentDTO childrenCreateDto)
     {
-        var children = _mapper.Map<Children>(childrenCreateDTO);
+        var children = _mapper.Map<Children>(childrenCreateDto);
         var childId = await _childrenRepository.InsertAsync(children);
 
-        foreach (var parentId in childrenCreateDTO.ParentIds)
+        foreach (var parentId in childrenCreateDto.ParentIds)
         {
             await AddParentToChildAsync(parentId, childId);
         }
@@ -84,7 +84,7 @@ public class ChildrenService : IChildrenService
             throw new InvalidOperationException("Bruger ikke fundet");
         }
 
-        if (user.Role != "Parent")
+        if (!user.Role.HasFlag(UserRole.Parent))
         {
             throw new InvalidOperationException("Kun brugere med rolle 'Parent' kan tilføjes som forældre");
         }
@@ -110,7 +110,7 @@ public class ChildrenService : IChildrenService
             throw new InvalidOperationException("Bruger ikke fundet");
         }
 
-        if (user.Role != "Teacher")
+        if (!user.Role.HasFlag(UserRole.Teacher))
         {
             throw new InvalidOperationException("Kun brugere med rolle 'Teacher' kan tilføjes som lærere");
         }

@@ -34,8 +34,7 @@ public class ChildrensController : BaseController
         var children = await _childrenService.GetAllChildrenAsync();
         return Ok(children);
     }
-
-
+    
     [HttpGet]
     public async Task<IActionResult> GetChildrenByParentId([FromHeader(Name = "Authorization")] string token)
     {
@@ -49,59 +48,7 @@ public class ChildrensController : BaseController
         return Ok(children);
     }
 
-
-
-
-    [HttpPost]
-    public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] ChildrenCreateDTO childrenCreate)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        try
-        {
-            var idString = _authService.RetrieveIdFromJwtToken(token); // Use the method to get the parentId from the token    
-            if (!int.TryParse(idString, out int parentId))
-            {
-                return BadRequest(new ErrorResponse { Message = new[] { "Id er ikke et tal" } });
-            }
-
-            var childToCreate = new ChildrenCreateParentDTO
-            {
-                FirstName = childrenCreate.FirstName,
-                LastName = childrenCreate.LastName,
-                ParentIds = new List<int> { parentId },
-                classId = childrenCreate.classId
-            };
-
-            var id = await _childrenService.CreateChildrenAsync(childToCreate);
-            if (id > 0)
-            {
-                return Created(string.Empty, id);
-            }
-            return BadRequest();
-        }
-        catch (InvalidOperationException e)
-        {
-            return BadRequest(e.Message);
-        }
-    }
-
-    [Authorize(Policy = "AdminPolicy")]
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var result = await _childrenService.DeleteChildrenAsync(id);
-        if (result > 0)
-        {
-            return NoContent();
-        }
-        return NotFound();
-    }
-
-
-    [Authorize(Policy = "TeacherPolicy")]
+    [Authorize(Policy = "TeacherChildPolicy")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetChildFromChildId(int id)
     {

@@ -48,7 +48,8 @@ public class MealsControllerTests
             new() { Id = 1, Name = "Pizza", Date = date, UserId = userId,Ingredients = [] },
             new() { Id = 2, Name = "Burger", Date = date, UserId = userId, Ingredients = [] }
         };
-        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
+        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = UserRole.Parent, RoleApproved = true };
+
 
         var JWTToken = "Bearer TestToken";
         mockAuthService
@@ -75,15 +76,15 @@ public class MealsControllerTests
         var mockMealService = new Mock<IMealService>();
         var mockAuthService = Mock.Of<IAuthService>();
         int userId = 1;
-        
+
         string date = "test";
         var meals = new List<MealDTO>
         {
             new() { Id = 1, Name = "Pizza", Date = date, UserId = userId, Ingredients = [] },
             new() { Id = 2, Name = "Burger", Date = date, UserId = userId, Ingredients = [] }
         };
-        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true};
-        
+        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = UserRole.Parent, RoleApproved = true };
+
         mockMealService
             .Setup(repo => repo.GetAllMealsByUserAsync(userId, date))
             .ReturnsAsync(meals);
@@ -152,9 +153,10 @@ public class MealsControllerTests
 
         int mealId = 1;
         int userId = 1;
-        MealCreateDTO mealDTO = new() {Name = "Pizza", Date = "test"};
+
+        MealCreateDTO mealDTO = new() { Name = "Pizza", Date = "test" };
         MealDTO meal = new() { Id = mealId, Name = "Pizza", Date = "test", UserId = userId, Ingredients = [] };
-        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
+        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = UserRole.Parent, RoleApproved = true };
 
         var JWTToken = "Bearer TestToken";
         mockAuthService
@@ -184,9 +186,9 @@ public class MealsControllerTests
         var mockMealService = new Mock<IMealService>();
         var mockAuthService = new Mock<IAuthService>();
 
-        MealCreateDTO mealDTO = new() {Name = "Pizza", Date = "test"};
+        MealCreateDTO mealDTO = new() { Name = "Pizza", Date = "test" };
         int userId = 1;
-        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
+        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = UserRole.Parent, RoleApproved = true };
 
         var JWTToken = "Bearer TestToken";
         mockAuthService
@@ -224,7 +226,7 @@ public class MealsControllerTests
             Ingredients = null
         };
         MealDTO mealDto = new() { Id = mealId, Name = "Pizza", Date = "test", UserId = userId, Ingredients = [] };
-        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
+        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = UserRole.Parent, RoleApproved = true };
 
         var JWTToken = "Bearer TestToken";
         mockAuthService
@@ -264,8 +266,7 @@ public class MealsControllerTests
             UserId = userId,
             Ingredients = null
         };
-        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
-
+        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = UserRole.Parent, RoleApproved = true };
         var JWTToken = "Bearer TestToken";
         mockAuthService
             .Setup(auth => auth.RetrieveIdFromJwtToken(JWTToken))
@@ -290,7 +291,7 @@ public class MealsControllerTests
         // Arrange
         var mockMealService = new Mock<IMealService>();
         var mockAuthService = Mock.Of<IAuthService>();
-        
+
         int mealId = 1;
         MealDTO meal = new() { Id = mealId, Name = "Pizza", Date = "test", UserId = 1, Ingredients = [] };
 

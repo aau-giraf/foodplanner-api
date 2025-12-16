@@ -40,7 +40,7 @@ public class ChildBuilder
             ChildId = _childId,
             FirstName = _firstName,
             LastName = _lastName,
-            classId = _classId
+            ClassId = _classId
         };
     }
 }

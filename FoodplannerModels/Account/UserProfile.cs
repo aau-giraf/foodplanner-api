@@ -13,10 +13,10 @@ namespace FoodplannerModels.Account
         {
             CreateMap<User, UserCreateDTO>();
             CreateMap<UserCreateDTO, User>();
-            
+
             CreateMap<User, UserArchivedDTO>();
             CreateMap<UserArchivedDTO, User>();
-            
+
             CreateMap<User, UserCredsDTO>();
             CreateMap<UserCredsDTO, User>();
 
@@ -31,9 +31,27 @@ namespace FoodplannerModels.Account
 
             CreateMap<User, UserUpdateLoggedInDTO>();
             CreateMap<UserUpdateLoggedInDTO, User>();
-            
+
             CreateMap<Login, LoginDTO>();
             CreateMap<LoginDTO, Login>();
+
+            CreateMap<User, UserCreateChildDTO>();
+            CreateMap<UserCreateChildDTO, User>();
+        }
+
+        private static UserRole ParseUserRole(string roleString)
+        {
+            if (string.IsNullOrWhiteSpace(roleString))
+            {
+                throw new ArgumentException("Role cannot be null or empty");
+            }
+
+            if (Enum.TryParse<UserRole>(roleString, true, out var role))
+            {
+                return role;
+            }
+
+            throw new ArgumentException($"Invalid role value: '{roleString}'. Valid values are: Admin, Child, Teacher, Parent");
         }
     }
 }

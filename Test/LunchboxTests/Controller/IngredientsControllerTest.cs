@@ -48,7 +48,7 @@ public class IngredientsControllerTests
             new() { Id = 1, Name = "Cheese", User_id = userId },
             new() { Id = 2, Name = "Bread", User_id = userId }
         };
-        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
+        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = UserRole.Parent, RoleApproved = true };
 
         var JWTToken = "Bearer TestToken";
         mockAuthService
@@ -123,6 +123,7 @@ public class IngredientsControllerTests
 
         int ingredientId = 1;
         int userId = 1;
+
         IngredientDTO ingredientDTO = new()
         {
             Name = "test",
@@ -130,13 +131,13 @@ public class IngredientsControllerTests
             User_id = 0
         };
         IngredientDTO ingredientDto = new() { Id = ingredientId, Name = "Cheese", User_id = userId };
-        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
-        
+        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = UserRole.Parent, RoleApproved = true };
+
         var JWTToken = "Bearer TestToken";
         mockAuthService
             .Setup(auth => auth.RetrieveIdFromJwtToken(JWTToken))
             .Returns(userId.ToString());
-        
+
         mockIngredientService
             .Setup(repo => repo.CreateIngredientAsync(ingredientDTO, userId))
             .ReturnsAsync(ingredientId);
@@ -161,13 +162,14 @@ public class IngredientsControllerTests
         var mockAuthService = new Mock<IAuthService>();
 
         int userId = 1;
+
         IngredientDTO ingredientDTO = new()
         {
             Name = "test",
             Id = 0,
             User_id = 0
         };
-        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = "Parent", RoleApproved = true };
+        var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = UserRole.Parent, RoleApproved = true };
 
         var JWTToken = "Bearer TestToken";
         mockAuthService

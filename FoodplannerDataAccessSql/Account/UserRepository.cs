@@ -17,27 +17,23 @@ namespace FoodplannerDataAccessSql.Account
 
         public async Task<int> DeleteAsync(int id)
         {
-            var deleteChildrenSql = "DELETE FROM children WHERE parent_id = @Id";
             var deleteUserSql = "DELETE FROM users WHERE id = @Id";
 
-            using (var connection = _connectionFactory.Create())
+            using var connection = _connectionFactory.Create();
+            connection.Open();
+
+            using var transaction = connection.BeginTransaction();
+            try
             {
-                connection.Open();
-                using (var transaction = connection.BeginTransaction())
-                {
-                    try
-                    {
-                        await connection.ExecuteAsync(deleteChildrenSql, new { Id = id }, transaction);
-                        var result = await connection.ExecuteAsync(deleteUserSql, new { Id = id }, transaction);
-                        transaction.Commit();
-                        return result;
-                    }
-                    catch
-                    {
-                        transaction.Rollback();
-                        throw;
-                    }
-                }
+                var result = await connection.ExecuteAsync(deleteUserSql, new { Id = id }, transaction);
+
+                transaction.Commit();
+                return result;
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
             }
         }
 
@@ -111,7 +107,7 @@ namespace FoodplannerDataAccessSql.Account
                     LastName = entity.LastName,
                     Email = entity.Email,
                     Password = entity.Password,
-                    role = entity.Role,
+                    role = entity.Role.ToString(),
                     RoleApproved = entity.RoleApproved
                 });
                 return result;
@@ -133,6 +129,9 @@ namespace FoodplannerDataAccessSql.Account
                     LastName = entity.LastName,
                     Email = entity.Email,
                     Password = entity.Password,
+                    Role = entity.Role.ToString(),
+                    RoleApproved = entity.RoleApproved,
+                    Archived = entity.Archived
                 });
                 return Task.FromResult(result);
             }

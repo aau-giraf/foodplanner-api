@@ -13,8 +13,7 @@ namespace FoodplannerModels.Account
         Task<IEnumerable<ChildrenDTO>> GetChildrenByParentIdAsync(int parentId);
         Task<IEnumerable<UserDTO>> GetParentsByChildIdAsync(int childId);
         Task<int> CreateChildrenAsync(ChildrenCreateParentDTO children);
-        Task<int> UpdateChildrenAsync(ChildrenDTO children);
-        Task<int> DeleteChildrenAsync(int id);
+        Task<int> UpdateChildrenAsync(ChildrenDTO children);        Task<int> DeleteChildrenAsync(int id);
         Task<ChildrenDTO> GetChildFromChildIdAsync(int id);
         Task<int> AddParentToChildAsync(int userId, int childId);
         Task<int> RemoveParentFromChildAsync(int userId, int childId);
