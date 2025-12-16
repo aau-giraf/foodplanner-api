@@ -145,6 +145,8 @@ namespace FoodplannerDataAccessSql.Account
                 connection.Open();
                 var result = await connection.ExecuteScalarAsync<string>(sql, new { PinCode = pinCode, Id = id });
 
+                connection.Close();
+                
                 if (result != null)
                 {
                     return result;
@@ -164,6 +166,8 @@ namespace FoodplannerDataAccessSql.Account
             {
                 connection.Open();
                 var result = await connection.ExecuteScalarAsync<string>(sql, new { Id = id });
+                connection.Close();
+                
                 if(result != null)
                 {
                     return result;
@@ -234,6 +238,8 @@ namespace FoodplannerDataAccessSql.Account
             {
                 connection.Open();
                 var result = await connection.QueryFirstOrDefaultAsync<User>(sql, new { Id = id });
+                connection.Close();
+                
                 if(result != null)
                 {
                     return result;

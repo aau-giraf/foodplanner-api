@@ -16,6 +16,8 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
         await using var connection = connectionFactory.Create();
         connection.Open();
         var result = await connection.QuerySingleOrDefaultAsync<ChatThread>(sql, new { ChatThreadId });
+        connection.Close();
+        
 
         if(result != null)
         {
@@ -60,6 +62,8 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
         {
             connection.Open();
             var result = await connection.QuerySingleOrDefaultAsync<Message>(sql, new { MessageId });
+            connection.Close();
+            
 
             if(result != null)
             {
