@@ -20,8 +20,6 @@ public class UserCreateChildDTO
     [Required(ErrorMessage = "Adgangskode er påkrævet")]
     [StringLength(100, ErrorMessage = "Adgangskode er for langt")]
     public required string Password { get; set; }
-    
-    public List<int> ParentIds { get; set; }
 
     public int ClassId { get; set; }
 }
