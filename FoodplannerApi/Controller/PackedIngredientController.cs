@@ -42,9 +42,7 @@ namespace FoodplannerApi.Controller
         public async Task<IActionResult> Create([FromBody] PackedIngredientProperDTO packIngredient)
         {
             // Calls the service to create a new packed ingredient
-            var mealId = packIngredient.Meal_id;
-            var ingredientId = packIngredient.Ingredient_id;
-            var result = await _packedIngredientService.CreatePackedIngredientAsync(mealId, ingredientId);
+            var result = await _packedIngredientService.CreatePackedIngredientAsync(packIngredient);
             if (result > 0)
             {
                 var createdPI = await _packedIngredientService.GetPackedIngredientByIdAsync(result);

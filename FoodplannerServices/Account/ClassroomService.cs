@@ -28,7 +28,7 @@ public class ClassroomService : IClassroomService {
     public async Task<int> UpdateClassroomAsync(CreateClassroomDTO createClassroomDto, int id)
     {
         var classroom = _mapper.Map<Classroom>(createClassroomDto);
-        var resultId = await _classroomRepository.UpdateAsync(classroom, id);
+        var resultId = await _classroomRepository.UpdateAsync(classroom);
         return resultId;
     }
 

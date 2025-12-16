@@ -48,7 +48,7 @@ namespace FoodplannerDataAccessSql.Lunchbox
         }
 
         // Inserts a new packed ingredient into the database and returns its Id
-        public async Task<int> InsertAsync(int meal_id, int ingredient_id)
+        public async Task<int> InsertAsync(PackedIngredient entity)
         {
             var sql = "INSERT INTO packed_ingredients (meal_id, ingredient_id) VALUES (@MealId, @IngredientId) RETURNING id";
             using (var connection = _connectionFactory.Create())
@@ -56,15 +56,15 @@ namespace FoodplannerDataAccessSql.Lunchbox
                 connection.Open();
                 return await connection.QuerySingleAsync<int>(sql, new
                 {
-                    MealId = meal_id,
-                    IngredientId = ingredient_id
+                    MealId = entity.Meal_id,
+                    IngredientId = entity.Ingredient_id
                 });
             }
         }
 
 
         // Updates an existing packed ingredient
-        public async Task<int> UpdateAsync(PackedIngredient entity, int id)
+        public async Task<int> UpdateAsync(PackedIngredient entity)
         {
             var sql = "UPDATE packed_ingredients SET meal_id = @MealId, ingredient_id = @IngredientId WHERE id = @Id";
             using (var connection = _connectionFactory.Create())
@@ -72,7 +72,7 @@ namespace FoodplannerDataAccessSql.Lunchbox
                 connection.Open();
                 return await connection.ExecuteAsync(sql, new
                 {
-                    Id = id,
+                    Id = entity.Id,
                     MealId = entity.Meal_id,
                     IngredientId = entity.Ingredient_id
                 });

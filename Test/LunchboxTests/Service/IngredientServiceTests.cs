@@ -18,11 +18,11 @@ public class IngredientServiceTests
 
         var ingredients = new List<Ingredient>
         { ingredient1, ingredient2 };
-        
+
         mockIngredientRepository
             .Setup(repo => repo.GetAllAsync())
             .ReturnsAsync(ingredients);
-        
+
         var mockMapper = new Mock<IMapper>();
         mockMapper.Setup(m => m.Map<IngredientDTO>(It.IsAny<Ingredient>()))
             .Returns((Ingredient src) => new IngredientDTO { Id = src.Id, Name = src.Name, User_id = src.User_id });
@@ -34,7 +34,7 @@ public class IngredientServiceTests
 
         // Assert
         Assert.NotNull(result);
-        
+
         var expectedIngredients = new List<IngredientDTO>
         {
             new IngredientDTO { Id = 1, Name = "Tomato", User_id = 2 },
@@ -45,7 +45,7 @@ public class IngredientServiceTests
 
         var expectedIngredientDto1 = new IngredientDTO { Id = 1, Name = "Tomato", User_id = 2 };
         Assert.Equivalent(expectedIngredientDto1, result.ElementAt(0));
-        
+
         var expectedIngredientDto2 =new IngredientDTO { Id = 2, Name = "Cheese", User_id = 1 };
         Assert.Equivalent(expectedIngredientDto2, result.ElementAt(1));
     }
@@ -59,18 +59,18 @@ public class IngredientServiceTests
         int userId = 123;
         var ingredient1 = new Ingredient { Id = 1, Name = "Lettuce", User_id = userId };
         var ingredient2 = new Ingredient { Id = 2, Name = "Bacon", User_id = userId };
-        
+
         var expectedIngredients = new List<Ingredient>
         { ingredient1, ingredient2 };
 
         mockIngredientRepository
             .Setup(repo => repo.GetAllByUserAsync(userId))
             .ReturnsAsync(expectedIngredients);
-        
+
         var mockMapper = new Mock<IMapper>();
         mockMapper.Setup(m => m.Map<IngredientDTO>(It.IsAny<Ingredient>()))
             .Returns((Ingredient src) => new IngredientDTO { Id = src.Id, Name = src.Name, User_id = src.User_id });
-        
+
         var ingredientService = new IngredientService(mockIngredientRepository.Object, mockMapper.Object );
 
         // Act
@@ -87,17 +87,17 @@ public class IngredientServiceTests
     {
         // Arrange
         var mockIngredientRepository = new Mock<IIngredientRepository>();
-        
+
         var ingredient = new Ingredient { Id = 1, Name = "Tomato", User_id = 2 };
 
         mockIngredientRepository
             .Setup(repo => repo.GetByIdAsync(ingredient.Id))
             .ReturnsAsync(ingredient);
-        
+
         var mockMapper = new Mock<IMapper>();
         mockMapper.Setup(m => m.Map<IngredientDTO>(It.IsAny<Ingredient>()))
             .Returns((Ingredient src) => new IngredientDTO { Id = src.Id, Name = src.Name, User_id = src.User_id });
-        
+
         var ingredientService = new IngredientService(mockIngredientRepository.Object, mockMapper.Object);
 
         // Act
@@ -105,10 +105,10 @@ public class IngredientServiceTests
 
         // Assert
         Assert.NotNull(result);
-        
+
         var expectedIngredientId = 1;
         Assert.Equal(expectedIngredientId, result.Id);
-        
+
         var expectedIngredientName = "Tomato";
         Assert.Equal(expectedIngredientName, result.Name);
     }
@@ -134,7 +134,7 @@ public class IngredientServiceTests
         Assert.Null(result);  // Should return null as ingredient doesn't exist
     }
 
-[Fact]
+    [Fact]
     public async Task CreateIngredientAsync_ReturnsNewIngredientId()
     {
         // Arrange
@@ -144,9 +144,9 @@ public class IngredientServiceTests
         int newIngredientId = 42;
 
         mockIngredientRepository
-            .Setup(repo => repo.InsertAsync(It.IsAny<IngredientDTO>(), It.IsAny<int>()))
+            .Setup(repo => repo.InsertAsync(It.IsAny<Ingredient>()))
             .ReturnsAsync(newIngredientId);
-        
+
         var mockMapper = new Mock<IMapper>();
         var ingredientService = new IngredientService(mockIngredientRepository.Object, mockMapper.Object);
 
@@ -173,17 +173,19 @@ public class IngredientServiceTests
         int rowsAffected = 1;
 
         mockIngredientRepository
-            .Setup(repo => repo.UpdateAsync(It.IsAny<Ingredient>(), It.IsAny<int>()))
+            .Setup(repo => repo.UpdateAsync(It.IsAny<Ingredient>()))
             .ReturnsAsync(rowsAffected);
-        
+
         var mockMapper = new Mock<IMapper>();
         var ingredientDto = new IngredientDTO { Id = 1, Name = "Updated Tomato", User_id = 2 };
+
+        // Service will map from DTO to entity for update; set up mapper accordingly.
         mockMapper
-            .Setup(m => m.Map<IngredientDTO>(ingredient))
-            .Returns<IngredientDTO>(_ => ingredientDto);
+            .Setup(m => m.Map<Ingredient>(It.IsAny<IngredientDTO>()))
+            .Returns(ingredient);
 
         var ingredientService = new IngredientService(mockIngredientRepository.Object, mockMapper.Object);
-        
+
         // Act
         var result = await ingredientService.UpdateIngredientAsync(ingredientDto, ingredient.Id);
 
@@ -203,7 +205,7 @@ public class IngredientServiceTests
         mockIngredientRepository
             .Setup(repo => repo.DeleteAsync(ingredientIdToDelete))
             .ReturnsAsync(rowsAffected);
-        
+
         var mockMapper = new Mock<IMapper>();
         var ingredientService = new IngredientService(mockIngredientRepository.Object, mockMapper.Object);
 

@@ -1,6 +1,7 @@
+using FoodplannerModels;
 using FoodplannerModels.FeedbackChat;
 
-public interface IChatRepository
+public interface IChatRepository : IGenericRepository<Message>
 {
     // Methods for ChatThread
     Task<int> GetChatThreadIdByChildIdAsync(int ChildId);
@@ -9,7 +10,5 @@ public interface IChatRepository
 
     // Methods for Message
     Task<IEnumerable<Message>> GetMessagesByChatThreadIdAsync(int chatThreadId);
-    Task AddMessageAsync(Message message);
-    Task UpdateMessageAsync(Message message);
     Task ArchiveMessageAsync(int messageId);
 }
