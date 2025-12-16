@@ -122,7 +122,7 @@ public class IngredientServiceTests
         int nonExistingId = 999;
         _ = mockIngredientRepository
             .Setup(repo => repo.GetByIdAsync(nonExistingId))
-            .ReturnsAsync((Ingredient)null); // Simulate non-existent ingredient
+            .ReturnsAsync((Ingredient?)null); // Simulate non-existent ingredient
         var mockMapper = new Mock<IMapper>();
 
         var ingredientService = new IngredientService(mockIngredientRepository.Object, mockMapper.Object);

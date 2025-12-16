@@ -33,7 +33,7 @@ namespace Test.Codes
         public async Task CreateOneTimePassword_InsertsOtpAndReturnsGeneratedCode()
         {
             // Arrange
-            OneTimePassword capturedOtp = null;
+            OneTimePassword? capturedOtp = null;
 
             _mockOtpRepository
                 .Setup(r => r.InsertAsync(It.IsAny<OneTimePassword>()))

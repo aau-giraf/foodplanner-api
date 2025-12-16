@@ -2,6 +2,6 @@ namespace FoodplannerModels.Account
 {
     public class Pincode
     {
-        public string PinCode { get; set; }
+        public required string PinCode { get; set; }
     }
 }

@@ -55,7 +55,7 @@ public class MealsController(IMealService mealService, IAuthService authService)
     }
 
     // Get a specific meal by ID
-    [HttpGet("{id}")]
+    [HttpGet("getmeal/{id}")]
     [Authorize(Roles = "Child, Parent, Teacher")]
     public async Task<IActionResult> Get(int id)
     {

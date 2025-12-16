@@ -157,7 +157,13 @@ builder.Services.AddAuthentication(cfg =>
     {
         OnTokenValidated = context =>
         {
-            var claimsIdentity = context.Principal.Identity as ClaimsIdentity;
+            var principal = context.Principal;
+            if(principal == null)
+            {
+                throw new Exception("Principal claim is null");
+            }
+
+            var claimsIdentity = principal.Identity as ClaimsIdentity;
 
             // Get the Status claim
             var statusClaim = claimsIdentity?.FindFirst("RoleApproved")?.Value;

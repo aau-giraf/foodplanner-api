@@ -111,7 +111,7 @@ public class MealServiceTests
         // Arrange
         int nonExistingId = 999;
         _mockMealRepository.Setup(repo => repo.GetByIdAsync(nonExistingId))
-            .ReturnsAsync((Meal)null);
+            .ReturnsAsync((Meal?)null);
 
         // Act
         var result = await _mealService.GetMealByIdAsync(nonExistingId);

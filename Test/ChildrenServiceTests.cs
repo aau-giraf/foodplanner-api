@@ -113,7 +113,7 @@ public class ChildrenServiceTests
         var childId = 1;
 
         _mockUserRepository.Setup(repo => repo.GetByIdAsync(userId))
-            .ReturnsAsync((User)null);
+            .ReturnsAsync((User?)null);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(

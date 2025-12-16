@@ -33,15 +33,15 @@ public class IngredientRepository(PostgreSQLConnectionFactory connectionFactory)
     }
 
     // Asynchronously retrieves an ingredient by its unique ID.
-    public async Task<Ingredient> GetByIdAsync(int id)
+    public async Task<Ingredient?> GetByIdAsync(int id)
     {
         var sql = "SELECT * FROM ingredients WHERE id = @Id";
         using (var connection = _connectionFactory.Create())
         {
             connection.Open();
             var result = await connection.QuerySingleOrDefaultAsync<Ingredient>(sql, new { Id = id });
-            if (result == null) return null;
-            else return result;
+            connection.Close();
+            return result;
         }
     }
 
