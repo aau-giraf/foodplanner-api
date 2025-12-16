@@ -3,7 +3,7 @@ using FluentMigrator;
 
 namespace FoodplannerDataAccessSql.Migrations;
 
-[Migration(11)]
+[Migration(12)]
 public class AddCascadeToUserId : Migration
 {
     public override void Up()

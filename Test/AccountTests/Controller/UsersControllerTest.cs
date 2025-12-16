@@ -3,6 +3,7 @@ using FoodplannerApi.Controller;
 using Microsoft.AspNetCore.Mvc;
 using FoodplannerModels.Account;
 using FoodplannerModels.Auth;
+using FoodplannerModels.Codes;
 
 namespace Test.AccountTests.Controller;
 
@@ -21,7 +22,7 @@ public class UsersControllerTests
             .Setup(a => a.GenerateJWTToken(It.IsAny<User>()))
             .Returns(JWTToken);
 
-        var controller = new UsersController(mockUserService.Object, authService.Object);
+        var controller = new UsersController(mockUserService.Object, authService.Object, null);
 
         //act
         var result = await controller.GetBearerTest();
@@ -49,7 +50,7 @@ public class UsersControllerTests
             .Setup(service => service.CreateUserAsync(userCreateDto))
             .ReturnsAsync(1);
 
-        var usersController = new UsersController(mockUserService.Object, null);
+        var usersController = new UsersController(mockUserService.Object, null, null);
 
         //act
         var result = await usersController.Create(userCreateDto);
@@ -80,7 +81,7 @@ public class UsersControllerTests
             .Setup(s => s.CreateUserAsync(userCreateDTO))
             .ReturnsAsync(0);
 
-        var controller = new UsersController(mockUserService.Object, authService.Object);
+        var controller = new UsersController(mockUserService.Object, authService.Object, null);
 
         //act
         var result = await controller.Create(userCreateDTO);
@@ -109,7 +110,7 @@ public class UsersControllerTests
             .Setup(s => s.CreateUserAsync(It.IsAny<UserCreateDTO>()))
             .ThrowsAsync(new InvalidOperationException("An error occurred while creating the user"));
 
-        var controller = new UsersController(mockUserService.Object, authService.Object);
+        var controller = new UsersController(mockUserService.Object, authService.Object, null);
 
         // Act
         var result = await controller.Create(userCreateDto);
@@ -142,7 +143,7 @@ public class UsersControllerTests
                 RoleApproved = true
             });
 
-        var controller = new UsersController(mockUserService.Object, authService.Object);
+        var controller = new UsersController(mockUserService.Object, authService.Object, null);
 
         var result = await controller.Login(login);
 
@@ -168,7 +169,7 @@ public class UsersControllerTests
             .Setup(s => s.GetJWTByEmailAndPasswordAsync(loginDto.Email, loginDto.Password))
             .ReturnsAsync((UserCredsDTO)null);
 
-        var controller = new UsersController(mockUserService.Object, authService.Object);
+        var controller = new UsersController(mockUserService.Object, authService.Object, null);
 
         // Act
         var result = await controller.Login(loginDto);
@@ -176,7 +177,7 @@ public class UsersControllerTests
         // Assert
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
         var errorResponse = Assert.IsType<ErrorResponse>(badRequestResult.Value);
-        Assert.Equal("Email eller password er forkert", errorResponse.Message[0]);
+        Assert.Equal("Email or password is wrong", errorResponse.Message[0]);
     }
 
 
@@ -196,13 +197,13 @@ public class UsersControllerTests
             .Setup(s => s.GetJWTByEmailAndPasswordAsync(loginDto.Email, loginDto.Password))
             .ThrowsAsync(new InvalidOperationException("An unexpected error occurred"));
 
-        var controller = new UsersController(mockUserService.Object, authService.Object);
+        var controller = new UsersController(mockUserService.Object, authService.Object, null);
 
         var result = await controller.Login(loginDto);
 
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
         var errorResponse = Assert.IsType<ErrorResponse>(badRequestResult.Value);
-        Assert.Equal("Email eller password er forkert", errorResponse.Message[0]);
+        Assert.Equal("Email or password is wrong", errorResponse.Message[0]);
     }
 
     [Fact]
@@ -216,7 +217,7 @@ public class UsersControllerTests
         var mockUserService = new Mock<IUserService>();
         var mockAuthService = new Mock<IAuthService>();
 
-        var controller = new UsersController(mockUserService.Object, mockAuthService.Object);
+        var controller = new UsersController(mockUserService.Object, mockAuthService.Object, null);
 
         mockAuthService
             .Setup(auth => auth.RetrieveIdFromJwtToken($"Bearer {validToken}"))
@@ -261,7 +262,7 @@ public class UsersControllerTests
             .Setup(s => s.UserHasPinCodeAsync(user.Id))
             .ReturnsAsync(false);
 
-        var controller = new UsersController(mockUserService.Object, authService.Object);
+        var controller = new UsersController(mockUserService.Object, authService.Object, null);
 
         //act
         var result = await controller.HasPinCode(JWTToken);
@@ -286,7 +287,7 @@ public class UsersControllerTests
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
 
-        var _controller = new UsersController(mockUserService.Object, authService.Object);
+        var _controller = new UsersController(mockUserService.Object, authService.Object, null);
 
         var userCredsDTO = new UserCredsDTO
         {
@@ -319,7 +320,7 @@ public class UsersControllerTests
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
 
-        var _controller = new UsersController(mockUserService.Object, authService.Object);
+        var _controller = new UsersController(mockUserService.Object, authService.Object, null);
 
         authService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Throws(new InvalidOperationException("Invalid token"));
 
@@ -337,6 +338,7 @@ public class UsersControllerTests
         // Arrange
         var mockUserService = new Mock<IUserService>();
         var mockAuthService = new Mock<IAuthService>();
+        var mockOneTimePassword = new Mock<IOneTimePasswordService>();
 
         var childDto = new UserCreateChildDTO
         {
@@ -353,14 +355,12 @@ public class UsersControllerTests
                     d.LastName == childDto.LastName),
                 It.IsAny<int>()))
             .ReturnsAsync(1);
-
         var parentId = 42;
         var token = "valid-token";
         mockAuthService
             .Setup(a => a.RetrieveIdFromJwtToken(token))
             .Returns(parentId.ToString());
-
-        var controller = new UsersController(mockUserService.Object, mockAuthService.Object);
+        var controller = new UsersController(mockUserService.Object, mockAuthService.Object, mockOneTimePassword.Object);
 
         // Act
         var result = await controller.CreateUserChildren(token, childDto);

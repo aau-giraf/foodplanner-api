@@ -6,5 +6,6 @@ public interface IAuthService
 {
     string GenerateJWTToken(User user);
     string RetrieveIdFromJwtToken(string token);
+    string RetrieveIdFromJwtTokenNoBearer(string token);
     string RetrieveRoleFromJwtToken(string token);
 }
