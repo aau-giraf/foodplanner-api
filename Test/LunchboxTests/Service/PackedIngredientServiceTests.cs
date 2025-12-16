@@ -153,7 +153,12 @@
                 mockPackedIngredientRepository
                     .Setup(repo => repo.InsertAsync(packedIngredient))
                     .ReturnsAsync(newPackedIngredientId);
-        
+
+                // Ensure the mapper returns the exact entity instance the repository expects
+                mockMapper
+                    .Setup(mapper => mapper.Map<PackedIngredient>(packedIngredientProperDto))
+                    .Returns(packedIngredient);
+
                 var packedIngredientService = new PackedIngredientService(mockPackedIngredientRepository.Object, mockMapper.Object);
         
                 // Act
