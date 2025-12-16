@@ -1,3 +1,4 @@
+using AutoMapper;
 using FoodplannerDataAccessSql.Image;
 using FoodplannerModels.Image;
 using FoodplannerServices.Image;
@@ -13,7 +14,7 @@ public class FoodImageServiceTests(FoodImageServiceFixture foodImageServiceFixtu
     public async void FoodImageIsCreatedWithCorrectUserId()
     {
         var expectedUserId = 42;
-        var foodImageService = new FoodImageService(foodImageServiceFixture.ImageService, foodImageServiceFixture.FoodImageRepository);
+        var foodImageService = new FoodImageService(foodImageServiceFixture.ImageService, foodImageServiceFixture.FoodImageRepository, new Mock<IMapper>().Object);
             
         var imageStream = new MemoryStream([0]);
         var actualUserId = await foodImageService.CreateFoodImage(expectedUserId, imageStream, "someImage", "someType", imageStream.Length);

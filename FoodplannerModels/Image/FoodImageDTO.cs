@@ -2,7 +2,7 @@
 
 public class FoodImageDTO
 {
-    public int Id;
+    public int Id { get; set; }
     public string ImageId { get; set; }
     public int UserId { get; set; }
     public string ImageName { get; set; }

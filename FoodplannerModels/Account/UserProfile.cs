@@ -11,11 +11,29 @@ namespace FoodplannerModels.Account
     {
         public UserProfile()
         {
-            CreateMap<User, UserCreateDTO>()
-                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()));
-            
-            CreateMap<UserCreateDTO, User>()
-                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => ParseUserRole(src.Role)));
+            CreateMap<User, UserCreateDTO>();
+            CreateMap<UserCreateDTO, User>();
+
+            CreateMap<User, UserArchivedDTO>();
+            CreateMap<UserArchivedDTO, User>();
+
+            CreateMap<User, UserCredsDTO>();
+            CreateMap<UserCredsDTO, User>();
+
+            CreateMap<User, UserRoleDTO>();
+            CreateMap<UserRoleDTO, User>();
+
+            CreateMap<User, UserDTO>();
+            CreateMap<UserDTO, User>();
+
+            CreateMap<User, UserUpdateDTO>();
+            CreateMap<UserUpdateDTO, User>();
+
+            CreateMap<User, UserUpdateLoggedInDTO>();
+            CreateMap<UserUpdateLoggedInDTO, User>();
+
+            CreateMap<Login, LoginDTO>();
+            CreateMap<LoginDTO, Login>();
 
             CreateMap<User, UserCreateChildDTO>();
             CreateMap<UserCreateChildDTO, User>();

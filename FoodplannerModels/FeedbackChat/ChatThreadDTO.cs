@@ -1,5 +1,13 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 public class ChatThreadDTO
 {
-    public int Id { get; set; }
-    public int ChildId { get; set; }
+    [Key]
+    [Required]
+    public required int Id { get; set; }
+    
+    [ForeignKey("ChildId")]
+    [Required]
+    public required int ChildId { get; set; }
 }

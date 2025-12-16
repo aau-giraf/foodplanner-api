@@ -4,11 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 public class ChatThread
 {
     [Key]
-    public int ChatThreadId { get; set; }
+    public required int ChatThreadId { get; set; }
 
     [ForeignKey("ChildId")]
-    public int ChildId { get; set; }
-    
-    
-    
+    public required int ChildId { get; set; }
 }

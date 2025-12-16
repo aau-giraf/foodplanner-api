@@ -34,7 +34,8 @@ namespace FoodplannerServices.FeedbackChat
         // Methods for Message
         public async Task<IEnumerable<UserNameFeedbackChatDTO>> GetMessagesAsync(int chatThreadId)
         {
-            var result = await _chatRepository.GetMessagesByChatThreadIdAsync(chatThreadId);
+            var messages = await _chatRepository.GetMessagesByChatThreadIdAsync(chatThreadId);
+            var result = messages.Select(message => _mapper.Map<UserNameFeedbackChatDTO>(message));
             
             foreach (UserNameFeedbackChatDTO message in result)
             {

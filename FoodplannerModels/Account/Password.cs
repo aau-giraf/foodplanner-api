@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace FoodplannerModels.Account
 {
     public class Password
     {
-        public string password { get; set; }
+        [Required]
+        public required string password { get; set; }
     }
 }
