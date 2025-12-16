@@ -223,7 +223,7 @@ public class MealsControllerTests
             Name = "Pizza",
             Date = "test",
             UserId = userId,
-            Ingredients = null
+            Ingredients = Enumerable.Empty<PackedIngredientDTO>()
         };
         MealDTO mealDto = new() { Id = mealId, Name = "Pizza", Date = "test", UserId = userId, Ingredients = [] };
         var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = UserRole.Parent, RoleApproved = true };
@@ -264,7 +264,7 @@ public class MealsControllerTests
             Name = "Pizza",
             Date = "test",
             UserId = userId,
-            Ingredients = null
+            Ingredients = Enumerable.Empty<PackedIngredientDTO>()
         };
         var user = new User() { Id = userId, FirstName = "test", LastName = "test", Email = "test@example.com", Password = "1234", Role = UserRole.Parent, RoleApproved = true };
         var JWTToken = "Bearer TestToken";

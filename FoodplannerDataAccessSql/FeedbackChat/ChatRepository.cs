@@ -16,7 +16,17 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
         await using var connection = connectionFactory.Create();
         connection.Open();
         var result = await connection.QuerySingleOrDefaultAsync<ChatThread>(sql, new { ChatThreadId });
-        return result;
+        connection.Close();
+        
+
+        if(result != null)
+        {
+            return result;
+        }
+        else
+        {
+            throw new Exception($"ChatThread with ID {ChatThreadId} not found.");
+        }
     }
 
     public async Task<int> GetChatThreadIdByChildIdAsync(int ChildId)
@@ -52,7 +62,17 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
         {
             connection.Open();
             var result = await connection.QuerySingleOrDefaultAsync<Message>(sql, new { MessageId });
-            return result;
+            connection.Close();
+            
+
+            if(result != null)
+            {
+                return result;
+            }
+            else
+            {
+                throw new Exception($"Message with ID {MessageId} not found.");
+            }
         }
     }
 

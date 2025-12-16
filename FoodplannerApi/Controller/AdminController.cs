@@ -50,7 +50,7 @@ public class AdminController : BaseController
         return Ok(users);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("updateuser/{id}")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -70,7 +70,7 @@ public class AdminController : BaseController
 
         var result = await _userService.UserUpdateArchivedAsync(id);
 
-        if (result != null)
+        if (result)
         {
             return Ok(result);
         }
@@ -80,12 +80,12 @@ public class AdminController : BaseController
         }
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("updaterole/{id}")]
     public async Task<IActionResult> UpdateRoleApproved(int id, [FromBody] UserRoleDTO userRoleDTO)
     {
         var result = await _userService.UserUpdateRoleApprovedAsync(id, userRoleDTO.role_approved);
 
-        if (result != null)
+        if (result)
         {
             return Ok(result);
         }

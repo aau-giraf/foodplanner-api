@@ -29,21 +29,21 @@ namespace FoodplannerDataAccessSql.Lunchbox
             {
                 connection.Open();
                 var result = await connection.QueryAsync<PackedIngredient>(sql, new { Id = id });
-                if (result == null) return null;
-                else return result;
+                connection.Close();
+                return result;
             }
         }
 
         // Get a specific packed ingredient by its ID
-        public async Task<PackedIngredient> GetByIdAsync(int id)
+        public async Task<PackedIngredient?> GetByIdAsync(int id)
         {
             var sql = "SELECT * FROM packed_ingredients WHERE id = @Id";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
                 var result = await connection.QuerySingleOrDefaultAsync<PackedIngredient>(sql, new { Id = id });
-                if (result == null) return null;
-                else return result;
+                connection.Close();
+                return result;
             }
         }
 

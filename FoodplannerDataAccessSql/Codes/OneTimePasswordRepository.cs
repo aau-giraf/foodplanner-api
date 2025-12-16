@@ -76,7 +76,7 @@ namespace FoodplannerDataAccessSql.Codes
             return rowsAffected;
         }
 
-        public async Task<OneTimePasswordDTO?> GetFromCodeAsync(string code)
+        public async Task<OneTimePasswordDTO> GetFromCodeAsync(string code)
         {
             const string sql = "SELECT code_id, generated_by, used, used_by_user, child_user FROM one_time_password WHERE code = @Code";
 
@@ -85,7 +85,14 @@ namespace FoodplannerDataAccessSql.Codes
             var result = await connection.QuerySingleOrDefaultAsync<OneTimePasswordDTO>(sql, new { Code = code });
             connection.Close();
 
-            return result;
+            if(result != null)
+            {
+                return result;
+            }
+            else
+            {
+                throw new Exception("OTP not found");
+            }
         }
 
 

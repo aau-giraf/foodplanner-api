@@ -13,9 +13,12 @@ public class ImageServiceTests(ImageServiceFixture imageServiceFixture) : IClass
     [Fact]
     public async Task CanUploadFromUninitializedState()
     {
-        var imageService = new ImageService(imageServiceFixture.MinioClient.Object, Mock.Of<ILogger<ImageService>>());
-        imageService.SaveImageAsync(0, new MemoryStream(), "type/type").Wait();
-        
+        var imageService = new ImageService(
+            imageServiceFixture.MinioClient.Object,
+            Mock.Of<ILogger<ImageService>>());
+
+        await imageService.SaveImageAsync(0, new MemoryStream(), "type/type");
+
         imageServiceFixture.VerifyBucketCreated();
     }
 }

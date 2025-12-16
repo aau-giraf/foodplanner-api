@@ -11,7 +11,6 @@ public class ClassroomControllerTest
 {
     private readonly Mock<IClassroomService> _mockClassroomService;
     private readonly ClassroomsController  _classroomController;
-    private readonly IMapper _mapper;
 
     public ClassroomControllerTest()
     {
