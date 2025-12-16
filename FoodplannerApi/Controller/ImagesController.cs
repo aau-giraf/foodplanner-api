@@ -152,6 +152,9 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
                 }
                 foreach (var foodImageId in foodImageIds)
                 {
+                    if (foodImageId == null)
+                        continue;
+
                     var foodImage = await foodImageService.GetFoodImage(int.Parse(foodImageId));
                     if (userId == foodImage.UserId) continue;
                     context.Result = new UnauthorizedResult();

@@ -34,15 +34,15 @@ public class MealRepository(PostgreSQLConnectionFactory connectionFactory) : IMe
     }
 
     // Asynchronously retrieves an meal by its unique ID.
-    public async Task<Meal> GetByIdAsync(int id)
+    public async Task<Meal?> GetByIdAsync(int id)
     {
         var sql = "SELECT * FROM meals WHERE id = @Id";
         using (var connection = _connectionFactory.Create())
         {
             connection.Open();
             var result = await connection.QuerySingleOrDefaultAsync<Meal>(sql, new { Id = id });
-            if (result == null) return null;
-            else return result;
+            connection.Close();
+            return result;
         }
     }
 

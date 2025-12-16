@@ -3,5 +3,5 @@
 public class UpdateMessageDTO
 {
     public int MessageId { get; set; }
-    public string Content { get; set; }
+    public required string Content { get; set; }
 }

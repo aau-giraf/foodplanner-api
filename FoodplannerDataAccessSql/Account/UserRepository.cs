@@ -144,7 +144,16 @@ namespace FoodplannerDataAccessSql.Account
             {
                 connection.Open();
                 var result = await connection.ExecuteScalarAsync<string>(sql, new { PinCode = pinCode, Id = id });
-                return result;
+
+                if (result != null)
+                {
+                    return result;
+                }
+                else 
+                {
+                    throw new Exception("Failed to update pincode");
+                }
+
             }
         }
 
@@ -155,7 +164,14 @@ namespace FoodplannerDataAccessSql.Account
             {
                 connection.Open();
                 var result = await connection.ExecuteScalarAsync<string>(sql, new { Id = id });
-                return result;
+                if(result != null)
+                {
+                    return result;
+                }
+                else
+                {
+                    throw new Exception("Pincode not found");
+                }
             }
         }
 
@@ -218,7 +234,14 @@ namespace FoodplannerDataAccessSql.Account
             {
                 connection.Open();
                 var result = await connection.QueryFirstOrDefaultAsync<User>(sql, new { Id = id });
-                return result;
+                if(result != null)
+                {
+                    return result;
+                }
+                else
+                {
+                    throw new Exception("User not found");
+                }
             }
         }
 

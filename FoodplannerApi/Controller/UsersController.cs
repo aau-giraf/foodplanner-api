@@ -142,7 +142,7 @@ public class UsersController : BaseController
             }
             return BadRequest(new ErrorResponse { Message = ["Email or password is wrong"] });
         }
-        catch (InvalidOperationException e)
+        catch
         {
             return BadRequest(new ErrorResponse { Message = ["Email or password is wrong"] });
         }
@@ -174,7 +174,7 @@ public class UsersController : BaseController
             }
             return BadRequest(new ErrorResponse { Message = ["Email eller password er forkert"] });
         }
-        catch (InvalidOperationException e)
+        catch
         {
             return BadRequest(new ErrorResponse { Message = ["Email eller password er forkert"] });
         }

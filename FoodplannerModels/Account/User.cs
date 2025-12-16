@@ -20,6 +20,6 @@ public class User
     public required string Password { get; set; }
     public required UserRole Role { get; set; }
     public required bool RoleApproved { get; set; }
-    public string PinCode { get; set; }
+    public string? PinCode { get; set; }
     public bool Archived { get; set; }
 }

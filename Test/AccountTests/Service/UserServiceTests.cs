@@ -304,7 +304,7 @@ public class UserServiceTests
         var expectedCreds = new UserCredsDTO { JWT = expectedJWT, Role = inputUser.Role.ToString(), RoleApproved = inputUser.RoleApproved };
 
         _mockUserRepository
-            .Setup(repo => repo.GetUserByEmailAsync(null))
+            .Setup(repo => repo.GetUserByEmailAsync(""))
             .ReturnsAsync(inputUser);
         _mockAuthService
             .Setup(auth => auth.GenerateJWTToken(inputUser))
@@ -520,10 +520,11 @@ public class UserServiceTests
     {
         // Arrange
         var expectedUsers = new List<User>
-        {
-            new User { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role =UserRole.Teacher, RoleApproved = true },
-            new User { Id = 2, FirstName = "ole", LastName = "olsen", Email = "olsen@example.com", Password = "password", Role =UserRole.Parent, RoleApproved = true },
-        };
+    {
+        new() { Id = 1, FirstName = "niels", LastName = "nielsen", Email = "nielsen@example.com", Password = "password", Role = UserRole.Teacher, RoleApproved = true },
+        new() { Id = 2, FirstName = "ole", LastName = "olsen", Email = "olsen@example.com", Password = "password", Role = UserRole.Parent, RoleApproved = true },
+    };
+
         _mockUserRepository
             .Setup(repo => repo.SelectAllNotArchivedAsync())
             .ReturnsAsync(expectedUsers);
@@ -532,17 +533,39 @@ public class UserServiceTests
         var result = await _userService.UserSelectAllNotArchivedAsync();
 
         // Assert
-        Assert.NotNull(result);
-        Assert.Equal(expectedUsers.Count(), result.Count());
-        Assert.All(result, user => Assert.Contains(expectedUsers,
-                                                    u => u.Id == user.Id &&
-                                                    u.FirstName == user.FirstName &&
-                                                    u.LastName == user.LastName &&
-                                                    u.Email == user.Email &&
-                                                    u.Password == user.Password &&
-                                                    u.Role == user.Role &&
-                                                    u.RoleApproved == user.RoleApproved));
+        Assert.Equal(expectedUsers.Count, result.Count());
+
+        Assert.All(result, user => Assert.NotNull(user));
+
+        Assert.Equal(
+            expectedUsers.Select(u => new
+            {
+                u.Id,
+                u.FirstName,
+                u.LastName,
+                u.Email,
+                u.Password,
+                u.Role,
+                u.RoleApproved
+            }),
+            result.Select(u =>
+            {
+                var user = u!;
+                return new
+                {
+                    user.Id,
+                    user.FirstName,
+                    user.LastName,
+                    user.Email,
+                    user.Password,
+                    user.Role,
+                    user.RoleApproved
+                };
+            })
+        );
+
     }
+
 
     [Fact]
     public async Task GetLoggedInUserAsync_ReturnsAUser()
@@ -747,7 +770,7 @@ public class UserServiceTests
         // Simulate missing parent
         _mockUserRepository
             .Setup(repo => repo.GetByIdAsync(invalidParentId))
-            .ReturnsAsync((User)null);
+            .ReturnsAsync((User?)null);
 
         // Act & Assert: missing parent should cause an InvalidOperationException
         await Assert.ThrowsAsync<InvalidOperationException>(() => _userService.CreateChildrenUserAsync(newUser, invalidParentId));

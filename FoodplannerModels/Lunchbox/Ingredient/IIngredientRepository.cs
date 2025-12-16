@@ -12,7 +12,7 @@ public interface IIngredientRepository
     // Gets all ingredients by user asynchronously.
     Task<IEnumerable<Ingredient>> GetAllByUserAsync(int id);
     // Gets an ingredient by ID asynchronously.
-    Task<Ingredient> GetByIdAsync(int id);
+    Task<Ingredient?> GetByIdAsync(int id);
     // Inserts a new ingredient asynchronously.
     Task<int> InsertAsync(IngredientDTO entity, int id);
     // Updates an existing ingredient asynchronously.

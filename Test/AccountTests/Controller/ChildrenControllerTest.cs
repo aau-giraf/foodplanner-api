@@ -13,7 +13,6 @@ public class ChildrenControllerTest
     private readonly Mock<IChildrenService> _mockChildrenService;
     private readonly Mock<IAuthService> _mockAuthService;
     private readonly ChildrensController _childrenController;
-    private readonly IMapper _mapper;
 
     public ChildrenControllerTest()
     {

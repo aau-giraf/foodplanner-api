@@ -16,13 +16,14 @@ public class UsersControllerTests
         //arrange
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
+        var otpService = new Mock<IOneTimePasswordService>();
 
         var JWTToken = "Bearer TestToken";
         authService
             .Setup(a => a.GenerateJWTToken(It.IsAny<User>()))
             .Returns(JWTToken);
 
-        var controller = new UsersController(mockUserService.Object, authService.Object, null);
+        var controller = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
 
         //act
         var result = await controller.GetBearerTest();
@@ -37,6 +38,8 @@ public class UsersControllerTests
     {
         //arrange
         var mockUserService = new Mock<IUserService>();
+        var authService = new Mock<IAuthService>();
+        var otpService = new Mock<IOneTimePasswordService>();
         var userCreateDto = new UserCreateDTO
         {
             FirstName = "test",
@@ -50,7 +53,7 @@ public class UsersControllerTests
             .Setup(service => service.CreateUserAsync(userCreateDto))
             .ReturnsAsync(1);
 
-        var usersController = new UsersController(mockUserService.Object, null, null);
+        var usersController = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
 
         //act
         var result = await usersController.Create(userCreateDto);
@@ -67,6 +70,7 @@ public class UsersControllerTests
         //arrange
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
+        var otpService = new Mock<IOneTimePasswordService>();
 
         var userCreateDTO = new UserCreateDTO
         {
@@ -81,7 +85,7 @@ public class UsersControllerTests
             .Setup(s => s.CreateUserAsync(userCreateDTO))
             .ReturnsAsync(0);
 
-        var controller = new UsersController(mockUserService.Object, authService.Object, null);
+        var controller = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
 
         //act
         var result = await controller.Create(userCreateDTO);
@@ -96,6 +100,7 @@ public class UsersControllerTests
         //arrange
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
+        var otpService = new Mock<IOneTimePasswordService>();
 
         var userCreateDto = new UserCreateDTO
         {
@@ -110,14 +115,16 @@ public class UsersControllerTests
             .Setup(s => s.CreateUserAsync(It.IsAny<UserCreateDTO>()))
             .ThrowsAsync(new InvalidOperationException("An error occurred while creating the user"));
 
-        var controller = new UsersController(mockUserService.Object, authService.Object, null);
+        var controller = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
 
         // Act
         var result = await controller.Create(userCreateDto);
 
         // Assert
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-        var errorResponse = Assert.IsType<ErrorResponse>(badRequestResult.Value);
+        var errorResponse = Assert.IsType<ErrorResponse>(badRequestResult.Value); 
+        Assert.NotNull(errorResponse);
+        Assert.NotNull(errorResponse.Email);
         Assert.Equal("An error occurred while creating the user", errorResponse.Email[0]);
     }
 
@@ -127,6 +134,7 @@ public class UsersControllerTests
     {
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
+        var otpService = new Mock<IOneTimePasswordService>();
 
         var login = new LoginDTO()
         {
@@ -143,7 +151,7 @@ public class UsersControllerTests
                 RoleApproved = true
             });
 
-        var controller = new UsersController(mockUserService.Object, authService.Object, null);
+        var controller = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
 
         var result = await controller.Login(login);
 
@@ -158,6 +166,7 @@ public class UsersControllerTests
         // Arrange
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
+        var otpService = new Mock<IOneTimePasswordService>();
 
         var loginDto = new LoginDTO()
         {
@@ -167,9 +176,9 @@ public class UsersControllerTests
 
         mockUserService
             .Setup(s => s.GetJWTByEmailAndPasswordAsync(loginDto.Email, loginDto.Password))
-            .ReturnsAsync((UserCredsDTO)null);
+            .ReturnsAsync((UserCredsDTO?)null);
 
-        var controller = new UsersController(mockUserService.Object, authService.Object, null);
+        var controller = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
 
         // Act
         var result = await controller.Login(loginDto);
@@ -177,6 +186,8 @@ public class UsersControllerTests
         // Assert
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
         var errorResponse = Assert.IsType<ErrorResponse>(badRequestResult.Value);
+        Assert.NotNull(errorResponse);
+        Assert.NotNull(errorResponse.Message);
         Assert.Equal("Email or password is wrong", errorResponse.Message[0]);
     }
 
@@ -186,6 +197,7 @@ public class UsersControllerTests
     {
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
+        var otpService = new Mock<IOneTimePasswordService>();
 
         var loginDto = new LoginDTO()
         {
@@ -197,12 +209,14 @@ public class UsersControllerTests
             .Setup(s => s.GetJWTByEmailAndPasswordAsync(loginDto.Email, loginDto.Password))
             .ThrowsAsync(new InvalidOperationException("An unexpected error occurred"));
 
-        var controller = new UsersController(mockUserService.Object, authService.Object, null);
+        var controller = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
 
         var result = await controller.Login(loginDto);
 
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
         var errorResponse = Assert.IsType<ErrorResponse>(badRequestResult.Value);
+        Assert.NotNull(errorResponse);
+        Assert.NotNull(errorResponse.Message);
         Assert.Equal("Email or password is wrong", errorResponse.Message[0]);
     }
 
@@ -216,8 +230,9 @@ public class UsersControllerTests
 
         var mockUserService = new Mock<IUserService>();
         var mockAuthService = new Mock<IAuthService>();
+        var otpService = new Mock<IOneTimePasswordService>();
 
-        var controller = new UsersController(mockUserService.Object, mockAuthService.Object, null);
+        var controller = new UsersController(mockUserService.Object, mockAuthService.Object, otpService.Object);
 
         mockAuthService
             .Setup(auth => auth.RetrieveIdFromJwtToken($"Bearer {validToken}"))
@@ -241,6 +256,7 @@ public class UsersControllerTests
         //arrange
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
+        var otpService = new Mock<IOneTimePasswordService>();
 
         var user = new User
         {
@@ -262,7 +278,7 @@ public class UsersControllerTests
             .Setup(s => s.UserHasPinCodeAsync(user.Id))
             .ReturnsAsync(false);
 
-        var controller = new UsersController(mockUserService.Object, authService.Object, null);
+        var controller = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
 
         //act
         var result = await controller.HasPinCode(JWTToken);
@@ -271,7 +287,16 @@ public class UsersControllerTests
         var okResult = Assert.IsType<OkObjectResult>(result);
 
         Assert.NotNull(okResult);
-        var hasPinCode = (bool)okResult.Value.GetType().GetProperty("HasPinCode").GetValue(okResult.Value, null);
+        Assert.NotNull(okResult.Value);
+
+        var property = okResult.Value.GetType().GetProperty("HasPinCode");
+        Assert.NotNull(property);
+
+        var value = property.GetValue(okResult.Value);
+        Assert.NotNull(value);
+
+        var hasPinCode = (bool)value;
+
 
         Assert.False(hasPinCode);
     }
@@ -286,8 +311,9 @@ public class UsersControllerTests
 
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
+        var otpService = new Mock<IOneTimePasswordService>();
 
-        var _controller = new UsersController(mockUserService.Object, authService.Object, null);
+        var _controller = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
 
         var userCredsDTO = new UserCredsDTO
         {
@@ -319,8 +345,9 @@ public class UsersControllerTests
 
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
+        var otpService = new Mock<IOneTimePasswordService>();
 
-        var _controller = new UsersController(mockUserService.Object, authService.Object, null);
+        var _controller = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
 
         authService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Throws(new InvalidOperationException("Invalid token"));
 
