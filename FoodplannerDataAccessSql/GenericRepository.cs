@@ -12,38 +12,6 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     private readonly PostgreSQLConnectionFactory _connectionFactory;
 
     protected virtual string entityId => "Id";
-    public static class EntityDbTranslation
-    {
-        // Children
-        public const string ChildId = "child_id";
-        public const string FirstName = "first_name";
-        public const string LastName = "last_name";
-        public const string parentId = "parent_id";
-        public const string classId = "class_id";
-        // User
-        public const string Id = "id";
-        public const string Email = "email";
-        public const string Password = "password";
-        public const string Role = "role";
-        public const string RoleApproved = "role_approved";
-        public const string PinCode = "pincode";
-        public const string Archived = "archived";
-
-        // Classroom
-        public const string ClassName = "class_name";
-        
-    
-        private static readonly Dictionary<string, string> _map =
-            typeof(EntityDbTranslation)
-                .GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
-                .ToDictionary(f => f.Name, f => f.GetValue(null)!.ToString()!);
-
-        public static string ToDb(string propertyName)
-        {
-            return _map.TryGetValue(propertyName, out var db) ? db : propertyName.ToLower();
-        }
-    }
-
 
     public GenericRepository(PostgreSQLConnectionFactory connectionFactory){
         _connectionFactory = connectionFactory;
@@ -54,7 +22,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         using (var connection = _connectionFactory.Create()){
             connection.Open();
-            var sql = $"SELECT * FROM {typeof(T).Name}";
+            var sql = $"SELECT * FROM {EntityDbTranslation.ToDb(typeof(T).Name)}";
             return await connection.QueryAsync<T>(sql);
         }
     }
@@ -63,7 +31,15 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         using (var connection = _connectionFactory.Create()){
             connection.Open();
-            var sql = $"SELECT * FROM {typeof(T).Name} WHERE {EntityDbTranslation.ToDb(entityId)} = @Id";
+
+            var tableName = EntityDbTranslation.ToDb(typeof(T).Name);
+            var idColumn  = EntityDbTranslation.ToDb(entityId);
+
+            var sql = $"""
+                    SELECT *
+                    FROM {tableName}
+                    WHERE {idColumn} = @Id
+                    """;
 Console.WriteLine("Using General Repository: 'GetByIdAsync' using:\n");
 Console.WriteLine("Entity:\n" + id);
 Console.WriteLine(sql);
@@ -75,8 +51,18 @@ Console.WriteLine(sql);
     {
         using (var connection = _connectionFactory.Create()){
             connection.Open();
-            var props = typeof(T).GetProperties().Skip(1);
-            var sql = $"INSERT INTO {typeof(T).Name.ToLower()} ({string.Join(", ", props.Select(p => EntityDbTranslation.ToDb(p.Name)))}) VALUES ({string.Join(", ", props.Select(p => "@" + p.Name))}) RETURNING {EntityDbTranslation.ToDb(entityId)}";
+            var props = typeof(T).GetProperties().Where(p => p.Name != entityId);
+            var tableName = EntityDbTranslation.ToDb(typeof(T).Name);
+            var columns = string.Join(", ", props.Select(p => EntityDbTranslation.ToDb(p.Name)));
+            var parameters = string.Join(", ", props.Select(p => "@" + p.Name));
+            var idColumn = EntityDbTranslation.ToDb(entityId);
+
+            var sql = $"""
+                INSERT INTO {tableName}
+                ({columns})
+                VALUES ({parameters})
+                RETURNING {idColumn}
+                """;
 
 // temp
 var propsss = typeof(T).GetProperties()
@@ -94,8 +80,16 @@ Console.WriteLine("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
     {
         using (var connection = _connectionFactory.Create()){
             connection.Open();
-            var props = typeof(T).GetProperties().Skip(1);
-            var sql = $"UPDATE {typeof(T).Name.ToLower()} SET ({string.Join(", ", props.Select(p => $"{EntityDbTranslation.ToDb(p.Name)} = @{p.Name}"))}) WHERE {EntityDbTranslation.ToDb(entityId)} = @{entityId}";
+            var props = typeof(T).GetProperties().Where(p => p.Name != entityId);
+            
+            var tableName = EntityDbTranslation.ToDb(typeof(T).Name);
+            var updateParameters = string.Join(", ", props.Select(p => $"{EntityDbTranslation.ToDb(p.Name)} = @{p.Name}"));
+            var idColumn = EntityDbTranslation.ToDb(entityId);
+            var sql = $"""
+                    UPDATE {tableName} 
+                    SET ({updateParameters}) 
+                    WHERE {EntityDbTranslation.ToDb(entityId)} = @{entityId}
+                    """;
             
 // temp
 var propsss = typeof(T).GetProperties()
@@ -115,7 +109,13 @@ Console.WriteLine("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
     {
         using (var connection = _connectionFactory.Create()){
             connection.Open();
-            var sql = $"DELETE FROM {typeof(T).Name.ToLower()} WHERE {EntityDbTranslation.ToDb(entityId)} = @Id";
+            var tableName = EntityDbTranslation.ToDb(typeof(T).Name);
+            var idColumn = EntityDbTranslation.ToDb(entityId);
+
+            var sql = $"""
+                    DELETE FROM {tableName} 
+                    WHERE {idColumn} = @{entityId}
+                    """;
             Console.WriteLine(id);
             Console.WriteLine(typeof(T).Name);
             Console.WriteLine(sql);
