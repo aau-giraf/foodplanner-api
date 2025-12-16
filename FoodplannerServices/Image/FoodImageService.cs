@@ -7,10 +7,8 @@ using FoodplannerModels.Image;
 
 namespace FoodplannerServices.Image;
 
-public class FoodImageService(IImageService imageService, IFoodImageRepository foodImageRepository) : IFoodImageService
+public class FoodImageService(IImageService imageService, IFoodImageRepository foodImageRepository, IMapper _mapper) : IFoodImageService
 {
-    private readonly IMapper _mapper;
-    
     public async Task<int> CreateFoodImage(int userid, Stream imageStream, string imageName, string imageType, long imageFileSize)
     {
         var imageId = await imageService.SaveImageAsync(userid, imageStream, imageType);
@@ -23,7 +21,7 @@ public class FoodImageService(IImageService imageService, IFoodImageRepository f
         
         return foodImageId;
     }
-
+    
     public async Task<FoodImageDTO> GetFoodImage(int foodImageId)
     {
         var foodImage = await foodImageRepository.GetImageByIdAsync(foodImageId);
