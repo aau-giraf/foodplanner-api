@@ -1,59 +1,101 @@
 ﻿using Dapper;
+using FoodplannerModels;
 using FoodplannerModels.Image;
 using Npgsql;
 
 namespace FoodplannerDataAccessSql.Image;
 
-public class FoodImageRepository(PostgreSQLConnectionFactory connectionFactory) : IFoodImageRepository
+public class FoodImageRepository : IFoodImageRepository
 {
-    public async Task<IEnumerable<FoodImage>> GetAllImagesAsync()
+    private readonly PostgreSQLConnectionFactory _connectionFactory;
+
+    public FoodImageRepository(PostgreSQLConnectionFactory connectionFactory)
+    {
+        _connectionFactory = connectionFactory;
+    }
+
+    public async Task<IEnumerable<FoodImage>> GetAllAsync()
     {
         const string sql = "SELECT * FROM food_image";
-        using (var connection = connectionFactory.Create())
-        {
-            connection.Open();
-            var result = await connection.QueryAsync<FoodImage>(sql);
-            return result.ToList();
-        }
+        await using var connection = _connectionFactory.Create();
+        connection.Open();
+        var result = await connection.QueryAsync<FoodImage>(sql);
+        return result;
+    }
+
+    public async Task<FoodImage?> GetByIdAsync(int foodImageId)
+    {
+        const string sql = "SELECT * FROM food_image WHERE id = @Id";
+        await using var connection = _connectionFactory.Create();
+        connection.Open();
+        var result = await connection.QuerySingleOrDefaultAsync<FoodImage>(sql, new { Id = foodImageId });
+        return result;
+    }
+
+    public async Task<int> InsertAsync(FoodImage entity)
+    {
+        const string sql = @"
+            INSERT INTO food_image (image_id, user_id, image_name, image_file_type, size)
+            VALUES (@ImageId, @UserId, @ImageName, @ImageFileType, @Size)
+            RETURNING id";
+        await using var connection = _connectionFactory.Create();
+        connection.Open();
+        var id = await connection.QuerySingleAsync<int>(sql, entity);
+        return id;
+    }
+
+    public async Task<int> UpdateAsync(FoodImage entity)
+    {
+        const string sql = @"
+            UPDATE food_image
+            SET image_id = @ImageId,
+                user_id = @UserId,
+                image_name = @ImageName,
+                image_file_type = @ImageFileType,
+                size = @Size
+            WHERE id = @Id";
+        await using var connection = _connectionFactory.Create();
+        connection.Open();
+        var affected = await connection.ExecuteAsync(sql, entity);
+        return affected;
+    }
+
+    public async Task<int> DeleteAsync(int id)
+    {
+        const string sql = "DELETE FROM food_image WHERE id = @Id";
+        await using var connection = _connectionFactory.Create();
+        connection.Open();
+        var affected = await connection.ExecuteAsync(sql, new { Id = id });
+        return affected;
+    }
+
+    // IFoodImageRepository specific methods
+    public async Task<IEnumerable<FoodImage>> GetAllImagesAsync()
+    {
+        return await GetAllAsync();
     }
 
     public async Task<FoodImage> GetImageByIdAsync(int foodImageId)
     {
-        string sql = $"SELECT * FROM food_image WHERE id = {foodImageId}";
-        using (var connection = connectionFactory.Create())
-        {
-            connection.Open();
-            var result = connection.QuerySingleOrDefault<FoodImage>(sql);
-            if (result is null)
-            {
-                throw new NullReferenceException("FoodImage not found");
-            }
-
-            return result;
-        }
+        var result = await GetByIdAsync(foodImageId);
+        return result ?? throw new KeyNotFoundException($"FoodImage with id {foodImageId} not found");
     }
 
-    public async Task<int> InsertImageAsync(string imageId, int userId, string imageName, string imageFileType, long fileSize)
+    public async Task<int> InsertImageAsync(string imageId, int userid, string imageName, string imageType, long imageStreamLength)
     {
-        int result;
-        var sql = "INSERT INTO food_image (image_id, user_id, image_name, image_file_type, size)\n" + 
-                  $"VALUES (@imageId, @userId, @imageName, @imageFileType, @fileSize) RETURNING id";
-
-        await using (var connection = connectionFactory.Create())
+        var entity = new FoodImage
         {
-            connection.Open();
-            result = await connection.QuerySingleAsync<int>(sql, new{imageId, userId, imageName, imageFileType, fileSize});
-        }
-        return result;
+            ImageId = imageId,
+            UserId = userid,
+            ImageName = imageName,
+            ImageFileType = imageType,
+            Size = imageStreamLength
+        };
+        return await InsertAsync(entity);
     }
 
-    public async Task DeleteImageAsync(int id)
+    public async Task DeleteImageAsync(int imageId)
     {
-        var sql = $"DELETE FROM food_image WHERE id = '{id}'";
-        using (var connection = connectionFactory.Create())
-        {
-            connection.Open();
-            connection.Execute(sql);
-        }
+        await DeleteAsync(imageId);
     }
 }

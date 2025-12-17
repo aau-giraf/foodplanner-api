@@ -9,13 +9,13 @@ namespace testing;
 
 public class FoodImageServiceTests(FoodImageServiceFixture foodImageServiceFixture) : IClassFixture<FoodImageServiceFixture>
 {
-    
+
     [Fact]
     public async void FoodImageIsCreatedWithCorrectUserId()
     {
         var expectedUserId = 42;
         var foodImageService = new FoodImageService(foodImageServiceFixture.ImageService, foodImageServiceFixture.FoodImageRepository, new Mock<IMapper>().Object);
-            
+
         var imageStream = new MemoryStream([0]);
         var actualUserId = await foodImageService.CreateFoodImage(expectedUserId, imageStream, "someImage", "someType", imageStream.Length);
         Assert.Equal(expectedUserId, actualUserId);
@@ -25,12 +25,12 @@ public class FoodImageServiceTests(FoodImageServiceFixture foodImageServiceFixtu
 public class FoodImageServiceFixture : IDisposable
 {
     public IFoodImageRepository FoodImageRepository { get; }
-    public IImageService ImageService { get;}
+    public IImageService ImageService { get; }
 
     public FoodImageServiceFixture()
     {
         var dummyStream = new MemoryStream();
-        
+
         var mockedImageService = new Mock<IImageService>();
         var mockedFoodImageRepository = new Mock<IFoodImageRepository>();
 
@@ -41,16 +41,16 @@ public class FoodImageServiceFixture : IDisposable
             .ReturnsAsync("https://localhost:0000/someBucket/images/food.jpg");
 
 
-        mockedFoodImageRepository.Setup(repo => repo.InsertImageAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>()))
-            .Returns((string _, int id, string _, string _, long _) => Task.FromResult(id));
-        
+        mockedFoodImageRepository.Setup(repo => repo.InsertAsync(It.IsAny<FoodImage>()))
+            .Returns((FoodImage foodImage) => Task.FromResult(foodImage.UserId));
+
         ImageService = mockedImageService.Object;
         FoodImageRepository = mockedFoodImageRepository.Object;
-        
-        
+
+
     }
     public void Dispose()
     {
-        
+
     }
 }

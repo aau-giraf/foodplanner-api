@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FoodplannerModels.Account
 {
-    public interface IUserRepository
+    public interface IUserRepository : IGenericRepository<User>
     {
         Task<IEnumerable<User>> GetAllAsync();
         Task<IEnumerable<User>> GetAllNotApprovedAsync();

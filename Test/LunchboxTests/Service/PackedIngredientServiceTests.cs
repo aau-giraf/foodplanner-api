@@ -134,17 +134,35 @@
                 var mockPackedIngredientRepository = new Mock<IPackedIngredientRepository>();
                 var mockMapper = new Mock<IMapper>();
         
-                int mealRef = 101, ingredientRef = 201;
+                PackedIngredient packedIngredient = new PackedIngredient
+                {
+                    Meal_id = 101,
+                    Ingredient_id = 201,
+                    Id = 0
+                };
+                
+                var packedIngredientProperDto = new PackedIngredientProperDTO
+                {
+                    Meal_id = packedIngredient.Meal_id,
+                    Ingredient_id = packedIngredient.Ingredient_id
+                };
+                
+                
                 int newPackedIngredientId = 42;
         
                 mockPackedIngredientRepository
-                    .Setup(repo => repo.InsertAsync(mealRef, ingredientRef))
+                    .Setup(repo => repo.InsertAsync(packedIngredient))
                     .ReturnsAsync(newPackedIngredientId);
-        
+
+                // Ensure the mapper returns the exact entity instance the repository expects
+                mockMapper
+                    .Setup(mapper => mapper.Map<PackedIngredient>(packedIngredientProperDto))
+                    .Returns(packedIngredient);
+
                 var packedIngredientService = new PackedIngredientService(mockPackedIngredientRepository.Object, mockMapper.Object);
         
                 // Act
-                var result = await packedIngredientService.CreatePackedIngredientAsync(mealRef, ingredientRef);
+                var result = await packedIngredientService.CreatePackedIngredientAsync(packedIngredientProperDto);
         
                 // Assert
                 Assert.Equal(newPackedIngredientId, result);
@@ -168,6 +186,12 @@
                     Ingredient_id = packedIngredient.Id,
                     order_number = packedIngredient.order_number
                 };
+                
+                var packedIngredientProperDto = new PackedIngredientProperDTO
+                {
+                    Meal_id = packedIngredient.Meal_id,
+                    Ingredient_id = packedIngredient.Ingredient_id
+                };
         
                 // Mock mapping from DTO -> entity for repository call
                 mockMapper
@@ -175,7 +199,7 @@
                     .Returns(packedIngredient);
         
                 mockPackedIngredientRepository
-                    .Setup(repo => repo.UpdateAsync(packedIngredient, packedIngredient.Id))
+                    .Setup(repo => repo.UpdateAsync(packedIngredient))
                     .ReturnsAsync(rowsAffected);
         
                 var packedIngredientService = new PackedIngredientService(mockPackedIngredientRepository.Object, mockMapper.Object);

@@ -84,12 +84,12 @@
         
                 int ingredientId = 1;
                 int mealId = 1;
-                PackedIngredientProperDTO packedIngredientDTO = new() { Ingredient_id = ingredientId, Meal_id = mealId};
+                PackedIngredientProperDTO packedIngredientProperDto = new() { Ingredient_id = ingredientId, Meal_id = mealId};
                 int packedIngredientId = 1;
                 PackedIngredientDTO packedIngredient = new() { Id = packedIngredientId, Ingredient_id = 1, Meal_id = 1, order_number = 1 };
         
                 mockPackedIngredientService
-                    .Setup(repo => repo.CreatePackedIngredientAsync(mealId, ingredientId))
+                    .Setup(repo => repo.CreatePackedIngredientAsync(packedIngredientProperDto))
                     .ReturnsAsync(packedIngredientId);
                 mockPackedIngredientService
                     .Setup(repo => repo.GetPackedIngredientByIdAsync(packedIngredientId))
@@ -98,7 +98,7 @@
                 var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
         
                 // Act
-                var result = await packedIngredientController.Create(packedIngredientDTO);
+                var result = await packedIngredientController.Create(packedIngredientProperDto);
         
                 // Assert
                 Assert.IsType<CreatedAtActionResult>(result);
@@ -112,16 +112,16 @@
         
                 int ingredientId = 1;
                 int mealId = 1;
-                PackedIngredientProperDTO packedIngredientDTO = new() { Ingredient_id = ingredientId, Meal_id = mealId};
+                PackedIngredientProperDTO packedIngredientProperDto = new() { Ingredient_id = ingredientId, Meal_id = mealId};
         
                 mockPackedIngredientService
-                    .Setup(repo => repo.CreatePackedIngredientAsync(mealId, ingredientId))
+                    .Setup(repo => repo.CreatePackedIngredientAsync(packedIngredientProperDto))
                     .ReturnsAsync(0);
         
                 var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
         
                 // Act
-                var result = await packedIngredientController.Create(packedIngredientDTO);
+                var result = await packedIngredientController.Create(packedIngredientProperDto);
         
                 // Assert
                 Assert.IsType<BadRequestResult>(result);

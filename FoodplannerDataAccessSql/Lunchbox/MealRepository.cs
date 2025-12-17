@@ -47,7 +47,7 @@ public class MealRepository(PostgreSQLConnectionFactory connectionFactory) : IMe
     }
 
     // Asynchronously inserts a new meal into the database and returns its Id.
-    public async Task<int> InsertAsync(Meal entity, int id)
+    public async Task<int> InsertAsync(Meal entity)
     {
         var sql = "INSERT INTO meals (name, user_id, food_image_id, date) VALUES (@Name, @UserId, @FoodImageId, @Date) RETURNING id";
         using (var connection = _connectionFactory.Create())
@@ -57,7 +57,7 @@ public class MealRepository(PostgreSQLConnectionFactory connectionFactory) : IMe
             return await connection.QuerySingleAsync<int>(sql, new
             {
                 Name = entity.Name,
-                UserId = id,
+                UserId = entity.Id,
                 FoodImageId = entity.Food_image_id ?? (object)DBNull.Value,
                 Date = entity.Date
             });
@@ -65,7 +65,7 @@ public class MealRepository(PostgreSQLConnectionFactory connectionFactory) : IMe
     }
 
     // Asynchronously updates an existing meal in the database.
-    public async Task<int> UpdateAsync(Meal entity, int id)
+    public async Task<int> UpdateAsync(Meal entity)
     {
         var sql = "UPDATE meals SET name = @Name, user_id = @UserId, food_image_id = @FoodImageId, date = @Date WHERE id = @Id";
         using (var connection = _connectionFactory.Create())
@@ -73,7 +73,7 @@ public class MealRepository(PostgreSQLConnectionFactory connectionFactory) : IMe
             connection.Open();
             return await connection.ExecuteAsync(sql, new
             {
-                Id = id,
+                Id = entity.Id,
                 Name = entity.Name,
                 UserId = entity.User_id,
                 FoodImageId = entity.Food_image_id ?? (object)DBNull.Value,

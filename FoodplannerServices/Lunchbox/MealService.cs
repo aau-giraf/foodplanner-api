@@ -168,15 +168,16 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
     public async Task<int> CreateMealAsync(MealCreateDTO mealCreateDTO, int id)
     {
         var meal = _mapper.Map<Meal>(mealCreateDTO);
-
-        return await _mealRepository.InsertAsync(meal, id);
+        meal.Id = id;
+        return await _mealRepository.InsertAsync(meal);
     }
     // Updates an existing meal in the repository by ID.
 
     public async Task<int> UpdateMealAsync(MealDTO mealDto, int id)
     {
         var meal = _mapper.Map<Meal>(mealDto);
-        var result = _mealRepository.UpdateAsync(meal, id);
+        meal.Id = id;
+        var result = _mealRepository.UpdateAsync(meal);
         
         return await result;
     }
