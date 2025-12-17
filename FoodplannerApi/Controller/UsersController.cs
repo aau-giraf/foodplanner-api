@@ -158,7 +158,8 @@ public class UsersController : BaseController
             {
                 int id = int.Parse(_authService.RetrieveIdFromJwtTokenNoBearer(result.JWT));
                 if (await _oneTimePasswordService.RedeemOneTimePassword(user.Code, id) == 0)
-                    return BadRequest("Failed while trying to redeem the one time code");
+                    Console.WriteLine("Relation already exists, logging in.. (Failed while trying to redeem the one time code)");
+                    // return BadRequest("Failed while trying to redeem the one time code");
             }
 
             if (result != null)
