@@ -5,7 +5,7 @@ using Npgsql;
 
 namespace FoodplannerDataAccessSql.Image;
 
-public class FoodImageRepository : IGenericRepository<FoodImage>
+public class FoodImageRepository : IFoodImageRepository
 {
     private readonly PostgreSQLConnectionFactory _connectionFactory;
 
@@ -67,5 +67,35 @@ public class FoodImageRepository : IGenericRepository<FoodImage>
         connection.Open();
         var affected = await connection.ExecuteAsync(sql, new { Id = id });
         return affected;
+    }
+
+    // IFoodImageRepository specific methods
+    public async Task<IEnumerable<FoodImage>> GetAllImagesAsync()
+    {
+        return await GetAllAsync();
+    }
+
+    public async Task<FoodImage> GetImageByIdAsync(int foodImageId)
+    {
+        var result = await GetByIdAsync(foodImageId);
+        return result ?? throw new KeyNotFoundException($"FoodImage with id {foodImageId} not found");
+    }
+
+    public async Task<int> InsertImageAsync(string imageId, int userid, string imageName, string imageType, long imageStreamLength)
+    {
+        var entity = new FoodImage
+        {
+            ImageId = imageId,
+            UserId = userid,
+            ImageName = imageName,
+            ImageFileType = imageType,
+            Size = imageStreamLength
+        };
+        return await InsertAsync(entity);
+    }
+
+    public async Task DeleteImageAsync(int imageId)
+    {
+        await DeleteAsync(imageId);
     }
 }
