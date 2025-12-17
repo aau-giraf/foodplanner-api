@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FoodplannerApi.Controller;
 
-[Authorize(Policy = "AdminPolicy")]
+// [Authorize(Policy = "AdminPolicy")]
 public class AdminController : BaseController
 {
     private readonly IUserService _userService;
