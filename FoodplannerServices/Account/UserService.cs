@@ -31,38 +31,45 @@ public class UserService : IUserService
         return userDTO;
     }
 
-    public async Task<User?> GetUserByIdAsync(int id)
+    public async Task<UserDTO?> GetUserByIdAsync(int id)
     {
-        return await _userRepository.GetByIdAsync(id);
+        var user = await _userRepository.GetByIdAsync(id);
+        return _mapper.Map<UserDTO?>(user);
     }
 
     public async Task<int> CreateUserAsync(UserCreateDTO userCreateDTO)
     {
         var user = _mapper.Map<User>(userCreateDTO);
-        if (await _userRepository.EmailExistsAsync(user.Email.ToString()))
+
+        if (await _userRepository.EmailExistsAsync(user.Email))
         {
             throw new InvalidOperationException("Email eksisterer allerede");
         }
 
         user.Password = _passwordHandler.EncryptPassword(user.Password);
         user.RoleApproved = false;
+
         var id = await _userRepository.InsertAsync(user);
         return id;
     }
 
-    public async Task<int> CreateChildrenUserAsync(UserCreateChildDTO userCreateChildDto)
+    public async Task<int> CreateChildrenUserAsync(UserCreateChildDTO userCreateChildDto, int parentId)
     {
         var user = _mapper.Map<User>(userCreateChildDto);
-        var parentIds = userCreateChildDto.ParentIds;
-
+        var parentUser = await _userRepository.GetByIdAsync(parentId);
+        if (parentUser == null  || (parentUser.Role != UserRole.Parent))
+        {
+            throw new InvalidOperationException("Forælder ikke fundet eller ugyldig rolle");
+        }
+        
         if (await _userRepository.EmailExistsAsync(user.Email.ToString()))
         {
             throw new InvalidOperationException("Email eksisterer allerede");
         }
 
         user.Password = _passwordHandler.EncryptPassword(user.Password);
-        user.RoleApproved = false;
-        user.Role = UserRole.Admin;
+        user.RoleApproved = parentUser.RoleApproved;
+        user.Role = UserRole.Child;
         var id = await _userRepository.InsertAsync(user);
 
         var child = new Children()
@@ -70,19 +77,18 @@ public class UserService : IUserService
             ChildId = id,
             FirstName = user.FirstName,
             LastName = user.LastName,
+            ClassId = userCreateChildDto.ClassId
         };
         await _childrenRepository.InsertAsync(child);
-
-        foreach (var parentId in parentIds)
-        {
-            await _childrenRepository.AddParentToChildAsync(parentId, child.ChildId);
-        }
+        await _childrenRepository.AddParentToChildAsync(parentId, child.ChildId);
 
         return id;
     }
 
-    public async Task<int> UpdateUserAsync(User user)
+    public async Task<int> UpdateUserAsync(UserUpdateDTO userUpdateDto, int id)
     {
+        var user = _mapper.Map<User>(userUpdateDto);
+        user.Id = id;
         user.Password = _passwordHandler.EncryptPassword(user.Password);
         return await _userRepository.UpdateAsync(user);
     }
@@ -99,6 +105,27 @@ public class UserService : IUserService
         if (user == null || !_passwordHandler.VerifyPassword(password, user.Password))
         {
             throw new InvalidOperationException("Forkert brugernavn eller adgangskode");
+        }
+
+
+        var jwt = _authService.GenerateJWTToken(user);
+        var userCreds = new UserCredsDTO
+        {
+            JWT = jwt,
+            Role = user.Role.ToString(),
+            RoleApproved = user.RoleApproved
+        };
+
+        return userCreds;
+    }
+
+    public async Task<UserCredsDTO?> GetJWTByEmailAsync(string email)
+    {
+        var user = await _userRepository.GetUserByEmailAsync(email);
+
+        if (user == null)
+        {
+            throw new InvalidOperationException("Forkert email");
         }
 
 
@@ -164,7 +191,8 @@ public class UserService : IUserService
 
     public async Task<IEnumerable<UserDTO>> GetUsersNotApprovedAsync()
     {
-        return await _userRepository.GetAllNotApprovedAsync();
+        var users = await _userRepository.GetAllNotApprovedAsync();
+        return _mapper.Map<IEnumerable<UserDTO>>(users);
     }
 
     public async Task<bool> UserUpdateArchivedAsync(int id)
@@ -185,12 +213,13 @@ public class UserService : IUserService
     public async Task<UserDTO> GetLoggedInUserAsync(int id)
     {
         var user = await _userRepository.GetLoggedInAsync(id);
-        return user;
+        if (user == null) throw new InvalidOperationException("Bruger ikke fundet");
+        return _mapper.Map<UserDTO>(user);
     }
 
-    public async Task<int> UpdateUserLoggedInAsync(int id, UserUpdateDTO userUpdateDTO)
+    public async Task<int> UpdateUserLoggedInAsync(int id, UserUpdateLoggedInDTO userUpdateLoggedInDto)
     {
-        var user = await _userRepository.UpdateLoggedInAsync(id, userUpdateDTO);
+        var user = await _userRepository.UpdateLoggedInAsync(id, userUpdateLoggedInDto);
         return user;
     }
 

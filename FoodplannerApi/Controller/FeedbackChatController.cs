@@ -1,5 +1,5 @@
-﻿using FoodplannerServices.Auth;
-using FoodplannerModels.Account;
+﻿using FoodplannerModels.Account;
+using FoodplannerModels.Auth;
 using FoodplannerModels.FeedbackChat;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +10,9 @@ namespace FoodplannerApi.Controller;
 public class FeedbackChatController : BaseController
 {
     private readonly IChatService _chatService;
-    private readonly AuthService _authService;
+    private readonly IAuthService _authService;
     
-    public FeedbackChatController(IChatService chatService, AuthService authService)
+    public FeedbackChatController(IChatService chatService, IAuthService authService)
     {
         _chatService = chatService;
         _authService = authService;
@@ -47,7 +47,7 @@ public class FeedbackChatController : BaseController
     }
 
     
-    [HttpGet("{chatThreadId}")]
+    [HttpGet("getmessage/{chatThreadId}")]
     [Authorize(Roles = "Parent, Teacher")]
     public async Task<IActionResult> GetMessages(int chatThreadId)
     {

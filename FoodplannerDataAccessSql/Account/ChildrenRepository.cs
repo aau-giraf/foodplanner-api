@@ -72,9 +72,8 @@ namespace FoodplannerDataAccessSql.Account
 
         public async Task<IEnumerable<Children>> GetChildrenByParentIdAsync(int parentId)
         {
-            var sql = @"SELECT c.* FROM children c
-                       JOIN child_relation uc ON c.child_id = uc.child_id
-                       WHERE uc.user_id = @ParentId";
+            var sql = @"SELECT child_id FROM child_relation c
+                       WHERE c.user_id = @ParentId";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
@@ -128,7 +127,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<Children> GetChildByIdAsync(int id)
+        public async Task<Children?> GetByIdAsync(int id)
         {
             var sql = "SELECT * FROM children WHERE child_id = @Id";
             using (var connection = _connectionFactory.Create())

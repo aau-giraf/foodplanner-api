@@ -1,8 +1,10 @@
+using AutoMapper;
 using FoodplannerApi.Controller;
 using FoodplannerModels.Account;
 using FoodplannerModels.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Test.Builder;
 
 namespace Test.Controller;
 
@@ -46,14 +48,14 @@ public class ChildrenControllerTest
     public async Task GetAll_ReturnsOkObjectResult()
     {
         // Arrange
-        var children = new List<Children>
+        var childrenDto = new List<ChildrenDTO>
         {
-            new Children { ChildId = 1, FirstName = "niels", LastName = "nielsen" },
-            new Children { ChildId = 2, FirstName = "ole", LastName = "olsen" },
+            new ChildrenDTO { ChildId = 1, FirstName = "Niels", LastName = "Nielsen" },
+            new ChildrenDTO { ChildId = 2, FirstName = "Ole", LastName = "Olesen" }
         };
         _mockChildrenService
             .Setup(repo => repo.GetAllChildrenAsync())
-            .ReturnsAsync(children);
+            .ReturnsAsync(childrenDto);
 
         // Act
         var result = await _childrenController.GetAll();

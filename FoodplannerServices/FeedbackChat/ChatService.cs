@@ -27,14 +27,15 @@ namespace FoodplannerServices.FeedbackChat
             message.Date = System.DateTime.Now;
             message.UserId = userId;
             
-            await _chatRepository.AddMessageAsync(message);
+            await _chatRepository.InsertAsync(message);
             return true;
         }
 
         // Methods for Message
         public async Task<IEnumerable<UserNameFeedbackChatDTO>> GetMessagesAsync(int chatThreadId)
         {
-            var result = await _chatRepository.GetMessagesByChatThreadIdAsync(chatThreadId);
+            var messages = await _chatRepository.GetMessagesByChatThreadIdAsync(chatThreadId);
+            var result = messages.Select(message => _mapper.Map<UserNameFeedbackChatDTO>(message));
             
             foreach (UserNameFeedbackChatDTO message in result)
             {
@@ -50,7 +51,7 @@ namespace FoodplannerServices.FeedbackChat
         {
             var _message = _mapper.Map<Message>(message);
             
-            await _chatRepository.UpdateMessageAsync(_message);
+            await _chatRepository.UpdateAsync(_message);
             return true;
         }
 

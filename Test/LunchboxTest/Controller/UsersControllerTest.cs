@@ -7,6 +7,7 @@ using FoodplannerServices.Account;
 using FoodplannerModels.Account;
 using Microsoft.AspNetCore.Builder;
 using FoodplannerModels.Auth;
+using FoodplannerModels.Codes;
 
 namespace Test.LunchboxTest.Controller;
 
@@ -19,13 +20,14 @@ public class UsersControllerTests
         var email = "test@example.com";
 
         var mockUserService = new Mock<IUserService>();
+        var authService = new Mock<IAuthService>();
+        var otpService = new Mock<IOneTimePasswordService>();
         mockUserService
             .Setup(s => s.UserEmailExistsAsync(email))
             .ReturnsAsync(true);
 
-        var authService = new Mock<IAuthService>();
 
-        var usersController = new UsersController(mockUserService.Object, authService.Object);
+        var usersController = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
 
         // Act
         var result = await usersController.EmailExists(email);
@@ -46,8 +48,9 @@ public class UsersControllerTests
 
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();
+        var otpService = new Mock<IOneTimePasswordService>();
 
-        var usersController = new UsersController(mockUserService.Object, authService.Object);
+        var usersController = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
 
         // Act
         var result = await usersController.EmailExists(email);
@@ -55,8 +58,11 @@ public class UsersControllerTests
         // Assert
         var badRequest = Assert.IsType<BadRequestObjectResult>(result);
         dynamic value = badRequest.Value!;
-        var messages = value.Message as string[];
+        Assert.IsType<string[]>(value.Message);
+        var messages = (string[])value.Message;
+
         Assert.Contains("Email skal angives", messages);
+
     }
 
     [Fact]
@@ -66,13 +72,14 @@ public class UsersControllerTests
         var email = "nonexistent@example.com";
 
         var mockUserService = new Mock<IUserService>();
+        var authService = new Mock<IAuthService>();
+        var otpService = new Mock<IOneTimePasswordService>();
         mockUserService
             .Setup(s => s.UserEmailExistsAsync(email))
             .ReturnsAsync(false);
 
-        var authService = new Mock<IAuthService>();
 
-        var usersController = new UsersController(mockUserService.Object, authService.Object);
+        var usersController = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
 
         // Act
         var result = await usersController.EmailExists(email);

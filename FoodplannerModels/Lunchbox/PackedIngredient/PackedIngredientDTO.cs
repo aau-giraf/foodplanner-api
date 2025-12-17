@@ -9,7 +9,7 @@ public class PackedIngredientDTO
     // Reference to the Meal that includes the ingredient.
     public required int Meal_id { get; set; }
     // Reference to the Ingredient being packed.
-    public required Ingredient Ingredient_id { get; set; }
+    public required int Ingredient_id { get; set; }
     // The unique identifier for the PackedIngredient entry.
     public required int Id { get; set; }
     public required int order_number { get; set; }

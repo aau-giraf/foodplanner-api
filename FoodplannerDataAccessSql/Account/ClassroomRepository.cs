@@ -25,7 +25,19 @@ namespace FoodplannerDataAccessSql.Account
                 return result.ToList();
             } 
         }
-        public async Task<int> InsertAsync(CreateClassroomDTO entity)
+
+        public async Task<Classroom?> GetByIdAsync(int id)
+        {
+            var sql = "SELECT * FROM classroom WHERE class_id = @Id";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QuerySingleAsync<Classroom>(sql, new { Id = id });
+                return result;
+            }
+        }
+
+        public async Task<int> InsertAsync(Classroom entity)
         {
             var sql = "INSERT INTO classroom (class_name) VALUES (@ClassName) RETURNING class_id";
             using (var connection = _connectionFactory.Create())
@@ -37,8 +49,9 @@ namespace FoodplannerDataAccessSql.Account
                 return result;
             }
         }
+        
 
-        public async Task<int> UpdateAsync(CreateClassroomDTO entity, int id)
+        public async Task<int> UpdateAsync(Classroom entity)
         {
             var sql = "UPDATE classroom SET class_name = @ClassName WHERE class_id = @ClassRoomId RETURNING class_id";
             using (var connection = _connectionFactory.Create())
@@ -46,7 +59,7 @@ namespace FoodplannerDataAccessSql.Account
                 connection.Open();
                 var result = await connection.QuerySingleAsync<int>(sql, new{
                     entity.ClassName,
-                    ClassRoomId = id
+                    ClassRoomId = entity.ClassId
                 });
                 return result;
             }

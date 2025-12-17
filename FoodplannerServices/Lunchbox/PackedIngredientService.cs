@@ -15,34 +15,36 @@ namespace FoodplannerServices.Lunchbox
         public async Task<IEnumerable<PackedIngredientProperDTO>> GetAllPackedIngredientsAsync()
         {
             var packedIngredient = await _packedIngredientRepository.GetAllAsync();
-            var packedIngredientDTO = _mapper.Map<IEnumerable<PackedIngredientProperDTO>>(packedIngredient);
-            return packedIngredientDTO;
+            return _mapper.Map<IEnumerable<PackedIngredientProperDTO>>(packedIngredient);
         }
 
         // Get all packed ingredients based on a meal ID
         public async Task<IEnumerable<PackedIngredientDTO>> GetAllPackedIngredientsByMealIdAsync(int id)
         {
-            var packedIngredient = await _packedIngredientRepository.GetAllByMealIdAsync(id);
-            var packedIngredientDTO = _mapper.Map<IEnumerable<PackedIngredientDTO>>(packedIngredient);
-            return packedIngredientDTO;
+            var packedIngredient = await _packedIngredientRepository.GetAllByMealIdAsync(id); 
+            return _mapper.Map<IEnumerable<PackedIngredientDTO>>(packedIngredient);
         }
 
         // Get a packed ingredient based on the ID
-        public async Task<PackedIngredient> GetPackedIngredientByIdAsync(int id)
+        public async Task<PackedIngredientDTO> GetPackedIngredientByIdAsync(int id)
         {
-            return await _packedIngredientRepository.GetByIdAsync(id);
+            var packedIngredient = await _packedIngredientRepository.GetByIdAsync(id);
+            return _mapper.Map<PackedIngredientDTO>(packedIngredient);
         }
 
         // Creates a new packed ingredient
-        public async Task<int> CreatePackedIngredientAsync(int mealId, int ingredientId)
+        public async Task<int> CreatePackedIngredientAsync(PackedIngredientProperDTO packedIngredientProperDTO)
         {
-            return await _packedIngredientRepository.InsertAsync(mealId, ingredientId);
+            var packedIngredient = _mapper.Map<PackedIngredient>(packedIngredientProperDTO);
+            return await _packedIngredientRepository.InsertAsync(packedIngredient);
         }
 
         // Updates an existing packed ingredient
-        public async Task<int> UpdatePackedIngredientAsync(PackedIngredient packedIngredient, int id)
+        public async Task<int> UpdatePackedIngredientAsync(PackedIngredientDTO packedIngredientDto, int id)
         {
-            return await _packedIngredientRepository.UpdateAsync(packedIngredient, id);
+            var packedIngredient = _mapper.Map<PackedIngredient>(packedIngredientDto);
+            packedIngredient.Id = id;
+            return await _packedIngredientRepository.UpdateAsync(packedIngredient);
         }
 
         // Deletes a packed ingredient based on the ID
@@ -51,9 +53,10 @@ namespace FoodplannerServices.Lunchbox
             return await _packedIngredientRepository.DeleteAsync(id);
         }
 
-        public async Task<bool> UpdatePackedIngredientOrderAsync(List<PackedIngredient> packedIngredients)
+        public async Task<bool> UpdatePackedIngredientOrderAsync(List<PackedIngredientDTO> packedIngredientsDto)
         {
-            foreach (var packedIngredient in packedIngredients)
+            var packedIngredientList = _mapper.Map<List<PackedIngredient>>(packedIngredientsDto);
+            foreach (var packedIngredient in packedIngredientList)
             {
                 var result = await _packedIngredientRepository.UpdateOrderAsync(packedIngredient.Id, packedIngredient.order_number);
                 if (!result)

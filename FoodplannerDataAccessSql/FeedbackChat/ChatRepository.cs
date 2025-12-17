@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
 using FoodplannerDataAccessSql;
+using FoodplannerModels;
 using FoodplannerModels.FeedbackChat;
 
 public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : IChatRepository
@@ -13,11 +14,19 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
     public async Task<ChatThread> GetChatThreadByIdAsync(int ChatThreadId)
     {
         const string sql = "SELECT * FROM chat_thread WHERE chat_thread_id = @ChatThreadId";
-        using (var connection = connectionFactory.Create())
+        await using var connection = connectionFactory.Create();
+        connection.Open();
+        var result = await connection.QuerySingleOrDefaultAsync<ChatThread>(sql, new { ChatThreadId });
+        connection.Close();
+        
+
+        if(result != null)
         {
-            connection.Open();
-            var result = await connection.QuerySingleOrDefaultAsync<ChatThread>(sql, new { ChatThreadId });
             return result;
+        }
+        else
+        {
+            throw new Exception($"ChatThread with ID {ChatThreadId} not found.");
         }
     }
 
@@ -47,14 +56,24 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
 
     
     // Methods for Message
-    public async Task<Message> GetMessageByIdAsync(int MessageId)
+    public async Task<Message> GetByIdAsync(int MessageId)
     {
       const string sql = "SELECT * FROM message WHERE message_id = @MessageId";
         using (var connection = connectionFactory.Create())
         {
             connection.Open();
             var result = await connection.QuerySingleOrDefaultAsync<Message>(sql, new { MessageId });
-            return result;
+            connection.Close();
+            
+
+            if(result != null)
+            {
+                return result;
+            }
+            else
+            {
+                throw new Exception($"Message with ID {MessageId} not found.");
+            }
         }
     }
 
@@ -70,7 +89,7 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
     //     }
     // }
     
-    public async Task<IEnumerable<UserNameFeedbackChatDTO>> GetMessagesByChatThreadIdAsync(int chatThreadId)
+    public async Task<IEnumerable<Message>> GetMessagesByChatThreadIdAsync(int chatThreadId)
     {
         const string sql = @"
                                 SELECT message.*, users.first_name
@@ -82,28 +101,30 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
         using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            var result = await connection.QueryAsync<UserNameFeedbackChatDTO>(sql, new{ chatThreadId });
+            var result = await connection.QueryAsync<Message>(sql, new{ chatThreadId });
             return result;
         }
     }
 
-    public async Task AddMessageAsync(Message message)
+    public async Task<int> InsertAsync(Message message)
     {
         const string sql = "INSERT INTO message (content, date, chat_thread_id, user_id) VALUES (@Content, @Date, @ChatThreadId, @UserId)";
         await using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            await connection.ExecuteAsync(sql, message);
+            var result = await connection.ExecuteAsync(sql, message);
+            return result;
         }
     }
 
-    public async Task UpdateMessageAsync(Message message)
+    public async Task<int> UpdateAsync(Message message)
     {
-       const string sql = "UPDATE message SET content = @Content, is_edited = true WHERE message_id = @MessageId";
-       await using (var connection = connectionFactory.Create())
+        const string sql = "UPDATE message SET content = @Content, is_edited = true WHERE message_id = @MessageId";
+        await using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            await connection.ExecuteAsync(sql, message);
+            var result = await connection.ExecuteAsync(sql, message);
+            return result;
         }
     }
 
@@ -116,6 +137,27 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
             await connection.ExecuteAsync(sql, new {MessageId});
         }
     }
+
+
+    public async Task<IEnumerable<Message>> GetAllAsync()
+    {
+        var sql = "SELECT * FROM message";
+        using (var connection = connectionFactory.Create())
+        {
+            var messages = await connection.QueryAsync<Message>(sql);
+            return messages;
+
+        }
+    }
     
-    
+    public async Task<int> DeleteAsync(int id)
+    {
+        var sql = "DELETE FROM message WHERE message_id = @MessageId";
+        using (var connection = connectionFactory.Create())
+        {
+            connection.Open();
+            var result = await connection.ExecuteAsync(sql, new { MessageId = id });
+            return result;
+        }
+    }
 }

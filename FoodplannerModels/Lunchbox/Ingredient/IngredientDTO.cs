@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace FoodplannerModels.Lunchbox;
 
 // Class for each ingredient in a meal.
@@ -5,8 +7,17 @@ namespace FoodplannerModels.Lunchbox;
 
 public class IngredientDTO
 {
-    // Name of the ingredient.
+    [Required]
+    public required int Id { get; set; }
+    
+    [Required]
     public required string Name { get; set; }
-    // Reference to the ingredient's image.
+    
+    [Required]
+    public required int User_id {get; set;}
+    
+    [Required]
     public int? Food_image_id { get; set; }
+    
+    
 }

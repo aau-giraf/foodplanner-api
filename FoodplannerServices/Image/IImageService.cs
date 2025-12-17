@@ -21,7 +21,7 @@ public interface IImageService
     public Task LoadImageStreamAsync(int userId, Guid imageId, Stream outStream);
 
     /// <summary>
-    /// DeleteImageAsync deletes an image from storage.
+    /// DeleteAsync deletes an image from storage.
     /// </summary>
     /// <param name="userId">ID of the user, who owns the image.</param>
     /// <param name="imageId">ID of the image to delete.</param>
