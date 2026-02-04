@@ -27,6 +27,7 @@ using FoodplannerModels.Image;
 using FoodplannerModels.Codes;
 using FoodplannerDataAccessSql.Codes;
 using FoodplannerServices.Codes;
+using FoodplannerApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -273,6 +274,9 @@ using (var scope = app.Services.CreateScope())
         runner.MigrateUp();
     }
 }
+
+// Global exception handler - catches unhandled exceptions and returns consistent error responses
+app.UseExceptionMiddleware();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
