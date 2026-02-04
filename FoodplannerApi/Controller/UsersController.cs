@@ -23,28 +23,6 @@ public class UsersController : BaseController
         _oneTimePasswordService = oneTimePasswordService;
     }
 
-    [HttpGet]
-    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetBearerTest()
-    {
-        //Generates a token for development purposes, Status must be Active.
-        //Roles can be: Admin, Child, Teacher, Parent
-        var user = new User
-        {
-            Id = 27,
-            FirstName = "test",
-            LastName = "test",
-            Email = "user@test.com",
-            Password = "test",
-            Role = UserRole.Admin,
-            RoleApproved = true
-        };
-
-        var token = _authService.GenerateJWTToken(user);
-
-        return Ok(token);
-    }
-
     [HttpPost]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     public async Task<IActionResult> Create([FromBody] UserCreateDTO userCreateDto)

@@ -9,30 +9,6 @@ namespace Test.AccountTests.Controller;
 
 public class UsersControllerTests
 {
-
-    [Fact]
-    public async Task GetBearerTest_ReturnsOkObjectResult()
-    {
-        //arrange
-        var mockUserService = new Mock<IUserService>();
-        var authService = new Mock<IAuthService>();
-        var otpService = new Mock<IOneTimePasswordService>();
-
-        var JWTToken = "Bearer TestToken";
-        authService
-            .Setup(a => a.GenerateJWTToken(It.IsAny<User>()))
-            .Returns(JWTToken);
-
-        var controller = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
-
-        //act
-        var result = await controller.GetBearerTest();
-
-        //assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.NotNull(okResult.Value);
-    }
-
     [Fact]
     public async Task Create_ReturnsCreatedResult_WhenUserIsValid()
     {
