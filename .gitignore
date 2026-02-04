@@ -60,4 +60,5 @@ private.txt
 FoodplannerApi/appsettings.Development.json
 /.vs
 *.env
-docker-compose.yml
+docker-compose.ymlminio/
+postgres/
