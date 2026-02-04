@@ -62,3 +62,6 @@ FoodplannerApi/appsettings.Development.json
 *.env
 docker-compose.ymlminio/
 postgres/
+minio/
+postgres/
+docker-compose.yml
