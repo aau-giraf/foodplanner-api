@@ -3,7 +3,7 @@ using System.Data;
 
 namespace FoodplannerDataAccessSql.Migrations;
 
-[Migration(11)]
+[Migration(15)]
 public class AddSubIngredients : Migration
 {
     public override void Up()
