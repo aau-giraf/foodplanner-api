@@ -50,17 +50,13 @@ public class AdminController : BaseController
         return Ok(users);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("updateuser/{id}")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update(int id, [FromBody] User user)
+    public async Task<IActionResult> Update(int id, [FromBody] UserUpdateDTO user)
     {
-        if (id != user.Id)
-        {
-            return BadRequest();
-        }
-        var result = await _userService.UpdateUserAsync(user);
+        var result = await _userService.UpdateUserAsync(user, id);
         if (result > 0)
         {
             return NoContent();
@@ -74,7 +70,7 @@ public class AdminController : BaseController
 
         var result = await _userService.UserUpdateArchivedAsync(id);
 
-        if (result != null)
+        if (result)
         {
             return Ok(result);
         }
@@ -84,30 +80,19 @@ public class AdminController : BaseController
         }
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("updaterole/{id}")]
     public async Task<IActionResult> UpdateRoleApproved(int id, [FromBody] UserRoleDTO userRoleDTO)
     {
-        if (id != userRoleDTO.id)
-        {
-            return BadRequest();
-        }
         var result = await _userService.UserUpdateRoleApprovedAsync(id, userRoleDTO.role_approved);
 
-        if (result != null)
+        if (result)
         {
             return Ok(result);
         }
 
         return NotFound();
     }
-
-    [HttpGet]
-    public async Task<IActionResult> GetNotApproved()
-    {
-        var users = await _userService.GetUsersNotApprovedAsync();
-        return Ok(users);
-    }
-
+    
     [HttpGet]
     public async Task<IActionResult> GetNotArchived()
     {
@@ -123,9 +108,9 @@ public class AdminController : BaseController
     }
 
     [HttpPut]
-    public async Task<IActionResult> UpdateChild([FromBody] Children children)
+    public async Task<IActionResult> UpdateChild([FromBody] ChildrenDTO childrenDto)
     {
-        var result = await _childrenService.UpdateChildrenAsync(children);
+        var result = await _childrenService.UpdateChildrenAsync(childrenDto);
         if (result > 0)
         {
             return NoContent();

@@ -7,9 +7,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FoodplannerModels.Account
 {
-    public class UserRoleDTO
+    public class UserArchivedDTO
     {
-        public int id { get; set; }
-        public bool role_approved { get; set; }
+        [Required]
+        public required bool Archived { get; set; }
     }
 }

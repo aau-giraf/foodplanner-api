@@ -9,6 +9,7 @@ public class MealBuilder
     private string _date = "11/11/2050";
     private int _userId;
     private int? _foodImageId;
+    private IEnumerable<PackedIngredient> _packedIngredient = [];
 
     public MealBuilder WithId(int id)
     {
@@ -39,6 +40,12 @@ public class MealBuilder
         _date = date;
         return this;
     }
+    
+    public MealBuilder AddPackedIngredient(PackedIngredient packedIngredient)
+    {
+        _packedIngredient.Append(packedIngredient);
+        return this;
+    }
 
     public Meal Build()
     {
@@ -49,6 +56,7 @@ public class MealBuilder
             User_id = _userId,
             Food_image_id = _foodImageId,
             Date = _date,
+            Ingredients = _packedIngredient,
         };
     }
 }

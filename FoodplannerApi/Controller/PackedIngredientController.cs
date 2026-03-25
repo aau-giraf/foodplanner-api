@@ -1,3 +1,4 @@
+using AutoMapper;
 using FoodplannerModels.Lunchbox;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,7 @@ namespace FoodplannerApi.Controller
     public class PackedIngredientController(IPackedIngredientService packedIngredientService) : BaseController
     {
         private readonly IPackedIngredientService _packedIngredientService = packedIngredientService;
-
+        
         // Get all packed ingredients
         [HttpGet]
         [Authorize(Policy = "AdminPolicy")]
@@ -41,9 +42,7 @@ namespace FoodplannerApi.Controller
         public async Task<IActionResult> Create([FromBody] PackedIngredientProperDTO packIngredient)
         {
             // Calls the service to create a new packed ingredient
-            var mealId = packIngredient.Meal_id;
-            var ingredientId = packIngredient.Ingredient_id;
-            var result = await _packedIngredientService.CreatePackedIngredientAsync(mealId, ingredientId);
+            var result = await _packedIngredientService.CreatePackedIngredientAsync(packIngredient);
             if (result > 0)
             {
                 var createdPI = await _packedIngredientService.GetPackedIngredientByIdAsync(result);
@@ -55,9 +54,9 @@ namespace FoodplannerApi.Controller
         // Update an existing packed ingredient
         [HttpPut("{id}")]
         [Authorize(Policy = "AdminPolicy")]
-        public async Task<IActionResult> Update([FromBody] PackedIngredient packedIngredient, int id)
+        public async Task<IActionResult> Update([FromBody] PackedIngredientDTO packedIngredientDto, int id)
         {
-            var result = await _packedIngredientService.UpdatePackedIngredientAsync(packedIngredient, id);
+            var result = await _packedIngredientService.UpdatePackedIngredientAsync(packedIngredientDto, id);
             if (result > 0)
             {
                 var changedPackedIngredient = await _packedIngredientService.GetPackedIngredientByIdAsync(id);
@@ -82,9 +81,9 @@ namespace FoodplannerApi.Controller
 
         [HttpPut]
         [Authorize(Roles = "Child, Parent")]
-        public async Task<IActionResult> UpdateOrder([FromBody] List<PackedIngredient> packedIngredients)
+        public async Task<IActionResult> UpdateOrder([FromBody] List<PackedIngredientDTO> packedIngredientsDto)
         {
-            var result = await _packedIngredientService.UpdatePackedIngredientOrderAsync(packedIngredients);
+            var result = await _packedIngredientService.UpdatePackedIngredientOrderAsync(packedIngredientsDto);
             if (result)
             {
                 return Ok();

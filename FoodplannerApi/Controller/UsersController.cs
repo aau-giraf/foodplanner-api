@@ -75,7 +75,8 @@ public class UsersController : BaseController
     
     [HttpPost]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    public async Task<IActionResult> CreateUserChildren([FromBody] UserCreateChildDTO userCreateChildDto)
+    [Authorize(Roles = "Parent")]
+    public async Task<IActionResult> CreateUserChildren([FromHeader(Name = "Authorization")] string token, [FromBody] UserCreateChildDTO userCreateChildDto)
     {
         if (!ModelState.IsValid)
         {
@@ -83,7 +84,13 @@ public class UsersController : BaseController
         }
         try
         {
-            var id = await _userService.CreateChildrenUserAsync(userCreateChildDto);
+            var idString = _authService.RetrieveIdFromJwtToken(token);
+            if (!int.TryParse(idString, out int parentId))
+            {
+                return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+            }
+            
+            var id = await _userService.CreateChildrenUserAsync(userCreateChildDto, parentId);
          
             if (id > 0)
             {
@@ -93,7 +100,7 @@ public class UsersController : BaseController
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new ErrorResponse { Email = [e.Message] });
+            return BadRequest(new ErrorResponse { Email = new[] { e.Message } });
         }
     }
 
@@ -101,7 +108,7 @@ public class UsersController : BaseController
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Login([FromBody] Login user)
+    public async Task<IActionResult> Login([FromBody] LoginDTO login)
     {
 
         if (!ModelState.IsValid)
@@ -110,7 +117,7 @@ public class UsersController : BaseController
         }
         try
         {
-            var result = await _userService.GetJWTByEmailAndPasswordAsync(user.Email, user.Password);
+            var result = await _userService.GetJWTByEmailAndPasswordAsync(login.Email, login.Password);
             
             //TODO: Handle usecase for parent using one time password
             /*if (!string.IsNullOrEmpty(user.Code) && result != null)
@@ -135,7 +142,7 @@ public class UsersController : BaseController
             }
             return BadRequest(new ErrorResponse { Message = ["Email or password is wrong"] });
         }
-        catch (InvalidOperationException e)
+        catch
         {
             return BadRequest(new ErrorResponse { Message = ["Email or password is wrong"] });
         }
@@ -167,7 +174,7 @@ public class UsersController : BaseController
             }
             return BadRequest(new ErrorResponse { Message = ["Email eller password er forkert"] });
         }
-        catch (InvalidOperationException e)
+        catch
         {
             return BadRequest(new ErrorResponse { Message = ["Email eller password er forkert"] });
         }
@@ -274,7 +281,7 @@ public class UsersController : BaseController
 
     [HttpPut]
     [Authorize(Roles = "Parent, Child,  Teacher, Admin")]
-    public async Task<IActionResult> UpdateLoggedIn([FromHeader(Name = "Authorization")] string token, [FromBody] UserUpdateDTO user)
+    public async Task<IActionResult> UpdateLoggedIn([FromHeader(Name = "Authorization")] string token, [FromBody] UserUpdateLoggedInDTO user)
     {
         var idString = _authService.RetrieveIdFromJwtToken(token);
         if (!int.TryParse(idString, out int id))

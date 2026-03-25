@@ -1,12 +1,13 @@
-namespace FoodplannerModels.Account;
 using System.ComponentModel.DataAnnotations;
 
+namespace FoodplannerModels.Account;
 
-public class Classroom {
+public class ClassroomDTO
+{
     [Key]
-    public int ClassId { get; set; }
-
     [Required]
-    [StringLength(100, ErrorMessage = "Klasse navn er for langt")]
+    public int ClassId { get; set; }
+    
+    [Required]
     public required string ClassName { get; set; }
 }

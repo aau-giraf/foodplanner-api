@@ -23,6 +23,7 @@ using FoodplannerServices.Secret;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using FoodplannerModels.Auth;
+using FoodplannerModels.Image;
 using FoodplannerModels.Codes;
 using FoodplannerDataAccessSql.Codes;
 using FoodplannerServices.Codes;
@@ -156,7 +157,13 @@ builder.Services.AddAuthentication(cfg =>
     {
         OnTokenValidated = context =>
         {
-            var claimsIdentity = context.Principal.Identity as ClaimsIdentity;
+            var principal = context.Principal;
+            if(principal == null)
+            {
+                throw new Exception("Principal claim is null");
+            }
+
+            var claimsIdentity = principal.Identity as ClaimsIdentity;
 
             // Get the Status claim
             var statusClaim = claimsIdentity?.FindFirst("RoleApproved")?.Value;
@@ -209,6 +216,9 @@ builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<ISubIngredientService, SubIngredientService>();
 builder.Services.AddScoped<ISubIngredientRelationService, SubIngredientRelationService>();
 builder.Services.AddScoped<IPasswordHandler, PasswordHandler>();
+builder.Services.AddScoped<IIngredientService, IngredientService>();
+builder.Services.AddScoped<IMealService, MealService>();
+builder.Services.AddScoped<IPackedIngredientService, PackedIngredientService>();
 builder.Services.AddScoped<IOneTimePasswordService, OneTimePasswordService>();
 builder.Services.AddSingleton<ISecretLoader, SecretsLoader>(_ => secretsLoader);
 
@@ -220,7 +230,13 @@ builder.Services.AddSingleton<IAuthService, AuthService>();
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(UserProfile));
 builder.Services.AddAutoMapper(typeof(ChatProfile));
+builder.Services.AddAutoMapper(typeof(PackedIngredientProfile));
+builder.Services.AddAutoMapper(typeof(IngredientProfile));
+builder.Services.AddAutoMapper(typeof(MealProfile));
+builder.Services.AddAutoMapper(typeof(ChildrenProfile));
 builder.Services.AddAutoMapper(typeof(ClassroomProfile));
+builder.Services.AddAutoMapper(typeof(ImageProfile));
+
 
 
 // Set up connection to database before running migrations
@@ -254,7 +270,6 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
-
     if (runner.HasMigrationsToApplyUp())
     {
         runner.ListMigrations();

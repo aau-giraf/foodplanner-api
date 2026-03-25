@@ -47,7 +47,7 @@ public class FeedbackChatController : BaseController
     }
 
     
-    [HttpGet("{chatThreadId}")]
+    [HttpGet("getmessage/{chatThreadId}")]
     [Authorize(Roles = "Parent, Teacher")]
     public async Task<IActionResult> GetMessages(int chatThreadId)
     {

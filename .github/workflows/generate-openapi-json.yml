@@ -44,7 +44,7 @@ jobs:
       run: |
         dotnet run --no-build --urls http://localhost:8080 --project FoodplannerApi/FoodplannerApi.csproj &
         echo $! > backend.pid &
-        sleep 60
+        sleep 30
     - name: Generate OpenAPI JSON
       run: curl http://localhost:8080/swagger/v1/swagger.json -o openapi.json
     - name: Upload OpenAPI JSON as artifact

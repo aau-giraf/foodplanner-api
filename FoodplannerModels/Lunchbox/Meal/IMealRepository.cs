@@ -3,10 +3,8 @@
 /**
 * Interface for the meal repository.
 */
-public interface IMealRepository
+public interface IMealRepository : IGenericRepository<Meal>
 {
-    // Gets all meals asynchronously.
-    Task<IEnumerable<Meal>> GetAllAsync();
     // Gets all meals by user id asynchronously.
     Task<IEnumerable<Meal>> GetAllByUserAsync(int id, string date);
     // Gets an meal by ID asynchronously.

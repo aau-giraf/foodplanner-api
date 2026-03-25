@@ -33,20 +33,20 @@ public class IngredientRepository(PostgreSQLConnectionFactory connectionFactory)
     }
 
     // Asynchronously retrieves an ingredient by its unique ID.
-    public async Task<Ingredient> GetByIdAsync(int id)
+    public async Task<Ingredient?> GetByIdAsync(int id)
     {
         var sql = "SELECT * FROM ingredients WHERE id = @Id";
         using (var connection = _connectionFactory.Create())
         {
             connection.Open();
             var result = await connection.QuerySingleOrDefaultAsync<Ingredient>(sql, new { Id = id });
-            if (result == null) return null;
-            else return result;
+            connection.Close();
+            return result;
         }
     }
 
     // Asynchronously inserts a new ingredient into the database and returns its Id.
-    public async Task<int> InsertAsync(IngredientDTO entity, int id)
+    public async Task<int> InsertAsync(Ingredient entity)
     {
         var sql = "INSERT INTO ingredients (name, user_id, food_image_id) VALUES (@Name, @UserId, @FoodImageId) RETURNING id";
         using (var connection = _connectionFactory.Create())
@@ -56,14 +56,14 @@ public class IngredientRepository(PostgreSQLConnectionFactory connectionFactory)
             return await connection.QuerySingleAsync<int>(sql, new
             {
                 Name = entity.Name,
-                UserId = id,
+                UserId = entity.User_id,
                 FoodImageId = entity.Food_image_id ?? (object)DBNull.Value,
             });
         }
     }
 
     // Asynchronously updates an existing ingredient in the database.
-    public async Task<int> UpdateAsync(Ingredient entity, int id)
+    public async Task<int> UpdateAsync(Ingredient entity)
     {
         var sql = "UPDATE ingredients SET name = @Name, user_id = @UserId, food_image_id = @FoodImageId WHERE id = @Id";
         using (var connection = _connectionFactory.Create())
@@ -71,7 +71,7 @@ public class IngredientRepository(PostgreSQLConnectionFactory connectionFactory)
             connection.Open();
             return await connection.ExecuteAsync(sql, new
             {
-                Id = id,
+                Id = entity.User_id,
                 Name = entity.Name,
                 UserId = entity.User_id,
                 FoodImageId = entity.Food_image_id

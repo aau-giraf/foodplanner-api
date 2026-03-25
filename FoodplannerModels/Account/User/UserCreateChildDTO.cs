@@ -1,7 +1,8 @@
-namespace FoodplannerModels.Account;
 using System.ComponentModel.DataAnnotations;
 
-public class UserUpdateDTO
+namespace FoodplannerModels.Account;
+
+public class UserCreateChildDTO
 {
     [Required(ErrorMessage = "Fornavn er påkrævet")]
     [StringLength(100, ErrorMessage = "Fornavn er for langt")]
@@ -15,4 +16,10 @@ public class UserUpdateDTO
     [EmailAddress(ErrorMessage = "Email er ikke gyldig")]
     [StringLength(100, ErrorMessage = "Email er for langt")]
     public required string Email { get; set; }
+
+    [Required(ErrorMessage = "Adgangskode er påkrævet")]
+    [StringLength(100, ErrorMessage = "Adgangskode er for langt")]
+    public required string Password { get; set; }
+
+    public int ClassId { get; set; }
 }

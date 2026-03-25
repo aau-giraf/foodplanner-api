@@ -13,9 +13,12 @@ public class MealDTO
     public int? Food_image_id { get; set; }
     // Title of the meal.
     public required string Name { get; set; }
+    // Reference to the user who created the meal.
+    public required int UserId { get; set; }
+    
     // Date accosiated with the meal
     public required string Date { get; set; }
     public bool Template { get; set; }
     //List of ingredients in the meal
-    public required List<PackedIngredientDTO> Ingredients { get; set; }
+    public required IEnumerable<PackedIngredientDTO> Ingredients { get; set; }
 }

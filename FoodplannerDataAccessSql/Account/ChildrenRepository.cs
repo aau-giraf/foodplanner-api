@@ -127,7 +127,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-        public async Task<Children> GetChildByIdAsync(int id)
+        public async Task<Children?> GetByIdAsync(int id)
         {
             var sql = "SELECT * FROM children WHERE child_id = @Id";
             using (var connection = _connectionFactory.Create())

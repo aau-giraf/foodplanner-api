@@ -44,15 +44,12 @@ public class OneTimePasswordService : IOneTimePasswordService
             return 0;
 
         var otp = await _oneTimePasswordRepository.GetFromCodeAsync(code);
-        otp.UsedByUser = usedByUser;
-        await _oneTimePasswordRepository.UpdateAsync(otp);
-
         if (otp == null)
             return 0;
 
-        if (otp.UsedByUser == null)
-            return 0;
-    
+        otp.UsedByUser = usedByUser;
+        await _oneTimePasswordRepository.UpdateAsync(otp);
+
         // Child is being added to parent
         if (otp.ChildUser == null)
         {
