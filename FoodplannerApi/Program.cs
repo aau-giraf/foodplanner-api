@@ -195,9 +195,6 @@ builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
 builder.Services.AddScoped(typeof(IMealRepository), typeof(MealRepository));
 builder.Services.AddScoped(typeof(IIngredientRepository), typeof(IngredientRepository));
 builder.Services.AddScoped(typeof(IPackedIngredientRepository), typeof(PackedIngredientRepository));
-builder.Services.AddScoped<IIngredientService, IngredientService>();
-builder.Services.AddScoped<IMealService, MealService>();
-builder.Services.AddScoped<IPackedIngredientService, PackedIngredientService>();
 builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
 builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepository));
 builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));
@@ -238,18 +235,6 @@ builder.Services.AddAutoMapper(typeof(ClassroomProfile));
 builder.Services.AddAutoMapper(typeof(ImageProfile));
 
 
-
-// Set up connection to database before running migrations
-builder.Services.AddSingleton(serviceProvider =>
-{
-    var host = secretsLoader.GetSecret("DB_HOST");
-    var port = secretsLoader.GetSecret("DB_PORT");
-    var database = secretsLoader.GetSecret("DB_NAME");
-    var username = secretsLoader.GetSecret("DB_USER");
-    var password = secretsLoader.GetSecret("DB_PASS");
-
-    return new PostgreSQLConnectionFactory(host, port, database, username, password);
-});
 
 builder.Services.AddFluentMigratorCore()
     .ConfigureRunner(rb => rb
