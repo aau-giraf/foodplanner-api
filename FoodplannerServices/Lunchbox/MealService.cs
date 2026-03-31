@@ -158,8 +158,7 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
             Food_image_id = meal.Food_image_id,
             Name = meal.Name,
             Date = meal.Date,
-            Ingredients = packedIngredientDTOs,
-            Template = meal.Template
+            Template = meal.Template,
             UserId = meal.User_id,
             Ingredients = packedIngredientDTOs
         };
@@ -220,7 +219,7 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
                 {
                     Id = p.Id,
                     Meal_id = p.Meal_id,
-                    Ingredient_id = ingredientsById[p.Ingredient_id],
+                    Ingredient_id = p.Ingredient_id,
                     order_number = p.order_number
                 }).ToList();
 
@@ -231,6 +230,7 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
                 Name = meal.Name,
                 Date = meal.Date,
                 Template = meal.Template,
+                UserId = meal.User_id,
                 Ingredients = packedIngredients
             };
         }).ToList();

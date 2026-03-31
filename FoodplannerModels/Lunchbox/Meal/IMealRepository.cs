@@ -7,16 +7,8 @@ public interface IMealRepository : IGenericRepository<Meal>
 {
     // Gets all meals by user id asynchronously.
     Task<IEnumerable<Meal>> GetAllByUserAsync(int id, string date);
-    // Gets an meal by ID asynchronously.
-    Task<Meal> GetByIdAsync(int id);
-    // Inserts a new meal asynchronously.
-    Task<int> InsertAsync(Meal entity, int id);
-    // Updates an existing meal asynchronously.
-    Task<int> UpdateAsync(Meal entity, int id);
-    // Deletes an meal by ID asynchronously.
-    Task<int> DeleteAsync(int id);
     // Get all meals that have template set to 1
-        Task<IEnumerable<Meal>> GetAllTemplatesByUserAsync(int userId);
+    Task<IEnumerable<Meal>> GetAllTemplatesByUserAsync(int userId);
     // Update a meals template status by its ID
     Task<int> UpdateTemplateStatusAsync(int id, bool template);
 }

@@ -8,5 +8,5 @@ public class MealCreateDTO
     public required string Name { get; set; }
     // Date accosiated with the meal
     public required string Date { get; set; }
-    public required bool Template {get; set;}
+    public bool Template { get; set; } = false;
 }
