@@ -16,6 +16,7 @@ public class Meal {
     public int? Food_image_id {get; set;}
     // Date accosiated with the meal
     public required string Date {get; set;}
+    public bool Template {get; set;}
     
     public required IEnumerable<PackedIngredient> Ingredients { get; set; }
     
