@@ -71,7 +71,7 @@ public class IngredientRepository(PostgreSQLConnectionFactory connectionFactory)
             connection.Open();
             return await connection.ExecuteAsync(sql, new
             {
-                Id = entity.User_id,
+                Id = entity.Id,
                 Name = entity.Name,
                 UserId = entity.User_id,
                 FoodImageId = entity.Food_image_id

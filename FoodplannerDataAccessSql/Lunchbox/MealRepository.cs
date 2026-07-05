@@ -56,7 +56,7 @@ public class MealRepository(PostgreSQLConnectionFactory connectionFactory) : IMe
             return await connection.QuerySingleAsync<int>(sql, new
             {
                 Name = entity.Name,
-                UserId = entity.Id,
+                UserId = entity.User_id,
                 FoodImageId = entity.Food_image_id ?? (object)DBNull.Value,
                 Date = entity.Date,
                 Template = entity.Template
