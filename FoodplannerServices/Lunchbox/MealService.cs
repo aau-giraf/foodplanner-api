@@ -15,9 +15,31 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
     private readonly IIngredientRepository _ingredientRepository = ingredientRepository;
     private readonly IMapper _mapper = mapper;
 
+    // Maps a packed ingredient to its response shape, nesting the ingredient's
+    // details (from the pre-fetched lookup) under "ingredient_id".
+    private static PackedIngredientResponseDTO ToResponse(PackedIngredient p, IDictionary<int, Ingredient?> ingredientsById)
+    {
+        ingredientsById.TryGetValue(p.Ingredient_id, out var ingredient);
+        return new PackedIngredientResponseDTO
+        {
+            Id = p.Id,
+            Meal_id = p.Meal_id,
+            order_number = p.order_number,
+            Ingredient = ingredient is not null
+                ? new IngredientDTO
+                {
+                    Id = ingredient.Id,
+                    Name = ingredient.Name,
+                    User_id = ingredient.User_id,
+                    Food_image_id = ingredient.Food_image_id
+                }
+                : new IngredientDTO { Id = p.Ingredient_id, Name = string.Empty, User_id = 0, Food_image_id = null }
+        };
+    }
+
 
     // Retrieves all meals from the repository.
-    public async Task<IEnumerable<MealDTO>> GetAllMealsAsync()
+    public async Task<IEnumerable<MealResponseDTO>> GetAllMealsAsync()
     {
         var meals = await _mealRepository.GetAllAsync();
 
@@ -46,15 +68,10 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
         {
             var packedIngredients = packedIngredientsByMeal
                 .First(m => m.Id == meal.Id).PackedIngredients
-                .Select(p => new PackedIngredientDTO
-                {
-                    Id = p.Id,
-                    Meal_id = p.Meal_id,
-                    Ingredient_id = p.Ingredient_id,
-                    order_number = p.order_number
-                }).ToList();
+                .Select(p => ToResponse(p, ingredientsById))
+                .ToList();
 
-            return new MealDTO
+            return new MealResponseDTO
             {
                 Id = meal.Id,
                 Food_image_id = meal.Food_image_id,
@@ -70,7 +87,7 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
 
 
     // Retrieves all meals by user id.
-    public async Task<IEnumerable<MealDTO>> GetAllMealsByUserAsync(int userId, string date)
+    public async Task<IEnumerable<MealResponseDTO>> GetAllMealsByUserAsync(int userId, string date)
     {
         var meals = await _mealRepository.GetAllByUserAsync(userId, date);
 
@@ -99,15 +116,10 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
         {
             var packedIngredients = packedIngredientsByMeal
                 .First(m => m.Id == meal.Id).PackedIngredients
-                .Select(p => new PackedIngredientDTO
-                {
-                    Id = p.Id,
-                    Meal_id = p.Meal_id,
-                    Ingredient_id = p.Ingredient_id,
-                    order_number = p.order_number
-                }).ToList();
+                .Select(p => ToResponse(p, ingredientsById))
+                .ToList();
 
-            return new MealDTO
+            return new MealResponseDTO
             {
                 Id = meal.Id,
                 Food_image_id = meal.Food_image_id,
@@ -122,7 +134,7 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
     }
 
     // Retrieves a specific meal by its ID.
-    public async Task<MealDTO?> GetMealByIdAsync(int id)
+    public async Task<MealResponseDTO?> GetMealByIdAsync(int id)
     {
         // Fetch the single meal.
         var meal = await _mealRepository.GetByIdAsync(id);
@@ -142,17 +154,11 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
             })
         )).ToDictionary(i => i.Id, i => i.Ingredient);
 
-        // Construct the list of PackedIngredientDTO.
-        var packedIngredientDTOs = packedIngredients.Select(p => new PackedIngredientDTO
-        {
-            Id = p.Id,
-            Meal_id = p.Meal_id,
-            Ingredient_id = p.Ingredient_id,
-            order_number = p.order_number
-        }).ToList();
+        // Construct the list of packed ingredients with nested ingredient details.
+        var packedIngredientDTOs = packedIngredients.Select(p => ToResponse(p, ingredientsById)).ToList();
 
-        // Construct and return the MealDTO.
-        return new MealDTO
+        // Construct and return the meal response.
+        return new MealResponseDTO
         {
             Id = meal.Id,
             Food_image_id = meal.Food_image_id,
@@ -189,7 +195,7 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
         return await _mealRepository.DeleteAsync(id);
     }
 
-    public async Task<IEnumerable<MealDTO>> GetAllTemplatesByUserAsync(int userId)
+    public async Task<IEnumerable<MealResponseDTO>> GetAllTemplatesByUserAsync(int userId)
     {
         var meals = await _mealRepository.GetAllTemplatesByUserAsync(userId);
 
@@ -215,15 +221,10 @@ public class MealService(IMealRepository mealRepository, IPackedIngredientReposi
         {
             var packedIngredients = packedIngredientsByMeal
                 .First(m => m.Id == meal.Id).PackedIngredients
-                .Select(p => new PackedIngredientDTO
-                {
-                    Id = p.Id,
-                    Meal_id = p.Meal_id,
-                    Ingredient_id = p.Ingredient_id,
-                    order_number = p.order_number
-                }).ToList();
+                .Select(p => ToResponse(p, ingredientsById))
+                .ToList();
 
-            return new MealDTO
+            return new MealResponseDTO
             {
                 Id = meal.Id,
                 Food_image_id = meal.Food_image_id,
