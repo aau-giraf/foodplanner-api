@@ -108,12 +108,13 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
 
     public async Task<int> InsertAsync(Message message)
     {
-        const string sql = "INSERT INTO message (content, date, chat_thread_id, user_id) VALUES (@Content, @Date, @ChatThreadId, @UserId)";
+        const string sql = "INSERT INTO message (content, date, chat_thread_id, user_id) VALUES (@Content, @Date, @ChatThreadId, @UserId) RETURNING message_id";
         await using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            var result = await connection.ExecuteAsync(sql, message);
-            return result;
+            var messageId = await connection.ExecuteScalarAsync<int>(sql, message);
+            message.MessageId = messageId;
+            return messageId;
         }
     }
 

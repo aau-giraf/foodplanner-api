@@ -96,6 +96,54 @@ public class ChatServiceTests
     }
 
     [Fact]
+    public async Task AddMessageAsync_BroadcastsMessageWithGeneratedMessageIdAndChatThreadId()
+    {
+        // Arrange
+        var messageDto = new AddMessageDTO { ChatThreadId = 42, Content = "Hello" };
+        const int userId = 7;
+        const int generatedMessageId = 123;
+
+        _mockMapper.Setup(m => m.Map<Message>(messageDto))
+            .Returns(new Message { ChatThreadId = messageDto.ChatThreadId, Content = messageDto.Content });
+
+        // Mirrors ChatRepository.InsertAsync, which now does "RETURNING message_id" and
+        // assigns the generated id back onto the passed-in Message before returning.
+        _mockChatRepository.Setup(repo => repo.InsertAsync(It.IsAny<Message>()))
+            .Callback<Message>(m => m.MessageId = generatedMessageId)
+            .ReturnsAsync(generatedMessageId);
+
+        UserNameFeedbackChatDTO? broadcastDto = null;
+        _mockMapper.Setup(m => m.Map<UserNameFeedbackChatDTO>(It.IsAny<Message>()))
+            .Returns((Message src) =>
+            {
+                broadcastDto = new UserNameFeedbackChatDTO
+                {
+                    MessageId = src.MessageId,
+                    ChatThreadId = src.ChatThreadId,
+                    Content = src.Content,
+                    FirstName = ""
+                };
+                return broadcastDto;
+            });
+
+        _mockUserRepository.Setup(repo => repo.GetByIdAsync(userId))
+            .ReturnsAsync((User?)null);
+
+        // Act
+        await _chatService.AddMessageAsync(messageDto, userId);
+
+        // Assert
+        Assert.NotNull(broadcastDto);
+        Assert.Equal(generatedMessageId, broadcastDto!.MessageId);
+        Assert.Equal(messageDto.ChatThreadId, broadcastDto.ChatThreadId);
+
+        _mockClientProxy.Verify(proxy => proxy.SendCoreAsync(
+            "ReceiveMessage",
+            It.Is<object[]>(args => args.Length == 1 && args[0] == broadcastDto),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
     public async Task AddMessageAsync_BroadcastThrows_StillReturnsTrueAndInsertsMessage()
     {
         // Arrange
@@ -125,5 +173,36 @@ public class ChatServiceTests
             m.ChatThreadId == messageDto.ChatThreadId &&
             m.Content == messageDto.Content &&
             m.UserId == userId)), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetMessagesAsync_ReturnsMessagesIncludingMessageIdAndChatThreadId()
+    {
+        // Arrange
+        const int chatThreadId = 42;
+        var storedMessages = new List<Message>
+        {
+            new Message { MessageId = 1, ChatThreadId = chatThreadId, Content = "Hi", UserId = 7 }
+        };
+
+        _mockChatRepository.Setup(repo => repo.GetMessagesByChatThreadIdAsync(chatThreadId))
+            .ReturnsAsync(storedMessages);
+
+        _mockMapper.Setup(m => m.Map<UserNameFeedbackChatDTO>(It.IsAny<Message>()))
+            .Returns((Message src) => new UserNameFeedbackChatDTO
+            {
+                MessageId = src.MessageId,
+                ChatThreadId = src.ChatThreadId,
+                Content = src.Content,
+                FirstName = ""
+            });
+
+        // Act
+        var result = (await _chatService.GetMessagesAsync(chatThreadId)).ToList();
+
+        // Assert
+        var dto = Assert.Single(result);
+        Assert.Equal(1, dto.MessageId);
+        Assert.Equal(chatThreadId, dto.ChatThreadId);
     }
 }

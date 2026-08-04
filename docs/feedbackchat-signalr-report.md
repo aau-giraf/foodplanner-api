@@ -18,18 +18,32 @@ keeping the existing SQL persistence as the single source of truth.
 
 ## 2. Files changed
 
-**New files:**
+**New files (initial feature):**
 - `FoodplannerServices/Hubs/ChatHub.cs`
 - `Test/FeedbackChatTests/Service/ChatServiceTests.cs`
 - `docs/SIGNALR_TESTING.md` *(superseded by this report; kept for reference)*
 
-**Modified files:**
+**Modified files (initial feature):**
 - `FoodplannerApi/Program.cs`
 - `FoodplannerServices/FeedbackChat/ChatService.cs`
 - `FoodplannerServices/FoodplannerServices.csproj`
 
 **Unchanged (confirmed):** `FoodplannerModels/FeedbackChat/IChatService.cs` — the
 interface signature for `AddMessageAsync` did not need to change.
+
+**Follow-up fixes — new files:**
+- `Test/FeedbackChatTests/Hub/ChatHubTests.cs` (object-level authorization)
+- `Test/FeedbackChatTests/ChatProfileTests.cs` (real-AutoMapper convention check)
+
+**Follow-up fixes — modified files:**
+- `FoodplannerServices/Hubs/ChatHub.cs` (§3.4 — thread-ownership check)
+- `FoodplannerModels/FeedbackChat/IChatRepository.cs` (§3.4 — exposed
+  `GetChatThreadByIdAsync`, no new query)
+- `FoodplannerModels/FeedbackChat/UserNameFeedbackChatDTO.cs` (§3.5 —
+  `MessageId`/`ChatThreadId`)
+- `FoodplannerDataAccessSql/FeedbackChat/ChatRepository.cs` (§3.5 —
+  `InsertAsync` now returns the generated id via `RETURNING message_id`)
+- `Test/FeedbackChatTests/Service/ChatServiceTests.cs` (§3.6 — new tests)
 
 ---
 
@@ -118,7 +132,63 @@ broadcast outcome):
    succeeded. A broadcast failure never turns a successful message creation
    into an HTTP error for the caller.
 
-### 3.4 Tests
+### 3.4 Object-level authorization on `JoinThread`/`LeaveThread`
+
+**Follow-up fix (code review):** class-level `[Authorize(Roles = "Parent,
+Teacher")]` alone let any approved Parent or Teacher join *any* chat
+thread's group, regardless of whether they were actually associated with
+the child that thread belongs to. Unlike the REST endpoints (which were
+never meant to be production-hardened), the hub now enforces this:
+
+`ChatHub` takes `IChatRepository` and `IChildrenRepository` via constructor
+injection (both already registered in DI, so no `Program.cs` change was
+needed). Both `JoinThread` and `LeaveThread` call a shared private helper,
+`EnsureCallerIsAuthorizedForThreadAsync`, before touching the group:
+
+1. Look up the `ChatThread` via `IChatRepository.GetChatThreadByIdAsync`
+   (already existed on the concrete `ChatRepository`, just not previously
+   exposed on `IChatRepository` — added to the interface rather than
+   duplicating the query) to get its `ChildId`.
+2. Read the caller's id from the `ClaimTypes.NameIdentifier` claim and role
+   from `Context.User.IsInRole(...)` — the same claim types
+   `AuthService`/`Program.cs` already use for REST auth
+   (`ClaimTypes.NameIdentifier` for id, `ClaimTypes.Role` as the configured
+   `RoleClaimType`).
+3. If the caller is a Parent, check their id is among
+   `IChildrenRepository.GetParentsByChildIdAsync(childId)`. If a Teacher,
+   check `GetTeachersByChildIdAsync(childId)` instead.
+4. If the check fails, the connection is **not** added to (or removed from)
+   the group, and a `HubException("Not authorized for this chat thread")` is
+   thrown, so the client sees a clear error instead of a silent no-op.
+
+### 3.5 `MessageId`/`ChatThreadId` on the broadcast payload (deduplication)
+
+**Follow-up fix (code review):** since a sender is themselves a member of
+their own chat thread's SignalR group, they receive their own message back
+via `ReceiveMessage`. Without a stable id, the frontend couldn't tell that
+apart from a genuinely new message, so it couldn't deduplicate an
+optimistically-rendered message against the one echoed back over the socket.
+
+- `UserNameFeedbackChatDTO` (used by both `GetMessagesAsync` and the
+  broadcast — same DTO, so history and live messages are now consistent)
+  gained `MessageId` and `ChatThreadId` int properties. `Message` already
+  has both fields under the exact same names, so AutoMapper's existing
+  `CreateMap<Message, UserNameFeedbackChatDTO>()` picks them up by
+  convention with no `.ForMember()` needed — confirmed with a dedicated
+  test using a real `MapperConfiguration` (not a mocked `IMapper`), see
+  below.
+- This exposed a latent bug: `ChatRepository.InsertAsync` ran a plain
+  `INSERT` via Dapper's `ExecuteAsync`, which does **not** populate
+  auto-generated ids back onto the passed-in object — `message.MessageId`
+  stayed `0` after every insert. Fixed by adding `RETURNING message_id`
+  (same pattern already used in `AddChatThreadIdByChildIdAsync`) and using
+  `ExecuteScalarAsync<int>` to read it back, assigning it onto
+  `message.MessageId` before returning. Since `ChatService.AddMessageAsync`
+  maps the broadcast DTO from that same `Message` object *after*
+  `InsertAsync` returns, the correct id now flows through automatically —
+  no `ChatService.cs` change was needed for this part.
+
+### 3.6 Tests
 
 `Test/FeedbackChatTests/Service/ChatServiceTests.cs`, following the existing
 Moq/xUnit conventions used elsewhere in the project, mocks
@@ -132,9 +202,32 @@ Moq/xUnit conventions used elsewhere in the project, mocks
 - If `SendAsync` throws, `AddMessageAsync` still returns `true` and the
   insert is still verified to have happened — a broadcast failure does not
   propagate or change the return value.
+- The broadcast DTO carries the `MessageId` generated by (a mocked)
+  `InsertAsync` and the correct `ChatThreadId`.
+- `GetMessagesAsync`'s mapped results include `MessageId`/`ChatThreadId`.
 
-**Result:** `dotnet build` — 0 errors (2 pre-existing, unrelated warnings).
-`dotnet test` — all tests passing, nothing skipped.
+`Test/FeedbackChatTests/ChatProfileTests.cs` is a new, deliberately
+non-mocked test: it builds a real `MapperConfiguration` with `ChatProfile`
+and asserts `Map<UserNameFeedbackChatDTO>(message)` actually carries
+`MessageId`/`ChatThreadId` through — proving AutoMapper's convention-based
+mapping works, which a mocked `IMapper` test could not prove.
+
+`Test/FeedbackChatTests/Hub/ChatHubTests.cs` is a new test file for
+`ChatHub` (SignalR's `Hub.Context`/`Hub.Groups`/`Hub.Clients` are public
+settable properties specifically to support this kind of unit testing
+without a live connection). Covers:
+
+- `JoinThread` succeeds (adds to the group) for a Parent actually linked to
+  the thread's child, and separately for a Teacher actually linked to it.
+- `JoinThread` throws `HubException` and does **not** add the connection to
+  the group when the caller (Parent or Teacher) is not associated with the
+  thread's child.
+- `LeaveThread` applies the same check and also throws without removing
+  the connection from the group when unauthorized.
+
+**Result:** `dotnet build` — 0 errors. `dotnet test` — 167/167 passing,
+nothing skipped (160 before this follow-up + 7 new tests: 4 in
+`ChatHubTests`, 2 in `ChatServiceTests`, 1 in `ChatProfileTests`).
 
 ---
 
@@ -151,13 +244,17 @@ Moq/xUnit conventions used elsewhere in the project, mocks
   everything buildable without changing the intended dependency injection
   pattern.
 - **No new database migration** — no schema changes were needed.
-- **Existing authorization gap intentionally preserved:** a chat thread is
-  not validated against the caller's actual association with the child —
-  any approved Parent/Teacher can join/query any `chatThreadId`. This
-  matches `FeedbackChatController`'s current REST behavior and was kept
-  consistent for the hub rather than silently tightened, to avoid scope
-  creep beyond issue #230. Worth a follow-up issue if stricter enforcement
-  is wanted.
+- **Object-level authorization gap — fixed (see §3.4):** joining or leaving
+  a chat thread's SignalR group now verifies the caller is actually a
+  parent or teacher associated with that thread's child, via
+  `IChildrenRepository`. This intentionally only covers the hub, per the
+  maintainer's review feedback — the REST endpoints
+  (`FeedbackChatController`) were explicitly out of scope for this
+  follow-up and still don't validate thread ownership; that would be a
+  separate change if wanted.
+- **Missing `MessageId`/`ChatThreadId` on the broadcast DTO — fixed (see
+  §3.5):** the frontend can now deduplicate a message it rendered
+  optimistically against the copy echoed back over the socket.
 - **No delivery retry/guarantee** if a client is briefly disconnected when a
   broadcast fires — out of scope for this issue.
 - **Frontend (Flutter) integration is not part of this change** — this is a
@@ -250,6 +347,30 @@ Set-Clipboard -Value ('{"type":1,"target":"JoinThread","arguments":[<chatThreadI
 Paste into Postman and **Send**. There's no response expected for this call
 (it's a `void`/`Task`-returning hub method) — no news is good news here.
 
+`JoinThread` now checks that you're actually a Parent/Teacher associated
+with the given thread's child (§3.4). SignalR only sends a completion
+message back for invocations that include an `invocationId` — the
+fire-and-forget payload above (no `invocationId`) will just silently not
+join the group if unauthorized, with nothing visible in Postman. To
+actually see the error, include an `invocationId`:
+
+```powershell
+Set-Clipboard -Value ('{"type":1,"invocationId":"1","target":"JoinThread","arguments":[<chatThreadId>]}' + [char]0x1e)
+```
+
+If you use a `chatThreadId` that belongs to a different child than the one
+your logged-in user is linked to, you'll get back:
+
+```json
+{"type":3,"invocationId":"1","error":"Not authorized for this chat thread"}
+```
+
+`HubException` messages (unlike other exception types) are always sent to
+the client verbatim, regardless of `EnableDetailedErrors` — that's why
+`ChatHub` throws `HubException` specifically rather than a generic
+exception. Either way — with or without an `invocationId` — an unauthorized
+call never adds the connection to the thread's group.
+
 ### Step 5 — Trigger a message and watch it arrive live
 
 From Swagger (or a separate Postman HTTP request), with a valid
@@ -266,11 +387,13 @@ Content-Type: application/json
 The WebSocket tab from Step 4 should immediately receive:
 
 ```json
-{"type":1,"target":"ReceiveMessage","arguments":[{"content":"Test message","firstName":"Test","date":"2026-07-22T22:49:28.8458292+02:00","archived":false,"isEdited":false}]}
+{"type":1,"target":"ReceiveMessage","arguments":[{"messageId":57,"chatThreadId":5,"content":"Test message","firstName":"Test","date":"2026-07-22T22:49:28.8458292+02:00","archived":false,"isEdited":false}]}
 ```
 
-No polling, no reconnect, no manual refresh needed — and `firstName` is
-populated, confirming the sender-name fix is working.
+No polling, no reconnect, no manual refresh needed — `firstName` is
+populated (confirming the sender-name fix), and `messageId`/`chatThreadId`
+are now present so a client that already rendered this message
+optimistically can recognize it and skip rendering a duplicate.
 
 ### Troubleshooting
 
@@ -280,20 +403,91 @@ populated, confirming the sender-name fix is working.
 | `401` on WebSocket connect | `RoleApproved` is `false`, or token expired/malformed |
 | Handshake sent but connection drops / `"Handshake was canceled"` | The `0x1e` terminator is missing — you likely typed the message directly instead of pasting the clipboard result; re-run the `Set-Clipboard` command and paste again |
 | Connected + handshake OK, but no `ReceiveMessage` ever arrives | `JoinThread` wasn't sent, or its `chatThreadId` doesn't match the one used in `AddMessage`; also check server logs — a broadcast failure is logged but silently swallowed, so `AddMessage` would still report success with nothing arriving |
+| `JoinThread`/`LeaveThread` completion has `"error":"Not authorized for this chat thread"` (only visible if you sent an `invocationId`) | The logged-in user is a Parent/Teacher, but not one associated with that `chatThreadId`'s child — use a `chatThreadId` for a child your test user is actually linked to (§3.4) |
 | Connection drops shortly after connecting | JWT expired — get a fresh token via Login and reconnect |
 
 ---
 
 ## 6. Verified result
 
-End-to-end tested manually on 2026-07-22 via the steps above. Confirmed
-received payload:
+### 6.1 Initial feature — 2026-07-22
+
+End-to-end tested manually via the steps above (predating the object-level
+authorization and `MessageId`/`ChatThreadId` follow-up fixes). Confirmed
+received payload at that time:
 
 ```json
 {"type":1,"target":"ReceiveMessage","arguments":[{"content":"Test message","firstName":"Test","date":"2026-07-22T22:49:28.8458292+02:00","archived":false,"isEdited":false}]}
 ```
 
-This confirms: the hub authenticates correctly over WebSocket, group
+This confirmed the hub authenticates correctly over WebSocket, group
 membership via `JoinThread` works, the broadcast fires immediately after
 `AddMessage` persists the message, and the sender's name is correctly
-populated (the second follow-up fix).
+populated.
+
+### 6.2 Follow-up fixes (review feedback) — 2026-08-04
+
+The two follow-up fixes in §3.4/§3.5 were re-verified manually end-to-end
+via Postman, on top of the automated tests in §3.6 (`dotnet test`,
+167/167 passing), using two separate Parent users each with their own
+child and chat thread.
+
+**Object-level authorization on `JoinThread` (§3.4):**
+
+- **Positive case** — joining a thread the connected user is actually
+  associated with succeeds:
+  ```json
+  {"type":1,"invocationId":"1","target":"JoinThread","arguments":[1]}
+  ```
+  ```json
+  {"type":3,"invocationId":"1","result":null}
+  ```
+- **Negative case** — the same connection then attempted to join a second
+  thread (`chatThreadId: 2`) belonging to a different, unrelated Parent
+  user. The server-side log confirms the request reached and was rejected
+  by the new authorization check, not by an unrelated error:
+  ```
+  fail: Microsoft.AspNetCore.SignalR.Internal.DefaultHubDispatcher[8]
+        Failed to invoke hub method 'JoinThread'.
+        Microsoft.AspNetCore.SignalR.HubException: Not authorized for this chat thread
+           at FoodplannerServices.Hubs.ChatHub.EnsureCallerIsAuthorizedForThreadAsync(Int32 chatThreadId) ...
+           at FoodplannerServices.Hubs.ChatHub.JoinThread(Int32 chatThreadId) ...
+  ```
+  (The Postman client itself only surfaced a generic "An unexpected error
+  occurred invoking 'JoinThread' on the server" message rather than the
+  `HubException`'s own text — a client-side display detail, not a defect
+  in the authorization check itself, which the server log confirms ran
+  and rejected the call as intended.)
+- **No unauthorized data leak** — a message was then posted to thread `2`
+  (`POST api/FeedbackChat/AddMessage`). The rejected connection, never
+  having been added to `thread-2`'s SignalR group, received nothing —
+  confirming the authorization check has a real effect on message
+  delivery, not just on the join call's return value.
+
+**`MessageId`/`ChatThreadId` on the broadcast DTO (§3.5):**
+
+A message posted to the thread the connection *was* validly joined to
+(`chatThreadId: 1`) arrived with both fields populated with real,
+non-zero values:
+
+```json
+{"type":1,"target":"ReceiveMessage","arguments":[{"messageId":6,"chatThreadId":1,"content":"test 1","firstName":"parent2","date":"2026-08-04T18:19:58.0912489+02:00","archived":false,"isEdited":false}]}
+```
+
+`messageId: 6` confirms the `RETURNING message_id` fix in
+`ChatRepository.InsertAsync` (§3.5) actually flows through to the broadcast
+— not just that the DTO has the field, but that it's populated with the
+real generated id rather than `0`.
+
+### 6.3 Summary
+
+| Check | Result |
+|---|---|
+| `JoinThread` succeeds for a thread the caller owns | ✅ confirmed |
+| `JoinThread` rejects a thread the caller does not own | ✅ confirmed (server log) |
+| Rejected caller receives no messages from that thread | ✅ confirmed (no leak) |
+| Broadcast `messageId` is a real, non-zero id | ✅ confirmed (`6`) |
+| Broadcast `chatThreadId` is correct | ✅ confirmed (`1`) |
+
+Both follow-up fixes are confirmed working end-to-end, not only at the
+level of mocked unit tests.
