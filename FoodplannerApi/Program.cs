@@ -27,6 +27,7 @@ using FoodplannerModels.Image;
 using FoodplannerModels.Codes;
 using FoodplannerDataAccessSql.Codes;
 using FoodplannerServices.Codes;
+using FoodplannerServices.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -155,6 +156,18 @@ builder.Services.AddAuthentication(cfg =>
     };
     x.Events = new JwtBearerEvents
     {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+
+            if (!string.IsNullOrEmpty(accessToken) &&
+                context.HttpContext.Request.Path.StartsWithSegments("/hubs/chat"))
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+        },
         OnTokenValidated = context =>
         {
             var principal = context.Principal;
@@ -218,6 +231,7 @@ builder.Services.AddScoped<IMealService, MealService>();
 builder.Services.AddScoped<IPackedIngredientService, PackedIngredientService>();
 builder.Services.AddScoped<IOneTimePasswordService, OneTimePasswordService>();
 builder.Services.AddSingleton<ISecretLoader, SecretsLoader>(_ => secretsLoader);
+builder.Services.AddSignalR();
 
 builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfile));
 builder.Services.AddAutoMapper(typeof(SubIngredientProfile));
@@ -286,6 +300,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<ChatHub>("/hubs/chat");
 
 // New endpoint to test database connection
 app.MapGet("/test-db-connection", async (PostgreSQLConnectionFactory connectionFactory) =>
