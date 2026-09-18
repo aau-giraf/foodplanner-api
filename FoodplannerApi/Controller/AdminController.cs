@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-// Adds the Admincontroller to the FoodPlannerApi.
+// Adds the Admincontroller to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
 
 [Authorize(Policy = "AdminPolicy")]
