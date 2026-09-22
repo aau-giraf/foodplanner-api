@@ -10,6 +10,7 @@ public class AddCascadeToUserId : Migration
     {
         const string userIdFkName = "fk_child_relation_user_id";
 
+        // Recreate the user_id foreign key with cascading delete and update behavior
         Delete.ForeignKey(userIdFkName).OnTable("child_relation");
 
         Create.ForeignKey(userIdFkName)
@@ -19,6 +20,8 @@ public class AddCascadeToUserId : Migration
             .OnUpdate(Rule.Cascade);
         
         const string childIdFkName = "fk_child_relation_child_id";
+
+        // Recreate the child_id foreign key with cascading delete and update behavior
         Delete.ForeignKey(childIdFkName).OnTable("child_relation");
         
         Create.ForeignKey(childIdFkName)
@@ -31,6 +34,8 @@ public class AddCascadeToUserId : Migration
     public override void Down()
     {
         const string userIdFkName = "fk_child_relation_user_id";
+
+        // Restore the user_id foreign key without cascading behavior
         Delete.ForeignKey(userIdFkName).OnTable("child_relation");
 
         Create.ForeignKey(userIdFkName)
@@ -38,6 +43,8 @@ public class AddCascadeToUserId : Migration
             .ToTable("users").PrimaryColumn("id");
         
         const string childIdFkName = "fk_child_relation_child_id";
+
+        // Restore the child_id foreign key without cascading behavior
         Delete.ForeignKey(childIdFkName).OnTable("child_relation");
 
         Create.ForeignKey(childIdFkName)
