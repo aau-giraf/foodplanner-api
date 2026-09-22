@@ -15,6 +15,7 @@ public class SubIngredientRelationRepository : ISubIngredientRelationRepository
         _connectionFactory = connectionFactory;
     }
 
+    //Asynchronously select all data from the subingredient_relation table
     public async Task<IEnumerable<SubIngredientRelation>> GetAllAsync()
     {
         var sql = "SELECT * FROM subingredient_relation";
@@ -25,6 +26,9 @@ public class SubIngredientRelationRepository : ISubIngredientRelationRepository
         }
     }
 
+    // Asynchronously select all data from the subingredient_relation table
+    // Where subingredient_id matches the ingredientId from function call
+    // Then the data is sorted in order of the order_number from the table
     public async Task<IEnumerable<SubIngredientRelation>> GetAllByIngredientIdAsync(int ingredientId)
     {
         var sql = "SELECT * FROM subingredient_relation WHERE ingredient_id = @IngredientId ORDER BY order_number";
@@ -35,6 +39,8 @@ public class SubIngredientRelationRepository : ISubIngredientRelationRepository
         }
     }
 
+    // Asynchronously selects all data from the subingredient_relation table
+    // Where id matches the id from the function call
     public async Task<SubIngredientRelation> GetByIdAsync(int id)
     {
         var sql = "SELECT * FROM subingredient_relation WHERE id = @Id";
@@ -46,6 +52,8 @@ public class SubIngredientRelationRepository : ISubIngredientRelationRepository
         }
     }
 
+    // Asynchronously inserts data into the subingredient_relation table
+    // Returning the id, to ensure the data is inserted correctly
     public async Task<int> InsertAsync(int ingredientId, int subingredientId)
     {
         var sql = "INSERT INTO subingredient_relation (ingredient_id, subingredient_id) VALUES (@IngredientId, @SubingredientId) RETURNING id";
@@ -60,6 +68,7 @@ public class SubIngredientRelationRepository : ISubIngredientRelationRepository
         }
     }
 
+    // Asynchrounously updates a subingredient_relation, by its id
     public async Task<int> UpdateAsync(SubIngredientRelation entity, int id)
     {
         var sql = "UPDATE subingredient_relation SET ingredient_id = @IngredientId, subingredient_id = @SubingredientId WHERE id = @Id";
@@ -75,6 +84,7 @@ public class SubIngredientRelationRepository : ISubIngredientRelationRepository
         }
     }
 
+    //Asynchrounously deletes a subingredient_relation from its id
     public async Task<int> DeleteAsync(int id)
     {
         var sql = "DELETE FROM subingredient_relation WHERE id = @Id";
@@ -85,6 +95,8 @@ public class SubIngredientRelationRepository : ISubIngredientRelationRepository
         }
     }
 
+    //Asynchrounously updates a subingredient_relations order_number
+    //with the order from the function call, based on its id
     public async Task<bool> UpdateOrderAsync(int id, int order)
     {
         var sql = "UPDATE subingredient_relation SET order_number = @Order WHERE id = @Id";
