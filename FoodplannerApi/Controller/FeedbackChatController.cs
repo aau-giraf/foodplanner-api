@@ -7,17 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 // Adds the FeedbackChatController to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
 
-public class FeedbackChatController : BaseController
+public class FeedbackChatController(IChatService chatService, IAuthService authService) : BaseController
 {
-
-    // Setup of controller with injections to the service layer for chat and authentication.
-    private readonly IChatService _chatService;
-    private readonly IAuthService _authService;
-    public FeedbackChatController(IChatService chatService, IAuthService authService)
-    {
-        _chatService = chatService;
-        _authService = authService;
-    }
     
     // URL: api/FeedbackChat/AddMessage
     // Adds message from AddMessageDTO and retrieves UserId from JWT token in Authorization header. Returns 201 Created if successful, or 400 Bad Request if unsuccessful.
@@ -31,14 +22,14 @@ public class FeedbackChatController : BaseController
         {
 
             // Retrieve UserId from the JWT token
-            var idString = _authService.RetrieveIdFromJwtToken(token);
+            var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int userId))
             {
                 return BadRequest(new { Message = "Id er ikke et tal" });
             }
          
             // Call the service layer to add the message
-            var result = await _chatService.AddMessageAsync(messageDto, userId);
+            var result = await chatService.AddMessageAsync(messageDto, userId);
             if (result)
             {
                 return Created(string.Empty, result);
@@ -63,7 +54,7 @@ public class FeedbackChatController : BaseController
     {
         try
         {
-            var messages = await _chatService.GetMessagesAsync(chatThreadId);
+            var messages = await chatService.GetMessagesAsync(chatThreadId);
             return Ok(messages);
         }
         catch (Exception)
@@ -84,13 +75,13 @@ public class FeedbackChatController : BaseController
         {
 
             // Retrieve UserId from the JWT token            
-            var idString = _authService.RetrieveIdFromJwtToken(token);
+            var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id)) {
                 return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
             }
 
             // Call the service layer to get the chatThreadId by childId
-            var chatThreadId = await _chatService.GetChatThreadIdByChildIdAsync(childId);
+            var chatThreadId = await chatService.GetChatThreadIdByChildIdAsync(childId);
 
             // Returns response object containing UserId and ChatThreadId
             var response = new {
@@ -115,13 +106,13 @@ public class FeedbackChatController : BaseController
         try {
 
             // Retrieve UserId from the JWT token
-            var idString = _authService.RetrieveIdFromJwtToken(token);
+            var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id)) {
                 return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
             }
 
             // Call the service layer to get the chatThreadId by userId
-            var chatThreadId = await _chatService.GetChatThreadIdByUserIdAsync(id);
+            var chatThreadId = await chatService.GetChatThreadIdByUserIdAsync(id);
             
             // Returns response object containing UserId and ChatThreadId
             var response = new {
@@ -146,7 +137,7 @@ public class FeedbackChatController : BaseController
     {
         try
         {
-            var result = await _chatService.ArchiveMessageAsync(messageId);
+            var result = await chatService.ArchiveMessageAsync(messageId);
             if (result)
             {
                 return Ok();
@@ -169,7 +160,7 @@ public class FeedbackChatController : BaseController
     {
         try
         {
-            var result = await _chatService.UpdateMessageAsync(message);
+            var result = await chatService.UpdateMessageAsync(message);
             if (result)
             {
                 return Ok();
