@@ -6,17 +6,8 @@ using FoodplannerModels.Auth;
 // Adds the ChildrensController to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
 
-public class ChildrensController : BaseController
+public class ChildrensController(IChildrenService childrenService, IAuthService authService) : BaseController
 {
-
-    // Setup of controller with injections to the service layer for children and authentication.
-    private readonly IChildrenService _childrenService;
-    private readonly IAuthService _authService;
-    public ChildrensController(IChildrenService childrenService, IAuthService authService)
-    {
-        _childrenService = childrenService;
-        _authService = authService;
-    }
 
     // URL: api/Childrens/GetAllChildrenClassesAsync
     // Retrieves all children classes. Returns 200 OK with the list of children classes.
@@ -25,7 +16,7 @@ public class ChildrensController : BaseController
     [ProducesResponseType(typeof(IEnumerable<ChildrenGetAllDTO>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllChildrenClassesAsync()
     {
-        var children = await _childrenService.GetAllChildrenClassesAsync();
+        var children = await childrenService.GetAllChildrenClassesAsync();
         return Ok(children);
     }
 
@@ -36,7 +27,7 @@ public class ChildrensController : BaseController
     [ProducesResponseType(typeof(IEnumerable<Children>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
-        var children = await _childrenService.GetAllChildrenAsync();
+        var children = await childrenService.GetAllChildrenAsync();
         return Ok(children);
     }
     
@@ -48,12 +39,12 @@ public class ChildrensController : BaseController
     public async Task<IActionResult> GetChildrenByParentId([FromHeader(Name = "Authorization")] string token)
     {
 
-        var idString = _authService.RetrieveIdFromJwtToken(token);
+        var idString = authService.RetrieveIdFromJwtToken(token);
         if (!int.TryParse(idString, out int id))
         {
             return BadRequest(new ErrorResponse { Message = ["Error"] });
         }
-        var children = await _childrenService.GetChildrenByParentIdAsync(id);
+        var children = await childrenService.GetChildrenByParentIdAsync(id);
         return Ok(children);
     }
 
@@ -63,7 +54,7 @@ public class ChildrensController : BaseController
     [HttpGet("{id}")]
     public async Task<IActionResult> GetChildFromChildId(int id)
     {
-        var child = await _childrenService.GetChildFromChildIdAsync(id);
+        var child = await childrenService.GetChildFromChildIdAsync(id);
         if (child != null)
         {
             return Ok(child);
@@ -77,7 +68,7 @@ public class ChildrensController : BaseController
     [ProducesResponseType(typeof(IEnumerable<User>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetParentsByChildId(int childId)
     {
-        var parents = await _childrenService.GetParentsByChildIdAsync(childId);
+        var parents = await childrenService.GetParentsByChildIdAsync(childId);
         return Ok(parents);
     }
 
@@ -88,7 +79,7 @@ public class ChildrensController : BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> AddParentToChild(int childId, int userId)
     {
-        var result = await _childrenService.AddParentToChildAsync(userId, childId);
+        var result = await childrenService.AddParentToChildAsync(userId, childId);
         if (result > 0)
         {
             return Ok(new { Message = "Forældre tilføjet til barn" });
@@ -103,7 +94,7 @@ public class ChildrensController : BaseController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RemoveParentFromChild(int childId, int userId)
     {
-        var result = await _childrenService.RemoveParentFromChildAsync(userId, childId);
+        var result = await childrenService.RemoveParentFromChildAsync(userId, childId);
         if (result > 0)
         {
             return NoContent();
@@ -119,7 +110,7 @@ public class ChildrensController : BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> AddTeacherToChild(int childId, int userId)
     {
-        var result = await _childrenService.AddTeacherToChildAsync(userId, childId);
+        var result = await childrenService.AddTeacherToChildAsync(userId, childId);
         if (result > 0)
         {
             return Ok(new { Message = "Lærer tilføjet til barn" });
@@ -135,7 +126,7 @@ public class ChildrensController : BaseController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> RemoveTeacherFromChild(int childId, int userId)
     {
-        var result = await _childrenService.RemoveTeacherFromChildAsync(userId, childId);
+        var result = await childrenService.RemoveTeacherFromChildAsync(userId, childId);
         if (result > 0)
         {
             return NoContent();
@@ -150,7 +141,7 @@ public class ChildrensController : BaseController
     [ProducesResponseType(typeof(IEnumerable<User>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTeachersByChildId(int childId)
     {
-        var teachers = await _childrenService.GetTeachersByChildIdAsync(childId);
+        var teachers = await childrenService.GetTeachersByChildIdAsync(childId);
         return Ok(teachers);
     }
 
@@ -161,7 +152,7 @@ public class ChildrensController : BaseController
     [ProducesResponseType(typeof(IEnumerable<Children>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetChildrenByTeacherId(int teacherId)
     {
-        var children = await _childrenService.GetChildrenByTeacherIdAsync(teacherId);
+        var children = await childrenService.GetChildrenByTeacherIdAsync(teacherId);
         return Ok(children);
     }
 }
