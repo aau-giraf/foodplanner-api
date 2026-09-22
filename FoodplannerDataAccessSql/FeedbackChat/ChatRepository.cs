@@ -13,7 +13,7 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
 
     // Methods for ChatThread
 
-    /* Retrives a chat thread by its ID
+    /* Retrieves a chat thread by its ID
     Throws an exception if no matching chat thread is found */
     public async Task<ChatThread> GetChatThreadByIdAsync(int ChatThreadId)
     {
@@ -34,7 +34,7 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
         }
     }
 
-    // Retrives the ID of the chat thread belonging to a child
+    // Retrieves the ID of the chat thread belonging to a child
     public async Task<int> GetChatThreadIdByChildIdAsync(int ChildId)
     {
         const string sql = "SELECT chat_thread_id FROM chat_thread WHERE child_id = @ChildId";
@@ -63,7 +63,7 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
     
     // Methods for Message
 
-    /* Retrives a message by its ID
+    /* Retrieves a message by its ID
     Throws an exception if no matching message is found */
     public async Task<Message> GetByIdAsync(int MessageId)
     {
