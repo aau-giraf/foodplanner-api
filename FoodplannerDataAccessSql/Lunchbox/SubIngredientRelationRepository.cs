@@ -26,9 +26,9 @@ public class SubIngredientRelationRepository : ISubIngredientRelationRepository
         }
     }
 
-    // Asynchronously select all data from the subingredient_relation table
-    // Where subingredient_id matches the ingredientId from function call
-    // Then the data is sorted in order of the order_number from the table
+    // Asynchronously selects all data from the subingredient_relation table
+    // where ingredient_id matches the ingredientId from the function call.
+    // The results are then sorted by order_number.
     public async Task<IEnumerable<SubIngredientRelation>> GetAllByIngredientIdAsync(int ingredientId)
     {
         var sql = "SELECT * FROM subingredient_relation WHERE ingredient_id = @IngredientId ORDER BY order_number";
