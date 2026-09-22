@@ -6,11 +6,15 @@ using FoodplannerDataAccessSql;
 using FoodplannerModels;
 using FoodplannerModels.FeedbackChat;
 
+// Handles database operations related to chat threads and messages
 public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : IChatRepository
 {
     
 
     // Methods for ChatThread
+
+    /* Retrives a chat thread by its ID
+    Throws an exception if no matching chat thread is found */
     public async Task<ChatThread> GetChatThreadByIdAsync(int ChatThreadId)
     {
         const string sql = "SELECT * FROM chat_thread WHERE chat_thread_id = @ChatThreadId";
@@ -30,6 +34,7 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
         }
     }
 
+    // Retrives the ID of the chat thread belonging to a child
     public async Task<int> GetChatThreadIdByChildIdAsync(int ChildId)
     {
         const string sql = "SELECT chat_thread_id FROM chat_thread WHERE child_id = @ChildId";
@@ -41,6 +46,7 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
         }
     }
     
+    // Creates a chat thread for a child and returns the newly created chat thread ID
     public async Task<int> AddChatThreadIdByChildIdAsync(int ChildId)
     {
         const string sql = "INSERT INTO chat_thread (child_id) VALUES (@ChildId) RETURNING chat_thread_id";
@@ -56,6 +62,9 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
 
     
     // Methods for Message
+
+    /* Retrives a message by its ID
+    Throws an exception if no matching message is found */
     public async Task<Message> GetByIdAsync(int MessageId)
     {
       const string sql = "SELECT * FROM message WHERE message_id = @MessageId";
@@ -88,7 +97,9 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
     //         return result.ToList();
     //     }
     // }
-    
+
+    /* Retrieves all messages from a chat thread together with the senders first name
+    Messages are ordered from oldest to newest */    
     public async Task<IEnumerable<Message>> GetMessagesByChatThreadIdAsync(int chatThreadId)
     {
         const string sql = @"
@@ -105,7 +116,7 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
             return result;
         }
     }
-
+    // Insert a new message to the database
     public async Task<int> InsertAsync(Message message)
     {
         const string sql = "INSERT INTO message (content, date, chat_thread_id, user_id) VALUES (@Content, @Date, @ChatThreadId, @UserId)";
@@ -117,6 +128,7 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
         }
     }
 
+    // Update the content of a message and mark it as edited
     public async Task<int> UpdateAsync(Message message)
     {
         const string sql = "UPDATE message SET content = @Content, is_edited = true WHERE message_id = @MessageId";
@@ -128,6 +140,7 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
         }
     }
 
+    // Archive a message instead of deleting it from the database
     public async Task ArchiveMessageAsync(int MessageId)
     {
         const string sql = "UPDATE message SET archived = true WHERE message_id = @MessageId";
@@ -138,7 +151,7 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
         }
     }
 
-
+    // Retrieves all messages from the database
     public async Task<IEnumerable<Message>> GetAllAsync()
     {
         var sql = "SELECT * FROM message";
@@ -149,7 +162,8 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
 
         }
     }
-    
+
+    // Permanently deletes a message by its ID
     public async Task<int> DeleteAsync(int id)
     {
         var sql = "DELETE FROM message WHERE message_id = @MessageId";
