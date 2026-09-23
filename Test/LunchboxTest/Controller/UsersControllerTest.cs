@@ -61,7 +61,7 @@ public class UsersControllerTests
         Assert.IsType<string[]>(value.Message);
         var messages = (string[])value.Message;
 
-        Assert.Contains("Email skal angives", messages);
+        Assert.Contains("Email is required", messages);
 
     }
 
