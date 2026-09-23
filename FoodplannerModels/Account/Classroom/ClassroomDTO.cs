@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FoodplannerModels.Account;
 
+// Classroom DTO
 public class ClassroomDTO
 {
     [Key]
