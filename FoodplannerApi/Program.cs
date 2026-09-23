@@ -230,7 +230,6 @@ builder.Services.AddAutoMapper(typeof(ChatProfile));
 builder.Services.AddAutoMapper(typeof(PackedIngredientProfile));
 builder.Services.AddAutoMapper(typeof(IngredientProfile));
 builder.Services.AddAutoMapper(typeof(MealProfile));
-builder.Services.AddAutoMapper(typeof(ChildrenProfile));
 builder.Services.AddAutoMapper(typeof(ClassroomProfile));
 builder.Services.AddAutoMapper(typeof(ImageProfile));
 

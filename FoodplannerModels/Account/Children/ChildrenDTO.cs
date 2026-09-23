@@ -3,6 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FoodplannerModels.Account;
 
+// Child DTO with error messages 
+// Used when needed a generic "child" DTO 
 public class ChildrenDTO
 {
     public int ChildId { get; set; }

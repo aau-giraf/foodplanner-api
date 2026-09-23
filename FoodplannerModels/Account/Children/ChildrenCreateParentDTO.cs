@@ -7,6 +7,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FoodplannerModels.Account
 {
+    // Child DTO 
+    // Used when creating a child profile, requires parent and classroom id 
     public class ChildrenCreateParentDTO
     {
         [Required(ErrorMessage = "Fornavn er påkrævet")]
