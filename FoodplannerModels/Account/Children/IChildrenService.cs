@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace FoodplannerModels.Account
 {
+    // Interface for children service 
     public interface IChildrenService
     {
         Task<IEnumerable<ChildrenDTO>> GetAllChildrenAsync();

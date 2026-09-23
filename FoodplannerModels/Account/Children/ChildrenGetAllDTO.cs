@@ -2,6 +2,8 @@
 
 namespace FoodplannerModels.Account;
 
+// Child DTO 
+// Used in "Get all children in a class", different from ChildrenDTO because it requires class name, but no parents or error messages
 public class ChildrenGetAllDTO
 {
     public int ChildId { get; set; }

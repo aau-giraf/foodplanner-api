@@ -1,95 +1,103 @@
-using AutoMapper;
 using FoodplannerModels.Lunchbox;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FoodplannerApi.Controller
+// Adds the PackedIngredientController to the FoodPlannerApi.Controller namespace
+namespace FoodplannerApi.Controller;
+
+public class PackedIngredientController(IPackedIngredientService packedIngredientService) : BaseController
 {
-    /**
-    * The controller for the PackedIngredient class.
-    */
-    public class PackedIngredientController(IPackedIngredientService packedIngredientService) : BaseController
+    
+    // URL: api/PackedIngredient/GetAll
+    // Retrieves all packed ingredients
+    [HttpGet]
+    [Authorize(Policy = "AdminPolicy")]
+    [ProducesResponseType(typeof(IEnumerable<PackedIngredientDTO>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAll()
     {
-        private readonly IPackedIngredientService _packedIngredientService = packedIngredientService;
-        
-        // Get all packed ingredients
-        [HttpGet]
-        [Authorize(Policy = "AdminPolicy")]
-        public async Task<IActionResult> GetAll()
-        {
-            // Calls the service to get all packed ingredients
-            var packedIngredients = await _packedIngredientService.GetAllPackedIngredientsAsync();
-            return Ok(packedIngredients); // Returns the packed ingredients with a 200 OK status
-        }
-
-        // Get a specific packed ingredient by id
-        [HttpGet("{id}")]
-        [Authorize(Policy = "AdminPolicy")]
-        public async Task<IActionResult> Get(int id)
-        {
-            // Calls the service to get the packed ingredient by ID
-            var packedIngredient = await _packedIngredientService.GetPackedIngredientByIdAsync(id);
-            if (packedIngredient == null)
-            {
-                return NotFound();
-            }
-            return Ok(packedIngredient);
-        }
-
-        // Create a new packed ingredient
-        [HttpPost]
-        [Authorize(Roles = "Child, Parent")]
-        public async Task<IActionResult> Create([FromBody] PackedIngredientProperDTO packIngredient)
-        {
-            // Calls the service to create a new packed ingredient
-            var result = await _packedIngredientService.CreatePackedIngredientAsync(packIngredient);
-            if (result > 0)
-            {
-                var createdPI = await _packedIngredientService.GetPackedIngredientByIdAsync(result);
-                return CreatedAtAction(nameof(Get), new { id = result }, createdPI);
-            }
-            return BadRequest();
-        }
-
-        // Update an existing packed ingredient
-        [HttpPut("{id}")]
-        [Authorize(Policy = "AdminPolicy")]
-        public async Task<IActionResult> Update([FromBody] PackedIngredientDTO packedIngredientDto, int id)
-        {
-            var result = await _packedIngredientService.UpdatePackedIngredientAsync(packedIngredientDto, id);
-            if (result > 0)
-            {
-                var changedPackedIngredient = await _packedIngredientService.GetPackedIngredientByIdAsync(id);
-                return Ok(changedPackedIngredient);
-            }
-            return BadRequest();
-        }
-
-        // Delete a packed ingredient by id
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "Parent")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            // Calls the service to delete the packed ingredient by ID
-            var result = await _packedIngredientService.DeletePackedIngredientAsync(id);
-            if (result > 0)
-            {
-                return NoContent();
-            }
-            return NotFound();
-        }
-
-        [HttpPut]
-        [Authorize(Roles = "Child, Parent")]
-        public async Task<IActionResult> UpdateOrder([FromBody] List<PackedIngredientDTO> packedIngredientsDto)
-        {
-            var result = await _packedIngredientService.UpdatePackedIngredientOrderAsync(packedIngredientsDto);
-            if (result)
-            {
-                return Ok();
-            }
-            return BadRequest();
-        }
+        var packedIngredients = await packedIngredientService.GetAllPackedIngredientsAsync();
+        return Ok(packedIngredients);
     }
 
+    // URL: api/PackedIngredient/Get/{id}
+    // Retrieves a packed ingredient by its ID
+    [HttpGet("{id}")]
+    [Authorize(Policy = "AdminPolicy")]
+    [ProducesResponseType(typeof(PackedIngredientDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Get(int id)
+    {
+        var packedIngredient = await packedIngredientService.GetPackedIngredientByIdAsync(id);
+        if (packedIngredient == null)
+        {
+            return NotFound();
+        }
+        return Ok(packedIngredient);
+    }
+
+    // URL: api/PackedIngredient/Create
+    // Creates new packed ingredient from PackedIngredientProperDTO
+    [HttpPost]
+    [Authorize(Roles = "Child, Parent")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Create([FromBody] PackedIngredientProperDTO packIngredient)
+    {
+        var result = await packedIngredientService.CreatePackedIngredientAsync(packIngredient);
+        if (result > 0)
+        {
+            var createdPI = await packedIngredientService.GetPackedIngredientByIdAsync(result);
+            return CreatedAtAction(nameof(Get), new { id = result }, createdPI);
+        }
+        return BadRequest();
+    }
+
+    // URL: api/PackedIngredient/Update/{id}
+    // Updates an existing packed ingredient by its ID and PackedIngredientDTO
+    [HttpPut("{id}")]
+    [Authorize(Policy = "AdminPolicy")]
+    [ProducesResponseType(typeof(PackedIngredientDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Update([FromBody] PackedIngredientDTO packedIngredientDto, int id)
+    {
+        var result = await packedIngredientService.UpdatePackedIngredientAsync(packedIngredientDto, id);
+        if (result > 0)
+        {
+            var changedPackedIngredient = await packedIngredientService.GetPackedIngredientByIdAsync(id);
+            return Ok(changedPackedIngredient);
+        }
+        return BadRequest();
+    }
+
+    // URL: api/PackedIngredient/Delete/{id}
+    // Deletes a packed ingredient by its ID
+    [HttpDelete("{id}")]
+    [Authorize(Roles = "Parent")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var result = await packedIngredientService.DeletePackedIngredientAsync(id);
+        if (result > 0)
+        {
+            return NoContent();
+        }
+        return NotFound();
+    }
+
+    // URL: api/PackedIngredient/UpdateOrder
+    // Updates the order of packed ingredients based on a list of PackedIngredientDTOs
+    [HttpPut]
+    [Authorize(Roles = "Child, Parent")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdateOrder([FromBody] List<PackedIngredientDTO> packedIngredientsDto)
+    {
+        var result = await packedIngredientService.UpdatePackedIngredientOrderAsync(packedIngredientsDto);
+        if (result)
+        {
+            return Ok();
+        }
+        return BadRequest();
+    }
 }
