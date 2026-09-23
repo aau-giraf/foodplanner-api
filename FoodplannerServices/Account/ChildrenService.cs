@@ -8,14 +8,14 @@ namespace FoodplannerServices.Account;
 // ChildrenService Class implemented with Interface IChildrenService
 public class ChildrenService : IChildrenService
 {
-    // Declares read only fields 
+    //Read only fields 
     private readonly IChildrenRepository _childrenRepository;
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly IAuthService _authService;
 
 
-    // Declares a constructor 
+    // Constructor 
     public ChildrenService(IChildrenRepository childrenRepository, IUserRepository userRepository, IMapper mapper, IAuthService authService)
     {
         _childrenRepository = childrenRepository;

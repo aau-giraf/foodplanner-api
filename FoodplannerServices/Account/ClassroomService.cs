@@ -2,12 +2,17 @@ using AutoMapper;
 using FoodplannerModels.Account;
 using Microsoft.AspNetCore.Http.HttpResults;
 
+// Adds the ClassroomService to the FoodplannerService.Account namespace 
 namespace FoodplannerServices.Account;
 
+
 public class ClassroomService : IClassroomService {
+
+    // Declares read only fields
     private readonly IClassroomRepository _classroomRepository;
     private readonly IMapper _mapper;
 
+    // Constructor
     public ClassroomService(IClassroomRepository classroomRepository, IMapper mapper){
        _classroomRepository = classroomRepository;
        _mapper = mapper;
