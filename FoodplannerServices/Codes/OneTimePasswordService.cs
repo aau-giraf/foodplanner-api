@@ -59,13 +59,13 @@ public class OneTimePasswordService : IOneTimePasswordService
         otp.UsedByUser = usedByUser;
         await _oneTimePasswordRepository.UpdateAsync(otp);
 
-        // Child is being added to parent        
+        // Child is being added to parent
         if (otp.ChildUser == null)
         {
             // Deletes the otp from the repository
             await _oneTimePasswordRepository.DeleteAsync(code);
 
-
+            // Adds a relation between child and parent
             return await _childrenRepository.AddParentToChildAsync(
                 otp.GeneratedBy,
                 otp.UsedByUser.Value
@@ -76,6 +76,8 @@ public class OneTimePasswordService : IOneTimePasswordService
         {   
             // Deletes the otp from the repository
             await _oneTimePasswordRepository.DeleteAsync(code);
+
+            // Adds a relation between parent and child
             return await _childrenRepository.AddParentToChildAsync(
                 otp.UsedByUser.Value,
                 otp.ChildUser.Value
