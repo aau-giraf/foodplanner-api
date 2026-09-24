@@ -3,14 +3,17 @@ using FoodplannerModels.Account;
 using FoodplannerModels.Codes;
 using FoodplannerServices.Codes;
 
+// Adds the OneTimePasswordService to the FoodplannerService.Codes namespace 
 namespace FoodplannerServices.Codes;
 
 public class OneTimePasswordService : IOneTimePasswordService
 {
+    // Read only fields
     private readonly IOneTimePasswordRepository _oneTimePasswordRepository;
     private readonly IChildrenRepository _childrenRepository;
     private readonly Random _random = new();
 
+    // Constructor
     public OneTimePasswordService(
         IOneTimePasswordRepository oneTimePasswordRepository,
         IChildrenRepository childrenRepository)
@@ -19,6 +22,8 @@ public class OneTimePasswordService : IOneTimePasswordService
         _childrenRepository = childrenRepository;
     }
 
+    // Creates a one time password (otp)
+    // The opt expires after 24 hours
     public async Task<int> CreateOneTimePassword(int userID, int? childUser)
     {
         var otp = new OneTimePassword
@@ -38,22 +43,29 @@ public class OneTimePasswordService : IOneTimePasswordService
         return int.Parse(otp.Code);
     }
 
+    // Checks and records who redeems the otp 
     public async Task<int> RedeemOneTimePassword(string code, int usedByUser)
     {
+        // Checks if otp has expired
         if (await _oneTimePasswordRepository.CheckIfCodeExpiredAsync(code))
             return 0;
 
+        // Retrieves otp from repository
         var otp = await _oneTimePasswordRepository.GetFromCodeAsync(code);
         if (otp == null)
             return 0;
 
+        // Links the otp to the user
         otp.UsedByUser = usedByUser;
         await _oneTimePasswordRepository.UpdateAsync(otp);
 
-        // Child is being added to parent
+        // Child is being added to parent        
         if (otp.ChildUser == null)
         {
+            // Deletes the otp from the repository
             await _oneTimePasswordRepository.DeleteAsync(code);
+
+
             return await _childrenRepository.AddParentToChildAsync(
                 otp.GeneratedBy,
                 otp.UsedByUser.Value
@@ -61,7 +73,8 @@ public class OneTimePasswordService : IOneTimePasswordService
         }
         // Parent is being added to child
         else
-        {
+        {   
+            // Deletes the otp from the repository
             await _oneTimePasswordRepository.DeleteAsync(code);
             return await _childrenRepository.AddParentToChildAsync(
                 otp.UsedByUser.Value,
@@ -70,6 +83,7 @@ public class OneTimePasswordService : IOneTimePasswordService
         }
     }
 
+    // Generates a unique 6 digit otp
     public async Task<string> GenerateUniqueSixDigitCodeAsync()
     {
         int code = _random.Next(100000, 1000000);
