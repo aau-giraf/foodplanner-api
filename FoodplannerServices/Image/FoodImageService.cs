@@ -7,8 +7,10 @@ using FoodplannerModels.Image;
 
 namespace FoodplannerServices.Image;
 
+// Service implementation for FoodImage business logic
 public class FoodImageService(IImageService imageService, IFoodImageRepository foodImageRepository, IMapper _mapper) : IFoodImageService
 {
+    // Creates a new food image by saving the image to the image service and storing its metadata in the repository.
     public async Task<int> CreateFoodImage(int userid, Stream imageStream, string imageName, string imageType, long imageFileSize)
     {
         var imageId = await imageService.SaveImageAsync(userid, imageStream, imageType);
@@ -26,12 +28,14 @@ public class FoodImageService(IImageService imageService, IFoodImageRepository f
         return foodImageId;
     }
 
+    // Return food image by ID.
     public async Task<FoodImageDTO> GetFoodImage(int foodImageId)
     {
         var foodImage = await foodImageRepository.GetByIdAsync(foodImageId);
         return _mapper.Map<FoodImageDTO>(foodImage);
     }
 
+    // Get a URL for the food image by ID.
     public async Task<string> GetFoodImageLink(int foodImageId)
     {
 
@@ -49,6 +53,7 @@ public class FoodImageService(IImageService imageService, IFoodImageRepository f
         return foodImageLink;
     }
 
+    // Delete food image by ID.
     public async Task<bool> DeleteImage(int foodImageId)
     {
 

@@ -2,6 +2,7 @@ using Npgsql;
 
 namespace FoodplannerDataAccessSql;
 
+// Factory class for creating PostgreSQL database connections.
 public class PostgreSQLConnectionFactory{
     private readonly string _host;
     private readonly string _port;
@@ -18,6 +19,7 @@ public class PostgreSQLConnectionFactory{
         _password = password;
     }
 
+    // Creates and returns a new NpgsqlConnection.
     public NpgsqlConnection Create(){
         var connectionString = $"Server={_host};Port={_port};Database={_database};User Id={_username};Password={_password}";
         return new NpgsqlConnection(connectionString);
