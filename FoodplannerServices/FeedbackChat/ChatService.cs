@@ -47,6 +47,7 @@ namespace FoodplannerServices.FeedbackChat
             return result;
         }
         
+        // Update a message
         public async Task<bool> UpdateMessageAsync(UpdateMessageDTO message)
         {
             var _message = _mapper.Map<Message>(message);
@@ -55,12 +56,14 @@ namespace FoodplannerServices.FeedbackChat
             return true;
         }
 
+        // Archive a message
         public async Task<bool> ArchiveMessageAsync(int messageId)
         {
             await _chatRepository.ArchiveMessageAsync(messageId);
             return true;
         }
         
+        // Get the chat thread ID for a child, creating a new chat thread if one does not exist.
         public async Task<int> GetChatThreadIdByChildIdAsync(int ChildId)
         {
             var chatThreadId = await _chatRepository.GetChatThreadIdByChildIdAsync(ChildId);
