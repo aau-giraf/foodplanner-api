@@ -4,85 +4,84 @@ using FoodplannerModels.Codes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FoodplannerApi.Controller
+// Adds the OneTimePasswordController to the FoodPlannerApi.Controller namespace
+namespace FoodplannerApi.Controller;
+
+public class OneTimePasswordController(IOneTimePasswordService passwordService, IAuthService authService, IChildrenService childrenService) : BaseController
 {
-    public class OneTimePasswordController : BaseController
+
+    // URL: api/OneTimePassword/Create
+    // Creates a one-time password for the authenticated parent user, optionally for a specified child user
+    // should maybe change to /api/OneTimePassword/Create/{childId}
+    [HttpPost]
+    [Authorize(Roles = "Parent")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, int? childUser)
     {
-        private readonly IOneTimePasswordService _passwordService;
-        private readonly IAuthService _authService;
-        private readonly IUserService _userService;
-        private readonly IChildrenService _childrenService;
-
-        public OneTimePasswordController(IOneTimePasswordService passwordService, IAuthService authService, IUserService userService, IChildrenService childrenService)
+        try
         {
-            _passwordService = passwordService;
-            _authService = authService;
-            _userService = userService;
-            _childrenService = childrenService;
+            // Retrieve the user ID from the JWT token
+            var idString = authService.RetrieveIdFromJwtToken(token);
+            if (!int.TryParse(idString, out int id))
+            {
+                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
+            }
+
+            // If a childUser is specified, check if the parent has a relation to this child
+            if (childUser != null)
+            {
+                var children = await childrenService.GetChildrenByParentIdAsync(id);
+                if (!children.Any(c => c.ChildId == childUser.Value))
+                {
+                    return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
+                }
+            }
+
+            // Create a one-time password for the parent or specified child user
+            int result = await passwordService.CreateOneTimePassword(id, childUser);
+            if (result > 0)
+            {
+                return Created(string.Empty, result);
+            }
+            return NotFound();
         }
-
-        [HttpPost]
-        [Authorize(Roles = "Parent")]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, int? childUser)
+        catch
         {
-            try
-            {
-                var idString = _authService.RetrieveIdFromJwtToken(token);
-                int id;
-                if (!int.TryParse(idString, out id))
-                {
-                    return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
-                }
-
-                // If a childUser is specified, check if the parent has a relation to this child
-                if (childUser != null)
-                {
-                    var children = await _childrenService.GetChildrenByParentIdAsync(id);
-                    if (!children.Any(c => c.ChildId == childUser.Value))
-                    {
-                        return BadRequest("You do not have a relation to this child.");
-                    }
-                }
-
-                int result = await _passwordService.CreateOneTimePassword(id, childUser);
-
-                if (result > 0)
-                {
-                    return Created(string.Empty, result);
-                }
-                return NotFound();
-            }
-            catch
-            {
-                return BadRequest("Most likely not logged in or a parent");
-            }
+            return BadRequest("Most likely not logged in or a parent");
         }
+    }
 
-        [HttpPost]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        public async Task<IActionResult> Redeem([FromHeader(Name = "Authorization")] string token, string code)
+    // URL: api/OneTimePassword/Redeem
+    // Redeems a one-time password for the authenticated user
+    // Should maybe change to /api/OneTimePassword/Redeem/{code}
+    [HttpPost]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Redeem([FromHeader(Name = "Authorization")] string token, string code)
+    {
+        try
         {
-            try
+            // Retrieve the user ID from the JWT token
+            var idString = authService.RetrieveIdFromJwtToken(token);
+            if (!int.TryParse(idString, out int id))
             {
-                var idString = _authService.RetrieveIdFromJwtToken(token);
-                if (!int.TryParse(idString, out int id))
-                    return BadRequest("Id is not a number");
-
-
-                var userRole = _authService.RetrieveRoleFromJwtToken(token);
-
-                var result = await _passwordService.RedeemOneTimePassword(code, id);
-
-                if (result > 0)
-                    return Ok("Code redeemed successfully.");
-
-                return BadRequest("Could not redeem code.");
+                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
             }
-            catch
-            {
-                return BadRequest("Most likely not logged in or not a parent");
-            }
+
+            // Redeem the one-time password for the user
+            var userRole = authService.RetrieveRoleFromJwtToken(token);
+            var result = await passwordService.RedeemOneTimePassword(code, id);
+            if (result > 0)
+                return Ok("Code redeemed successfully.");
+
+            return BadRequest("Could not redeem code.");
+        }
+        catch
+        {
+            return BadRequest("Most likely not logged in or not a parent");
         }
     }
 }
+

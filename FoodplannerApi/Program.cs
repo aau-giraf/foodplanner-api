@@ -1,47 +1,52 @@
-using System.Security.Claims;
-using System.Text;
-using Npgsql;
 using FoodplannerDataAccessSql;
 using FoodplannerDataAccessSql.Account;
 using FoodplannerDataAccessSql.Lunchbox;
+using FoodplannerDataAccessSql.Migrations;
+using FoodplannerDataAccessSql.Image;
+using FoodplannerDataAccessSql.Codes;
 using FoodplannerModels;
 using FoodplannerModels.Account;
-using FoodplannerServices.Account;
-using FoodplannerModels.Lunchbox;
-using FoodplannerServices.Lunchbox;
-using FoodplannerDataAccessSql.Image;
-using FoodplannerServices.Image;
-using Minio;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using FoodplannerServices.Auth;
-using FluentMigrator.Runner;
-using FoodplannerDataAccessSql.Migrations;
 using FoodplannerModels.FeedbackChat;
-using FoodplannerServices.FeedbackChat;
-using FoodplannerServices.Secret;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using FoodplannerModels.Lunchbox;
 using FoodplannerModels.Auth;
 using FoodplannerModels.Image;
 using FoodplannerModels.Codes;
-using FoodplannerDataAccessSql.Codes;
+using FoodplannerServices.Account;
+using FoodplannerServices.Lunchbox;
+using FoodplannerServices.Image;
+using FoodplannerServices.Auth;
+using FoodplannerServices.FeedbackChat;
+using FoodplannerServices.Secret;
 using FoodplannerServices.Codes;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Security.Claims;
+using System.Text;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using FluentMigrator.Runner;
+using Npgsql;
+using Minio;
 
+
+// Create the base builder for the web application
 var builder = WebApplication.CreateBuilder(args);
 
 
-//Add environment variables for Infisical and configure SecretsLoader
+// Add services to the container.
+builder.Services.AddControllers();
+
+
+// Configure Dapper to match column names with underscores to property names with PascalCase
+Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
+
+// Add environment variables to the builder for Infisical and setup SecretsLoader
 builder.Configuration.AddEnvironmentVariables(prefix: "INFISICAL_");
 var secretsLoader = new SecretsLoader(builder.Configuration, builder.Environment.EnvironmentName);
 
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
-
-//Configure and add MinIO service
+// Add MinIO to builder and configure it using secrets from SecretsLoader
 var endpoint = secretsLoader.GetSecret("MINIO_ENDPOINT");
 var accessKey = secretsLoader.GetSecret("MINIO_ACCESS");
 var secretKey = secretsLoader.GetSecret("MINIO_SECRET");
@@ -52,9 +57,12 @@ builder.Services.AddMinio(configureClient =>
         .WithTimeout(10000).WithSSL(false)
         .Build()
 );
+
+
 // Add CORS policy
 builder.Services.AddCors(options =>
 {
+    // Allows requests from specific origins (intended for the frontend of foodplanner)
     options.AddPolicy("AllowSpecificOrigins",
         policy =>
         {
@@ -63,24 +71,29 @@ builder.Services.AddCors(options =>
                 .AllowAnyMethod();
         });
 
+    // Allows requests from any origin (for development purposes)
     options.AddPolicy("Development",
         policy =>
     {
-        policy.WithOrigins("*")
+        policy.AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
 });
 
+
+// Add Swagger/OpenAPI support to the builder
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    // Setup Swagger document information
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "Foodplanner API",
         Version = "v1"
     });
 
-    // Add JWT authentication to Swagger
+    // Configure JWT authentication in Swagger
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -91,6 +104,7 @@ builder.Services.AddSwaggerGen(options =>
         Description = "Enter 'Bearer' [space] and then your token in the text input below. Example: \"Bearer 12345abcdef\"",
     });
 
+    // Configure Swagger to allow JWT authentication for API endpoints in bearer scheme
     options.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -106,12 +120,15 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 
+    // Configure Swagger to use inline definitions for enums
     options.SchemaGeneratorOptions = new SchemaGeneratorOptions
     {
         UseInlineDefinitionsForEnums = false
     };
 });
 
+
+// Add PostgreSQL connection factory as a singleton service using secrets from SecretsLoader
 builder.Services.AddSingleton(serviceProvider =>
 {
     var host = secretsLoader.GetSecret("DB_HOST");
@@ -119,26 +136,21 @@ builder.Services.AddSingleton(serviceProvider =>
     var database = secretsLoader.GetSecret("DB_NAME");
     var username = secretsLoader.GetSecret("DB_USER");
     var password = secretsLoader.GetSecret("DB_PASS");
-
     return new PostgreSQLConnectionFactory(host, port, database, username, password);
 });
 
 
-
-// Add services to the container.
-builder.Services.AddControllers();
-
-// Configure JWT authentication
+// Configure user authentication
 var configuration = builder.Configuration;
-
-
 builder.Services.AddAuthentication(cfg =>
 {
+    // Set JWT bearer authentication to the default authentication sheme
     cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(x =>
 {
+    // Configure which parameters are checked for authentication
     x.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
@@ -153,25 +165,25 @@ builder.Services.AddAuthentication(cfg =>
         ),
         ClockSkew = TimeSpan.Zero
     };
+
+    // Adds an additional check for user approval status after JWT validation
     x.Events = new JwtBearerEvents
     {
         OnTokenValidated = context =>
         {
+            // Get the claims principal created from the JWT
             var principal = context.Principal;
             if(principal == null)
             {
                 throw new Exception("Principal claim is null");
             }
 
+            // Check whether users role is approved for given scenario
             var claimsIdentity = principal.Identity as ClaimsIdentity;
-
-            // Get the Status claim
             var statusClaim = claimsIdentity?.FindFirst("RoleApproved")?.Value;
-
             if (statusClaim != true.ToString())
             {
-                // If status is not active, fail the authentication
-                context.Fail("Inactive user status");
+                context.Fail("User role is not approved");
             }
 
             return Task.CompletedTask;
@@ -179,6 +191,8 @@ builder.Services.AddAuthentication(cfg =>
     };
 });
 
+
+// Configure authorization policies and which roles live up to them
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ChildPolicy", policy => policy.RequireRole("Child"));
@@ -187,6 +201,21 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("TeacherPolicy", policy => policy.RequireRole("Teacher", "Admin"));
     options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
 });
+
+
+// Adds FluentMigrator to the builder, which is responsible for migrating the database
+builder.Services.AddFluentMigratorCore()
+    .ConfigureRunner(rb => rb
+        .AddPostgres()
+        .WithGlobalConnectionString(
+            $"Host={secretsLoader.GetSecret("DB_HOST")};" +
+            $"Port={secretsLoader.GetSecret("DB_PORT")};" +
+            $"Database={secretsLoader.GetSecret("DB_NAME")};" +
+            $"Username={secretsLoader.GetSecret("DB_USER")};" +
+            $"Password={secretsLoader.GetSecret("DB_PASS")}")
+        .ScanIn(typeof(InitTables).Assembly).For.Migrations())
+    .AddLogging(lb => lb.AddFluentMigratorConsole());
+
 
 //Dependency Injection Starts Here !
 // Add Repositories
@@ -218,10 +247,6 @@ builder.Services.AddScoped<IMealService, MealService>();
 builder.Services.AddScoped<IPackedIngredientService, PackedIngredientService>();
 builder.Services.AddScoped<IOneTimePasswordService, OneTimePasswordService>();
 builder.Services.AddSingleton<ISecretLoader, SecretsLoader>(_ => secretsLoader);
-
-builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfile));
-builder.Services.AddAutoMapper(typeof(SubIngredientProfile));
-
 builder.Services.AddSingleton<IAuthService, AuthService>();
 
 // Add AutoMapper
@@ -230,31 +255,26 @@ builder.Services.AddAutoMapper(typeof(ChatProfile));
 builder.Services.AddAutoMapper(typeof(PackedIngredientProfile));
 builder.Services.AddAutoMapper(typeof(IngredientProfile));
 builder.Services.AddAutoMapper(typeof(MealProfile));
-builder.Services.AddAutoMapper(typeof(ChildrenProfile));
-builder.Services.AddAutoMapper(typeof(ClassroomProfile));
 builder.Services.AddAutoMapper(typeof(ImageProfile));
+builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfile));
+builder.Services.AddAutoMapper(typeof(SubIngredientProfile));
 
 
 
-builder.Services.AddFluentMigratorCore()
-    .ConfigureRunner(rb => rb
-        .AddPostgres()
-        .WithGlobalConnectionString(
-            $"Host={secretsLoader.GetSecret("DB_HOST")};" +
-            $"Port={secretsLoader.GetSecret("DB_PORT")};" +
-            $"Database={secretsLoader.GetSecret("DB_NAME")};" +
-            $"Username={secretsLoader.GetSecret("DB_USER")};" +
-            $"Password={secretsLoader.GetSecret("DB_PASS")}")
-        .ScanIn(typeof(InitTables).Assembly).For.Migrations())
-    .AddLogging(lb => lb.AddFluentMigratorConsole()); //Add logging to migrations to see state.
 
 
+
+// Builds the application
 var app = builder.Build();
+
 
 // Run migrations at application startup
 using (var scope = app.Services.CreateScope())
 {
+    // Finds the FluentMigrator service
     var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
+
+    // Goes through any migrations not yet applied
     if (runner.HasMigrationsToApplyUp())
     {
         runner.ListMigrations();
@@ -262,7 +282,8 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Configure the HTTP request pipeline.
+
+// Generates swagger page if the application is in development mode
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger(c =>
@@ -277,17 +298,21 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
 // Apply CORS policy
 if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
     app.UseCors("Development");
 else app.UseCors("AllowSpecificOrigins");
 
+
+// Initializes various parts of the application
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-// New endpoint to test database connection
+
+// Creates a new end-point to test PostgreSQL connection
 app.MapGet("/test-db-connection", async (PostgreSQLConnectionFactory connectionFactory) =>
     {
         try
@@ -306,8 +331,11 @@ app.MapGet("/test-db-connection", async (PostgreSQLConnectionFactory connectionF
     .WithName("TestDbConnection")
     .WithOpenApi();
 
+
 // Configure the application to listen on all network interfaces
 var backendPort = secretsLoader.GetSecret("BACKEND_PORT");
 app.Urls.Add($"http://0.0.0.0:{backendPort}");
 
+
+// Runs the finalized application
 app.Run();

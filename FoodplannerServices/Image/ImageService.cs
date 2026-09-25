@@ -5,12 +5,13 @@ using Minio.DataModel.Args;
 
 namespace FoodplannerServices.Image;
 
+// Image service implementation for handling image storage and retrieval using MinIO.
 public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger) : IImageService
 {
     private static readonly string UserImageBucket = "user-images";
     private static readonly int PresignedExpiry = 604800;
 
-
+    // Save an image to the MinIO bucket and return its ID.
     public async Task<Guid> SaveImageAsync(int userId, Stream imageStream, string contentType)
     {
         var imageId = Guid.NewGuid();
@@ -33,6 +34,7 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         return imageId;
     }
 
+    // Load an image from the MinIO bucket and write it to the provided output stream.
     public async Task LoadImageStreamAsync(int userId, Guid imageId, Stream outStream)
     {
         string objectName = ObjectName(userId, imageId, "");
@@ -44,6 +46,7 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         logger.LogInformation($"{imageObject.Size} bytes read from bucket [{UserImageBucket}].");
     }
 
+    // Get a presigned URL for an image in the MinIO bucket, allowing temporary access to the image.
     public async Task<string?> LoadImagePresignedAsync(int userId, Guid imageId, string contentType)
     {
         var presignedGetArgs = new PresignedGetObjectArgs()
@@ -58,6 +61,7 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         return imageUrl;
     }
 
+    // Delete an image from the MinIO bucket by user ID and image ID.
     public async Task<bool> DeleteImageAsync(int userId, Guid imageId, string contentType)
     {
         EnsureInitializedAsync().Wait();
@@ -70,6 +74,7 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         return true;
     }
 
+    // Delete multiple images from the MinIO bucket by user ID and a list of image IDs.
     public async Task<bool> DeleteImagesAsync(int userId, IEnumerable<Guid> imageIds)
     {
         EnsureInitializedAsync().Wait();
@@ -88,6 +93,7 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         return false;
     }
 
+    // Ensure that the MinIO bucket for user images exists, creating it if necessary.
     private async Task EnsureInitializedAsync()
     {
         var bucketExistsArgs = new BucketExistsArgs().WithBucket(UserImageBucket);
@@ -98,6 +104,7 @@ public class ImageService(IMinioClient minioClient, ILogger<ImageService> logger
         await minioClient.MakeBucketAsync(makeBucketArgs);
     }
 
+    // Generate the object name for an image in the MinIO bucket based on user ID, image ID, and optional file extension.
     private string ObjectName(int userId, Guid imageId, string? extension)
     {
         var ext = (extension != null) ? $".{extension.Split("/").Last()}" : string.Empty;

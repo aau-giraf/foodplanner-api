@@ -1,33 +1,20 @@
 using FoodplannerModels.Account;
-using FoodplannerServices;
-using FoodplannerServices.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using FoodplannerServices.Auth;
 using FoodplannerModels.Auth;
 using FoodplannerModels.Codes;
 
 namespace FoodplannerApi.Controller;
 
-public class UsersController : BaseController
+public class UsersController(IUserService userService, IAuthService authService, IOneTimePasswordService oneTimePasswordService) : BaseController
 {
-    private readonly IUserService _userService;
-    private readonly IAuthService _authService;
-    private readonly IOneTimePasswordService _oneTimePasswordService;
 
-    public UsersController(IUserService userService, IAuthService authService, IOneTimePasswordService oneTimePasswordService)
-    {
-        _userService = userService;
-        _authService = authService;
-        _oneTimePasswordService = oneTimePasswordService;
-    }
-
+    // URL: api/Users/GetBearerTest
+    // Generates a JWT token for development purposes with a hardcoded user
     [HttpGet]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetBearerTest()
     {
-        //Generates a token for development purposes, Status must be Active.
         //Roles can be: Admin, Child, Teacher, Parent
         var user = new User
         {
@@ -39,28 +26,33 @@ public class UsersController : BaseController
             Role = UserRole.Admin,
             RoleApproved = true
         };
-
-        var token = _authService.GenerateJWTToken(user);
-
+        var token = authService.GenerateJWTToken(user);
         return Ok(token);
     }
 
+    // URL: api/Users/Create
+    // Creates a new non-child user from UserCreateDTO
     [HttpPost]
-    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] UserCreateDTO userCreateDto)
     {
+        // Check if the role is Child, which is not allowed for this endpoint
         if (Enum.TryParse<UserRole>(userCreateDto.Role, true, out var parsedRole) && parsedRole == UserRole.Child)
         {
-            return BadRequest(new ErrorResponse { Message = ["Børn må ikke laves med dette endpoint, istedet skal CreateUserChildren bruges."] });
+            return BadRequest(new ErrorResponse { Message = ["Children must be created using the CreateUserChildren endpoint."] });
         }
         
+        // Validate the model state to ensure the incoming data is valid
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
+
+        // Calls the service to create a new user and returns the result
         try
         {
-            var id = await _userService.CreateUserAsync(userCreateDto);
+            var id = await userService.CreateUserAsync(userCreateDto);
             if (id > 0)
             {
                 return Created(string.Empty, id);
@@ -73,24 +65,29 @@ public class UsersController : BaseController
         }
     }
     
+    // URL: api/Users/CreateUserChildren
+    // Creates a new child user from UserCreateChildDTO, which is associated with the parent user of authorization token
     [HttpPost]
-    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateUserChildren([FromHeader(Name = "Authorization")] string token, [FromBody] UserCreateChildDTO userCreateChildDto)
     {
+        // Validate the model state to ensure the incoming data is valid
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
         try
         {
-            var idString = _authService.RetrieveIdFromJwtToken(token);
+            // Retrieve the user ID from the JWT token
+            var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int parentId))
             {
-                return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
             }
 
-            var id = await _userService.CreateChildrenUserAsync(userCreateChildDto, parentId);
-
+            // Calls the service to create a new child user associated with the user ID
+            var id = await userService.CreateChildrenUserAsync(userCreateChildDto, parentId);
             if (id > 0)
             {
                 return Created(string.Empty, id);
@@ -99,24 +96,26 @@ public class UsersController : BaseController
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new ErrorResponse { Email = new[] { e.Message } });
+            return BadRequest(new ErrorResponse { Email = [e.Message] });
         }
     }
 
+    // URL: api/Users/Login
+    // Authenticates a non-child user with LoginDTO and returns a JWT token if successful
     [HttpPost]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Login([FromBody] LoginDTO login)
     {
-
+        // Validate the model state to ensure the incoming data is valid
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
         try
         {
-            var result = await _userService.GetJWTByEmailAndPasswordAsync(login.Email, login.Password);
+            var result = await userService.GetJWTByEmailAndPasswordAsync(login.Email, login.Password);
             
             //TODO: Handle usecase for parent using one time password
             /*if (!string.IsNullOrEmpty(user.Code) && result != null)
@@ -125,13 +124,13 @@ public class UsersController : BaseController
                 {
                     return BadRequest(new ErrorResponse { Message = ["Børn må ikke laves med dette endpoint, istedet skal LoginChild bruges."] });
                 }
-                var code = await _oneTimePasswordService.GetOneTimePassword(user.Code);
+                var code = await oneTimePasswordService.GetOneTimePassword(user.Code);
                 code.Used = true;
-                code.UsedByUser = int.Parse(_authService.RetrieveIdFromJwtTokenNoBearer(result.JWT));
+                code.UsedByUser = int.Parse(authService.RetrieveIdFromJwtTokenNoBearer(result.JWT));
 
-                if (await _oneTimePasswordService.UpdateOneTimePassword(code) == 0)
+                if (await oneTimePasswordService.UpdateOneTimePassword(code) == 0)
                     return BadRequest(new ErrorResponse { Message = ["Fejlede i at opdatere engangskode"] });
-                if (await _oneTimePasswordService.RedeemOneTimePassword(code.Code) == 0)
+                if (await oneTimePasswordService.RedeemOneTimePassword(code.Code) == 0)
                     return BadRequest(new ErrorResponse{ Message = ["Fejlede i at indløse engangskode"] });
             }*/
 
@@ -147,50 +146,63 @@ public class UsersController : BaseController
         }
     }
 
+    // URL: api/Users/LoginChild
+    // Authenticates a child user with LoginChild and returns a JWT token if successful
     [HttpPost]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> LoginChild([FromBody] LoginChild user)
     {
+        // Validate the model state to ensure the incoming data is valid
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
         try
         {
-            var result = await _userService.GetJWTByEmailAsync(user.Email);
+            // Calls the service to authenticate the child user and retrieve a JWT token
+            var result = await userService.GetJWTByEmailAsync(user.Email);
             if (!string.IsNullOrEmpty(user.Code) && result != null)
             {
-                int id = int.Parse(_authService.RetrieveIdFromJwtTokenNoBearer(result.JWT));
-                if (await _oneTimePasswordService.RedeemOneTimePassword(user.Code, id) == 0)
+                // If a one-time password is provided, redeem it for the user
+                int id = int.Parse(authService.RetrieveIdFromJwtTokenNoBearer(result.JWT));
+                if (await oneTimePasswordService.RedeemOneTimePassword(user.Code, id) == 0)
                     return BadRequest("Failed while trying to redeem the one time code");
             }
 
+            // Return the JWT token if authentication is successful, otherwise return a bad request response
             if (result != null)
             {
                 return Ok(result);
             }
-            return BadRequest(new ErrorResponse { Message = ["Email eller password er forkert"] });
+            return BadRequest(new ErrorResponse { Message = ["Email or password is wrong"] });
         }
         catch
         {
-            return BadRequest(new ErrorResponse { Message = ["Email eller password er forkert"] });
+            return BadRequest(new ErrorResponse { Message = ["Email or password is wrong"] });
         }
     }
 
+    // URL: api/Users/UpdatePinCode
+    // Updates the pin code for the authenticated user
     [HttpPut]
     [Authorize(Roles = "Child, Parent")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdatePinCode([FromHeader(Name = "Authorization")] string token, [FromBody] Pincode pincode)
     {
         try
         {
-            var idString = _authService.RetrieveIdFromJwtToken(token);
+            // Retrieve the user ID from the JWT token
+            var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id))
             {
-                return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
             }
-            var result = await _userService.UpdateUserPinCodeAsync(pincode.PinCode, id);
+
+            // Calls the service to update the pin code for the user
+            var result = await userService.UpdateUserPinCodeAsync(pincode.PinCode, id);
             if (result.Length > 0)
             {
                 return Created();
@@ -203,6 +215,8 @@ public class UsersController : BaseController
         }
     }
 
+    // URL: api/Users/CheckPinCode
+    // Checks if the provided pin code matches the authenticated users pin code
     [HttpPost]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
@@ -212,16 +226,16 @@ public class UsersController : BaseController
     {
         try
         {
-            var idString = _authService.RetrieveIdFromJwtToken(token);
+            // Retrieve the user ID from the JWT token
+            var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id))
             {
-                return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
             }
-            var result = await _userService.GetUserByIdAndPinCodeAsync(id, pincode.PinCode);
 
+            // Calls the service to check if pin codes match and returns the result
+            var result = await userService.GetUserByIdAndPinCodeAsync(id, pincode.PinCode);
             return Ok(result);
-
-            //return BadRequest(new ErrorResponse {Message = ["Forkert pinkode"]});
         }
         catch (InvalidOperationException e)
         {
@@ -229,6 +243,8 @@ public class UsersController : BaseController
         }
     }
 
+    // URL: api/Users/EmailExists
+    // Checks if the provided email exists in the system
     [HttpGet]
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -236,26 +252,32 @@ public class UsersController : BaseController
     {
         if (string.IsNullOrWhiteSpace(email))
         {
-            return BadRequest(new ErrorResponse { Message = ["Email skal angives"] });
+            return BadRequest(new ErrorResponse { Message = ["Email is required"] });
         }
 
-        var exists = await _userService.UserEmailExistsAsync(email);
+        var exists = await userService.UserEmailExistsAsync(email);
         return Ok(new { EmailExists = exists });
     }
 
-
+    // URL: api/Users/HasPinCode
+    // Checks if the authenticated user has a pin code set
     [HttpGet]
     [Authorize(Roles = "Child, Parent")]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> HasPinCode([FromHeader(Name = "Authorization")] string token)
     {
         try
         {
-            var idString = _authService.RetrieveIdFromJwtToken(token);
+            // Retrieve the user ID from the JWT token
+            var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id))
             {
-                return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
             }
-            var result = await _userService.UserHasPinCodeAsync(id);
+
+            // Calls the service to check if the user has a pin code and returns the result
+            var result = await userService.UserHasPinCodeAsync(id);
             return Ok(new { HasPinCode = result });
         }
         catch (InvalidOperationException e)
@@ -264,31 +286,44 @@ public class UsersController : BaseController
         }
     }
 
+    // URL: api/Users/GetLoggedIn
+    // Retrieves the currently logged-in user based on the authorization token
     [HttpGet]
     [Authorize(Roles = "Child, Parent, Teacher, Admin")]
+    [ProducesResponseType(typeof(UserDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetLoggedIn([FromHeader(Name = "Authorization")] string token)
     {
-
-        var idString = _authService.RetrieveIdFromJwtToken(token);
+        // Retrieve the user ID from the JWT token
+        var idString = authService.RetrieveIdFromJwtToken(token);
         if (!int.TryParse(idString, out int id))
         {
-            return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+            return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
         }
-        var user = await _userService.GetLoggedInUserAsync(id);
+
+        // Calls the service to retrieve the logged-in user and returns the result
+        var user = await userService.GetLoggedInUserAsync(id);
         return Ok(user);
     }
 
+    // URL: api/Users/UpdateLoggedIn
+    // Updates the currently logged-in user based on the authorization token and UserUpdateLoggedInDTO
     [HttpPut]
     [Authorize(Roles = "Parent, Child,  Teacher, Admin")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateLoggedIn([FromHeader(Name = "Authorization")] string token, [FromBody] UserUpdateLoggedInDTO user)
     {
-        var idString = _authService.RetrieveIdFromJwtToken(token);
+        // Retrieve the user ID from the JWT token
+        var idString = authService.RetrieveIdFromJwtToken(token);
         if (!int.TryParse(idString, out int id))
         {
-            return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+            return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
         }
 
-        var result = await _userService.UpdateUserLoggedInAsync(id, user);
+        // Calls the service to update the logged-in user and returns the result
+        var result = await userService.UpdateUserLoggedInAsync(id, user);
         if (result > 0)
         {
             return Created();
@@ -296,17 +331,24 @@ public class UsersController : BaseController
         return NotFound();
     }
 
+    // URL: api/Users/UpdatePassword
+    // Updates the password for the currently logged-in user based on the authorization token and Password
     [HttpPut]
     [Authorize(Roles = "Parent, Child,  Teacher, Admin")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdatePassword([FromHeader(Name = "Authorization")] string token, [FromBody] Password password)
     {
-        var idString = _authService.RetrieveIdFromJwtToken(token);
+        // Retrieve the user ID from the JWT token
+        var idString = authService.RetrieveIdFromJwtToken(token);
         if (!int.TryParse(idString, out int id))
         {
-            return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+            return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
         }
 
-        var result = await _userService.UpdateUserPasswordAsync(password.password, id);
+        // Calls the service to update the password for the logged-in user and returns the result
+        var result = await userService.UpdateUserPasswordAsync(password.password, id);
         if (result > 0)
         {
             return Created();
@@ -314,25 +356,28 @@ public class UsersController : BaseController
         return NotFound();
     }
 
+    // URL: api/Users/DeleteLoggedIn
+    // Deletes the currently logged-in user based on the authorization token
     [HttpDelete]
     [Authorize(Roles = "Parent, Child, Teacher, Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> DeleteLoggedInUser([FromHeader(Name = "Authorization")] string token)
     {
-        var idString = _authService.RetrieveIdFromJwtToken(token);
+        // Retrieve the user ID from the JWT token
+        var idString = authService.RetrieveIdFromJwtToken(token);
         if (!int.TryParse(idString, out int id))
         {
-            return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+            return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
         }
 
-        int result = await _userService.DeleteUserAsync(id);
-
+        // Calls the service to delete the logged-in user and returns the result
+        int result = await userService.DeleteUserAsync(id);
         if (result > 0)
         {
             return NoContent();
         }
         return NotFound();
     }
-
 }

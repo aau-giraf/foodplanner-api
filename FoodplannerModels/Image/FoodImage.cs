@@ -1,5 +1,6 @@
 ﻿namespace FoodplannerModels.Image;
 
+// Represents a food image with its metadata.
 public class FoodImage
 {
     public int Id;
