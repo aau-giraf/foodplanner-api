@@ -2,6 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FoodplannerModels.Account;
 
+// Create a child account DTO
+// with error messages
 public class UserCreateChildDTO
 {
     [Required(ErrorMessage = "Fornavn er påkrævet")]
