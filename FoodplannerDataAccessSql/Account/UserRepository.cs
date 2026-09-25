@@ -11,11 +11,14 @@ namespace FoodplannerDataAccessSql.Account
 
         private readonly PostgreSQLConnectionFactory _connectionFactory;
 
+        // Constructor for user repository
         public UserRepository(PostgreSQLConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
 
+        /* Asynchronously deletes a user from the users table based on their ID
+        Uses a transaction to roll back the deletion if an error occurs*/
         public async Task<int> DeleteAsync(int id)
         {
             var deleteUserSql = "DELETE FROM users WHERE id = @Id";
@@ -38,6 +41,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
+        //Asynchronously retrieves all users from the users table, ordered by first name
         public async Task<IEnumerable<User>> GetAllAsync()
         {
             var sql = "SELECT id, first_name, last_name, email, role, archived FROM users ORDER BY first_name";
@@ -49,6 +53,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
+        //Asynchronously retrieves a user from the users table based on their email address
         public async Task<User?> GetUserByEmailAsync(string email)
         {
             var sql = "SELECT * FROM users WHERE email = @Email";
@@ -60,6 +65,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
+        // Asynchronously retrieves a user from the users table based on their ID
         public async Task<User?> GetByIdAsync(int id)
         {
             var sql = "SELECT id, first_name, last_name, email, role, role_approved FROM users WHERE id = @Id";
@@ -72,6 +78,7 @@ namespace FoodplannerDataAccessSql.Account
 
         }
 
+        // Asynchronously retrieves all users whose roles have not been approved
         public async Task<IEnumerable<User>> GetAllNotApprovedAsync()
         {
             var sql = "SELECT id, first_name, last_name, email, role FROM users WHERE role_approved = false";
@@ -83,6 +90,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
+        // Asynchronously checks if a user with the given email exists returns true if the user exists, false otherwise
         public async Task<bool> EmailExistsAsync(string email)
         {
             var sql = "SELECT COUNT(1) FROM users WHERE email = @Email";
@@ -94,6 +102,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
+        // Asynchronously inserts a new user into the users table and returns the ID of the newly inserted user
         public async Task<int> InsertAsync(User entity)
         {
             var sql = "INSERT INTO users (first_name, last_name, email, password, role, role_approved) VALUES (@FirstName, @LastName, @Email, @Password, @role, @RoleApproved) RETURNING id";
@@ -116,7 +125,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-
+        // updates an existing user's first name, last name, email, and password based on the user's ID
         public Task<int> UpdateAsync(User entity)
         {
             var sql = "UPDATE users SET first_name = @FirstName, last_name = @LastName, email = @Email, password = @Password WHERE id = @Id";
@@ -138,6 +147,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
+        // Asynchronously updates the pincode of a user based on their ID and returns the updated pincode
         public async Task<string> UpdatePinCodeAsync(string pinCode, int id)
         {
             var sql = "UPDATE users SET pincode = @PinCode WHERE id = @Id RETURNING pincode";
@@ -160,6 +170,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
+        // Asynchronously retrieves a user's pincode based on their ID, throws an exception if the pincode is not found
         public async Task<string> GetPinCodeByIdAsync(int id)
         {
             var sql = "SELECT pincode FROM users WHERE id = @Id";
@@ -180,6 +191,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
+        // Asynchronously checks whether a user has a pincode, returns true if the user has a pincode, false otherwise
         public async Task<bool> HasPinCodeAsync(int id)
         {
             var sql = "SELECT COUNT(1) FROM users WHERE id = @Id AND pincode IS NOT NULL";
@@ -192,7 +204,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
-
+        // Asynchronously toggles a user's archived status, returns true if the archived status was sucessfully updated
         public async Task<bool> UpdateArchivedAsync(int id)
         {
             var selectSql = "SELECT archived FROM users WHERE id = @Id";
@@ -210,6 +222,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
+        // Asynchronously updates whether a user's role has been approved
         public async Task<bool> UpdateRoleApprovedAsync(int id, bool roleApproved)
         {
             var sql = "UPDATE users SET role_approved = @RoleApproved WHERE id = @Id";
@@ -221,6 +234,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
+        // Asynchronously retrieves all users who are not archived.
         public async Task<IEnumerable<User?>> SelectAllNotArchivedAsync()
         {
             var sql = "SELECT * FROM users WHERE archived = false";
@@ -232,6 +246,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
+        // Asynchronously retrieves the logged-in user's information based on their ID, throws an exception if the user is not found
         public async Task<User> GetLoggedInAsync(int id)
         {
             var sql = "SELECT id, first_name, last_name, email, role, role_approved FROM users WHERE id = @Id";
@@ -252,6 +267,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
+        // Asynchronously updates the logged-in user's first name, last name, and email based on their ID
         public async Task<int> UpdateLoggedInAsync(int id, UserUpdateLoggedInDTO userUpdateLoggedInDto)
         {
             var sql = "UPDATE users SET first_name = @FirstName, last_name = @LastName, email = @Email WHERE id = @Id RETURNING id";
@@ -269,6 +285,7 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
 
+        // Asynchronously updates a user's password based on their ID.
         public async Task<int> UpdatePasswordAsync(string password, int id)
         {
             var sql = "UPDATE users SET password = @Password WHERE id = @Id";
