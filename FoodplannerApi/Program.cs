@@ -18,6 +18,7 @@ using FoodplannerServices.Auth;
 using FoodplannerServices.FeedbackChat;
 using FoodplannerServices.Secret;
 using FoodplannerServices.Codes;
+using FoodplannerServices.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -29,7 +30,7 @@ using Npgsql;
 using Minio;
 
 
-// Create the base builder for the web application
+// Create a builder for the web application
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -169,6 +170,18 @@ builder.Services.AddAuthentication(cfg =>
     // Adds an additional check for user approval status after JWT validation
     x.Events = new JwtBearerEvents
     {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+
+            if (!string.IsNullOrEmpty(accessToken) &&
+                context.HttpContext.Request.Path.StartsWithSegments("/hubs/chat"))
+            {
+                context.Token = accessToken;
+            }
+
+            return Task.CompletedTask;
+        },
         OnTokenValidated = context =>
         {
             // Get the claims principal created from the JWT
@@ -247,7 +260,12 @@ builder.Services.AddScoped<IMealService, MealService>();
 builder.Services.AddScoped<IPackedIngredientService, PackedIngredientService>();
 builder.Services.AddScoped<IOneTimePasswordService, OneTimePasswordService>();
 builder.Services.AddSingleton<ISecretLoader, SecretsLoader>(_ => secretsLoader);
+
+builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfile));
+builder.Services.AddAutoMapper(typeof(SubIngredientProfile));
+
 builder.Services.AddSingleton<IAuthService, AuthService>();
+builder.Services.AddSignalR();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(UserProfile));
@@ -310,6 +328,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<ChatHub>("/hubs/chat");
 
 
 // Creates a new end-point to test PostgreSQL connection

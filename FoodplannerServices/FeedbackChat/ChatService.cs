@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using FoodplannerModels.Account;
+using FoodplannerServices.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 
 
 namespace FoodplannerServices.FeedbackChat
@@ -12,12 +15,18 @@ namespace FoodplannerServices.FeedbackChat
         private readonly IChatRepository _chatRepository;
         private readonly IMapper _mapper;
         private readonly IChildrenRepository _childrenRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IHubContext<ChatHub> _hubContext;
+        private readonly ILogger<ChatService> _logger;
 
-        public ChatService(IChatRepository chatRepository, IMapper mapper, IChildrenRepository childrenRepository)
+        public ChatService(IChatRepository chatRepository, IMapper mapper, IChildrenRepository childrenRepository, IUserRepository userRepository, IHubContext<ChatHub> hubContext, ILogger<ChatService> logger)
         {
             _childrenRepository = childrenRepository;
             _chatRepository = chatRepository;
             _mapper = mapper;
+            _userRepository = userRepository;
+            _hubContext = hubContext;
+            _logger = logger;
         }
 
         // Methods for ChatThread
@@ -26,8 +35,26 @@ namespace FoodplannerServices.FeedbackChat
             var message = _mapper.Map<Message>(messageDTO);
             message.Date = System.DateTime.Now;
             message.UserId = userId;
-            
+
             await _chatRepository.InsertAsync(message);
+
+            try
+            {
+                var messageDto = _mapper.Map<UserNameFeedbackChatDTO>(message);
+
+                var user = await _userRepository.GetByIdAsync(userId);
+                if (user != null)
+                {
+                    messageDto.FirstName = user.FirstName;
+                }
+
+                await _hubContext.Clients.Group($"thread-{message.ChatThreadId}").SendAsync("ReceiveMessage", messageDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to broadcast new FeedbackChat message to group thread-{message.ChatThreadId}");
+            }
+
             return true;
         }
 
