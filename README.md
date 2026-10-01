@@ -58,7 +58,7 @@ New migrations are added by including a new file in the [Migrations folder](http
 
 Ensure you have the following installed:
 
--   [ASP.NET Core SDK](https://dotnet.microsoft.com/en-us/download)
+-   [ASP.NET Core SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 -   [Docker](https://www.docker.com) (optional, for containerized deployment)
 
 An active [Infisical](https://infisical.com/) project must exist for managing secrets, either use the existing project, create a new one or overwrite all secrets. 
@@ -77,7 +77,7 @@ git clone https://github.com/aau-giraf/foodplanner-api.git
 2. Navigate to the project directory:
 
 ```bash
-cd foodplanner-api/foodplannerApi
+cd foodplanner-api/FoodplannerApi
 ```
 
 3. Install dependencies:
@@ -280,63 +280,43 @@ Then add the following line to the end of the file.
 
 This will run the bash script once every minute and write the output to `docker-deploy.log`
 
-## Running the API Locally
-### Setup local database.
-Have docker installed.
-1. Create a file in a local folder named docker-compose-example.yaml (Its gonna be the name of the docker container)
-  ```yml
-docker-compose-example.yaml
-``` 
-2. Paste in the following:
-    ```yml
-	version: '3.8'
-	
-	services:
-	  minio:
-	    image: minio/minio:latest
-	    container_name: minio_giraf_local
-	    restart: unless-stopped
-	    ports:
-	      - "9000:9000"
-	      - "9001:9001"
-	    volumes:
-	      - ./minio/data:/mnt/data
-	    environment:
-	      - MINIO_ROOT_USER=girafminio
-	      - MINIO_ROOT_PASSWORD=girafminio
-	      - MINIO_VOLUMES=/mnt/data
-	    command: server /mnt/data --console-address ":9001"
-	
-	  postgres:
-	    image: postgres:latest
-	    container_name: postgres_giraf_local
-	    restart: unless-stopped
-	    ports:
-	      - "7654:5432"
-	    volumes:
-	      - ./postgres/data:/var/lib/postgresql/data
-	    environment:
-	      - POSTGRES_PASSWORD=postgres
-	      - POSTGRES_USER=postgres
-	      - POSTGRES_DB=giraf
-	
-	  adminer:
-	    image: adminer
-	    restart: unless-stopped
-	    container_name: adminer_giraf_local
-	    ports:
-	      - "8000:8080"
+### Running the API Locally
+1. Overwriting environment variables, by adding to the `"Infisical"` group in the `appsettings.Development.json`.
+
+    ```json
+    ...
+    "Infisical": {
+        "ClientId": "<ClientId>",
+        "ClientSecret": "<ClientSecret>",
+        "Workspace": "<Workspace>",
+
+        "MINIO_ENDPOINT": "localhost:9000",
+        "MINIO_ACCESS": "girafminio",
+        "MINIO_SECRET": "girafminio",
+
+        "DB_HOST": "localhost",
+        "DB_PORT": "7654",
+        "DB_NAME": "giraf",
+        "DB_USER": "postgres",
+        "DB_PASS": "postgres",
+
+        "JWT_SECRET": "<TopSecret>",
+        "BACKEND_PORT": "8080"
+    }
+    ...
     ```
 
-3. Open cmd
-4. Change directory to the folder containing the yml file:
-   ```bash
-	cd PATH TO YOUR FOLDER.
-	```
-5. Run your yml
+2. Have docker installed. Rename the file called `docker-compose-example.yml` to `docker-compose.yml` and update the credentials.
+
+3. Change directory to the folder containing the yml file:
     ```bash
-	docker compose -f docker-compose-example.yaml up
-	```
+    cd PATH TO YOUR FOLDER.
+    ```
+
+4. Run the docker compose file using the following command:
+    ```bash
+    docker compose -f docker-compose.yml up
+    ```
 
 > [!IMPORTANT]
 > The credentials must match the Infisical setup for development in secrets.
@@ -352,19 +332,33 @@ docker-compose-example.yaml
 **Password**: postgres<br>
 **Database**: giraf
 
-6. Start the API locally:
+6. Navigate to the project directory:
 
-```bash
-dotnet run
-```
+    ```bash
+    cd foodplanner-api/FoodplannerApi
+    ```
 
-2. The API will be available at https://localhost:8080
+7. Start the API locally:
+
+    ```bash
+    dotnet run
+    ```
 
 ## API Documentation
 
 The API is documented using Swagger, available at:
 
--   https://localhost:8080/swagger/index.html
+-   http://localhost:8080/swagger/index.html
+
+## Testing
+Navigate to the `Test` directory.
+```bash
+cd foodplanner-api/Test
+```
+Run all tests with:
+```bash
+dotnet test
+```
 
 # Contributing
 

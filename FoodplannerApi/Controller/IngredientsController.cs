@@ -4,43 +4,44 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using FoodplannerModels.Auth;
 
+// Adds the IngredientsController to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
 
-/**
-* The IngredientsController class handles CRUD (Create, Read, Update, Delete) operations for the Ingredient entity.
-* It uses the IngredientService to interact with the database and process ingredient-related requests.
-*/
 public class IngredientsController(IIngredientService ingredientService, IAuthService authService) : BaseController
 {
-    // Private field to hold the injected IngredientService.
-    private readonly IIngredientService _ingredientService = ingredientService;
-    private readonly IAuthService _authService = authService;
 
-    // Get all ingredients
+    // URL: api/Ingredients/GetAll
+    // Retrieves all ingredients. Returns 200 OK with the list of ingredients.
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
+    [ProducesResponseType(typeof(IEnumerable<IngredientDTO>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
-        // Calls the service to fetch all ingredients
-        var ingredients = await _ingredientService.GetAllIngredientsAsync(); // Fetch all ingredients.
-        return Ok(ingredients); // Returns the list of ingredients with a 200 OK status
+        var ingredients = await ingredientService.GetAllIngredientsAsync();
+        return Ok(ingredients);
     }
 
-    // Get all ingredients by user
+    // URL: api/Ingredients/GetAllByUser
+    // Retrieves all ingredients associated with a user ID extracted from the JWT token in the Authorization header.
     [HttpGet]
     [Authorize(Roles = "Child, Parent")]
+    [ProducesResponseType(typeof(IEnumerable<IngredientDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAllByUser([FromHeader(Name = "Authorization")] string token)
     {
         try
         {
-            var idString = _authService.RetrieveIdFromJwtToken(token);
+
+            // Retrieves user id from JWT token in the Authorization header.
+            var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id))
             {
-                return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
             }
+
             // Calls the service to fetch all ingredients
-            var ingredients = await _ingredientService.GetAllIngredientsByUserAsync(id); // Fetch all ingredients by user.
-            return Ok(ingredients); // Returns the list of ingredients with a 200 OK status
+            var ingredients = await ingredientService.GetAllIngredientsByUserAsync(id);
+            return Ok(ingredients);
         }
         catch (InvalidOperationException e)
         {
@@ -48,65 +49,78 @@ public class IngredientsController(IIngredientService ingredientService, IAuthSe
         }
     }
 
-    // Get a specific ingredient by ID
+    // URL: api/Ingredients/Get/{id}
+    // Retrieves an ingredient by its ID.
     [HttpGet("{id}")]
     [Authorize(Roles = "Child, Parent")]
+    [ProducesResponseType(typeof(IngredientDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(int id)
     {
-        var ingredient = await _ingredientService.GetIngredientByIdAsync(id); // Fetch the ingredient by ID.
+        var ingredient = await ingredientService.GetIngredientByIdAsync(id);
         if (ingredient == null)
-        {  // Check if the ingredient exists
-            return NotFound(); // Returns 404 if not found
+        {
+            return NotFound();
         }
-        return Ok(ingredient); // Returns the found ingredient with a 200 OK status
+        return Ok(ingredient);
     }
 
-    // Create a new ingredient
+    // URL: api/Ingredients/Create
+    // Creates a new ingredient associated with the user ID extracted from the JWT token in the Authorization header.
     [HttpPost]
     [Authorize(Roles = "Child, Parent")]
+    [ProducesResponseType(typeof(IngredientDTO), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] IngredientDTO ingredient)
     {
-        var idString = _authService.RetrieveIdFromJwtToken(token); // Use the method to get the parentId from the token
+        // Retrieves user id from JWT token in the Authorization header.
+        var idString = authService.RetrieveIdFromJwtToken(token);
         if (!int.TryParse(idString, out int id))
         {
-            return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+            return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
         }
-        // Calls the service to fetch the ingredient by ID
-        var result = await _ingredientService.CreateIngredientAsync(ingredient, id);
+
+        // Calls the service to create a new ingredient associated with the user ID
+        var result = await ingredientService.CreateIngredientAsync(ingredient, id);
         if (result > 0)
         {
-            var createdIngredient = await _ingredientService.GetIngredientByIdAsync(result);
+            var createdIngredient = await ingredientService.GetIngredientByIdAsync(result);
             return CreatedAtAction(nameof(Get), new { id = result }, createdIngredient);
         }
         return BadRequest();
     }
 
-    // Update an existing ingredient
+    // URL: api/Ingredients/Update/{id}
+    // Updates an existing ingredient by its ID using provided IngredientDTO.
     [HttpPut("{id}")]
     [Authorize(Roles = "Child, Parent")]
+    [ProducesResponseType(typeof(IngredientDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update([FromBody] IngredientDTO ingredientDto, int id)
     {
-        var result = await _ingredientService.UpdateIngredientAsync(ingredientDto, id); // Calls the service to update the ingredient by ID
+        var result = await ingredientService.UpdateIngredientAsync(ingredientDto, id);
         if (result > 0)
         {
-            var changedIngredient = await _ingredientService.GetIngredientByIdAsync(id); // Fetch updated ingredient
-            return Ok(changedIngredient); // Returns the updated ingredient with a 200 OK status
+            var changedIngredient = await ingredientService.GetIngredientByIdAsync(id);
+            return Ok(changedIngredient);
         }
-        return BadRequest(); // Returns 400 if the update fails
+        return BadRequest();
     }
 
-    // Delete an ingredient by ID
+    // URL: api/Ingredients/Delete/{id}
+    // Deletes an ingredient by its ID, returns deleted ingredient if successful.
     [HttpDelete("{id}")]
     [Authorize(Roles = "Child, Parent")]
+    [ProducesResponseType(typeof(IngredientDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
     {
-        // Calls the service to delete the ingredient by ID
-        var ingredient = await _ingredientService.GetIngredientByIdAsync(id);
-        var result = await _ingredientService.DeleteIngredientAsync(id);
+        var ingredient = await ingredientService.GetIngredientByIdAsync(id);
+        var result = await ingredientService.DeleteIngredientAsync(id);
         if (result > 0)
         {
             return Ok(ingredient);
         }
-        return NotFound(); // Returns 404 if the ingredient was not found
+        return NotFound();
     }
 }

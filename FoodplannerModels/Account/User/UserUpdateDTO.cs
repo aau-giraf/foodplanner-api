@@ -1,6 +1,7 @@
 namespace FoodplannerModels.Account;
 using System.ComponentModel.DataAnnotations;
 
+// DTO to update user 
 public class UserUpdateDTO
 {
     [Required(ErrorMessage = "Fornavn er påkrævet")]

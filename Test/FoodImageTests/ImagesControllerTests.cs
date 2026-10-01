@@ -19,6 +19,8 @@ public class ImagesControllerTests
         var userId = 1;
         var imageId = 12345;
 
+        imageFile.Setup(file => file.Length).Returns(1000);
+
         var mockFoodImageService = new Mock<IFoodImageService>();
         var mockAuthService = new Mock<IAuthService>();
 
@@ -45,7 +47,8 @@ public class ImagesControllerTests
     [Fact]
     public async Task UploadImages_ValidTokenAndValidImages_ReturnsOkWithImageIds()
     {
-        //Arrange
+        // Arrange
+        var token = "valid-jwt-token";
         var userId = 1;
         var imageId1 = 1;
         var imageId2 = 2;
@@ -53,15 +56,23 @@ public class ImagesControllerTests
         var mockFile1 = new Mock<IFormFile>();
         var mockFile2 = new Mock<IFormFile>();
 
-        mockFile1.Setup(f => f.OpenReadStream()).Returns(new MemoryStream(new byte[] { 1, 2, 3 }));
-        mockFile1.Setup(f => f.FileName).Returns("image1.jpg");
-        mockFile1.Setup(f => f.ContentType).Returns("image/jpeg");
-        mockFile1.Setup(f => f.Length).Returns(1024);
+        mockFile1.Setup(f => f.OpenReadStream())
+            .Returns(new MemoryStream(new byte[] { 1, 2, 3 }));
+        mockFile1.Setup(f => f.FileName)
+            .Returns("image1.jpg");
+        mockFile1.Setup(f => f.ContentType)
+            .Returns("image/jpeg");
+        mockFile1.Setup(f => f.Length)
+            .Returns(1024);
 
-        mockFile2.Setup(f => f.OpenReadStream()).Returns(new MemoryStream(new byte[] { 4, 5, 6 }));
-        mockFile2.Setup(f => f.FileName).Returns("image2.jpg");
-        mockFile2.Setup(f => f.ContentType).Returns("image/jpeg");
-        mockFile2.Setup(f => f.Length).Returns(1024);
+        mockFile2.Setup(f => f.OpenReadStream())
+            .Returns(new MemoryStream(new byte[] { 4, 5, 6 }));
+        mockFile2.Setup(f => f.FileName)
+            .Returns("image2.jpg");
+        mockFile2.Setup(f => f.ContentType)
+            .Returns("image/jpeg");
+        mockFile2.Setup(f => f.Length)
+            .Returns(1024);
 
         var imageFiles = new FormFileCollection
         {
@@ -70,37 +81,41 @@ public class ImagesControllerTests
         };
 
         var mockFoodImageService = new Mock<IFoodImageService>();
-        mockFoodImageService.Setup(service => service.CreateFoodImage(
-            userId,
-            mockFile1.Object.OpenReadStream(),
-            mockFile1.Object.FileName,
-            mockFile1.Object.ContentType,
-            mockFile1.Object.Length
-        ))
-        .ReturnsAsync(imageId1);
+        var mockAuthService = new Mock<IAuthService>();
 
-        mockFoodImageService.Setup(service => service.CreateFoodImage(
-            userId,
-            mockFile2.Object.OpenReadStream(),
-            mockFile2.Object.FileName,
-            mockFile2.Object.ContentType,
-            mockFile2.Object.Length
-        ))
-        .ReturnsAsync(imageId2);
+        // Mock JWT -> user ID
+        mockAuthService
+            .Setup(auth => auth.RetrieveIdFromJwtToken(token))
+            .Returns(userId.ToString());
 
-        var controller = new ImagesController(mockFoodImageService.Object, Mock.Of<IAuthService>());
+        // Mock CreateFoodImage
+        mockFoodImageService
+            .SetupSequence(service => service.CreateFoodImage(
+                userId,
+                It.IsAny<Stream>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<long>()))
+            .ReturnsAsync(imageId1)
+            .ReturnsAsync(imageId2);
+
+        var controller = new ImagesController(
+            mockFoodImageService.Object,
+            mockAuthService.Object
+        );
 
         // Act
-        var result = await controller.UploadImages(imageFiles, userId);
+        var result = await controller.UploadImages(token, imageFiles);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var imageIds = Assert.IsAssignableFrom<IEnumerable<string>>(okResult.Value);
-        Assert.NotEmpty(imageIds);
-        Assert.Contains(imageIds, id => id == imageId1.ToString());
-        Assert.Contains(imageIds, id => id == imageId2.ToString());
-    }
 
+        var imageIds = Assert.IsAssignableFrom<IEnumerable<int>>(okResult.Value);
+
+        Assert.NotEmpty(imageIds);
+        Assert.Contains(imageIds, id => id == imageId1);
+        Assert.Contains(imageIds, id => id == imageId2);
+    }
     [Fact]
     public async Task DeleteImages_ValidTokenAndValidImageIds_ReturnsOkWithSuccessMessage()
     {
@@ -203,13 +218,3 @@ public class ImagesControllerTests
         Assert.Equal(presignedLink, returnedLink);
     }
 }
-
-
-
-
-
-
-
-
-
-

@@ -3,6 +3,7 @@ using System.Text.Json;
 
 namespace FoodplannerModels.Account;
 
+// DTO to get user credentials : JWT token, role, and whether role approval status 
 public class UserCredsDTO
 {
     [Required]

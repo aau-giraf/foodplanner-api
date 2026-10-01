@@ -1,5 +1,6 @@
 namespace FoodplannerModels.Account;
 
+// Interface for password handler 
 public interface IPasswordHandler
 {
     string EncryptPassword(string password);

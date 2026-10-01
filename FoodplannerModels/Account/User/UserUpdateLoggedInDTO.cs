@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FoodplannerModels.Account;
 
+// DTO to update user, when already logged in 
 public class UserUpdateLoggedInDTO
 {
     [Required(ErrorMessage = "Fornavn er påkrævet")]

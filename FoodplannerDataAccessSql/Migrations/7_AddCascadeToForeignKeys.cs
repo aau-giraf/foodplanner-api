@@ -8,6 +8,7 @@ using System.Data;
     {
         public override void Up()
         {
+            // Recreate the foreign key with cascading delete behavior
             Delete.ForeignKey("fk_packed_ingredients_ingredient_id").OnTable("packed_ingredients");
     
             Create.ForeignKey("fk_packed_ingredients_ingredient_id")
@@ -18,6 +19,7 @@ using System.Data;
     
         public override void Down()
         {
+            // Restore the foreign key without cascading delete behavior
             Delete.ForeignKey("fk_packed_ingredients_ingredient_id").OnTable("packed_ingredients");
     
             Create.ForeignKey("fk_packed_ingredients_ingredient_id")

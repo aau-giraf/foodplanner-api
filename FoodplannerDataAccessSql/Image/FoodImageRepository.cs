@@ -5,15 +5,18 @@ using Npgsql;
 
 namespace FoodplannerDataAccessSql.Image;
 
+// Class for FoodImage Repository 
 public class FoodImageRepository : IFoodImageRepository
 {
     private readonly PostgreSQLConnectionFactory _connectionFactory;
 
+    // Constructor 
     public FoodImageRepository(PostgreSQLConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory;
     }
 
+    // Asynchronously retrieves all food_images from the database.
     public async Task<IEnumerable<FoodImage>> GetAllAsync()
     {
         const string sql = "SELECT * FROM food_image";
@@ -23,6 +26,7 @@ public class FoodImageRepository : IFoodImageRepository
         return result;
     }
 
+    // Asynchronously retrieves all food_images with given image ID  
     public async Task<FoodImage?> GetByIdAsync(int foodImageId)
     {
         const string sql = "SELECT * FROM food_image WHERE id = @Id";
@@ -32,6 +36,7 @@ public class FoodImageRepository : IFoodImageRepository
         return result;
     }
 
+    // Asynchronously add a new food_image to database, returns its ID
     public async Task<int> InsertAsync(FoodImage entity)
     {
         const string sql = @"
@@ -44,6 +49,7 @@ public class FoodImageRepository : IFoodImageRepository
         return id;
     }
 
+    // Asynchronously update an existing food image entry in the database 
     public async Task<int> UpdateAsync(FoodImage entity)
     {
         const string sql = @"
@@ -60,6 +66,7 @@ public class FoodImageRepository : IFoodImageRepository
         return affected;
     }
 
+    // Asynchronously deletes a food image from databse given its ID 
     public async Task<int> DeleteAsync(int id)
     {
         const string sql = "DELETE FROM food_image WHERE id = @Id";
@@ -69,18 +76,23 @@ public class FoodImageRepository : IFoodImageRepository
         return affected;
     }
 
-    // IFoodImageRepository specific methods
+    // IFoodImageRepository specific methods (extended from IGenericRepository class)
+    // Asynchronously runs GetAllSync from this class 
     public async Task<IEnumerable<FoodImage>> GetAllImagesAsync()
     {
         return await GetAllAsync();
     }
 
+    // Asynchronously use the GetById method from this class 
+    // And throw an exception if ID is not found 
     public async Task<FoodImage> GetImageByIdAsync(int foodImageId)
     {
         var result = await GetByIdAsync(foodImageId);
         return result ?? throw new KeyNotFoundException($"FoodImage with id {foodImageId} not found");
     }
 
+    // Given attributes, create a new food image entity 
+    // Asynchronously add the new food image entry to database 
     public async Task<int> InsertImageAsync(string imageId, int userid, string imageName, string imageType, long imageStreamLength)
     {
         var entity = new FoodImage
@@ -94,6 +106,7 @@ public class FoodImageRepository : IFoodImageRepository
         return await InsertAsync(entity);
     }
 
+    // Asynchronously remove food image entry form database using DeleteAsync method from this class
     public async Task DeleteImageAsync(int imageId)
     {
         await DeleteAsync(imageId);

@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace FoodplannerModels.Account
 {
+    // Interface for children repo 
     public interface IChildrenRepository: IGenericRepository<Children>
     {
         Task<IEnumerable<ChildrenGetAllDTO>> GetAllChildrenClassesAsync();

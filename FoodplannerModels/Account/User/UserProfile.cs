@@ -9,6 +9,7 @@ namespace FoodplannerModels.Account
 {
     public class UserProfile : Profile
     {
+        // Entity for user profile 
         public UserProfile()
         {
             CreateMap<User, UserCreateDTO>();

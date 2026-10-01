@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace FoodplannerModels.Account
 {
+   // Class for errors in controllers
    public class ErrorResponse
    {
         [JsonPropertyName("Message")]

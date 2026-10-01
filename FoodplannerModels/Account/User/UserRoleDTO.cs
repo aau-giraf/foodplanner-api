@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
 namespace FoodplannerModels.Account
 {
+    // DTO for user role status 
     public class UserRoleDTO
     {
         [Required]

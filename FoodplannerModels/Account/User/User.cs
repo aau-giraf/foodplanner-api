@@ -10,6 +10,7 @@ public enum UserRole
     Teacher = 1 << 2,    // 4
     Parent = 1 << 3     // 8
 }
+// User entity 
 public class User
 {
     [Key]
@@ -18,6 +19,7 @@ public class User
     public required string LastName { get; set; }
     public required string Email { get; set; }
     public required string Password { get; set; }
+    // Teacher or parent  
     public required UserRole Role { get; set; }
     public required bool RoleApproved { get; set; }
     public string? PinCode { get; set; }

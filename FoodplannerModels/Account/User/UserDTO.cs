@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace FoodplannerModels.Account
 {
+    // User DTO 
+    // More detailed than user create DTO 
     public class UserDTO
     {
         [Key]

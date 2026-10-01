@@ -40,6 +40,7 @@ public class SecretsLoader : ISecretLoader
         _configuration = new Configuration(MapEnvironmentToSlug(environment), workspaceId, new InfisicalClient(settings));
     }
 
+    // Gets a secret from Infisical. If an overwrite value is found in the local configuration, it will be returned instead.
     public string GetSecret(string secretName, string path = "/")
     {
         if (_configuration == null)
@@ -64,6 +65,7 @@ public class SecretsLoader : ISecretLoader
         return _configuration.Client.GetSecret(getSecretOptions).SecretValue;
     }
 
+    // Maps the environment name to a slug used in Infisical.
     private string MapEnvironmentToSlug(string environment) => environment switch
     {
         "Development" => "dev",

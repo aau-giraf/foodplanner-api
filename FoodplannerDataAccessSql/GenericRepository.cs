@@ -13,7 +13,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         _connectionFactory = connectionFactory;
     }
 
-    
+    // Retrieves all records from the database.
     public async Task<IEnumerable<T>> GetAllAsync()
     {
         using (var connection = _connectionFactory.Create()){
@@ -23,6 +23,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         }
     }
 
+    // Retrieves a record by its ID from the database.
     public async Task<T?> GetByIdAsync(int id)
     {
         using (var connection = _connectionFactory.Create()){
@@ -37,6 +38,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         }
     }
 
+    // Inserts a new record into the database.
     public async Task<int> InsertAsync(T entity)
     {
         using (var connection = _connectionFactory.Create()){
@@ -46,6 +48,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         }
     }
 
+    // Updates an existing record in the database.
     public async Task<int> UpdateAsync(T entity)
     {
         using (var connection = _connectionFactory.Create()){
@@ -55,6 +58,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         }
     }
 
+    // Deletes a record by its ID from the database.
     public async Task<int> DeleteAsync(int id)
     {
         using (var connection = _connectionFactory.Create()){
@@ -64,11 +68,13 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         }
     }
 
+    // Retrieves the properties of the given entity, optionally with a prefix.
     private IEnumerable<string> GetProperties(T entity, string prefix = "")
     {
         return typeof(T).GetProperties().Select(p => $"{prefix}{p.Name}");
     }
 
+    // Retrieves the fields to be updated for the given entity.
     private IEnumerable<string> GetUpdateFields(T entity)
     {
         return typeof(T).GetProperties().Where(p => p.Name != "Id").Select(p => $"{p.Name} = @{p.Name}");

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace FoodplannerModels.Account
 {
+    // DTO for account creation for parent or teacher user  
+
     public class UserCreateDTO
     {
         [Required(ErrorMessage = "Fornavn er påkrævet")]

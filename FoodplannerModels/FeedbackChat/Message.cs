@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+// Represents a message in a feedback chat thread.
 public class Message
 {
     [Key]

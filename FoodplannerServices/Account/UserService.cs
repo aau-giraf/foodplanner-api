@@ -3,17 +3,19 @@ using AutoMapper;
 using FoodplannerModels.Account;
 using FoodplannerModels.Auth;
 
+// Adds the UserService to the FoodplannerService.Account namespace 
 namespace FoodplannerServices.Account;
 
 public class UserService : IUserService
 {
+    // Read only fields
     private readonly IUserRepository _userRepository;
     private readonly IChildrenRepository _childrenRepository;
     private readonly IMapper _mapper;
     private readonly IAuthService _authService;
     private readonly IPasswordHandler _passwordHandler;
 
-
+    // Constructor 
     public UserService(IUserRepository userRepository, IMapper mapper, IAuthService authService,
         IChildrenRepository childrenRepository, IPasswordHandler passwordHandler)
     {
@@ -24,6 +26,7 @@ public class UserService : IUserService
         _passwordHandler = passwordHandler;
     }
 
+    // Retrieves all users from database 
     public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
     {
         var user = await _userRepository.GetAllAsync();
@@ -31,12 +34,14 @@ public class UserService : IUserService
         return userDTO;
     }
 
+    // Retrieve user associated with ID
     public async Task<UserDTO?> GetUserByIdAsync(int id)
     {
         var user = await _userRepository.GetByIdAsync(id);
         return _mapper.Map<UserDTO?>(user);
     }
 
+    // Creates a new user based on UserCreateDTO (First and Last-name, e-mail, password, and role)
     public async Task<int> CreateUserAsync(UserCreateDTO userCreateDTO)
     {
         var user = _mapper.Map<User>(userCreateDTO);
@@ -53,6 +58,7 @@ public class UserService : IUserService
         return id;
     }
 
+    // Creates a user account for the child and associates it with a parents user account
     public async Task<int> CreateChildrenUserAsync(UserCreateChildDTO userCreateChildDto, int parentId)
     {
         var user = _mapper.Map<User>(userCreateChildDto);
@@ -85,6 +91,7 @@ public class UserService : IUserService
         return id;
     }
 
+    // Updates user
     public async Task<int> UpdateUserAsync(UserUpdateDTO userUpdateDto, int id)
     {
         var user = _mapper.Map<User>(userUpdateDto);
@@ -93,11 +100,13 @@ public class UserService : IUserService
         return await _userRepository.UpdateAsync(user);
     }
 
+    // Deletes user
     public async Task<int> DeleteUserAsync(int id)
     {
         return await _userRepository.DeleteAsync(id);
     }
 
+    // Retrieves JWT by e-mail and password
     public async Task<UserCredsDTO?> GetJWTByEmailAndPasswordAsync(string email, string password)
     {
         var user = await _userRepository.GetUserByEmailAsync(email);
@@ -119,6 +128,7 @@ public class UserService : IUserService
         return userCreds;
     }
 
+    // Retrieve JWT by Email
     public async Task<UserCredsDTO?> GetJWTByEmailAsync(string email)
     {
         var user = await _userRepository.GetUserByEmailAsync(email);
@@ -140,6 +150,7 @@ public class UserService : IUserService
         return userCreds;
     }
 
+    // Update user's pincode
     public async Task<string> UpdateUserPinCodeAsync(string pinCode, int id)
     {
         if (pinCode.ToString().Length != 4)
@@ -153,6 +164,7 @@ public class UserService : IUserService
         return pincode;
     }
 
+    // Retrieve user ID and their pin code
     public async Task<UserCredsDTO> GetUserByIdAndPinCodeAsync(int id, string pinCode)
     {
         var pincode = await _userRepository.GetPinCodeByIdAsync(id);
@@ -184,32 +196,38 @@ public class UserService : IUserService
         return userCreds;
     }
 
+    // Checks if the user has a pin code
     public async Task<bool> UserHasPinCodeAsync(int id)
     {
         return await _userRepository.HasPinCodeAsync(id);
     }
 
+    // Retrieve all not-approved users 
     public async Task<IEnumerable<UserDTO>> GetUsersNotApprovedAsync()
     {
         var users = await _userRepository.GetAllNotApprovedAsync();
         return _mapper.Map<IEnumerable<UserDTO>>(users);
     }
 
+    // Updates the user's 'archived'-status
     public async Task<bool> UserUpdateArchivedAsync(int id)
     {
         return await _userRepository.UpdateArchivedAsync(id);
     }
 
+    // Updates user's role to approved
     public async Task<bool> UserUpdateRoleApprovedAsync(int id, bool roleApproved)
     {
         return await _userRepository.UpdateRoleApprovedAsync(id, roleApproved);
     }
 
+    // Selects all not-archived users
     public async Task<IEnumerable<User?>> UserSelectAllNotArchivedAsync()
     {
         return await _userRepository.SelectAllNotArchivedAsync();
     }
 
+    // Retrieves the logged-in user by ID
     public async Task<UserDTO> GetLoggedInUserAsync(int id)
     {
         var user = await _userRepository.GetLoggedInAsync(id);
@@ -217,12 +235,14 @@ public class UserService : IUserService
         return _mapper.Map<UserDTO>(user);
     }
 
+    // Updates logged-in user information by ID
     public async Task<int> UpdateUserLoggedInAsync(int id, UserUpdateLoggedInDTO userUpdateLoggedInDto)
     {
         var user = await _userRepository.UpdateLoggedInAsync(id, userUpdateLoggedInDto);
         return user;
     }
 
+    // Update user's password
     public async Task<int> UpdateUserPasswordAsync(string password, int id)
     {
         password = _passwordHandler.EncryptPassword(password);
@@ -230,6 +250,7 @@ public class UserService : IUserService
         return _password;
     }
 
+    // Checks if user's e-mail already exists
     public async Task<bool> UserEmailExistsAsync(string email)
     {
         var _email = await _userRepository.EmailExistsAsync(email);

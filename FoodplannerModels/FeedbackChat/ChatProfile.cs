@@ -3,6 +3,7 @@ using FoodplannerModels.Account;
 
 namespace FoodplannerModels.FeedbackChat;
 
+// AutoMapper profile for mapping between Message, AddMessageDTO, UserNameFeedbackChatDTO, UpdateMessageDTO, and ChatThreadDTO.
 public class ChatProfile : Profile
 {
     public ChatProfile()

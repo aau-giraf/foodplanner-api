@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   minio:
-    image: minio/minio:latest
+    image: quay.io/minio/minio:latest
     container_name: minio_giraf_local
     restart: unless-stopped
     ports:

@@ -1,9 +1,5 @@
-using System.Runtime.InteropServices.JavaScript;
-using System.Security.Claims;
 using System.ComponentModel.DataAnnotations;
-using FoodplannerDataAccessSql.Account;
 using FoodplannerModels.Account;
-using FoodplannerModels.Image;
 using FoodplannerServices.Image;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,27 +7,44 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using FoodplannerServices.Auth;
 using FoodplannerModels.Auth;
 
+// Adds the ImagesController to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
 
 public class ImagesController(IFoodImageService foodImageService, IAuthService authService) : BaseController
 {
+    
+    // Maximum file size for image uploads, set to 2GB
     private readonly long _maxFileSize = 2000000000;
-    private readonly IAuthService _authService = authService;
 
+    // URL: api/Images/UploadImage
+    // Uploads image file with IFormFile, returns 200 OK with the foodImageId if successful, or 400 Bad Request if unsuccessful.
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UploadImage([FromHeader(Name = "Authorization")] string token, IFormFile imageFile)
     {
         try
         {
-            var idString = _authService.RetrieveIdFromJwtToken(token);
-            if (!int.TryParse(idString, out int id))
+            // Retrieve UserId from the JWT token
+            var idString = authService.RetrieveIdFromJwtToken(token);
+            if (!int.TryParse(idString, out int userId))
             {
-                return BadRequest(new ErrorResponse { Message = ["Id er ikke et tal"] });
+                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
+            }
+            
+            // Check if file is empty or exceeds the maximum file size
+            if (imageFile.Length == 0)
+            {
+                return BadRequest(new ErrorResponse { Message = ["File is empty"] });
+            }
+            if (imageFile.Length >= _maxFileSize)
+            {
+                return BadRequest(new ErrorResponse { Message = ["File is too big"] });
             }
 
+            // Validate the image file
             var foodImageId = await foodImageService.CreateFoodImage(
-                id,
+                userId,
                 imageFile.OpenReadStream(),
                 imageFile.FileName,
                 imageFile.ContentType,
@@ -44,46 +57,66 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
         {
             return BadRequest(new ErrorResponse { Message = [e.Message] });
         }
-        // var imageFile = imageContainer.ImageFile;
-        // var userId = imageContainer.UserId;
-
-        // if (imageFile.Length == 0) return BadRequest("File is empty");
-        // if (imageFile.Length >= _maxFileSize) return BadRequest("File too big");
-
-        // var foodImageId = await foodImageService.CreateFoodImage(
-        //     userId,
-        //     imageFile.OpenReadStream(),
-        //     imageFile.FileName,
-        //     imageFile.ContentType,
-        //     imageFile.Length);
-
-        // return Ok(foodImageId);
     }
 
+    // URL: api/Images/UploadImages
+    // Uploads multiple images with IFormFileCollection, returns 200 OK with the list of foodImageIds if successful, or 400 Bad Request if unsuccessful.
     [HttpPost]
-    [ApiExplorerSettings(IgnoreApi = true)]
-    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> UploadImages([Required] IFormFileCollection imageFiles, int userId)
+    [ProducesResponseType(typeof(IEnumerable<long>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UploadImages([FromHeader(Name = "Authorization")] string token, [Required] IFormFileCollection imageFiles)
     {
-        if (imageFiles.Any(file => file.Length == 0)) return BadRequest("A file is empty");
-        if (imageFiles.Any(file => file.Length >= _maxFileSize)) return BadRequest("a file too big");
-        var ids = imageFiles
-            .Select(async file => await foodImageService.CreateFoodImage(
-                userId,
-                file.OpenReadStream(),
-                file.FileName,
-                file.ContentType,
-                file.Length))
-            .Select(task => task.Result.ToString());
+        try
+        {
+            // Retrieve UserId from the JWT token
+            var idString = authService.RetrieveIdFromJwtToken(token);
+            if (!int.TryParse(idString, out int userId))
+            {
+                return BadRequest(new ErrorResponse {Message = ["Invalid user ID"]});
+            }
 
-        return Ok(ids);
+            // Check that files were provided
+            if (imageFiles.Count == 0)
+            {
+                return BadRequest(new ErrorResponse {Message = ["No files were provided"]});
+            }
+
+            // Validate the image files
+            if (imageFiles.Any(file => file.Length == 0))
+            {
+                return BadRequest(new ErrorResponse {Message = ["A file is empty"]});
+            }
+            if (imageFiles.Any(file => file.Length >= _maxFileSize))
+            {
+                return BadRequest(new ErrorResponse {Message = ["A file is too big"]});
+            }
+
+            // Create all food images
+            var foodImageIds = await Task.WhenAll(
+                imageFiles.Select(file =>
+                    foodImageService.CreateFoodImage(
+                        userId,
+                        file.OpenReadStream(),
+                        file.FileName,
+                        file.ContentType,
+                        file.Length))
+            );
+
+            return Ok(foodImageIds);
+        }
+        catch (InvalidOperationException e)
+        {
+            return BadRequest(new ErrorResponse {Message = [e.Message]});
+        }
     }
 
-
+    // URL: api/Images/DeleteImages
+    // Deletes images with given foodImageIds. Returns 200 OK if successful, or 400 Bad Request if unsuccessful.
     [HttpDelete]
-    [Authorize(Roles = "Child, Parent")]
     [AuthorizeImageOwnerFilter]
+    [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> DeleteImages(IEnumerable<int> foodImageIds)
     {
         var imageIdList = foodImageIds.ToList();
@@ -95,24 +128,27 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
         return Ok("Images deleted successfully");
     }
 
+    // URL: api/Images/GetFoodImage
+    // Retrieves food image from id. Returns 200 OK with the food image data if found, or 400 Bad Request if the foodImageId is invalid, or 404 Not Found if the food image does not exist.
     [HttpGet]
-    [Authorize(Roles = "Child, Parent")]
     [AuthorizeImageOwnerFilter]
+    [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(FoodImageDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetFoodImage(int foodImageId)
     {
         if (foodImageId < 0)
-            return BadRequest("Invalid userId");
-
+            return BadRequest("Invalid food image ID");
         var image = await foodImageService.GetFoodImage(foodImageId);
         if (image is null) return NotFound();
         return Ok(image);
     }
 
-
+    // URL: api/Images/GetPresignedImageLink
+    // Retrieves presigned image link for a given foodImageId. Returns 200 OK with the presigned link if successful.
     [HttpGet]
     [Authorize(Roles = "Parent, Child, Teacher, Admin")]
-    //[AuthorizeImageOwnerFilter]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPresignedImageLink(int foodImageId)
     {
@@ -120,16 +156,19 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
         return Ok(presignedImageLink.Replace("localhost", HttpContext.Request.Host.Host));
     }
 
+    // Custom action filter to authorize image owners
     private class AuthorizeImageOwnerFilter : ActionFilterAttribute
     {
         public override async void OnActionExecuting(ActionExecutingContext context)
         {
+
+            // Retrieve services from the request context
             var authService = context.HttpContext.RequestServices.GetService<AuthService>();
-            var userRepository = context.HttpContext.RequestServices.GetService<IUserRepository>();
             var foodImageService = context.HttpContext.RequestServices.GetService<IFoodImageService>();
             var token = context.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
             var foodImageIds = context.HttpContext.Request.Query["foodImageId"];
 
+            // Validate the request and services
             if (token == null)
             {
                 context.Result = new UnauthorizedResult();
@@ -138,25 +177,30 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
             {
                 context.Result = new BadRequestResult();
             }
-            else if (authService == null || foodImageService == null || userRepository == null)
+            else if (authService == null || foodImageService == null)
             {
                 throw new Exception("Missing services");
             }
             else
             {
+
+                // Retrieve userId and role from the JWT token
                 var userId = int.Parse(authService.RetrieveIdFromJwtToken(token));
                 var role = authService.RetrieveRoleFromJwtToken(token);
+
+                // If the user is an teacher, allow access without further checks
                 if (role == "Teacher")
                 {
                     return;
                 }
+
+                // Check if the user is the owner of all the food images
                 foreach (var foodImageId in foodImageIds)
                 {
                     if (foodImageId == null)
                     {
                         continue;
                     }
-
                     var foodImage = await foodImageService.GetFoodImage(int.Parse(foodImageId));
                     if (userId == foodImage.UserId) continue;
                     context.Result = new UnauthorizedResult();

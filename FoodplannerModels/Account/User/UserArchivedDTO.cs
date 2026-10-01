@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FoodplannerModels.Account
 {
+    // DTO class for users that are archived 
     public class UserArchivedDTO
     {
         [Required]
