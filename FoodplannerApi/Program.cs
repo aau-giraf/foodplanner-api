@@ -18,15 +18,19 @@ using FoodplannerServices.Auth;
 using FoodplannerServices.FeedbackChat;
 using FoodplannerServices.Secret;
 using FoodplannerServices.Codes;
+using FoodplannerServices.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.Text;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using FluentMigrator.Runner;
+using Npgsql;
+using Minio;
 
 
-
+// Create a builder for the web application
 var builder = WebApplication.CreateBuilder(args);
 
 
