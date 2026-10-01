@@ -24,12 +24,8 @@ using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.Text;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using FoodplannerModels.Auth;
-using FoodplannerModels.Image;
-using FoodplannerModels.Codes;
-using FoodplannerDataAccessSql.Codes;
-using FoodplannerServices.Codes;
-using FoodplannerServices.Hubs;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
