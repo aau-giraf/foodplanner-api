@@ -40,7 +40,7 @@ public class SubIngredientRepository : ISubIngredientRepository
 
     // Asynchronously collects all subingredients data from the subingredient table
     //Where id matches the id given within the function call
-    public async Task<SubIngredient> GetByIdAsync(int id)
+    public async Task<SubIngredient?> GetByIdAsync(int id)
     {
         var sql = "SELECT * FROM subingredients WHERE id = @Id";
         using (var connection = _connectionFactory.Create())

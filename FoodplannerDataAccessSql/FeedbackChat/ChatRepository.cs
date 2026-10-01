@@ -65,7 +65,7 @@ public class ChatRepository(PostgreSQLConnectionFactory connectionFactory) : ICh
 
     /* Retrieves a message by its ID
     Throws an exception if no matching message is found */
-    public async Task<Message> GetByIdAsync(int MessageId)
+    public async Task<Message?> GetByIdAsync(int MessageId)
     {
       const string sql = "SELECT * FROM message WHERE message_id = @MessageId";
         using (var connection = connectionFactory.Create())
