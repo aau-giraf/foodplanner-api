@@ -121,6 +121,40 @@ public class MealServiceTests
     }
 
     [Fact]
+    public async Task GetAllMealsByUserAsync_NestsIngredientDetails_AndPreservesTemplate()
+    {
+        // Arrange
+        const int userId = 3;
+        const string date = "2026-07-15";
+        var meals = new List<Meal>
+        {
+            new Meal { Id = 1, Name = "Sandwich", Date = date, Template = true, Ingredients = [] }
+        };
+        _mockMealRepository.Setup(repo => repo.GetAllByUserAsync(userId, date))
+            .ReturnsAsync(meals);
+
+        _mockPackedIngredientRepository.Setup(repo => repo.GetAllByMealIdAsync(1))
+            .ReturnsAsync(new List<PackedIngredient>
+            {
+                new PackedIngredient { Id = 10, Meal_id = 1, Ingredient_id = 5, order_number = 0 }
+            });
+
+        _mockIngredientRepository.Setup(repo => repo.GetByIdAsync(5))
+            .ReturnsAsync(new Ingredient { Id = 5, Name = "Bacon", User_id = userId, Food_image_id = 6 });
+
+        // Act
+        var result = (await _mealService.GetAllMealsByUserAsync(userId, date)).ToList();
+
+        // Assert
+        var meal = Assert.Single(result);
+        Assert.True(meal.Template); // template state must survive the list projection
+        var packed = Assert.Single(meal.Ingredients);
+        Assert.Equal(5, packed.Ingredient.Id);
+        Assert.Equal("Bacon", packed.Ingredient.Name);
+        Assert.Equal(6, packed.Ingredient.Food_image_id);
+    }
+
+    [Fact]
     public async Task CreateMealAsync_ReturnsNewMealId()
     {
         // Arrange
