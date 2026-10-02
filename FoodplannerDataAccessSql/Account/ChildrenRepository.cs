@@ -1,8 +1,7 @@
 
 using Dapper;
 using FoodplannerModels.Account;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Npgsql;
+
 
 namespace FoodplannerDataAccessSql.Account
 {

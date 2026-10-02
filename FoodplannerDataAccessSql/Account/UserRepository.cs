@@ -1,8 +1,7 @@
 ﻿
 using Dapper;
-using FoodplannerModels;
 using FoodplannerModels.Account;
-using Npgsql;
+
 
 namespace FoodplannerDataAccessSql.Account
 {

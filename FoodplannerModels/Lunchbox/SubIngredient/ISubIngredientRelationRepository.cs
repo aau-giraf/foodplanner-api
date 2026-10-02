@@ -18,7 +18,7 @@ public interface ISubIngredientRelationRepository
     /// <summary>
     /// Gets a specific subingredient relation by ID
     /// </summary>
-    Task<SubIngredientRelation> GetByIdAsync(int id);
+    Task<SubIngredientRelation?> GetByIdAsync(int id);
     
     /// <summary>
     /// Creates a new subingredient relation
