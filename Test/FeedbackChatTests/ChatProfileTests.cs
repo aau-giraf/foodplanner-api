@@ -1,6 +1,6 @@
 using AutoMapper;
 using FoodplannerModels.FeedbackChat;
-
+using Microsoft.Extensions.Logging.Abstractions;
 namespace Test.Service;
 
 public class ChatProfileTests
@@ -9,7 +9,7 @@ public class ChatProfileTests
 
     public ChatProfileTests()
     {
-        var configuration = new MapperConfiguration(cfg => cfg.AddProfile<ChatProfile>());
+        var configuration = new MapperConfiguration(cfg => cfg.AddProfile<ChatProfile>(), NullLoggerFactory.Instance);
         _mapper = configuration.CreateMapper();
     }
 
