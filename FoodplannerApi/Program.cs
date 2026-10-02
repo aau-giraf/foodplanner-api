@@ -21,7 +21,7 @@ using FoodplannerServices.Codes;
 using FoodplannerServices.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using System.Security.Claims;
 using System.Text;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -106,27 +106,17 @@ builder.Services.AddSwaggerGen(options =>
     });
 
     // Configure Swagger to allow JWT authentication for API endpoints in bearer scheme
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
     {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string[] {}
-        }
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = []
     });
 
-    // Configure Swagger to use inline definitions for enums
-    options.SchemaGeneratorOptions = new SchemaGeneratorOptions
-    {
-        UseInlineDefinitionsForEnums = false
-    };
-});
+        // Configure Swagger to use inline definitions for enums
+        options.SchemaGeneratorOptions = new SchemaGeneratorOptions
+        {
+            UseInlineDefinitionsForEnums = false
+        };
+    });
 
 
 // Add PostgreSQL connection factory as a singleton service using secrets from SecretsLoader
@@ -261,21 +251,21 @@ builder.Services.AddScoped<IPackedIngredientService, PackedIngredientService>();
 builder.Services.AddScoped<IOneTimePasswordService, OneTimePasswordService>();
 builder.Services.AddSingleton<ISecretLoader, SecretsLoader>(_ => secretsLoader);
 
-builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfile));
-builder.Services.AddAutoMapper(typeof(SubIngredientProfile));
+builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile), typeof(PackedIngredientProfile));
+builder.Services.AddAutoMapper(cfg => { }, typeof(SubIngredientProfile));
 
 builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddSignalR();
 
 // Add AutoMapper
-builder.Services.AddAutoMapper(typeof(UserProfile));
-builder.Services.AddAutoMapper(typeof(ChatProfile));
-builder.Services.AddAutoMapper(typeof(PackedIngredientProfile));
-builder.Services.AddAutoMapper(typeof(IngredientProfile));
-builder.Services.AddAutoMapper(typeof(MealProfile));
-builder.Services.AddAutoMapper(typeof(ImageProfile));
-builder.Services.AddAutoMapper(typeof(UserProfile), typeof(PackedIngredientProfile));
-builder.Services.AddAutoMapper(typeof(SubIngredientProfile));
+builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile));
+builder.Services.AddAutoMapper(cfg => { }, typeof(ChatProfile));
+builder.Services.AddAutoMapper(cfg => { }, typeof(PackedIngredientProfile));
+builder.Services.AddAutoMapper(cfg => { }, typeof(IngredientProfile));
+builder.Services.AddAutoMapper(cfg => { }, typeof(MealProfile));
+builder.Services.AddAutoMapper(cfg => { }, typeof(ImageProfile));
+builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile), typeof(PackedIngredientProfile));
+builder.Services.AddAutoMapper(cfg => { }, typeof(SubIngredientProfile));
 
 
 
