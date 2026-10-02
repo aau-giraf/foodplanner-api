@@ -32,9 +32,7 @@ public class SecretsLoader : ISecretLoader
         client
             .Auth()
             .UniversalAuth()
-            .LoginAsync(clientId, clientSecret)
-            .GetAwaiter()
-            .GetResult();
+            .LoginAsync(clientId, clientSecret);
 
         _configuration = new Configuration(MapEnvironmentToSlug(environment), workspaceId, client);
     }
