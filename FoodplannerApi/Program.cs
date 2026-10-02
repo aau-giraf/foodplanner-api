@@ -337,8 +337,7 @@ app.MapGet("/test-db-connection", async (PostgreSQLConnectionFactory connectionF
             return Results.Problem($"Database connection failed: {ex.Message}");
         }
     })
-    .WithName("TestDbConnection")
-    .WithOpenApi();
+    .WithName("TestDbConnection");
 
 
 // Configure the application to listen on all network interfaces
