@@ -45,6 +45,7 @@ public class ChatServiceTests
         );
     }
 
+    // Test case to verify that AddMessageAsync inserts a message and broadcasts it to the correct SignalR group
     [Fact]
     public async Task AddMessageAsync_InsertsMessageAndBroadcastsToCorrectGroup()
     {
@@ -95,6 +96,7 @@ public class ChatServiceTests
         Assert.Equal("Alice", broadcastDto.FirstName);
     }
 
+    // test case to verify that AddMessageAsync correctly uploads a message and broadcasts it to the correct SignalR group, including the generated message ID and chat thread ID
     [Fact]
     public async Task AddMessageAsync_BroadcastsMessageWithGeneratedMessageIdAndChatThreadId()
     {
@@ -143,6 +145,7 @@ public class ChatServiceTests
             It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    // Test case to verify that AddMessageAsync handles broadcast exceptions and still returns true
     [Fact]
     public async Task AddMessageAsync_BroadcastThrows_StillReturnsTrueAndInsertsMessage()
     {
@@ -175,6 +178,7 @@ public class ChatServiceTests
             m.UserId == userId)), Times.Once);
     }
 
+    // Test case to verify that GetMessagesAsync retrieves messages and maps them to UserNameFeedbackChatDTOs
     [Fact]
     public async Task GetMessagesAsync_ReturnsMessagesIncludingMessageIdAndChatThreadId()
     {

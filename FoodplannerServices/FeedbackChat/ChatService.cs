@@ -1,6 +1,4 @@
 ﻿using FoodplannerModels.FeedbackChat;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using AutoMapper;
 using FoodplannerModels.Account;
 using FoodplannerServices.Hubs;
@@ -36,18 +34,19 @@ namespace FoodplannerServices.FeedbackChat
             message.Date = System.DateTime.Now;
             message.UserId = userId;
 
+            // Insert the message into the database and try to broadcast it to the SignalR group for the chat thread
             await _chatRepository.InsertAsync(message);
-
             try
             {
+                // Map message to DTO, and find first name of user to include in the DTO
                 var messageDto = _mapper.Map<UserNameFeedbackChatDTO>(message);
-
                 var user = await _userRepository.GetByIdAsync(userId);
                 if (user != null)
                 {
                     messageDto.FirstName = user.FirstName;
                 }
 
+                // Broadcast the message to the SignalR group for the chat thread
                 await _hubContext.Clients.Group($"thread-{message.ChatThreadId}").SendAsync("ReceiveMessage", messageDto);
             }
             catch (Exception ex)

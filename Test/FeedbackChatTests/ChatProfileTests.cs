@@ -13,6 +13,7 @@ public class ChatProfileTests
         _mapper = configuration.CreateMapper();
     }
 
+    // Test case to verify that the AutoMapper configuration is valid
     [Fact]
     public void Map_MessageToUserNameFeedbackChatDTO_MapsMessageIdAndChatThreadIdByConvention()
     {

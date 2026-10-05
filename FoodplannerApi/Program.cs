@@ -167,13 +167,13 @@ builder.Services.AddAuthentication(cfg =>
         ClockSkew = TimeSpan.Zero
     };
 
-    // Adds an additional check for user approval status after JWT validation
+    // Adds additional checks after JWT validation
     x.Events = new JwtBearerEvents
     {
+        // When recieving feedbackchat message, check if the access token is present in the query string and set it as the token for the request
         OnMessageReceived = context =>
         {
             var accessToken = context.Request.Query["access_token"];
-
             if (!string.IsNullOrEmpty(accessToken) &&
                 context.HttpContext.Request.Path.StartsWithSegments("/hubs/chat"))
             {
@@ -182,6 +182,8 @@ builder.Services.AddAuthentication(cfg =>
 
             return Task.CompletedTask;
         },
+
+        // If token is validated, check if users role is approved for endpoint access
         OnTokenValidated = context =>
         {
             // Get the claims principal created from the JWT
