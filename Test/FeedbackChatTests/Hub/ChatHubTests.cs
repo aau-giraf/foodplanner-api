@@ -1,10 +1,10 @@
 using System.Security.Claims;
 using FoodplannerModels.Account;
-using FoodplannerModels.FeedbackChat;
 using FoodplannerServices.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Moq;
 
+// Adds the ChatHubTests to the Test.Service namespace
 namespace Test.Service;
 
 public class ChatHubTests
@@ -22,8 +22,8 @@ public class ChatHubTests
         _mockContext = new Mock<HubCallerContext>();
         _mockGroups = new Mock<IGroupManager>();
 
+        // Mock connection ID for the HubCallerContext to simulate a client connection
         _mockContext.Setup(c => c.ConnectionId).Returns("connection-1");
-
         _chatHub = new ChatHub(_mockChatRepository.Object, _mockChildrenRepository.Object)
         {
             Context = _mockContext.Object,
@@ -31,6 +31,7 @@ public class ChatHubTests
         };
     }
 
+    // Helper method to set the caller's identity in the mocked HubCallerContext
     private void SetCallerIdentity(int userId, string role)
     {
         var claims = new List<Claim>
@@ -42,6 +43,7 @@ public class ChatHubTests
         _mockContext.Setup(c => c.User).Returns(new ClaimsPrincipal(identity));
     }
 
+    // Helper method to create a User object with the specified ID for testing purposes
     private static User MakeUser(int id) => new User
     {
         Id = id,
@@ -53,6 +55,8 @@ public class ChatHubTests
         RoleApproved = true
     };
 
+
+    // Test case to verify that a parent associated with a child can successfully join a chat thread group
     [Fact]
     public async Task JoinThread_ParentAssociatedWithChild_AddsConnectionToGroup()
     {
@@ -75,6 +79,7 @@ public class ChatHubTests
         _mockGroups.Verify(g => g.AddToGroupAsync("connection-1", $"thread-{chatThreadId}", It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    // Test case to verify that a teacher associated with a child can successfully join a chat thread group
     [Fact]
     public async Task JoinThread_TeacherAssociatedWithChild_AddsConnectionToGroup()
     {
@@ -97,6 +102,7 @@ public class ChatHubTests
         _mockGroups.Verify(g => g.AddToGroupAsync("connection-1", $"thread-{chatThreadId}", It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    // Test case to verify that a parent not associated with a child cannot join a chat thread group and throws a HubException
     [Fact]
     public async Task JoinThread_ParentNotAssociatedWithChild_ThrowsHubExceptionAndDoesNotJoinGroup()
     {
@@ -119,6 +125,7 @@ public class ChatHubTests
         _mockGroups.Verify(g => g.AddToGroupAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
+    // Test case to verify that a parent not associated with a child cannot leave a chat thread group and throws a HubException
     [Fact]
     public async Task LeaveThread_ParentNotAssociatedWithChild_ThrowsHubExceptionAndDoesNotLeaveGroup()
     {
