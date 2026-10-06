@@ -27,7 +27,7 @@ public override void Up()
     
     //create table "Children"
     Create.Table("children")
-        .WithColumn("child_id").AsInt32().PrimaryKey().Identity().NotNullable() //Primary key that auto-increments
+        .WithColumn("child_id").AsInt32().PrimaryKey().NotNullable() //Primary key that auto-increments
         .WithColumn("first_name").AsString(100).NotNullable()
         .WithColumn("last_name").AsString(100).NotNullable()
         .WithColumn("parent_id").AsInt32().NotNullable() //foreign key pointing at users.id

@@ -58,7 +58,7 @@ New migrations are added by including a new file in the [Migrations folder](http
 
 Ensure you have the following installed:
 
--   [ASP.NET Core SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+-   [ASP.NET Core SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
 -   [Docker](https://www.docker.com) (optional, for containerized deployment)
 
 An active [Infisical](https://infisical.com/) project must exist for managing secrets, either use the existing project, create a new one or overwrite all secrets. 
@@ -300,7 +300,7 @@ This will run the bash script once every minute and write the output to `docker-
         "DB_USER": "postgres",
         "DB_PASS": "postgres",
 
-        "JWT_SECRET": "<TopSecret>",
+        "JWT_SECRET": "local-development-secret-key-123",
         "BACKEND_PORT": "8080"
     }
     ...

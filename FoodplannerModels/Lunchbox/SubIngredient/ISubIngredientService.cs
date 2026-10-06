@@ -18,7 +18,7 @@ public interface ISubIngredientService
     /// <summary>
     /// Gets a specific subingredient by ID
     /// </summary>
-    Task<SubIngredient> GetSubIngredientByIdAsync(int id);
+    Task<SubIngredient?> GetSubIngredientByIdAsync(int id);
     
     /// <summary>
     /// Creates a new subingredient

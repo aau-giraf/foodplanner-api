@@ -38,6 +38,11 @@ public class SubIngredientRelationService : ISubIngredientRelationService
         {
             var subingredient = await _subIngredientRepository.GetByIdAsync(relation.Subingredient_id);
             
+            if (subingredient is null)
+            {
+                continue;
+            }
+        
             relationsWithDetails.Add(new SubIngredientRelationDTO
             {
                 Id = relation.Id,
@@ -50,7 +55,7 @@ public class SubIngredientRelationService : ISubIngredientRelationService
         return relationsWithDetails;
     }
 
-    public async Task<SubIngredientRelation> GetSubIngredientRelationByIdAsync(int id)
+    public async Task<SubIngredientRelation?> GetSubIngredientRelationByIdAsync(int id)
     {
         return await _subIngredientRelationRepository.GetByIdAsync(id);
     }

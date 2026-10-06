@@ -25,7 +25,7 @@ public class SubIngredientService : ISubIngredientService
         return subingredients.ToList();
     }
 
-    public async Task<SubIngredient> GetSubIngredientByIdAsync(int id)
+    public async Task<SubIngredient?> GetSubIngredientByIdAsync(int id)
     {
         return await _subIngredientRepository.GetByIdAsync(id);
     }

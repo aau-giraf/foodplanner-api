@@ -41,7 +41,7 @@ public class SubIngredientRelationRepository : ISubIngredientRelationRepository
 
     // Asynchronously selects all data from the subingredient_relation table
     // Where id matches the id from the function call
-    public async Task<SubIngredientRelation> GetByIdAsync(int id)
+    public async Task<SubIngredientRelation?> GetByIdAsync(int id)
     {
         var sql = "SELECT * FROM subingredient_relation WHERE id = @Id";
         using (var connection = _connectionFactory.Create())
