@@ -314,7 +314,10 @@ else app.UseCors("AllowSpecificOrigins");
 
 
 // Initializes various parts of the application
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
