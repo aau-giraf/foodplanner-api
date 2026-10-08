@@ -264,5 +264,20 @@ namespace Test.JwtTest
             handler.WriteToken(token);
         });
         }
-    }
+    
+
+    [Fact]
+    // Test that checks if if key limit is 256
+    public void JwtToken_ShouldPreciselyBe256()
+        {
+            //Arrange
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("local-development-secret-key-123"));
+
+            //Assert
+            Assert.True(key.KeySize == 256);
+        }
+
+
+
+}
 }
