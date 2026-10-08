@@ -47,10 +47,10 @@ namespace FoodplannerServices.Auth
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretsLoader.GetSecret("JWT_SECRET")));
 
             // Check the length of the JWT_SECRET
-            if (key.KeySize >= 256)
+            if (key.KeySize < 256)
             {
-                Console.WriteLine($"Key size is not 256. Key size: {key.KeySize}");
-                throw new InvalidOperationException($"Key size is not 256. Key size: {key.KeySize}");
+                Console.WriteLine($"JWT_SECRET must be at least 256 bits long. Current size: {key.KeySize}");
+                throw new InvalidOperationException($"JWT_SECRET must be at least 256 bits long. Current size: {key.KeySize}");
             }
 
             // Combines HmacSha256 and key to a signing credential
