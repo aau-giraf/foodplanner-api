@@ -16,7 +16,6 @@ namespace Test.JwtTest
         private const string Issuer = "TestIssuer";
         private const string Audience = "TestAudience";
         private const string Secret = "TestSecretKey123456789thisissoverysecretyesindeeeeeeeeeeeeeeed";
-
         private string GenerateJwtToken(Guid userId, UserRole role, bool roleApproved, DateTime? expiration = null)
         {
             expiration ??= DateTime.UtcNow.AddDays(30);
@@ -217,6 +216,53 @@ namespace Test.JwtTest
 
             // Check the exception type or message, "signature" ensures it's the signature exception that is tested.
             Assert.Contains("signature", exception.Message, StringComparison.OrdinalIgnoreCase);
+        }
+
+        [Fact]
+        public void JwtSecret_ShouldBeAtLeast256Bits()
+        {
+            // Arrange
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(Secret)
+            ); 
+
+            // Assert
+            Assert.True(
+                key.KeySize >= 256,
+                $"JWT secret must be at least 256 bits. Current size: {key.KeySize} bits."
+            );
+        }
+
+        [Fact]
+        public void GenerateJwtToken_ShouldFail_WhenSecretIsTooShort()
+        {
+
+        // Arrange 
+        const string shortSecret = "TooShort";
+
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(shortSecret)
+        );
+
+        var creds = new SigningCredentials(
+            key,
+            SecurityAlgorithms.HmacSha256
+        );
+
+        var token = new JwtSecurityToken(
+            issuer: Issuer,
+            audience: Audience,
+            expires: DateTime.UtcNow.AddDays(30),
+            signingCredentials: creds
+        );
+
+        var handler = new JwtSecurityTokenHandler();
+
+        // Act & Assert
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+        {
+            handler.WriteToken(token);
+        });
         }
     }
 }
