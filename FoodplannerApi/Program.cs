@@ -26,6 +26,8 @@ using System.Security.Claims;
 using System.Text;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using FluentMigrator.Runner;
+using FluentMigrator.Runner.Initialization;
+using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Minio;
 
@@ -219,8 +221,14 @@ builder.Services.AddFluentMigratorCore()
             $"Username={secretsLoader.GetSecret("DB_USER")};" +
             $"Password={secretsLoader.GetSecret("DB_PASS")}")
         .ScanIn(typeof(InitTables).Assembly).For.Migrations())
+    .Configure<RunnerOptions>(options =>
+    {
+        // Only run migrations tagged for the Foodplanner database.
+        options.Tags = new[] { "FoodPlanner" };
+        // Exclude migrations without tags to prevent unintended execution.
+        options.IncludeUntaggedMigrations = false;
+    })
     .AddLogging(lb => lb.AddFluentMigratorConsole());
-
 
 //Dependency Injection Starts Here !
 // Add Repositories
@@ -278,12 +286,14 @@ builder.Services.AddAutoMapper(cfg => { }, typeof(SubIngredientProfile));
 var app = builder.Build();
 
 
-// Run migrations at application startup
+// Run Foodplanner migrations
+/*
+// Original setup, can be used when mock database is gone
 using (var scope = app.Services.CreateScope())
 {
-    // Finds the FluentMigrator service
-    var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
-
+    var runner = scope.ServiceProvider
+        .GetRequiredService<IMigrationRunner>();
+        
     // Goes through any migrations not yet applied
     if (runner.HasMigrationsToApplyUp())
     {
@@ -291,7 +301,81 @@ using (var scope = app.Services.CreateScope())
         runner.MigrateUp();
     }
 }
+*/
+// Run Foodplanner migrations up to version 15
+using (var scope = app.Services.CreateScope())
+{
+    var runner = scope.ServiceProvider
+        .GetRequiredService<IMigrationRunner>();
 
+    runner.MigrateUp(15);
+}
+
+
+// Only initialize CoreMock in development
+if (app.Environment.IsDevelopment())
+{
+    var connectionBuilder = new NpgsqlConnectionStringBuilder
+    {
+        Host = secretsLoader.GetSecret("DB_HOST"),
+        Port = 7655, // CoreMock's separate PostgreSQL container
+        Username = secretsLoader.GetSecret("DB_USER"),
+        Password = secretsLoader.GetSecret("DB_PASS"),
+        Database = "postgres"
+    };
+
+    // Configure CoreMock connection
+    connectionBuilder.Database = "giraf_core_mock";
+
+    // Connection to the original Foodplanner database
+    var sourceConnection = new NpgsqlConnectionStringBuilder
+    {
+        Host = secretsLoader.GetSecret("DB_HOST"),
+        Port = int.Parse(secretsLoader.GetSecret("DB_PORT")),
+        Database = secretsLoader.GetSecret("DB_NAME"),
+        Username = secretsLoader.GetSecret("DB_USER"),
+        Password = secretsLoader.GetSecret("DB_PASS")
+    }.ConnectionString;
+
+    // Run CoreMock migrations separately
+    using var serviceProvider = new ServiceCollection()
+        .AddSingleton(new DataMigrationSource(sourceConnection))
+        .AddFluentMigratorCore()
+        .ConfigureRunner(rb => rb
+            .AddPostgres()
+            .WithGlobalConnectionString(connectionBuilder.ConnectionString)
+            .ScanIn(typeof(CreateCoreMockDatabase).Assembly)
+            .For.Migrations())
+        .Configure<RunnerOptions>(options =>
+        {
+            // Only run migrations tagged for the CoreMock database.
+            options.Tags = new[] { "CoreMock" };
+            // Exclude migrations without tags to prevent unintended execution.
+            options.IncludeUntaggedMigrations = false;
+        })
+        .AddLogging(lb => lb.AddFluentMigratorConsole())
+        .BuildServiceProvider();
+
+    using var scope = serviceProvider.CreateScope();
+
+    var runner = scope.ServiceProvider
+        .GetRequiredService<IMigrationRunner>();
+
+    if (runner.HasMigrationsToApplyUp())
+    {
+        runner.ListMigrations();
+        runner.MigrateUp();
+    }
+}
+
+// Run remaining Foodplanner migrations after data migration
+using (var scope = app.Services.CreateScope())
+{
+    var runner = scope.ServiceProvider
+        .GetRequiredService<IMigrationRunner>();
+
+    runner.MigrateUp();
+}
 
 // Generates swagger page if the application is in development mode
 if (app.Environment.IsDevelopment())

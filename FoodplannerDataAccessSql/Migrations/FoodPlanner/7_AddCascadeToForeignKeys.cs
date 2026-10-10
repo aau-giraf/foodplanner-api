@@ -4,6 +4,7 @@ using System.Data;
     namespace FoodplannerDataAccessSql.Migrations;
     
     [Migration(7)]
+    [Tags("FoodPlanner")]
     public class AddCascadeToForeignKeys : Migration
     {
         public override void Up()

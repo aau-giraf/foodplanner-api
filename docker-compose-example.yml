@@ -27,6 +27,20 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=giraf
       - PGDATA=/var/lib/postgresql/data/pgdata
+#Mock database
+  core-postgres:
+    image: postgres:latest
+    container_name: postgres_core_mock_local
+    restart: unless-stopped
+    ports:
+      - "7655:5432"
+    volumes:
+      - ./core-postgres/data:/var/lib/postgresql/data:Z
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=giraf_core_mock
+      - PGDATA=/var/lib/postgresql/data/pgdata
 
   adminer:
     image: adminer

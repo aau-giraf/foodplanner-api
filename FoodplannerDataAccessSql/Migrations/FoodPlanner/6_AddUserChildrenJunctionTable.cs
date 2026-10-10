@@ -3,6 +3,7 @@ using FluentMigrator;
 namespace FoodplannerDataAccessSql.Migrations;
 
 [Migration(6)]
+[Tags("FoodPlanner")]
 public class AddUserChildrenJunctionTable : Migration
 {
     public override void Up()

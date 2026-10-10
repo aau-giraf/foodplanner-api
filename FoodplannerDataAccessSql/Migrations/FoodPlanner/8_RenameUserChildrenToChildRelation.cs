@@ -3,6 +3,7 @@ using FluentMigrator;
 namespace FoodplannerDataAccessSql.Migrations;
 
 [Migration(8)]
+[Tags("FoodPlanner")]
 public class RenameUserChildrenToChildRelation : Migration
 {
     public override void Up()

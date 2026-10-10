@@ -4,6 +4,7 @@ using FluentMigrator;
 namespace FoodplannerDataAccessSql.Migrations;
 
 [Migration(12)]
+[Tags("FoodPlanner")]
 public class AddCascadeToUserId : Migration
 {
     public override void Up()

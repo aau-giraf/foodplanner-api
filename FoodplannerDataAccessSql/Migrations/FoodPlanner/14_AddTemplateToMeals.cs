@@ -3,6 +3,7 @@ using FluentMigrator;
 namespace FoodplannerDataAccessSql.Migrations;
 
 [Migration(14)]
+[Tags("FoodPlanner")]
 public class AddTemplateToMeals : Migration
 {
     public override void Up()

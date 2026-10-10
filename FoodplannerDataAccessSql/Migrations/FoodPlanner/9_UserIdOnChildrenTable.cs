@@ -4,6 +4,7 @@ using System.Data;
 namespace FoodplannerDataAccessSql.Migrations;
 
 [Migration(9)]
+[Tags("FoodPlanner")]
 public class UserIdOnChildrenTable : Migration
 {
     public override void Up()

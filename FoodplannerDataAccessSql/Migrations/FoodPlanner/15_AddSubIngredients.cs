@@ -4,6 +4,7 @@ using System.Data;
 namespace FoodplannerDataAccessSql.Migrations;
 
 [Migration(15)]
+[Tags("FoodPlanner")]
 public class AddSubIngredients : Migration
 {
     public override void Up()

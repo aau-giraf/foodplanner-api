@@ -4,6 +4,7 @@ using FluentMigrator;
 namespace FoodplannerDataAccessSql.Migrations;
 
 [Migration(10)]
+[Tags("FoodPlanner")]
 public class FoodimageUserIdForeignKey : Migration
 {
     public override void Up()

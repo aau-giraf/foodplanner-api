@@ -4,6 +4,7 @@ using FluentMigrator;
 namespace FoodplannerDataAccessSql.Migrations;
 
 [Migration(13)]
+[Tags("FoodPlanner")]
 public class AddIndexForMessages : Migration
 {
     public override void Up()

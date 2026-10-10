@@ -65,3 +65,4 @@ docker-compose.yml
 # Local development data
 minio/
 postgres/
+core-postgres/

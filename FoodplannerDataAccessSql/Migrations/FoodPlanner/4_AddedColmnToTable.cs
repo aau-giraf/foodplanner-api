@@ -4,6 +4,7 @@ namespace FoodplannerDataAccessSql.Migrations
 {
     //fourth iteration of the database
     [Migration(4)]
+    [Tags("FoodPlanner")]
     public class AddedColmnToTable : Migration
     {
         //changes when migration is run

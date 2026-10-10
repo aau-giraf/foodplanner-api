@@ -3,6 +3,7 @@ using FluentMigrator;
 namespace FoodplannerDataAccessSql.Migrations;
 //fifth iteration of the database
 [Migration(5)]
+[Tags("FoodPlanner")]
 public class FeedBackChatTables : Migration
 {
         //changes when migration is run

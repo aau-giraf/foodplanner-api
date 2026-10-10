@@ -5,6 +5,7 @@ namespace FoodplannerDataAccessSql.Migrations;
 
 //third iteration of the database
 [Migration(3)]
+[Tags("FoodPlanner")]
 public class addedNewTables : Migration
 {
     //changes when migration is run

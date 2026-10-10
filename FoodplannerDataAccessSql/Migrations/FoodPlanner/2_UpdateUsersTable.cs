@@ -5,6 +5,7 @@ namespace FoodplannerDataAccessSql.Migrations;
 
 
 [Migration(2)]
+[Tags("FoodPlanner")]
 public class updateUsersTable: Migration 
 {
     public override void Up()

@@ -2,6 +2,7 @@
 namespace FoodplannerDataAccessSql.Migrations
 {
     [Migration(11)]
+    [Tags("FoodPlanner")]
     public class AddOTPTable : Migration
     {
         public override void Up()
