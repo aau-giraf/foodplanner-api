@@ -42,7 +42,6 @@ namespace FoodplannerServices.Auth
                 }
             }
 
-
             // Converts secret to bytes
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretsLoader.GetSecret("JWT_SECRET")));
 

@@ -277,7 +277,5 @@ namespace Test.JwtTest
             Assert.True(key.KeySize == 256);
         }
 
-
-
 }
 }
