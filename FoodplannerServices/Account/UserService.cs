@@ -86,7 +86,7 @@ public class UserService : IUserService
             ClassId = userCreateChildDto.ClassId
         };
         await _childrenRepository.InsertAsync(child);
-        await _childrenRepository.AddParentToChildAsync(parentId, child.ChildId);
+        await _childrenRepository.AddUserToChildAsync(parentId, child.ChildId);
 
         return id;
     }
@@ -212,7 +212,16 @@ public class UserService : IUserService
     // Updates the user's 'archived'-status
     public async Task<bool> UserUpdateArchivedAsync(int id)
     {
-        return await _userRepository.UpdateArchivedAsync(id);
+        var user = await _userRepository.GetByIdAsync(id);
+        if (user == null)
+        {
+            throw new InvalidOperationException("Bruger ikke fundet");
+        }
+        var archived = user.Archived; 
+        // Flip archived status 
+        archived = !archived;
+        
+        return await _userRepository.UpdateArchivedAsync(id, archived);
     }
 
     // Updates user's role to approved

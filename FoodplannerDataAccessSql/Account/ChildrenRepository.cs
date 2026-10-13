@@ -61,32 +61,6 @@ namespace FoodplannerDataAccessSql.Account
 
         }
 
-        // Given a child ID, find their parents and retrieve those users (parents) from the database 
-        public async Task<IEnumerable<User>> GetParentsByChildIdAsync(int childId)
-        {
-            var sql = @"SELECT u.* FROM users u
-                       JOIN child_relation uc ON u.id = uc.user_id
-                       WHERE uc.child_id = @ChildId";
-            using (var connection = _connectionFactory.Create())
-            {
-                connection.Open();
-                var result = await connection.QueryAsync<User>(sql, new { ChildId = childId });
-                return result;
-            }
-        }
-
-        // Given parent id, find their children, and retrieve them from the database 
-        public async Task<IEnumerable<Children>> GetChildrenByParentIdAsync(int parentId)
-        {
-            var sql = @"SELECT child_id FROM child_relation c
-                       WHERE c.user_id = @ParentId";
-            using (var connection = _connectionFactory.Create())
-            {
-                connection.Open();
-                var result = await connection.QueryAsync<Children>(sql, new { ParentId = parentId });
-                return result;
-            }
-        }
 
         // Add a new child to the database 
         public async Task<int> InsertAsync(Children entity)
@@ -148,61 +122,42 @@ namespace FoodplannerDataAccessSql.Account
             }
         }
         
-        // Add child-parent relation to child_relation table in database given parent id and child id 
-        public async Task<int> AddParentToChildAsync(int userId, int childId)
+        // Given a child ID, find their parents and retrieve those users (parents) from the database 
+        // Using placeholder @ to match id's 
+        public async Task<IEnumerable<User>> GetParentsByChildIdAsync(int childId)
         {
-            var sql = "INSERT INTO child_relation (user_id, child_id) VALUES (@UserId, @ChildId) ON CONFLICT DO NOTHING";
+            var sql = @"SELECT u.* FROM users u
+                       JOIN child_relation cr ON u.id = cr.user_id
+                       WHERE cr.child_id = @ChildId AND u.role = 'Parent'";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.ExecuteAsync(sql, new { UserId = userId, ChildId = childId });
+                var result = await connection.QueryAsync<User>(sql, new { ChildId = childId });
                 return result;
             }
         }
 
-        // Remove child-parent relation from child_relation table in database given parent id and child id 
-        public async Task<int> RemoveParentFromChildAsync(int userId, int childId)
+        // Given parent id, find their children by Id, and retrieve them from the database 
+        public async Task<IEnumerable<Children>> GetChildrenByParentIdAsync(int parentId)
         {
-            var sql = "DELETE FROM child_relation WHERE user_id = @UserId AND child_id = @ChildId";
+            var sql = @"SELECT c.* FROM children c
+                       JOIN child_relation cr ON c.child_id = cr.child_id
+                       WHERE cr.user_id = @ParentId AND cr.role = 'Parent'";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-                var result = await connection.ExecuteAsync(sql, new { UserId = userId, ChildId = childId });
+                var result = await connection.QueryAsync<Children>(sql, new { ParentId = parentId });
                 return result;
             }
         }
 
-        // Add a child-teacher relation in child_relation table in database given teacher id and child id 
-        public async Task<int> AddTeacherToChildAsync(int userId, int childId)
-        {
-            var sql = "INSERT INTO child_relation (user_id, child_id) VALUES (@UserId, @ChildId) ON CONFLICT DO NOTHING";
-            using (var connection = _connectionFactory.Create())
-            {
-                connection.Open();
-                var result = await connection.ExecuteAsync(sql, new { UserId = userId, ChildId = childId });
-                return result;
-            }
-        }
-
-        // Remove child-teacher relation in child_relation table in database given teacher id and child id 
-        public async Task<int> RemoveTeacherFromChildAsync(int userId, int childId)
-        {
-            var sql = "DELETE FROM child_relation WHERE user_id = @UserId AND child_id = @ChildId";
-            using (var connection = _connectionFactory.Create())
-            {
-                connection.Open();
-                var result = await connection.ExecuteAsync(sql, new { UserId = userId, ChildId = childId });
-                return result;
-            }
-        }
-
-        // Given child id, find their teachers 
+                // Given child id, find their teachers 
         // by finding 'user' entries in child_relation table, where the 'user' is a teacher  
         public async Task<IEnumerable<User>> GetTeachersByChildIdAsync(int childId)
         {
             var sql = @"SELECT u.* FROM users u
-                       JOIN child_relation uc ON u.id = uc.user_id
-                       WHERE uc.child_id = @ChildId AND u.role = 'Teacher'";
+                       JOIN child_relation cr ON u.id = cr.user_id
+                       WHERE cr.child_id = @ChildId AND u.role = 'Teacher'";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
@@ -216,8 +171,8 @@ namespace FoodplannerDataAccessSql.Account
         public async Task<IEnumerable<Children>> GetChildrenByTeacherIdAsync(int teacherId)
         {
             var sql = @"SELECT c.* FROM children c
-                       JOIN child_relation uc ON c.child_id = uc.child_id
-                       WHERE uc.user_id = @TeacherId";
+                       JOIN child_relation cr ON c.child_id = cr.child_id
+                       WHERE cr.user_id = @TeacherId AND cr.role = 'Teacher'";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
@@ -225,5 +180,30 @@ namespace FoodplannerDataAccessSql.Account
                 return result;
             }
         }
+
+        // Add user-child relation to child_relation table in database given user id and child id 
+        public async Task<int> AddUserToChildAsync(int userId, int childId)
+        {
+            var sql = "INSERT INTO child_relation (user_id, child_id) VALUES (@UserId, @ChildId) ON CONFLICT DO NOTHING";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.ExecuteAsync(sql, new { UserId = userId, ChildId = childId });
+                return result;
+            }
+        }
+
+        // Remove user-child relation from child_relation table in database given user id and child id 
+        public async Task<int> RemoveUserFromChildAsync(int userId, int childId)
+        {
+            var sql = "DELETE FROM child_relation WHERE user_id = @UserId AND child_id = @ChildId";
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.ExecuteAsync(sql, new { UserId = userId, ChildId = childId });
+                return result;
+            }
+        }
+
     }
 }
