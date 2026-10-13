@@ -1,58 +1,55 @@
 ﻿using Dapper;
 using FoodplannerModels.Lunchbox;
 
+// Adds the IngredientRepository to the FoodplannerDataAccessSql.Lunchbox namespace
 namespace FoodplannerDataAccessSql.Lunchbox;
 
-/**
-* The repository for the Ingredient class.
-*/
-public class IngredientRepository(PostgreSQLConnectionFactory connectionFactory) : IIngredientRepository
+//The repository for the Ingredient class.
+public class IngredientsRepository(PostgreSQLConnectionFactory connectionFactory)
 {
-    private readonly PostgreSQLConnectionFactory _connectionFactory = connectionFactory;
-
     // Asynchronously retrieves all ingredients from the database. Used in testing.
-    public async Task<IEnumerable<Ingredient>> GetAllAsync()
+    public async Task<IEnumerable<IngredientDTO>> GetAllAsync()
     {
         var sql = "SELECT * FROM ingredients";
-        using (var connection = _connectionFactory.Create())
+        using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            return await connection.QueryAsync<Ingredient>(sql);
+            return await connection.QueryAsync<IngredientDTO>(sql);
         }
     }
 
     // Asynchronously retrieves all ingredients by user.
-    public async Task<IEnumerable<Ingredient>> GetAllByUserAsync(int id)
+    public async Task<IEnumerable<IngredientDTO>> GetAllByUserAsync(int id)
     {
         var sql = "SELECT * FROM ingredients WHERE user_id = @Id";
-        using (var connection = _connectionFactory.Create())
+        using (var connection = connectionFactory.Create())
         {
-            connection.Open();
-            return await connection.QueryAsync<Ingredient>(sql, new { Id = id });
+            return await connection.QueryAsync<IngredientDTO>(sql, new { Id = id });
         }
     }
 
     // Asynchronously retrieves an ingredient by its unique ID.
-    public async Task<Ingredient?> GetByIdAsync(int id)
+    public async Task<IngredientDTO?> GetByIdAsync(int id)
     {
         var sql = "SELECT * FROM ingredients WHERE id = @Id";
-        using (var connection = _connectionFactory.Create())
+        using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            var result = await connection.QuerySingleOrDefaultAsync<Ingredient>(sql, new { Id = id });
+            var result = await connection.QuerySingleOrDefaultAsync<IngredientDTO>(sql, new { Id = id });
             connection.Close();
             return result;
         }
     }
 
     // Asynchronously inserts a new ingredient into the database and returns its Id.
-    public async Task<int> InsertAsync(Ingredient entity)
+    public async Task<int> InsertAsync(IngredientDTO entity)
     {
         var sql = "INSERT INTO ingredients (name, user_id, food_image_id) VALUES (@Name, @UserId, @FoodImageId) RETURNING id";
-        using (var connection = _connectionFactory.Create())
+        using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            //Since food_image_id is nullable in the database, we cast it as a nullable object in a null-coalescing operator in order to return the correct form of null to the database.
+            
+            // If Food_image_id is null, we need to pass DBNull.Value to the database.
             return await connection.QuerySingleAsync<int>(sql, new
             {
                 Name = entity.Name,
@@ -63,10 +60,10 @@ public class IngredientRepository(PostgreSQLConnectionFactory connectionFactory)
     }
 
     // Asynchronously updates an existing ingredient in the database.
-    public async Task<int> UpdateAsync(Ingredient entity)
+    public async Task<int> UpdateAsync(IngredientDTO entity)
     {
         var sql = "UPDATE ingredients SET name = @Name, user_id = @UserId, food_image_id = @FoodImageId WHERE id = @Id";
-        using (var connection = _connectionFactory.Create())
+        using (var connection = connectionFactory.Create())
         {
             connection.Open();
             return await connection.ExecuteAsync(sql, new
@@ -83,7 +80,7 @@ public class IngredientRepository(PostgreSQLConnectionFactory connectionFactory)
     public async Task<int> DeleteAsync(int id)
     {
         var sql = "DELETE FROM ingredients WHERE id = @Id";
-        using (var connection = _connectionFactory.Create())
+        using (var connection = connectionFactory.Create())
         {
             connection.Open();
             return await connection.ExecuteAsync(sql, new { Id = id });

@@ -1,98 +1,82 @@
 using Dapper;
 using FoodplannerModels.Lunchbox;
 
+// Adds the SubIngredientRepository to the FoodplannerDataAccessSql.Lunchbox namespace
 namespace FoodplannerDataAccessSql.Lunchbox;
 
-/// <summary>
-/// Repository implementation for SubIngredient data access
-/// </summary>
-public class SubIngredientRepository : ISubIngredientRepository
+// Repository for the SubIngredient class.
+public class SubIngredientRepository(PostgreSQLConnectionFactory connectionFactory)
 {
-    private readonly PostgreSQLConnectionFactory _connectionFactory;
-
-    public SubIngredientRepository(PostgreSQLConnectionFactory connectionFactory)
+    // Get all packed ingredients from the database. Used in testing.
+    public async Task<IEnumerable<SubIngredientDTO>> GetAllAsync()
     {
-        _connectionFactory = connectionFactory;
-    }
-
-    // Asynchronously collects all subingredients data from the subingredient table
-    public async Task<IEnumerable<SubIngredient>> GetAllAsync()
-    {
-        var sql = "SELECT * FROM subingredients";
-        using (var connection = _connectionFactory.Create())
+        var sql = "SELECT * FROM subingredient";
+        using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            return await connection.QueryAsync<SubIngredient>(sql);
+            return await connection.QueryAsync<SubIngredientDTO>(sql);
         }
     }
 
-    // Asynchronously collects all subingredients data from the subingredient table
-    //where user_id matches the userId given within the function call
-    public async Task<IEnumerable<SubIngredient>> GetAllByUserAsync(int userId)
+    // Get all subingredients associated with parent id
+    public async Task<IEnumerable<SubIngredientDTO>> GetAllByParentIdAsync(int id)
     {
-        var sql = "SELECT * FROM subingredients WHERE user_id = @UserId";
-        using (var connection = _connectionFactory.Create())
+        var sql = "SELECT * FROM subingredient WHERE parent_id = @Id ORDER BY order_number";
+        using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            return await connection.QueryAsync<SubIngredient>(sql, new { UserId = userId });
-        }
-    }
-
-    // Asynchronously collects all subingredients data from the subingredient table
-    //Where id matches the id given within the function call
-    public async Task<SubIngredient?> GetByIdAsync(int id)
-    {
-        var sql = "SELECT * FROM subingredients WHERE id = @Id";
-        using (var connection = _connectionFactory.Create())
-        {
-            connection.Open();
-            var result = await connection.QuerySingleOrDefaultAsync<SubIngredient>(sql, new { Id = id });
+            var result = await connection.QueryAsync<SubIngredientDTO>(sql, new { Id = id });
+            connection.Close();
             return result;
         }
     }
 
-    // Asynchronously inserts data into the subingredient table
-    //the data being name, user_id, and food_image_id
-    public async Task<int> InsertAsync(SubIngredientDTO entity, int userId)
+    // Inserts a new subingredient into the database
+    public async Task<int> InsertAsync(SubIngredientDTO entity)
     {
-        var sql = "INSERT INTO subingredients (name, user_id, food_image_id) VALUES (@Name, @UserId, @FoodImageId) RETURNING id";
-        using (var connection = _connectionFactory.Create())
+        var sql = "INSERT INTO subingredient (parent_id, child_id, order_number) VALUES (@ParentId, @ChildId, @OrderNumber)";
+        using (var connection = connectionFactory.Create())
         {
             connection.Open();
             return await connection.QuerySingleAsync<int>(sql, new
             {
-                Name = entity.Name,
-                UserId = userId,
-                FoodImageId = entity.Food_image_id ?? (object)DBNull.Value,
+                ParentId = entity.Parent_id,
+                ChildId = entity.Child_id,
+                OrderNumber = entity.Order_number
             });
         }
     }
 
-    //Asynchronously updates a specific subingredients values, based on its id
-    public async Task<int> UpdateAsync(SubIngredient entity, int id)
+    // Updates an existing subingredient
+    public async Task<int> UpdateAsync(SubIngredientDTO Old, SubIngredientDTO New)
     {
-        var sql = "UPDATE subingredients SET name = @Name, user_id = @UserId, food_image_id = @FoodImageId WHERE id = @Id";
-        using (var connection = _connectionFactory.Create())
+        var sql = "UPDATE subingredient SET parent_id = @NewParentId, child_id = @NewChildId, order_number = @NewOrderNumber WHERE parent_id = @OldParentId AND child_id = @OldChildId";
+        using (var connection = connectionFactory.Create())
         {
             connection.Open();
             return await connection.ExecuteAsync(sql, new
             {
-                Id = id,
-                Name = entity.Name,
-                UserId = entity.User_id,
-                FoodImageId = entity.Food_image_id ?? (object)DBNull.Value
+                NewParentId = New.Parent_id,
+                NewChildId = New.Child_id,
+                NewOrderNumber = New.Order_number,
+                OldParentId = Old.Parent_id,
+                OldChildId = Old.Child_id
             });
         }
     }
 
-    //Asynchronously deletes a subingredient from the table, based on the subingredients id
-    public async Task<int> DeleteAsync(int id)
+    // Deletes a subingredient from the database
+    public async Task<int> DeleteAsync(SubIngredientDTO entity)
     {
-        var sql = "DELETE FROM subingredients WHERE id = @Id";
-        using (var connection = _connectionFactory.Create())
+        var sql = "DELETE FROM subingredient WHERE parent_id = @ParentId AND child_id = @ChildId";
+        using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            return await connection.ExecuteAsync(sql, new { Id = id });
+            return await connection.ExecuteAsync(sql, new
+            {
+                ParentId = entity.Parent_id,
+                ChildId = entity.Child_id
+            });
         }
     }
 }

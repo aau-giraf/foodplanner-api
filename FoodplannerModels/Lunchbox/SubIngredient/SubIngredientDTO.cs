@@ -1,17 +1,10 @@
+// Adds the SubIngredient class to the FoodplannerModels.Lunchbox namespace
 namespace FoodplannerModels.Lunchbox;
 
-/// <summary>
-/// DTO for creating a subingredient (without ID and user_id)
-/// </summary>
+// Represents a subingredient that can be part of an ingredient
 public class SubIngredientDTO
 {
-    /// <summary>
-    /// Name of the subingredient
-    /// </summary>
-    public required string Name { get; set; }
-    
-    /// <summary>
-    /// Optional reference to the subingredient's image
-    /// </summary>
-    public int? Food_image_id { get; set; }
+    public required int Parent_id { get; set; }
+    public required int Child_id { get; set; }
+    public required int Order_number { get; set; }
 }
