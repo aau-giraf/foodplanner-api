@@ -9,7 +9,7 @@ public class MealBuilder
     private string _date = "11/11/2050";
     private int _userId;
     private int? _foodImageId;
-    private IEnumerable<PackedIngredient> _packedIngredient = [];
+    private IEnumerable<PackedDTO> _packedIngredient = [];
 
     public MealBuilder WithId(int id)
     {
@@ -41,22 +41,21 @@ public class MealBuilder
         return this;
     }
     
-    public MealBuilder AddPackedIngredient(PackedIngredient packedIngredient)
+    public MealBuilder AddPackedIngredient(PackedDTO packedIngredient)
     {
         _packedIngredient.Append(packedIngredient);
         return this;
     }
 
-    public Meal Build()
+    public MealDTO Build()
     {
-        return new Meal
+        return new MealDTO
         {
             Id = _id,
             Name = _name,
             User_id = _userId,
             Food_image_id = _foodImageId,
-            Date = _date,
-            Ingredients = _packedIngredient,
+            Date = _date
         };
     }
 }

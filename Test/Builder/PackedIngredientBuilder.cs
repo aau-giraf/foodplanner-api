@@ -33,14 +33,13 @@ public class PackedIngredientBuilder
         return this;
     }
 
-    public PackedIngredient Build()
+    public PackedDTO Build()
     {
-        return new PackedIngredient
+        return new PackedDTO
         {
-            Id = _id,
             Ingredient_id = _ingredientId,
             Meal_id = _mealId,
-            order_number = _orderNumber
+            Order_number = _orderNumber
         };
     }
 }

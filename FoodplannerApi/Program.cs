@@ -234,15 +234,10 @@ builder.Services.AddFluentMigratorCore()
 // Add Repositories
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
-builder.Services.AddScoped(typeof(IMealRepository), typeof(MealRepository));
-builder.Services.AddScoped(typeof(IIngredientRepository), typeof(IngredientRepository));
-builder.Services.AddScoped(typeof(IPackedIngredientRepository), typeof(PackedIngredientRepository));
 builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
 builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepository));
 builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));
 builder.Services.AddScoped(typeof(IChatRepository), typeof(ChatRepository));
-builder.Services.AddScoped<ISubIngredientRepository, SubIngredientRepository>();
-builder.Services.AddScoped<ISubIngredientRelationRepository, SubIngredientRelationRepository>();
 builder.Services.AddScoped(typeof(IOneTimePasswordRepository), typeof(OneTimePasswordRepository));
 
 // Add Services
@@ -252,30 +247,16 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddScoped<IChatService, ChatService>();
-builder.Services.AddScoped<ISubIngredientService, SubIngredientService>();
-builder.Services.AddScoped<ISubIngredientRelationService, SubIngredientRelationService>();
 builder.Services.AddScoped<IPasswordHandler, PasswordHandler>();
-builder.Services.AddScoped<IIngredientService, IngredientService>();
-builder.Services.AddScoped<IMealService, MealService>();
-builder.Services.AddScoped<IPackedIngredientService, PackedIngredientService>();
 builder.Services.AddScoped<IOneTimePasswordService, OneTimePasswordService>();
 builder.Services.AddSingleton<ISecretLoader, SecretsLoader>(_ => secretsLoader);
-
-builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile), typeof(PackedIngredientProfile));
-builder.Services.AddAutoMapper(cfg => { }, typeof(SubIngredientProfile));
-
 builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddSignalR();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile));
 builder.Services.AddAutoMapper(cfg => { }, typeof(ChatProfile));
-builder.Services.AddAutoMapper(cfg => { }, typeof(PackedIngredientProfile));
-builder.Services.AddAutoMapper(cfg => { }, typeof(IngredientProfile));
-builder.Services.AddAutoMapper(cfg => { }, typeof(MealProfile));
 builder.Services.AddAutoMapper(cfg => { }, typeof(ImageProfile));
-builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile), typeof(PackedIngredientProfile));
-builder.Services.AddAutoMapper(cfg => { }, typeof(SubIngredientProfile));
 
 
 

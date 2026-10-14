@@ -3,11 +3,12 @@ using FoodplannerModels.Lunchbox;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FoodplannerModels.Auth;
+using FoodplannerServices.Lunchbox;
 
 // Adds the MealsController to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
 
-public class MealsController(IMealService mealService, IAuthService authService) : BaseController
+public class MealsController(MealsService mealService, IAuthService authService) : BaseController
 {
 
     // URL: api/Meals/GetAll
@@ -38,7 +39,7 @@ public class MealsController(IMealService mealService, IAuthService authService)
             }
 
             // Retrieve all meals for the user on the specified date.
-            var meals = await mealService.GetAllMealsByUserAsync(id, date);
+            var meals = await mealService.GetAllMealsByUserAndDateAsync(id, date);
             return Ok(meals);
         }
         catch (InvalidOperationException e)
@@ -54,7 +55,7 @@ public class MealsController(IMealService mealService, IAuthService authService)
     [ProducesResponseType(typeof(IEnumerable<MealDTO>), StatusCodes.Status200OK)]
     public async Task<IActionResult> TeacherGetUserMeals(string date, int id)
     {
-        var meals = await mealService.GetAllMealsByUserAsync(id, date);
+        var meals = await mealService.GetAllMealsByUserAndDateAsync(id, date);
         return Ok(meals);
     }
 
@@ -80,7 +81,7 @@ public class MealsController(IMealService mealService, IAuthService authService)
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(MealDTO), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] MealCreateDTO meal)
+    public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] MealCreateDTO mealCreateDTO)
     {
         try
         {
@@ -92,7 +93,7 @@ public class MealsController(IMealService mealService, IAuthService authService)
             }
 
             // Create the meal and return the created meal with a 201 Created status.
-            var result = await mealService.CreateMealAsync(meal, id);
+            var result = await mealService.CreateMealAsync(mealCreateDTO, id);
             if (result > 0)
             {
                 var createdMeal = await mealService.GetMealByIdAsync(result);
@@ -124,8 +125,7 @@ public class MealsController(IMealService mealService, IAuthService authService)
             }
 
             // Update the meal and return the updated meal with a 200 OK status.
-            mealDto.UserId = user_id;
-            var result = await mealService.UpdateMealAsync(mealDto, id);
+            var result = await mealService.UpdateMealAsync(mealDto);
             if (result > 0)
             {
                 var changedMeal = await mealService.GetMealByIdAsync(id);

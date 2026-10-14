@@ -33,9 +33,9 @@ public class IngredientBuilder
         return this;
     }
 
-    public Ingredient Build()
+    public IngredientDTO Build()
     {
-        return new Ingredient
+        return new IngredientDTO
         {
             Id = _id,
             Name = _name,

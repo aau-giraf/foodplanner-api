@@ -1,0 +1,12 @@
+namespace FoodplannerModels.Lunchbox;
+
+// DTO for transfer of backend data to the frontend for a meal with its associated ingredients.
+public class MealWithIngredientsDTO {
+    public required int Id {get; init;}
+    public required string Name {get; set;}
+    public required string Date {get; set;}
+    public  required bool Template {get; set;}
+    public int? Food_image_id {get; set;}
+    public required int User_id {get; init;}
+    public required List<IngredientDTO> Ingredients {get; set;}
+}

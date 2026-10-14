@@ -1,24 +1,12 @@
+// Adds the Meal class to the FoodplannerModels.Lunchbox namespace
 namespace FoodplannerModels.Lunchbox;
 
-/**
-* Class for individual meals in the foodplanner.
-* Contains the title of the Meal and references to a user and an image.
-* The date of creation is also stored.
-*/
-public class MealDTO
-{
-    // Unique identifier for the ingredient.
-    public required int Id { get; set; }
-    // Reference to the meal's image.
-    public int? Food_image_id { get; set; }
-    // Title of the meal.
-    public required string Name { get; set; }
-    // Reference to the user who created the meal.
-    public required int UserId { get; set; }
-    
-    // Date accosiated with the meal
-    public required string Date { get; set; }
-    public bool Template { get; set; }
-    //List of ingredients in the meal
-    public required IEnumerable<PackedIngredientDTO> Ingredients { get; set; }
+// DTO for transfer of backend data to the frontend for a meal.
+public class MealDTO {
+    public required int Id {get; init;}
+    public required string Name {get; set;}
+    public required string Date {get; set;}
+    public required bool Template {get; set;}
+    public int? Food_image_id {get; set;}
+    public required int User_id {get; init;}
 }

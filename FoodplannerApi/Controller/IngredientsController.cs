@@ -1,5 +1,6 @@
 using FoodplannerModels.Account;
 using FoodplannerModels.Lunchbox;
+using FoodplannerServices.Lunchbox;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using FoodplannerModels.Auth;
@@ -7,7 +8,7 @@ using FoodplannerModels.Auth;
 // Adds the IngredientsController to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
 
-public class IngredientsController(IIngredientService ingredientService, IAuthService authService) : BaseController
+public class IngredientsController(IngredientsService ingredientService, IAuthService authService) : BaseController
 {
 
     // URL: api/Ingredients/GetAll
@@ -81,7 +82,7 @@ public class IngredientsController(IIngredientService ingredientService, IAuthSe
         }
 
         // Calls the service to create a new ingredient associated with the user ID
-        var result = await ingredientService.CreateIngredientAsync(ingredient, id);
+        var result = await ingredientService.CreateIngredientAsync(ingredient);
         if (result > 0)
         {
             var createdIngredient = await ingredientService.GetIngredientByIdAsync(result);
@@ -98,7 +99,7 @@ public class IngredientsController(IIngredientService ingredientService, IAuthSe
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update([FromBody] IngredientDTO ingredientDto, int id)
     {
-        var result = await ingredientService.UpdateIngredientAsync(ingredientDto, id);
+        var result = await ingredientService.UpdateIngredientAsync(ingredientDto);
         if (result > 0)
         {
             var changedIngredient = await ingredientService.GetIngredientByIdAsync(id);
