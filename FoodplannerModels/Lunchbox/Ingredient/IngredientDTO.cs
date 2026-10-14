@@ -7,5 +7,5 @@ public class IngredientDTO {
     public required int Id {get; set;}
     public required string Name {get; set;}
     public required int User_id {get; set;}
-    public int? Food_image_id {get; set;}
+    public int? Image_id {get; set;}
 }

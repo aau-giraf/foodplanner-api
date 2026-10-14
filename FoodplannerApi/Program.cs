@@ -252,6 +252,10 @@ builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepositor
 builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));
 builder.Services.AddScoped(typeof(IChatRepository), typeof(ChatRepository));
 builder.Services.AddScoped(typeof(IOneTimePasswordRepository), typeof(OneTimePasswordRepository));
+builder.Services.AddScoped<IngredientsRepository>();
+builder.Services.AddScoped<MealsRepository>();
+builder.Services.AddScoped<PackedRepository>();
+builder.Services.AddScoped<SubIngredientRepository>();
 
 // Add Services
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
@@ -265,6 +269,10 @@ builder.Services.AddScoped<IOneTimePasswordService, OneTimePasswordService>();
 builder.Services.AddSingleton<ISecretLoader, SecretsLoader>(_ => secretsLoader);
 builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddSignalR();
+builder.Services.AddScoped<IngredientsService>();
+builder.Services.AddScoped<MealsService>();
+builder.Services.AddScoped<PackedService>();
+builder.Services.AddScoped<SubIngredientService>();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile));
