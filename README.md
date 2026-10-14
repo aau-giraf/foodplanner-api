@@ -300,6 +300,12 @@ This will run the bash script once every minute and write the output to `docker-
         "DB_USER": "postgres",
         "DB_PASS": "postgres",
 
+        "CORE_DB_HOST": "localhost",
+        "CORE_DB_PORT": "7655",
+        "CORE_DB_NAME": "giraf_core_mock",
+        "CORE_DB_USER": "postgres",
+        "CORE_DB_PASS": "postgres",
+
         "JWT_SECRET": "local-development-secret-key-123",
         "BACKEND_PORT": "8080"
     }

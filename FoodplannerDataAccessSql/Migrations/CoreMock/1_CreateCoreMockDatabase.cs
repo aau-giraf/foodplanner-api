@@ -19,7 +19,7 @@ public override void Up()
         .WithColumn("role").AsString(30).NotNullable()
         .WithColumn("pincode").AsString(100).Nullable()
         .WithColumn("role_approved").AsBoolean().NotNullable()
-        .WithColumn("archived").AsBoolean().NotNullable();
+        .WithColumn("archived").AsBoolean().NotNullable().WithDefaultValue(false);
     
     //Creates table "classroom"
     Create.Table("classroom")

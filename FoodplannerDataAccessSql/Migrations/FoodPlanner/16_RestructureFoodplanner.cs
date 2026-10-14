@@ -172,7 +172,7 @@ public class RestructureFoodplanner : Migration
         // Recreate the original subingredients table.
         Create.Table("subingredients")
             .WithColumn("id").AsInt32().PrimaryKey().Identity()
-            .WithColumn("name").AsString().NotNullable()
+            .WithColumn("name").AsString(100).NotNullable()
             .WithColumn("user_id").AsInt32().NotNullable()
             .WithColumn("food_image_id").AsInt32().Nullable();
 
@@ -181,18 +181,20 @@ public class RestructureFoodplanner : Migration
             .WithColumn("id").AsInt32().PrimaryKey().Identity()
             .WithColumn("ingredient_id").AsInt32().NotNullable()
             .WithColumn("subingredient_id").AsInt32().NotNullable()
-            .WithColumn("order_number").AsInt32().NotNullable();
+            .WithColumn("order_number").AsInt32().NotNullable().WithDefaultValue(0);
 
         // Restore the original relations.
         Create.ForeignKey("fk_subingredient_relation_ingredient_id")
             .FromTable("subingredient_relation")
             .ForeignColumn("ingredient_id")
-            .ToTable("ingredients").PrimaryColumn("id");
+            .ToTable("ingredients").PrimaryColumn("id")
+            .OnDelete(Rule.Cascade);
 
         Create.ForeignKey("fk_subingredient_relation_subingredient_id")
             .FromTable("subingredient_relation")
             .ForeignColumn("subingredient_id")
-            .ToTable("subingredients").PrimaryColumn("id");
+            .ToTable("subingredients").PrimaryColumn("id")
+            .OnDelete(Rule.Cascade);
 
 
         // Remove the composite primary key.
