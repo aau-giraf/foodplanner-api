@@ -5,7 +5,7 @@ using FoodplannerDataAccessSql.Lunchbox;
 namespace FoodplannerServices.Lunchbox;
 
 // Service for the Packed class.
-public class PackedService(PackedRepository packedRepository)
+public class PackedService(PackedRepository packedRepository) : IPackedService
 {
     // Retrieves all packed ingredients
     public async Task<IEnumerable<PackedDTO>> GetAllPackedAsync()
