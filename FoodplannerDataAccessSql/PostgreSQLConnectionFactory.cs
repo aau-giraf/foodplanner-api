@@ -24,4 +24,9 @@ public class PostgreSQLConnectionFactory{
         var connectionString = $"Server={_host};Port={_port};Database={_database};User Id={_username};Password={_password}";
         return new NpgsqlConnection(connectionString);
     }
+
+    public static implicit operator PostgreSQLConnectionFactory(CorePostgreSQLConnectionFactory v)
+    {
+        throw new NotImplementedException();
+    }
 }

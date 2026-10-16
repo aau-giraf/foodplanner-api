@@ -485,11 +485,21 @@ public class UserServiceTests
     {
         // Arrange
         var id = 1;
-        var archived = true; 
+        var archived = true;
+        var user = new User
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "JohnDoe.Sexy@google.com",
+            Role = UserRole.Parent,
+            RoleApproved = true,
+            Password = "123"
+        };
 
         _mockUserRepository
             .Setup(repo => repo.UpdateArchivedAsync(id, archived))
             .ReturnsAsync(true);
+        _mockUserRepository.Setup(repo => repo.GetByIdAsync(id)).ReturnsAsync(user);
 
         // Act
         var result = await _userService.UserUpdateArchivedAsync(id);

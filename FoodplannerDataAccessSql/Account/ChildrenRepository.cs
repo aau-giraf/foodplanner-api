@@ -30,7 +30,6 @@ namespace FoodplannerDataAccessSql.Account
         }
 
         // Select children (name and ID) and their classrooms (name and ID)
-        // To get the parents of children in a classroom 
         public async Task<IEnumerable<ChildrenGetAllDTO>> GetAllChildrenClassesAsync()
         {
             var query = @"
