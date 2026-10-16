@@ -38,6 +38,6 @@ public class PackedIngredientBuilderTest
         Assert.Equal(id, packedIngredient.Id);
         Assert.Equal(ingredientId, packedIngredient.Ingredient_id);
         Assert.Equal(mealId, packedIngredient.Meal_id);
-        Assert.Equal(orderNumber, packedIngredient.order_number);
+        Assert.Equal(orderNumber, packedIngredient.order_no);
     }
 }

@@ -18,8 +18,8 @@
                 // Data returned by repository mock
                 var packedIngredients = new List<PackedIngredient>
                 {
-                    new PackedIngredient { Id = 1, Meal_id = 101, Ingredient_id = 201, order_number = 2 },
-                    new PackedIngredient { Id = 2, Meal_id = 102, Ingredient_id = 202, order_number = 1 }
+                    new PackedIngredient { Id = 1, Meal_id = 101, Ingredient_id = 201, order_no = 2 },
+                    new PackedIngredient { Id = 2, Meal_id = 102, Ingredient_id = 202, order_no = 1 }
                 };
         
                 // Expected data mapped by AutoMapper
@@ -59,14 +59,14 @@
                 int mealId = 101;
                 var packedIngredients = new List<PackedIngredient>
                 {
-                    new PackedIngredient { Id = 1, Meal_id = mealId, Ingredient_id = 201, order_number = 1 },
-                    new PackedIngredient { Id = 2, Meal_id = mealId, Ingredient_id = 202, order_number = 2 }
+                    new PackedIngredient { Id = 1, Meal_id = mealId, Ingredient_id = 201, order_no = 1 },
+                    new PackedIngredient { Id = 2, Meal_id = mealId, Ingredient_id = 202, order_no = 2 }
                 };
         
                 var packedIngredientDTOs = new List<PackedIngredientDTO>
                 {
-                    new PackedIngredientDTO { Id = 1, Meal_id = mealId, Ingredient_id = 1, order_number = 1 },
-                    new PackedIngredientDTO { Id = 2, Meal_id = mealId, Ingredient_id = 1, order_number = 2 }
+                    new PackedIngredientDTO { Id = 1, Meal_id = mealId, Ingredient_id = 1, order_no = 1 },
+                    new PackedIngredientDTO { Id = 2, Meal_id = mealId, Ingredient_id = 1, order_no = 2 }
                 };
         
                 mockPackedIngredientRepository
@@ -95,7 +95,7 @@
                 var mockPackedIngredientRepository = new Mock<IPackedIngredientRepository>();
                 var mockMapper = new Mock<IMapper>();
         
-                var packedIngredient = new PackedIngredient { Id = 1, Meal_id = 101, Ingredient_id = 201, order_number = 5 };
+                var packedIngredient = new PackedIngredient { Id = 1, Meal_id = 101, Ingredient_id = 201, order_no = 5 };
         
                 mockPackedIngredientRepository
                     .Setup(repo => repo.GetByIdAsync(packedIngredient.Id))
@@ -107,7 +107,7 @@
                     Id = packedIngredient.Id,
                     Meal_id = packedIngredient.Meal_id,
                     Ingredient_id = packedIngredient.Ingredient_id,
-                    order_number = packedIngredient.order_number
+                    order_no = packedIngredient.order_no
                 };
         
                 mockMapper
@@ -175,7 +175,7 @@
                 var mockPackedIngredientRepository = new Mock<IPackedIngredientRepository>();
                 var mockMapper = new Mock<IMapper>();
         
-                var packedIngredient = new PackedIngredient { Id = 1, Meal_id = 101, Ingredient_id = 201, order_number = 1 };
+                var packedIngredient = new PackedIngredient { Id = 1, Meal_id = 101, Ingredient_id = 201, order_no = 1 };
                 int rowsAffected = 1;
         
                 // Create a DTO to pass to the service (service likely expects DTO)
@@ -184,7 +184,7 @@
                     Id = packedIngredient.Id,
                     Meal_id = packedIngredient.Meal_id,
                     Ingredient_id = packedIngredient.Id,
-                    order_number = packedIngredient.order_number
+                    order_no = packedIngredient.order_no
                 };
                 
                 var packedIngredientProperDto = new PackedIngredientProperDTO

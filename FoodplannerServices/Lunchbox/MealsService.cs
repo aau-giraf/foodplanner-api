@@ -30,7 +30,7 @@ public class MealsService(MealsRepository mealsRepository, PackedRepository pack
 
                 Ingredients = packed
                     .Where(p => p.Meal_id == meal.Id)
-                    .OrderBy(p => p.Order_number)
+                    .OrderBy(p => p.order_no)
                     .Select(p => ingredientsById[p.Ingredient_id])
                     .ToList()
             }).ToList();

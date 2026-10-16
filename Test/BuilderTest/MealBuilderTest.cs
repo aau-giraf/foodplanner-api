@@ -36,7 +36,7 @@ public class MealBuilderTest
         Assert.Equal(id, meal.Id);
         Assert.Equal(name, meal.Name);
         Assert.Equal(userId, meal.User_id);
-        Assert.Equal(foodImageId, meal.Food_image_id);
+        Assert.Equal(foodImageId, meal.Image_id);
         Assert.Equal(date, meal.Date);
     }
 }

@@ -36,6 +36,6 @@ public class IngredientBuilderTest
         Assert.Equal(id, ingredient.Id);
         Assert.Equal(name, ingredient.Name);
         Assert.Equal(userId, ingredient.User_id);
-        Assert.Equal(foodImageId, ingredient.Food_image_id);
+        Assert.Equal(foodImageId, ingredient.Image_id);
     }
 }

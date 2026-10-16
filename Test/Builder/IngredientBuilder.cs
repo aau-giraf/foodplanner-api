@@ -40,7 +40,7 @@ public class IngredientBuilder
             Id = _id,
             Name = _name,
             User_id = _userId,
-            Food_image_id = _foodImageId,
+            Image_id = _foodImageId,
         };
     }
 }

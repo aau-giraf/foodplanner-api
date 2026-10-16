@@ -39,7 +39,7 @@ public class PackedIngredientBuilder
         {
             Ingredient_id = _ingredientId,
             Meal_id = _mealId,
-            Order_number = _orderNumber
+            order_no = _orderNumber
         };
     }
 }

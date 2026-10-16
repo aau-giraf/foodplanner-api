@@ -39,7 +39,7 @@
                 var mockPackedIngredientService = new Mock<IPackedIngredientService>();
         
                 int packedIngredientId = 1;
-                PackedIngredientDTO packedIngredient = new() { Id = packedIngredientId, Ingredient_id = 1, Meal_id = 1, order_number = 1 };
+                PackedIngredientDTO packedIngredient = new() { Id = packedIngredientId, Ingredient_id = 1, Meal_id = 1, order_no = 1 };
         
                 mockPackedIngredientService
                     .Setup(repo => repo.GetPackedIngredientByIdAsync(packedIngredientId))
@@ -86,7 +86,7 @@
                 int mealId = 1;
                 PackedIngredientProperDTO packedIngredientProperDto = new() { Ingredient_id = ingredientId, Meal_id = mealId};
                 int packedIngredientId = 1;
-                PackedIngredientDTO packedIngredient = new() { Id = packedIngredientId, Ingredient_id = 1, Meal_id = 1, order_number = 1 };
+                PackedIngredientDTO packedIngredient = new() { Id = packedIngredientId, Ingredient_id = 1, Meal_id = 1, order_no = 1 };
         
                 mockPackedIngredientService
                     .Setup(repo => repo.CreatePackedIngredientAsync(packedIngredientProperDto))
@@ -134,7 +134,7 @@
                 var mockPackedIngredientService = new Mock<IPackedIngredientService>();
         
                 int packedIngredientId = 1;
-                PackedIngredientDTO packedIngredient = new() { Id = packedIngredientId, Ingredient_id = 1, Meal_id = 1, order_number = 1 };
+                PackedIngredientDTO packedIngredient = new() { Id = packedIngredientId, Ingredient_id = 1, Meal_id = 1, order_no = 1 };
         
                 mockPackedIngredientService
                     .Setup(repo => repo.UpdatePackedIngredientAsync(packedIngredient, packedIngredientId))
@@ -159,7 +159,7 @@
                 var mockPackedIngredientService = new Mock<IPackedIngredientService>();
         
                 int packedIngredientId = 1;
-                PackedIngredientDTO packedIngredient = new() { Id = packedIngredientId, Ingredient_id = 1, Meal_id = 1, order_number = 1 };
+                PackedIngredientDTO packedIngredient = new() { Id = packedIngredientId, Ingredient_id = 1, Meal_id = 1, order_no = 1 };
         
                 mockPackedIngredientService
                     .Setup(repo => repo.UpdatePackedIngredientAsync(packedIngredient, packedIngredientId))

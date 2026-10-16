@@ -154,7 +154,7 @@ public class IngredientServiceTests
         var result = await ingredientService.CreateIngredientAsync(new IngredientDTO
         {
             Name = "Onion",
-            Food_image_id = 2,
+            Image_id = 2,
             Id = 0,
             User_id = 0
         }, 2);
