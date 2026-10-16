@@ -8,7 +8,7 @@ namespace Test.Service;
 public class SubIngredientServiceTests
 {
     // mock repository and service
-    private readonly Mock<SubIngredientRepository> mockSubIngredientRepository = new();
+    private readonly Mock<ISubIngredientRepository> mockSubIngredientRepository = new();
     private readonly SubIngredientService subIngredientService;
     public SubIngredientServiceTests()
     {

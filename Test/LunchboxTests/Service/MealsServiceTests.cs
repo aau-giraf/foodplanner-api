@@ -8,9 +8,9 @@ namespace Test.Service;
 public class MealsServiceTests
 {
     // Mock repositories and service
-    private readonly Mock<MealsRepository> mockMealsRepository = new();
-    private readonly Mock<PackedRepository> mockPackedRepository = new();
-    private readonly Mock<IngredientsRepository> mockIngredientsRepository = new();
+    private readonly Mock<IMealsRepository> mockMealsRepository = new();
+    private readonly Mock<IPackedRepository> mockPackedRepository = new();
+    private readonly Mock<IIngredientsRepository> mockIngredientsRepository = new();
     private readonly MealsService mealsService;
     public MealsServiceTests()
     {

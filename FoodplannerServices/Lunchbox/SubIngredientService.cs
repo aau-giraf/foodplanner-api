@@ -5,7 +5,7 @@ using FoodplannerDataAccessSql.Lunchbox;
 namespace FoodplannerServices.Lunchbox;
 
 // Service implementation for SubIngredient business logic
-public class SubIngredientService(SubIngredientRepository subIngredientRepository)
+public class SubIngredientService(ISubIngredientRepository subIngredientRepository)
 {
     // Retrieves all sub-ingredients
     public async Task<IEnumerable<SubIngredientDTO>> GetAllSubIngredientsAsync()

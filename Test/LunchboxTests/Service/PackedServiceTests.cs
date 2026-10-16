@@ -8,7 +8,7 @@ namespace Test.Service;
 public class PackedServiceTests
 {
     // mock repository and service
-    private readonly Mock<PackedRepository> mockPackedRepository = new();
+    private readonly Mock<IPackedRepository> mockPackedRepository = new();
     private readonly PackedService packedService;
     public PackedServiceTests()
     {

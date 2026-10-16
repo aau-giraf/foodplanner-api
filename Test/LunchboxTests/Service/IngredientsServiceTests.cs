@@ -8,7 +8,7 @@ namespace Test.Service;
 public class IngredientsServiceTests
 {
     // Mock repositories and service
-    private readonly Mock<IngredientsRepository> mockIngredientsRepository = new();
+    private readonly Mock<IIngredientsRepository> mockIngredientsRepository = new();
     private readonly IngredientsService ingredientsService;
     public IngredientsServiceTests()
     {
@@ -124,7 +124,7 @@ public class IngredientsServiceTests
         mockIngredientsRepository.Setup(repo => repo.GetByIdAsync(id)).ThrowsAsync(new Exception("Database error"));
 
         // Act & Assert
-        await Assert.ThrowsAsync<Exception>(() => ingredientsService.GetAllIngredientsByUserAsync(id));
+        await Assert.ThrowsAsync<Exception>(() => ingredientsService.GetIngredientByIdAsync(id));
     }
 
     [Fact]

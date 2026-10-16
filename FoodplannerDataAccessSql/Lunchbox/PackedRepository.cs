@@ -5,7 +5,7 @@ using FoodplannerModels.Lunchbox;
 namespace FoodplannerDataAccessSql.Lunchbox;
 
 // Repository for the PackedIngredient class.
-public class PackedRepository(PostgreSQLConnectionFactory connectionFactory)
+public class PackedRepository(PostgreSQLConnectionFactory connectionFactory) : IPackedRepository
 {
     // Get all packed ingredients from the database. Used in testing.
     public async Task<IEnumerable<PackedDTO>> GetAllAsync()

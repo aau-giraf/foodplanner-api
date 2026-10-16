@@ -5,7 +5,7 @@ using FoodplannerModels.Lunchbox;
 namespace FoodplannerDataAccessSql.Lunchbox;
 
 // Repository for the SubIngredient class.
-public class SubIngredientRepository(PostgreSQLConnectionFactory connectionFactory)
+public class SubIngredientRepository(PostgreSQLConnectionFactory connectionFactory) : ISubIngredientRepository
 {
     // Get all packed ingredients from the database. Used in testing.
     public async Task<IEnumerable<SubIngredientDTO>> GetAllAsync()
