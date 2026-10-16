@@ -237,7 +237,7 @@ public class MealsServiceTests
             Name = "Salad",
             Date = "21/03/2023",
             Template = false,
-            Food_image_id = null
+            Image_id = null
         };
         int newMealId = 1;
         mockMealsRepository.Setup(repo => repo.InsertAsync(It.IsAny<MealCreateDTO>(), It.IsAny<int>())).ReturnsAsync(newMealId);
@@ -258,7 +258,7 @@ public class MealsServiceTests
             Name = "Salad",
             Date = "21/03/2023",
             Template = false,
-            Food_image_id = null
+            Image_id = null
         };
         mockMealsRepository.Setup(repo => repo.InsertAsync(It.IsAny<MealCreateDTO>(), It.IsAny<int>())).ThrowsAsync(new Exception("Database error"));
 

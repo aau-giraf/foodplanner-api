@@ -23,8 +23,8 @@ public class PackedServiceTests
         // Arrange
         var packed = new List<PackedDTO>
         {
-            new PackedDTO { Meal_id = 1, Ingredient_id = 2, Order_number = 1 },
-            new PackedDTO { Meal_id = 3, Ingredient_id = 4, Order_number = 2 }
+            new PackedDTO { Meal_id = 1, Ingredient_id = 2, order_no = 1 },
+            new PackedDTO { Meal_id = 3, Ingredient_id = 4, order_no = 2 }
         };
         mockPackedRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(packed);
 
@@ -55,8 +55,8 @@ public class PackedServiceTests
         int mealId = 1;
         var packed = new List<PackedDTO>
         {
-            new PackedDTO { Meal_id = mealId, Ingredient_id = 1, Order_number = 1 },
-            new PackedDTO { Meal_id = mealId, Ingredient_id = 2, Order_number = 2 }
+            new PackedDTO { Meal_id = mealId, Ingredient_id = 1, order_no = 1 },
+            new PackedDTO { Meal_id = mealId, Ingredient_id = 2, order_no = 2 }
         };
         mockPackedRepository.Setup(repo => repo.GetAllByMealIdAsync(mealId)).ReturnsAsync(packed);
 
@@ -85,7 +85,7 @@ public class PackedServiceTests
     public async Task CreatePackedAsync_Success()
     {
         // Arrange
-        var packed = new PackedDTO{ Meal_id = 1, Ingredient_id = 2, Order_number= 3 };
+        var packed = new PackedDTO{ Meal_id = 1, Ingredient_id = 2, order_no= 3 };
         mockPackedRepository.Setup(repo => repo.InsertAsync(packed)).ReturnsAsync(1);
 
         // Act
@@ -99,7 +99,7 @@ public class PackedServiceTests
     public async Task CreatePackedAsync_RepositoryError()
     {
         // Arrange
-        var packed = new PackedDTO{ Meal_id = 1, Ingredient_id = 2, Order_number= 3 };
+        var packed = new PackedDTO{ Meal_id = 1, Ingredient_id = 2, order_no= 3 };
         mockPackedRepository.Setup(repo => repo.InsertAsync(packed)).ThrowsAsync(new Exception("Database error"));
 
         // Act & Assert
@@ -110,8 +110,8 @@ public class PackedServiceTests
     public async Task UpdatePackedAsync_Success()
     {
         // Arrange
-        var oldPacked = new PackedDTO { Meal_id = 101, Ingredient_id = 201, Order_number = 1 };
-        var newPacked = new PackedDTO { Meal_id = 101, Ingredient_id = 201, Order_number = 2 };
+        var oldPacked = new PackedDTO { Meal_id = 101, Ingredient_id = 201, order_no = 1 };
+        var newPacked = new PackedDTO { Meal_id = 101, Ingredient_id = 201, order_no = 2 };
         mockPackedRepository.Setup(repo => repo.UpdateAsync(oldPacked, newPacked)).ReturnsAsync(1);
     
         // Act
@@ -125,8 +125,8 @@ public class PackedServiceTests
     public async Task UpdatePackedAsync_RepositoryError()
     {
         // Arrange
-        var oldPacked = new PackedDTO { Meal_id = 101, Ingredient_id = 201, Order_number = 1 };
-        var newPacked = new PackedDTO { Meal_id = 101, Ingredient_id = 201, Order_number = 2 };
+        var oldPacked = new PackedDTO { Meal_id = 101, Ingredient_id = 201, order_no = 1 };
+        var newPacked = new PackedDTO { Meal_id = 101, Ingredient_id = 201, order_no = 2 };
         mockPackedRepository.Setup(repo => repo.UpdateAsync(oldPacked, newPacked)).ThrowsAsync(new Exception("Database error"));
 
         // Act & Assert
@@ -137,7 +137,7 @@ public class PackedServiceTests
     public async Task DeletePackedAsync_Success()
     {
         // Arrange
-        var toBeDeletedPacked = new PackedDTO { Meal_id = 101, Ingredient_id = 201, Order_number = 1 };
+        var toBeDeletedPacked = new PackedDTO { Meal_id = 101, Ingredient_id = 201, order_no = 1 };
         mockPackedRepository.Setup(repo => repo.DeleteAsync(toBeDeletedPacked)).ReturnsAsync(1);
 
         // Act
@@ -151,7 +151,7 @@ public class PackedServiceTests
     public async Task DeletePackedAsync_RepositoryError()
     {
         // Arrange
-        var toBeDeletedPacked = new PackedDTO { Meal_id = 101, Ingredient_id = 201, Order_number = 1 };
+        var toBeDeletedPacked = new PackedDTO { Meal_id = 101, Ingredient_id = 201, order_no = 1 };
         mockPackedRepository.Setup(repo => repo.DeleteAsync(toBeDeletedPacked)).ThrowsAsync(new Exception("Database error"));
 
         // Act & Assert

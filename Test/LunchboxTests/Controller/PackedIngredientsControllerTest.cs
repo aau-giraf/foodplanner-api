@@ -26,8 +26,8 @@ public class PackedPackedIngredientControllerTests
         // Arrange
         var packedIngredients = new List<PackedDTO>
         {
-            new() { Ingredient_id = 1, Meal_id = 1, Order_number = 1 },
-            new() { Ingredient_id = 2, Meal_id = 1, Order_number = 2 }
+            new() { Ingredient_id = 1, Meal_id = 1, order_no = 1 },
+            new() { Ingredient_id = 2, Meal_id = 1, order_no = 2 }
         };
 
         mockPackedService.Setup(service => service.GetAllPackedAsync()).ReturnsAsync(packedIngredients);
@@ -52,8 +52,8 @@ public class PackedPackedIngredientControllerTests
         int mealId = 1;
         var packedIngredients = new List<PackedDTO>
         {
-            new() { Ingredient_id = 1, Meal_id = mealId, Order_number = 1 },
-            new() { Ingredient_id = 2, Meal_id = mealId, Order_number = 2 }
+            new() { Ingredient_id = 1, Meal_id = mealId, order_no = 1 },
+            new() { Ingredient_id = 2, Meal_id = mealId, order_no = 2 }
         };
 
         mockPackedService.Setup(service => service.GetAllPackedByMealIdAsync(mealId)).ReturnsAsync(packedIngredients);
@@ -92,7 +92,7 @@ public class PackedPackedIngredientControllerTests
     {
         // Arrange
         int createdId = 1;
-        var packedIngredient = new PackedDTO { Ingredient_id = 1, Meal_id = 1, Order_number = 1 };
+        var packedIngredient = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 1 };
         mockPackedService.Setup(service => service.CreatePackedAsync(packedIngredient)).ReturnsAsync(createdId);
 
         // Act
@@ -110,7 +110,7 @@ public class PackedPackedIngredientControllerTests
     public async Task Create_ReturnsCreatedAtActionResult_WhenPackedIngredientIsNotCreated()
     {
         // Arrange
-        var packedIngredient = new PackedDTO { Ingredient_id = 1, Meal_id = 1, Order_number = 1 };
+        var packedIngredient = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 1 };
         mockPackedService.Setup(service => service.CreatePackedAsync(packedIngredient)).ReturnsAsync(0);
 
         // Act
@@ -125,8 +125,8 @@ public class PackedPackedIngredientControllerTests
     public async Task Update_ReturnsOkObjectResult_WhenPackedIngredientIsUpdated()
     {
         // Arrange
-        var oldPacked = new PackedDTO { Ingredient_id = 1, Meal_id = 1, Order_number = 1 };
-        var newPacked = new PackedDTO { Ingredient_id = 1, Meal_id = 1, Order_number = 2 };
+        var oldPacked = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 1 };
+        var newPacked = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 2 };
         mockPackedService.Setup(service => service.UpdatePackedAsync(oldPacked, newPacked)).ReturnsAsync(1);
 
         // Act
@@ -142,8 +142,8 @@ public class PackedPackedIngredientControllerTests
     public async Task Update_ReturnsOkObjectResult_WhenPackedIngredientIsNotUpdated()
     {
         // Arrange
-        var oldPacked = new PackedDTO { Ingredient_id = 1, Meal_id = 1, Order_number = 1 };
-        var newPacked = new PackedDTO { Ingredient_id = 1, Meal_id = 1, Order_number = 2 };
+        var oldPacked = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 1 };
+        var newPacked = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 2 };
         mockPackedService.Setup(service => service.UpdatePackedAsync(oldPacked, newPacked)).ReturnsAsync(0);
 
         // Act
@@ -158,7 +158,7 @@ public class PackedPackedIngredientControllerTests
     public async Task Delete_ReturnsOkObjectResult_WhenPackedIngredientDoesExist()
     {
         // Arrange
-        var packedIngredient = new PackedDTO { Ingredient_id = 1, Meal_id = 1, Order_number = 1 };
+        var packedIngredient = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 1 };
         mockPackedService.Setup(service => service.DeletePackedAsync(packedIngredient)).ReturnsAsync(1);
 
         // Act
@@ -173,7 +173,7 @@ public class PackedPackedIngredientControllerTests
     public async Task Delete_ReturnsNotFoundResult_WhenPackedIngredientDoesNotExist()
     {
         // Arrange
-        var packedIngredient = new PackedDTO { Ingredient_id = 1, Meal_id = 1, Order_number = 1 };
+        var packedIngredient = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 1 };
         mockPackedService.Setup(service => service.DeletePackedAsync(packedIngredient)).ReturnsAsync(0);
 
         // Act
