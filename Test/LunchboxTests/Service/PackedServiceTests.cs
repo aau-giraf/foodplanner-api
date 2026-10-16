@@ -1,235 +1,160 @@
-using AutoMapper;
-using FoodplannerModels.Lunchbox;
+using FoodplannerDataAccessSql.Lunchbox;
 using FoodplannerServices.Lunchbox;
+using FoodplannerModels.Lunchbox;
 using Moq;
 
 namespace Test.Service;
 
-public class PackedIngredientServiceTests
+public class PackedServiceTests
 {
+    // mock repository and service
+    private readonly Mock<PackedRepository> mockPackedRepository = new();
+    private readonly PackedService packedService;
+    public PackedServiceTests()
+    {
+        packedService = new PackedService(
+            mockPackedRepository.Object
+        );
+    }
+
     [Fact]
-    public async Task GetAllPackedIngredientsAsync_ReturnsAllPackedIngredients()
+    public async Task GetAllPackedAsync_Success()
     {
         // Arrange
-        var mockPackedIngredientRepository = new Mock<IPackedIngredientRepository>();
-        var mockMapper = new Mock<IMapper>();
-
-        // Data returned by repository mock
-        var packedIngredients = new List<PackedIngredient>
+        var packed = new List<PackedDTO>
         {
-            new PackedIngredient { Id = 1, Meal_id = 101, Ingredient_id = 201, order_number = 2 },
-            new PackedIngredient { Id = 2, Meal_id = 102, Ingredient_id = 202, order_number = 1 }
+            new PackedDTO { Meal_id = 1, Ingredient_id = 2, Order_number = 1 },
+            new PackedDTO { Meal_id = 3, Ingredient_id = 4, Order_number = 2 }
         };
-
-        // Expected data mapped by AutoMapper
-        var PackedIngredientProperDTOs = new List<PackedIngredientProperDTO>
-        {
-            new PackedIngredientProperDTO { Meal_id = 101, Ingredient_id =  2 },
-            new PackedIngredientProperDTO { Meal_id = 102, Ingredient_id = 1 }
-        };
-
-        // Mock the repository behavior
-        mockPackedIngredientRepository
-            .Setup(repo => repo.GetAllAsync())
-            .ReturnsAsync(packedIngredients);
-
-        // Mock the mapping behavior
-        mockMapper
-            .Setup(mapper => mapper.Map<IEnumerable<PackedIngredientProperDTO>>(packedIngredients))
-            .Returns(PackedIngredientProperDTOs);
-
-        var packedIngredientService = new PackedIngredientService(mockPackedIngredientRepository.Object, mockMapper.Object);
+        mockPackedRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(packed);
 
         // Act
-        var result = await packedIngredientService.GetAllPackedIngredientsAsync();
+        var result = await packedService.GetAllPackedAsync();
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(PackedIngredientProperDTOs.Count, result.Count()); // Checks that the count matches
+        Assert.Equal(packed.Count, result.Count());
+        Assert.Equal(1, packed[0].Meal_id);
+        Assert.Equal(3, packed[1].Meal_id);
     }
 
     [Fact]
-    public async Task GetAllPackedIngredientsByMealIdAsync_ReturnsPackedIngredientsForMeal()
+    public async Task GetAllPackedAsync_RepositoryError()
     {
         // Arrange
-        var mockPackedIngredientRepository = new Mock<IPackedIngredientRepository>();
-        var mockMapper = new Mock<IMapper>();
+        mockPackedRepository.Setup(repo => repo.GetAllAsync()).ThrowsAsync(new Exception("Database error"));
 
-        int mealId = 101;
-        var packedIngredients = new List<PackedIngredient>
+        // Act & Assert
+        await Assert.ThrowsAsync<Exception>(() => packedService.GetAllPackedAsync());
+    }
+
+    [Fact]
+    public async Task GetAllPackedByMealIdAsync_Success()
+    {
+        // Arrange
+        int mealId = 1;
+        var packed = new List<PackedDTO>
         {
-            new PackedIngredient { Id = 1, Meal_id = mealId, Ingredient_id = 201, order_number = 1 },
-            new PackedIngredient { Id = 2, Meal_id = mealId, Ingredient_id = 202, order_number = 2 }
+            new PackedDTO { Meal_id = mealId, Ingredient_id = 1, Order_number = 1 },
+            new PackedDTO { Meal_id = mealId, Ingredient_id = 2, Order_number = 2 }
         };
-
-        var packedIngredientDTOs = new List<PackedIngredientDTO>
-        {
-            new PackedIngredientDTO { Id = 1, Meal_id = mealId, Ingredient_id = 1, order_number = 1 },
-            new PackedIngredientDTO { Id = 2, Meal_id = mealId, Ingredient_id = 1, order_number = 2 }
-        };
-
-        mockPackedIngredientRepository
-            .Setup(repo => repo.GetAllByMealIdAsync(mealId))
-            .ReturnsAsync(packedIngredients);
-
-        mockMapper
-            .Setup(mapper => mapper.Map<IEnumerable<PackedIngredientDTO>>(packedIngredients))
-            .Returns(packedIngredientDTOs);
-
-        var packedIngredientService = new PackedIngredientService(mockPackedIngredientRepository.Object, mockMapper.Object);
+        mockPackedRepository.Setup(repo => repo.GetAllByMealIdAsync(mealId)).ReturnsAsync(packed);
 
         // Act
-        var result = await packedIngredientService.GetAllPackedIngredientsByMealIdAsync(mealId);
+        var result = await packedService.GetAllPackedByMealIdAsync(mealId);
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(packedIngredientDTOs.Count, result.Count());
-        Assert.All(result, dto => Assert.Equal(mealId, dto.Meal_id));
+        Assert.Equal(packed.Count, result.Count());
+        Assert.Equal(1, packed[0].Ingredient_id);
+        Assert.Equal(2, packed[1].Ingredient_id);
     }
 
     [Fact]
-    public async Task GetPackedIngredientByIdAsync_ReturnsPackedIngredient()
+    public async Task GetAllPackedByMealIdAsync_RepositoryError()
     {
         // Arrange
-        var mockPackedIngredientRepository = new Mock<IPackedIngredientRepository>();
-        var mockMapper = new Mock<IMapper>();
+        int mealId = 1;
+        mockPackedRepository.Setup(repo => repo.GetAllByMealIdAsync(mealId)).ThrowsAsync(new Exception("Database error"));
 
-        var packedIngredient = new PackedIngredient { Id = 1, Meal_id = 101, Ingredient_id = 201, order_number = 5 };
-
-        mockPackedIngredientRepository
-            .Setup(repo => repo.GetByIdAsync(packedIngredient.Id))
-            .ReturnsAsync(packedIngredient);
-
-        // Provide a DTO that the mapper should return
-        var packedIngredientDTO = new PackedIngredientDTO
-        {
-            Id = packedIngredient.Id,
-            Meal_id = packedIngredient.Meal_id,
-            Ingredient_id = packedIngredient.Ingredient_id,
-            order_number = packedIngredient.order_number
-        };
-
-        mockMapper
-            .Setup(mapper => mapper.Map<PackedIngredientDTO>(packedIngredient))
-            .Returns(packedIngredientDTO);
-
-        var packedIngredientService = new PackedIngredientService(mockPackedIngredientRepository.Object, mockMapper.Object);
-
-        // Act
-        var result = await packedIngredientService.GetPackedIngredientByIdAsync(packedIngredient.Id);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(packedIngredient.Id, result.Id);
-        Assert.Equal(packedIngredient.Meal_id, result.Meal_id);
-        // Compare the DTO's Ingredient.Id to the entity's Ingredient_id
-        Assert.Equal(packedIngredient.Ingredient_id, result.Ingredient_id);
+        // Act & Assert
+        await Assert.ThrowsAsync<Exception>(() => packedService.GetAllPackedByMealIdAsync(mealId));
     }
 
     [Fact]
-    public async Task CreatePackedIngredientAsync_ReturnsNewPackedIngredientId()
+    public async Task CreatePackedAsync_Success()
     {
         // Arrange
-        var mockPackedIngredientRepository = new Mock<IPackedIngredientRepository>();
-        var mockMapper = new Mock<IMapper>();
-
-        PackedIngredient packedIngredient = new PackedIngredient
-        {
-            Meal_id = 101,
-            Ingredient_id = 201,
-            Id = 0
-        };
-        
-        var packedIngredientProperDto = new PackedIngredientProperDTO
-        {
-            Meal_id = packedIngredient.Meal_id,
-            Ingredient_id = packedIngredient.Ingredient_id
-        };
-        
-        
-        int newPackedIngredientId = 42;
-
-        mockPackedIngredientRepository
-            .Setup(repo => repo.InsertAsync(packedIngredient))
-            .ReturnsAsync(newPackedIngredientId);
-
-        // Ensure the mapper returns the exact entity instance the repository expects
-        mockMapper
-            .Setup(mapper => mapper.Map<PackedIngredient>(packedIngredientProperDto))
-            .Returns(packedIngredient);
-
-        var packedIngredientService = new PackedIngredientService(mockPackedIngredientRepository.Object, mockMapper.Object);
+        var packed = new PackedDTO{ Meal_id = 1, Ingredient_id = 2, Order_number= 3 };
+        mockPackedRepository.Setup(repo => repo.InsertAsync(packed)).ReturnsAsync(1);
 
         // Act
-        var result = await packedIngredientService.CreatePackedIngredientAsync(packedIngredientProperDto);
+        var result = await packedService.CreatePackedAsync(packed);
 
         // Assert
-        Assert.Equal(newPackedIngredientId, result);
+        Assert.Equal(1, result);
     }
 
     [Fact]
-    public async Task UpdatePackedIngredientAsync_UpdatesPackedIngredient_ReturnsAffectedRows()
+    public async Task CreatePackedAsync_RepositoryError()
     {
         // Arrange
-        var mockPackedIngredientRepository = new Mock<IPackedIngredientRepository>();
-        var mockMapper = new Mock<IMapper>();
+        var packed = new PackedDTO{ Meal_id = 1, Ingredient_id = 2, Order_number= 3 };
+        mockPackedRepository.Setup(repo => repo.InsertAsync(packed)).ThrowsAsync(new Exception("Database error"));
 
-        var packedIngredient = new PackedIngredient { Id = 1, Meal_id = 101, Ingredient_id = 201, order_number = 1 };
-        int rowsAffected = 1;
-
-        // Create a DTO to pass to the service (service likely expects DTO)
-        var packedIngredientDTO = new PackedIngredientDTO
-        {
-            Id = packedIngredient.Id,
-            Meal_id = packedIngredient.Meal_id,
-            Ingredient_id = packedIngredient.Id,
-            order_number = packedIngredient.order_number
-        };
-        
-        var packedIngredientProperDto = new PackedIngredientProperDTO
-        {
-            Meal_id = packedIngredient.Meal_id,
-            Ingredient_id = packedIngredient.Ingredient_id
-        };
-
-        // Mock mapping from DTO -> entity for repository call
-        mockMapper
-            .Setup(mapper => mapper.Map<PackedIngredient>(packedIngredientDTO))
-            .Returns(packedIngredient);
-
-        mockPackedIngredientRepository
-            .Setup(repo => repo.UpdateAsync(packedIngredient))
-            .ReturnsAsync(rowsAffected);
-
-        var packedIngredientService = new PackedIngredientService(mockPackedIngredientRepository.Object, mockMapper.Object);
-
-        // Act
-        var result = await packedIngredientService.UpdatePackedIngredientAsync(packedIngredientDTO, packedIngredient.Id);
-
-        // Assert
-        Assert.Equal(rowsAffected, result);
+        // Act & Assert
+        await Assert.ThrowsAsync<Exception>(() => packedService.CreatePackedAsync(packed));
     }
 
     [Fact]
-    public async Task DeletePackedIngredientAsync_DeletesPackedIngredient_ReturnsAffectedRows()
+    public async Task UpdatePackedAsync_Success()
     {
         // Arrange
-        var mockPackedIngredientRepository = new Mock<IPackedIngredientRepository>();
-        var mockMapper = new Mock<IMapper>();
-
-        int packedIngredientId = 1;
-        int rowsAffected = 1;
-
-        mockPackedIngredientRepository
-            .Setup(repo => repo.DeleteAsync(packedIngredientId))
-            .ReturnsAsync(rowsAffected);
-
-        var packedIngredientService = new PackedIngredientService(mockPackedIngredientRepository.Object, mockMapper.Object);
-
+        var oldPacked = new PackedDTO { Meal_id = 101, Ingredient_id = 201, Order_number = 1 };
+        var newPacked = new PackedDTO { Meal_id = 101, Ingredient_id = 201, Order_number = 2 };
+        mockPackedRepository.Setup(repo => repo.UpdateAsync(oldPacked, newPacked)).ReturnsAsync(1);
+    
         // Act
-        var result = await packedIngredientService.DeletePackedIngredientAsync(packedIngredientId);
+        var result = await packedService.UpdatePackedAsync(oldPacked, newPacked);
 
         // Assert
-        Assert.Equal(rowsAffected, result);
+        Assert.Equal(1, result);
+    }
+
+    [Fact]
+    public async Task UpdatePackedAsync_RepositoryError()
+    {
+        // Arrange
+        var oldPacked = new PackedDTO { Meal_id = 101, Ingredient_id = 201, Order_number = 1 };
+        var newPacked = new PackedDTO { Meal_id = 101, Ingredient_id = 201, Order_number = 2 };
+        mockPackedRepository.Setup(repo => repo.UpdateAsync(oldPacked, newPacked)).ThrowsAsync(new Exception("Database error"));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<Exception>(() => packedService.UpdatePackedAsync(oldPacked, newPacked));
+    }
+
+    [Fact]
+    public async Task DeletePackedAsync_Success()
+    {
+        // Arrange
+        var toBeDeletedPacked = new PackedDTO { Meal_id = 101, Ingredient_id = 201, Order_number = 1 };
+        mockPackedRepository.Setup(repo => repo.DeleteAsync(toBeDeletedPacked)).ReturnsAsync(1);
+
+        // Act
+        var result = await packedService.DeletePackedAsync(toBeDeletedPacked);
+
+        // Assert
+        Assert.Equal(1, result);
+    }
+    
+    [Fact]
+    public async Task DeletePackedAsync_RepositoryError()
+    {
+        // Arrange
+        var toBeDeletedPacked = new PackedDTO { Meal_id = 101, Ingredient_id = 201, Order_number = 1 };
+        mockPackedRepository.Setup(repo => repo.DeleteAsync(toBeDeletedPacked)).ThrowsAsync(new Exception("Database error"));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<Exception>(() => packedService.DeletePackedAsync(toBeDeletedPacked));
     }
 }

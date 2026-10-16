@@ -1,6 +1,6 @@
-using FoodplannerModels.Lunchbox;
-using FoodplannerServices.Lunchbox;
 using FoodplannerDataAccessSql.Lunchbox;
+using FoodplannerServices.Lunchbox;
+using FoodplannerModels.Lunchbox;
 using Moq;
 
 namespace Test.Service;
@@ -73,7 +73,7 @@ public class MealsServiceTests
         Assert.Equal("Pizza", firstMeal.Name);
         Assert.Equal("18/11/2022", firstMeal.Date);
         Assert.False(firstMeal.Template);
-        Assert.Null(firstMeal.Food_image_id);
+        Assert.Null(firstMeal.Image_id);
         Assert.Equal(1, firstMeal.User_id);
         Assert.Equal(2, firstMeal.Ingredients.Count());
         Assert.Equal("Cheese", firstMeal.Ingredients[0].Name);
@@ -83,7 +83,7 @@ public class MealsServiceTests
         Assert.Equal("Burger", secondMeal.Name);
         Assert.Equal("19/01/2013", secondMeal.Date);
         Assert.True(secondMeal.Template);
-        Assert.Null(secondMeal.Food_image_id);
+        Assert.Null(secondMeal.Image_id);
         Assert.Equal(2, secondMeal.User_id);
         Assert.Single(secondMeal.Ingredients);
         Assert.Equal("Cheese", secondMeal.Ingredients[0].Name);
@@ -144,7 +144,7 @@ public class MealsServiceTests
         Assert.Equal("Pizza", mealWithIngredients.Name);
         Assert.Equal(date, mealWithIngredients.Date);
         Assert.False(mealWithIngredients.Template);
-        Assert.Null(mealWithIngredients.Food_image_id);
+        Assert.Null(mealWithIngredients.Image_id);
         Assert.Equal(userId, mealWithIngredients.User_id);
         Assert.Equal(2, mealWithIngredients.Ingredients.Count());
     }
@@ -198,7 +198,7 @@ public class MealsServiceTests
         Assert.Equal("Pasta", result.Name);
         Assert.Equal("20/03/2022", result.Date);
         Assert.False(result.Template);
-        Assert.Null(result.Food_image_id);
+        Assert.Null(result.Image_id);
         Assert.Equal(3, result.User_id);
         Assert.Equal(2, result.Ingredients.Count());
         Assert.Equal("Noodles", result.Ingredients[0].Name);
@@ -236,8 +236,7 @@ public class MealsServiceTests
         {
             Name = "Salad",
             Date = "21/03/2023",
-            Template = false,
-            Food_image_id = null
+            Template = false
         };
         int newMealId = 1;
         mockMealsRepository.Setup(repo => repo.InsertAsync(It.IsAny<MealCreateDTO>(), It.IsAny<int>())).ReturnsAsync(newMealId);
@@ -257,8 +256,7 @@ public class MealsServiceTests
         {
             Name = "Salad",
             Date = "21/03/2023",
-            Template = false,
-            Food_image_id = null
+            Template = false
         };
         mockMealsRepository.Setup(repo => repo.InsertAsync(It.IsAny<MealCreateDTO>(), It.IsAny<int>())).ThrowsAsync(new Exception("Database error"));
 
@@ -363,7 +361,7 @@ public class MealsServiceTests
         Assert.Equal("Template Meal", mealWithIngredients.Name);
         Assert.Equal("23/03/2023", mealWithIngredients.Date);
         Assert.True(mealWithIngredients.Template);
-        Assert.Null(mealWithIngredients.Food_image_id);
+        Assert.Null(mealWithIngredients.Image_id);
         Assert.Equal(userId, mealWithIngredients.User_id);
     }
 
