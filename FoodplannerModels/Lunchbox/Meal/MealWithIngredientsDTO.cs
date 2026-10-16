@@ -6,7 +6,7 @@ public class MealWithIngredientsDTO {
     public required string Name {get; set;}
     public required string Date {get; set;}
     public  required bool Template {get; set;}
-    public int? Food_image_id {get; set;}
+    public int? Image_id {get; set;}
     public required int User_id {get; init;}
     public required List<IngredientDTO> Ingredients {get; set;}
 }

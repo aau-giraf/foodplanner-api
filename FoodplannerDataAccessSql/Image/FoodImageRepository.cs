@@ -8,10 +8,9 @@ namespace FoodplannerDataAccessSql.Image;
 // Class for FoodImage Repository 
 public class FoodImageRepository : IFoodImageRepository
 {
-    private readonly PostgreSQLConnectionFactory _connectionFactory;
+    private readonly CorePostgreSQLConnectionFactory _connectionFactory;
 
-    // Constructor 
-    public FoodImageRepository(PostgreSQLConnectionFactory connectionFactory)
+    public FoodImageRepository(CorePostgreSQLConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory;
     }

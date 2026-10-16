@@ -25,7 +25,7 @@ public class MealsService(MealsRepository mealsRepository, PackedRepository pack
                 Name = meal.Name,
                 Date = meal.Date,
                 Template = meal.Template,
-                Food_image_id = meal.Food_image_id,
+                Image_id = meal.Image_id,
                 User_id = meal.User_id,
 
                 Ingredients = packed
@@ -214,7 +214,7 @@ public class MealsService(MealsRepository mealsRepository, PackedRepository pack
             Name = meal.Name,
             Date = meal.Date,
             Template = meal.Template,
-            Food_image_id = meal.Food_image_id,
+            Image_id = meal.Image_id,
             User_id = meal.User_id,
             Ingredients = ingredients.Where(i => i != null).Select(i => i!).ToList()
         };

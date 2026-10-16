@@ -44,17 +44,17 @@ public class IngredientsRepository(PostgreSQLConnectionFactory connectionFactory
     // Asynchronously inserts a new ingredient into the database and returns its Id.
     public async Task<int> InsertAsync(IngredientDTO entity)
     {
-        var sql = "INSERT INTO ingredients (name, user_id, food_image_id) VALUES (@Name, @UserId, @FoodImageId) RETURNING id";
+        var sql = "INSERT INTO ingredients (name, user_id, image_id) VALUES (@Name, @UserId, @ImageId) RETURNING id";
         using (var connection = connectionFactory.Create())
         {
             connection.Open();
             
-            // If Food_image_id is null, we need to pass DBNull.Value to the database.
+            // If Image_id is null, we need to pass DBNull.Value to the database.
             return await connection.QuerySingleAsync<int>(sql, new
             {
                 Name = entity.Name,
                 UserId = entity.User_id,
-                FoodImageId = entity.Food_image_id ?? (object)DBNull.Value,
+                ImageId = entity.Image_id ?? (object)DBNull.Value,
             });
         }
     }
@@ -62,7 +62,7 @@ public class IngredientsRepository(PostgreSQLConnectionFactory connectionFactory
     // Asynchronously updates an existing ingredient in the database.
     public async Task<int> UpdateAsync(IngredientDTO entity)
     {
-        var sql = "UPDATE ingredients SET name = @Name, user_id = @UserId, food_image_id = @FoodImageId WHERE id = @Id";
+        var sql = "UPDATE ingredients SET name = @Name, user_id = @UserId, image_id = @ImageId WHERE id = @Id";
         using (var connection = connectionFactory.Create())
         {
             connection.Open();
@@ -71,7 +71,7 @@ public class IngredientsRepository(PostgreSQLConnectionFactory connectionFactory
                 Id = entity.Id,
                 Name = entity.Name,
                 UserId = entity.User_id,
-                FoodImageId = entity.Food_image_id
+                ImageId = entity.Image_id
             });
         }
     }
