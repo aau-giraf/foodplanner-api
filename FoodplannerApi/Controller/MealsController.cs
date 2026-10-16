@@ -8,7 +8,7 @@ using FoodplannerServices.Lunchbox;
 // Adds the MealsController to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
 
-public class MealsController(MealsService mealService, IAuthService authService) : BaseController
+public class MealsController(IMealsService mealService, IAuthService authService) : BaseController
 {
 
     // URL: api/Meals/GetAll

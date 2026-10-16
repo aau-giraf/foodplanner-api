@@ -8,7 +8,7 @@ using FoodplannerModels.Auth;
 // Adds the IngredientsController to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
 
-public class IngredientsController(IngredientsService ingredientService, IAuthService authService) : BaseController
+public class IngredientsController(IIngredientsService ingredientService, IAuthService authService) : BaseController
 {
 
     // URL: api/Ingredients/GetAll

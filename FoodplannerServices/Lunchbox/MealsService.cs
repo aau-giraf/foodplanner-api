@@ -5,7 +5,7 @@ using FoodplannerDataAccessSql.Lunchbox;
 namespace FoodplannerServices.Lunchbox;
 
 // The service for the Meal class.
-public class MealsService(MealsRepository mealsRepository, PackedRepository packedRepository, IngredientsRepository ingredientRepository)
+public class MealsService(IMealsRepository mealsRepository, IPackedRepository packedRepository, IIngredientsRepository ingredientRepository) : IMealsService
 {
     // Retrieves all meals and their ingredients from the repository.
     public async Task<IEnumerable<MealWithIngredientsDTO>> GetAllMealsAsync()
@@ -30,7 +30,7 @@ public class MealsService(MealsRepository mealsRepository, PackedRepository pack
 
                 Ingredients = packed
                     .Where(p => p.Meal_id == meal.Id)
-                    .OrderBy(p => p.Order_number)
+                    .OrderBy(p => p.order_no)
                     .Select(p => ingredientsById[p.Ingredient_id])
                     .ToList()
             }).ToList();

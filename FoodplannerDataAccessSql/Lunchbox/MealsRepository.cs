@@ -5,7 +5,7 @@ using FoodplannerModels.Lunchbox;
 namespace FoodplannerDataAccessSql.Lunchbox;
 
 // The repository for the Meal class.
-public class MealsRepository(PostgreSQLConnectionFactory connectionFactory)
+public class MealsRepository(PostgreSQLConnectionFactory connectionFactory): IMealsRepository
 {
     // Asynchronously retrieves all meals from the database. Used in testing.
     public async Task<IEnumerable<MealDTO>> GetAllAsync()

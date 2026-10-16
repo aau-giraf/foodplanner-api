@@ -6,5 +6,5 @@ public class PackedDTO {
     public required int Ingredient_id { get; set; }
     // Reference to the Meal that includes the ingredient (foreign key).
     public required int Meal_id { get; set; }
-    public int Order_number { get; set; }
+    public int order_no { get; set; }
 }
