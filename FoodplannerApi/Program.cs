@@ -269,9 +269,9 @@ builder.Services.AddScoped<IOneTimePasswordService, OneTimePasswordService>();
 builder.Services.AddSingleton<ISecretLoader, SecretsLoader>(_ => secretsLoader);
 builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddSignalR();
-builder.Services.AddScoped<IngredientsService>();
-builder.Services.AddScoped<MealsService>();
-builder.Services.AddScoped<PackedService>();
+builder.Services.AddScoped<IIngredientsService,IngredientsService>();
+builder.Services.AddScoped<IMealsService, MealsService>();
+builder.Services.AddScoped<IPackedService,PackedService>();
 builder.Services.AddScoped<SubIngredientService>();
 
 // Add AutoMapper

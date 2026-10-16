@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 // Adds the PackedIngredientController to the FoodPlannerApi.Controller namespace
 namespace FoodplannerApi.Controller;
 
-public class PackedIngredientController(PackedService packedIngredientService) : BaseController
+public class PackedIngredientController(IPackedService packedIngredientService) : BaseController
 {
     
     // URL: api/PackedIngredient/GetAll
