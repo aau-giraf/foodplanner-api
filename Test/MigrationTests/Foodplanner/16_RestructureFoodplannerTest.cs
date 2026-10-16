@@ -37,11 +37,11 @@ public class RestructureFoodplannerTests
         var migration = new RestructureFoodplanner();
         var expectedKeys = new[]
         {
-            ("meals", "fk_meals_Image_id"),
+            ("meals", "fk_meals_food_image_id"),
             ("meals", "fk_meals_user_id"),
-            ("ingredients", "fk_ingredients_Image_id"),
+            ("ingredients", "fk_ingredients_food_image_id"),
             ("ingredients", "fk_ingredients_user_id"),
-            ("subingredients", "fk_subingredients_Image_id"),
+            ("subingredients", "fk_subingredients_food_image_id"),
             ("subingredients", "fk_subingredients_user_id")
         };
 
@@ -95,9 +95,9 @@ public class RestructureFoodplannerTests
 
         // Assert
         Assert.Contains(renames, r => r.TableName == "ingredients"
-            && r.OldName == "Image_id" && r.NewName == "image_id");
+            && r.OldName == "food_image_id" && r.NewName == "image_id");
         Assert.Contains(renames, r => r.TableName == "meals"
-            && r.OldName == "Image_id" && r.NewName == "image_id");
+            && r.OldName == "food_image_id" && r.NewName == "image_id");
     }
 
     [Fact]
@@ -115,7 +115,7 @@ public class RestructureFoodplannerTests
         Assert.Contains(tableRenames, r =>
             r.OldName == "packed_ingredients" && r.NewName == "packed");
         Assert.Contains(columnRenames, r =>
-            r.TableName == "packed" && r.OldName == "order_no"
+            r.TableName == "packed" && r.OldName == "order_number"
             && r.NewName == "order_no");
     }
 
@@ -245,7 +245,7 @@ public class RestructureFoodplannerTests
         Assert.Contains("INSERT INTO ingredients", sql[2]);
         Assert.Contains("RETURNING id INTO new_ingredient_id", sql[2]);
         Assert.Contains("INSERT INTO subingredient_id_map", sql[2]);
-        Assert.Contains("item.Image_id", sql[2]);
+        Assert.Contains("item.food_image_id", sql[2]);
     }
 
     [Fact]
@@ -271,7 +271,7 @@ public class RestructureFoodplannerTests
         var copy = ((ExecuteSqlStatementExpression)expressions[copyIndex]).SqlStatement;
         Assert.Contains("r.ingredient_id", copy);
         Assert.Contains("m.new_id", copy);
-        Assert.Contains("r.order_no", copy);
+        Assert.Contains("r.order_number", copy);
         Assert.Contains("m.old_id = r.subingredient_id", copy);
     }
 
@@ -328,7 +328,7 @@ public class RestructureFoodplannerTests
 
         // Assert
         var table = Assert.Single(tables);
-        var ordering = Assert.Single(table.Columns.Where(c => c.Name == "order_no"));
+        var ordering = Assert.Single(table.Columns.Where(c => c.Name == "order_number"));
         Assert.Equal(expectedDefault, ordering.DefaultValue);
     }
 
@@ -380,7 +380,7 @@ public class RestructureFoodplannerTests
             && e.Constraint.Columns.SequenceEqual(new[] { "id" }));
         Assert.Contains(columnRenames, e =>
             e.TableName == "packed" && e.OldName == "order_no"
-            && e.NewName == "order_no");
+            && e.NewName == "order_number");
         Assert.Contains(tableRenames, e =>
             e.OldName == "packed" && e.NewName == "packed_ingredients");
     }
@@ -410,7 +410,7 @@ public class RestructureFoodplannerTests
         foreach (var table in new[] { "ingredients", "meals" })
             Assert.Contains(renames, e =>
                 e.TableName == table && e.OldName == "image_id"
-                && e.NewName == "Image_id");
+                && e.NewName == "food_image_id");
     }
 
     [Fact]
@@ -425,9 +425,9 @@ public class RestructureFoodplannerTests
             "fk_food_image_user_id", "fk_chat_thread_child_id",
             "fk_message_chat_thread_id", "fk_message_user_id",
             "fk_otp_generated_by", "fk_otp_used_by_user", "fk_otp_child_user",
-            "fk_meals_Image_id", "fk_meals_user_id",
-            "fk_ingredients_Image_id", "fk_ingredients_user_id",
-            "fk_subingredients_Image_id", "fk_subingredients_user_id"
+            "fk_meals_food_image_id", "fk_meals_user_id",
+            "fk_ingredients_food_image_id", "fk_ingredients_user_id",
+            "fk_subingredients_food_image_id", "fk_subingredients_user_id"
         };
 
         // Act
