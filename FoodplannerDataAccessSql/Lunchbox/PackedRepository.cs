@@ -38,7 +38,7 @@ public class PackedRepository(PostgreSQLConnectionFactory connectionFactory)
         using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            return await connection.QuerySingleAsync<int>(sql, new
+            return await connection.ExecuteAsync(sql, new
             {
                 MealId = entity.Meal_id,
                 IngredientId = entity.Ingredient_id,

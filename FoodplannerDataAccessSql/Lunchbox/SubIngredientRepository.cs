@@ -38,7 +38,7 @@ public class SubIngredientRepository(PostgreSQLConnectionFactory connectionFacto
         using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            return await connection.QuerySingleAsync<int>(sql, new
+            return await connection.ExecuteAsync(sql, new
             {
                 ParentId = entity.Parent_id,
                 ChildId = entity.Child_id,
