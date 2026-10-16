@@ -66,7 +66,7 @@ public class OneTimePasswordService : IOneTimePasswordService
             await _oneTimePasswordRepository.DeleteAsync(code);
 
             // Adds a relation between child and parent
-            return await _childrenRepository.AddParentToChildAsync(
+            return await _childrenRepository.AddUserToChildAsync(
                 otp.GeneratedBy,
                 otp.UsedByUser.Value
             );
@@ -78,7 +78,7 @@ public class OneTimePasswordService : IOneTimePasswordService
             await _oneTimePasswordRepository.DeleteAsync(code);
 
             // Adds a relation between parent and child
-            return await _childrenRepository.AddParentToChildAsync(
+            return await _childrenRepository.AddUserToChildAsync(
                 otp.UsedByUser.Value,
                 otp.ChildUser.Value
             );

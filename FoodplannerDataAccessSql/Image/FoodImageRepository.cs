@@ -19,20 +19,25 @@ public class FoodImageRepository : IFoodImageRepository
     public async Task<IEnumerable<FoodImage>> GetAllAsync()
     {
         const string sql = "SELECT * FROM food_image";
-        await using var connection = _connectionFactory.Create();
-        connection.Open();
-        var result = await connection.QueryAsync<FoodImage>(sql);
-        return result;
+        await using (var connection = _connectionFactory.Create())
+        {
+            connection.Open();
+            var result = await connection.QueryAsync<FoodImage>(sql);
+            return result; 
+        }
+        
     }
 
     // Asynchronously retrieves all food_images with given image ID  
     public async Task<FoodImage?> GetByIdAsync(int foodImageId)
     {
         const string sql = "SELECT * FROM food_image WHERE id = @Id";
-        await using var connection = _connectionFactory.Create();
-        connection.Open();
-        var result = await connection.QuerySingleOrDefaultAsync<FoodImage>(sql, new { Id = foodImageId });
-        return result;
+        await using (var connection = _connectionFactory.Create())
+        {
+            connection.Open();
+            var result = await connection.QuerySingleOrDefaultAsync<FoodImage>(sql, new { Id = foodImageId });
+            return result;
+        }
     }
 
     // Asynchronously add a new food_image to database, returns its ID
@@ -42,10 +47,13 @@ public class FoodImageRepository : IFoodImageRepository
             INSERT INTO food_image (image_id, user_id, image_name, image_file_type, size)
             VALUES (@ImageId, @UserId, @ImageName, @ImageFileType, @Size)
             RETURNING id";
-        await using var connection = _connectionFactory.Create();
-        connection.Open();
-        var id = await connection.QuerySingleAsync<int>(sql, entity);
-        return id;
+        await using (var connection = _connectionFactory.Create())
+        {
+            connection.Open();
+            var id = await connection.QuerySingleAsync<int>(sql, entity);
+            return id; 
+        }
+
     }
 
     // Asynchronously update an existing food image entry in the database 
@@ -59,20 +67,24 @@ public class FoodImageRepository : IFoodImageRepository
                 image_file_type = @ImageFileType,
                 size = @Size
             WHERE id = @Id";
-        await using var connection = _connectionFactory.Create();
-        connection.Open();
-        var affected = await connection.ExecuteAsync(sql, entity);
-        return affected;
+        await using (var connection = _connectionFactory.Create())
+        {
+            connection.Open();
+            var affected = await connection.ExecuteAsync(sql, entity);
+            return affected;
+        }
     }
 
     // Asynchronously deletes a food image from databse given its ID 
     public async Task<int> DeleteAsync(int id)
     {
         const string sql = "DELETE FROM food_image WHERE id = @Id";
-        await using var connection = _connectionFactory.Create();
-        connection.Open();
-        var affected = await connection.ExecuteAsync(sql, new { Id = id });
-        return affected;
+        await using (var connection = _connectionFactory.Create())
+        {
+            connection.Open();
+            var affected = await connection.ExecuteAsync(sql, new { Id = id });
+            return affected; 
+        }
     }
 
     // IFoodImageRepository specific methods (extended from IGenericRepository class)

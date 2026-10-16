@@ -25,17 +25,16 @@ namespace FoodplannerDataAccessSql.Codes
         public async Task<bool> CheckIfCodeExistsAsync(string code)
         {
             const string sql = "SELECT code_id FROM one_time_password WHERE code = @Code";
-            using var connection = _connectionFactory.Create();
-            connection.Open();
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QuerySingleOrDefaultAsync<int?>(sql, new { Code = code });
 
-            var result = await connection.QuerySingleOrDefaultAsync<int?>(sql, new { Code = code });
-
-            connection.Close();
-
-            if(result == null)
-                return false;
-            else
-                return true;
+                if(result == null)
+                    return false;
+                else
+                    return true;
+            }
         }
 
         // Retrieve all one time passwords from database 
@@ -54,18 +53,18 @@ namespace FoodplannerDataAccessSql.Codes
         public async Task<bool> CheckIfCodeExpiredAsync(string code)
         {
             const string sql = "SELECT expires_on FROM one_time_password WHERE code = @Code";
-            using var connection = _connectionFactory.Create();
-            connection.Open();
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QuerySingleOrDefaultAsync<DateTime?>(sql, new { Code = code });
 
-            var result = await connection.QuerySingleOrDefaultAsync<DateTime?>(sql, new { Code = code });
+                // We assume if none found it is an expired code
+                if (result == null)
+                    return true;
 
-            connection.Close();
-
-            // We assume if none found it is an expired code
-            if (result == null)
-                return true;
-
-            return result <= DateTime.UtcNow;
+                return result <= DateTime.UtcNow;
+            }
+       
         }
 
         // Delete one time password from database 
@@ -73,14 +72,14 @@ namespace FoodplannerDataAccessSql.Codes
         {
             const string sql = "DELETE FROM one_time_password WHERE code = @Code";
 
-            using var connection = _connectionFactory.Create();
-            connection.Open();
+            using (var connection = _connectionFactory.Create())
+            {
+                 connection.Open();
 
-            var rowsAffected = await connection.ExecuteAsync(sql, new { Code = code });
+                var rowsAffected = await connection.ExecuteAsync(sql, new { Code = code });
 
-            connection.Close();
-
-            return rowsAffected;
+                return rowsAffected;
+            }
         }
 
         // Retrieve attributes of a one time password from database 
@@ -88,19 +87,21 @@ namespace FoodplannerDataAccessSql.Codes
         {
             const string sql = "SELECT code_id, generated_by, used, used_by_user, child_user FROM one_time_password WHERE code = @Code";
 
-            using var connection = _connectionFactory.Create();
-            connection.Open();
-            var result = await connection.QuerySingleOrDefaultAsync<OneTimePasswordDTO>(sql, new { Code = code });
-            connection.Close();
+            using (var connection = _connectionFactory.Create())
+            {
+                connection.Open();
+                var result = await connection.QuerySingleOrDefaultAsync<OneTimePasswordDTO>(sql, new { Code = code });
 
-            if(result != null)
-            {
-                return result;
+                if(result != null)
+                {
+                    return result;
+                }
+                else
+                {
+                    throw new Exception("OTP not found");
+                }   
             }
-            else
-            {
-                throw new Exception("OTP not found");
-            }
+            
         }
 
         // Create and add one time password to database 
@@ -130,14 +131,14 @@ namespace FoodplannerDataAccessSql.Codes
         public async Task<int> UpdateAsync(OneTimePasswordDTO OTP)
         {
             var sql = @"
-    UPDATE one_time_password 
-    SET 
-        generated_by = @GeneratedBy,
-        used = @Used,
-        used_by_user = @UsedByUser,
-        child_user = @ChildUser
-    WHERE code_id = @CodeId;
-";
+                    UPDATE one_time_password 
+                    SET 
+                        generated_by = @GeneratedBy,
+                        used = @Used,
+                        used_by_user = @UsedByUser,
+                        child_user = @ChildUser
+                    WHERE code_id = @CodeId;
+                    ";
 
             using (var connection = _connectionFactory.Create())
             {

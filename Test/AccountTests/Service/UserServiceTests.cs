@@ -485,9 +485,10 @@ public class UserServiceTests
     {
         // Arrange
         var id = 1;
+        var archived = true; 
 
         _mockUserRepository
-            .Setup(repo => repo.UpdateArchivedAsync(id))
+            .Setup(repo => repo.UpdateArchivedAsync(id, archived))
             .ReturnsAsync(true);
 
         // Act
@@ -704,7 +705,7 @@ public class UserServiceTests
             .Setup(repo => repo.InsertAsync(It.IsAny<Children>()))
             .ReturnsAsync(expectedId);
         _mockChildrenRepository
-            .Setup(repo => repo.AddParentToChildAsync(It.IsAny<int>(), It.IsAny<int>()))
+            .Setup(repo => repo.AddUserToChildAsync(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(1);
         // The service now requires a parentId; mock the parent lookup
         _mockUserRepository
@@ -723,7 +724,7 @@ public class UserServiceTests
                 c.LastName == mappedUser.LastName
             )), Times.Once);
 
-        _mockChildrenRepository.Verify(repo => repo.AddParentToChildAsync(parentId, expectedId), Times.Once);
+        _mockChildrenRepository.Verify(repo => repo.AddUserToChildAsync(parentId, expectedId), Times.Once);
     }
 
 
