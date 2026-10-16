@@ -14,7 +14,7 @@
         Task<User?> GetUserByEmailAsync(string email);
         Task<string> UpdatePinCodeAsync(string pinCode, int id);
         Task<bool> HasPinCodeAsync(int id);
-        Task<bool> UpdateArchivedAsync(int id);
+        Task<bool> UpdateArchivedAsync(int id, bool archived);
         Task<bool> UpdateRoleApprovedAsync(int id, bool roleApproved);
         Task<IEnumerable<User?>> SelectAllNotArchivedAsync();
         Task<User> GetLoggedInAsync(int id);

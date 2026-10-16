@@ -1,4 +1,3 @@
-// Adds the Meal class to the FoodplannerModels.Lunchbox namespace
 namespace FoodplannerModels.Lunchbox;
 
 // DTO for transfer of backend data to the frontend for a meal.

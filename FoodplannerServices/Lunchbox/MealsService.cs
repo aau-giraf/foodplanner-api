@@ -5,7 +5,7 @@ using FoodplannerDataAccessSql.Lunchbox;
 namespace FoodplannerServices.Lunchbox;
 
 // The service for the Meal class.
-public class MealsService(MealsRepository mealsRepository, PackedRepository packedRepository, IngredientsRepository ingredientRepository)
+public class MealsService(MealsRepository mealsRepository, PackedRepository packedRepository, IngredientsRepository ingredientRepository) : IMealsService
 {
     // Retrieves all meals and their ingredients from the repository.
     public async Task<IEnumerable<MealWithIngredientsDTO>> GetAllMealsAsync()
