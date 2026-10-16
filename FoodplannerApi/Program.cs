@@ -132,6 +132,19 @@ builder.Services.AddSingleton(serviceProvider =>
     return new PostgreSQLConnectionFactory(host, port, database, username, password);
 });
 
+// the same as before but just for the core mock database
+builder.Services.AddSingleton(serviceProvider =>
+{
+    var host = secretsLoader.GetSecret("CORE_DB_HOST");
+    var port = secretsLoader.GetSecret("CORE_DB_PORT");
+    var database = secretsLoader.GetSecret("CORE_DB_NAME");
+    var username = secretsLoader.GetSecret("CORE_DB_USER");
+    var password = secretsLoader.GetSecret("CORE_DB_PASS");
+
+    return new CorePostgreSQLConnectionFactory(
+        host, port, database, username, password);
+});
+
 
 // Configure user authentication
 var configuration = builder.Configuration;
@@ -239,6 +252,10 @@ builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepositor
 builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));
 builder.Services.AddScoped(typeof(IChatRepository), typeof(ChatRepository));
 builder.Services.AddScoped(typeof(IOneTimePasswordRepository), typeof(OneTimePasswordRepository));
+builder.Services.AddScoped<IngredientsRepository>();
+builder.Services.AddScoped<MealsRepository>();
+builder.Services.AddScoped<PackedRepository>();
+builder.Services.AddScoped<SubIngredientRepository>();
 
 // Add Services
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
@@ -252,6 +269,10 @@ builder.Services.AddScoped<IOneTimePasswordService, OneTimePasswordService>();
 builder.Services.AddSingleton<ISecretLoader, SecretsLoader>(_ => secretsLoader);
 builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddSignalR();
+builder.Services.AddScoped<IngredientsService>();
+builder.Services.AddScoped<MealsService>();
+builder.Services.AddScoped<PackedService>();
+builder.Services.AddScoped<SubIngredientService>();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile));
@@ -298,11 +319,11 @@ if (app.Environment.IsDevelopment())
 {
     var connectionBuilder = new NpgsqlConnectionStringBuilder
     {
-        Host = secretsLoader.GetSecret("DB_HOST"),
-        Port = 7655, // CoreMock's separate PostgreSQL container
-        Username = secretsLoader.GetSecret("DB_USER"),
-        Password = secretsLoader.GetSecret("DB_PASS"),
-        Database = "postgres"
+        Host = secretsLoader.GetSecret("CORE_DB_HOST"),
+        Port = int.Parse(secretsLoader.GetSecret("CORE_DB_PORT")), // CoreMock's separate PostgreSQL container
+        Username = secretsLoader.GetSecret("CORE_DB_USER"),
+        Password = secretsLoader.GetSecret("CORE_DB_PASS"),
+        Database = "core-postgres"
     };
 
     // Configure CoreMock connection

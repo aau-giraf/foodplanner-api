@@ -9,10 +9,9 @@ namespace FoodplannerDataAccessSql.Account
     public class ChildrenRepository : IChildrenRepository
     {
 
-        private readonly PostgreSQLConnectionFactory _connectionFactory;
+        private readonly CorePostgreSQLConnectionFactory _connectionFactory;
 
-        // Constructor 
-        public ChildrenRepository(PostgreSQLConnectionFactory connectionFactory)
+        public ChildrenRepository(CorePostgreSQLConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }

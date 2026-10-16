@@ -46,7 +46,7 @@ public class MealsRepository(PostgreSQLConnectionFactory connectionFactory)
     // Asynchronously inserts a new meal into the database and returns its Id.
     public async Task<int> InsertAsync(MealCreateDTO entity, int userId)
     {
-        var sql = "INSERT INTO meals (name, user_id, food_image_id, date, template) VALUES (@Name, @UserId, @FoodImageId, @Date, @Template) RETURNING id";
+        var sql = "INSERT INTO meals (name, user_id, image_id, date, template) VALUES (@Name, @UserId, @ImageId, @Date, @Template) RETURNING id";
         using (var connection = connectionFactory.Create())
         {
             connection.Open();
@@ -54,7 +54,7 @@ public class MealsRepository(PostgreSQLConnectionFactory connectionFactory)
             {
                 Name = entity.Name,
                 UserId = userId,
-                FoodImageId = entity.Food_image_id ?? (object)DBNull.Value,
+                ImageId = entity.Image_id ?? (object)DBNull.Value,
                 Date = entity.Date,
                 Template = entity.Template
             });
@@ -64,7 +64,7 @@ public class MealsRepository(PostgreSQLConnectionFactory connectionFactory)
     // Asynchronously updates an existing meal in the database.
     public async Task<int> UpdateAsync(MealDTO entity)
     {
-        var sql = "UPDATE meals SET name = @Name, user_id = @UserId, food_image_id = @FoodImageId, date = @Date, template = @Template WHERE id = @Id";
+        var sql = "UPDATE meals SET name = @Name, user_id = @UserId, image_id = @ImageId, date = @Date, template = @Template WHERE id = @Id";
         using (var connection = connectionFactory.Create())
         {
             connection.Open();
@@ -72,7 +72,7 @@ public class MealsRepository(PostgreSQLConnectionFactory connectionFactory)
             {
                 Name = entity.Name,
                 UserId = entity.User_id,
-                FoodImageId = entity.Food_image_id ?? (object)DBNull.Value,
+                ImageId = entity.Image_id ?? (object)DBNull.Value,
                 Date = entity.Date,
                 Template = entity.Template
             });
