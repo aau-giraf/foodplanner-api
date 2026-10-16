@@ -48,9 +48,9 @@ public class MealsServiceTests
         };
         var packed = new List<PackedDTO>
         {
-            new PackedDTO {Meal_id = 1, Ingredient_id = 1, Order_number = 1 },
-            new PackedDTO {Meal_id = 1, Ingredient_id = 2, Order_number = 2 },
-            new PackedDTO {Meal_id = 2, Ingredient_id = 1, Order_number = 1 }
+            new PackedDTO {Meal_id = 1, Ingredient_id = 1, order_no = 1 },
+            new PackedDTO {Meal_id = 1, Ingredient_id = 2, order_no = 2 },
+            new PackedDTO {Meal_id = 2, Ingredient_id = 1, order_no = 1 }
         };
         var ingredients = new List<IngredientDTO>
         {
@@ -119,8 +119,8 @@ public class MealsServiceTests
         };
         var packed = new List<PackedDTO>
         {
-            new PackedDTO {Meal_id = 1, Ingredient_id = 1, Order_number = 1 },
-            new PackedDTO {Meal_id = 1, Ingredient_id = 2, Order_number = 2 }
+            new PackedDTO {Meal_id = 1, Ingredient_id = 1, order_no = 1 },
+            new PackedDTO {Meal_id = 1, Ingredient_id = 2, order_no = 2 }
         };
         var ingredients = new List<IngredientDTO>
         {
@@ -176,8 +176,8 @@ public class MealsServiceTests
         };
         var packed = new List<PackedDTO>
         {
-            new PackedDTO {Meal_id = 1, Ingredient_id = 1, Order_number = 1 },
-            new PackedDTO {Meal_id = 1, Ingredient_id = 2, Order_number = 2 }
+            new PackedDTO {Meal_id = 1, Ingredient_id = 1, order_no = 1 },
+            new PackedDTO {Meal_id = 1, Ingredient_id = 2, order_no = 2 }
         };
         var ingredients = new List<IngredientDTO>
         {
@@ -236,7 +236,8 @@ public class MealsServiceTests
         {
             Name = "Salad",
             Date = "21/03/2023",
-            Template = false
+            Template = false,
+            Food_image_id = null
         };
         int newMealId = 1;
         mockMealsRepository.Setup(repo => repo.InsertAsync(It.IsAny<MealCreateDTO>(), It.IsAny<int>())).ReturnsAsync(newMealId);
@@ -256,7 +257,8 @@ public class MealsServiceTests
         {
             Name = "Salad",
             Date = "21/03/2023",
-            Template = false
+            Template = false,
+            Food_image_id = null
         };
         mockMealsRepository.Setup(repo => repo.InsertAsync(It.IsAny<MealCreateDTO>(), It.IsAny<int>())).ThrowsAsync(new Exception("Database error"));
 
@@ -468,12 +470,12 @@ public class MealsServiceTests
         };
         var packed1 = new List<PackedDTO>
         {
-            new PackedDTO {Meal_id = 1, Ingredient_id = 1, Order_number = 1 },
-            new PackedDTO {Meal_id = 1, Ingredient_id = 2, Order_number = 2 }
+            new PackedDTO {Meal_id = 1, Ingredient_id = 1, order_no = 1 },
+            new PackedDTO {Meal_id = 1, Ingredient_id = 2, order_no = 2 }
         };
         var packed2 = new List<PackedDTO>
         {
-            new PackedDTO {Meal_id = 2, Ingredient_id = 1, Order_number = 1 }
+            new PackedDTO {Meal_id = 2, Ingredient_id = 1, order_no = 1 }
         };
         var Cheese = new IngredientDTO { Id = 1, Name = "Cheese", User_id = 1};
         var Tomato = new IngredientDTO { Id = 2, Name = "Tomato", User_id = 1};
@@ -523,12 +525,12 @@ public class MealsServiceTests
         };
         var packed1 = new List<PackedDTO>
         {
-            new PackedDTO {Meal_id = 1, Ingredient_id = 1, Order_number = 1 },
-            new PackedDTO {Meal_id = 1, Ingredient_id = 2, Order_number = 2 }
+            new PackedDTO {Meal_id = 1, Ingredient_id = 1, order_no = 1 },
+            new PackedDTO {Meal_id = 1, Ingredient_id = 2, order_no = 2 }
         };
         var packed2 = new List<PackedDTO>
         {
-            new PackedDTO {Meal_id = 2, Ingredient_id = 1, Order_number = 1 }
+            new PackedDTO {Meal_id = 2, Ingredient_id = 1, order_no = 1 }
         };
         var Cheese = new IngredientDTO { Id = 1, Name = "Cheese", User_id = 1};
         var Tomato = new IngredientDTO { Id = 2, Name = "Tomato", User_id = 1};
@@ -572,12 +574,12 @@ public class MealsServiceTests
         };
         var packed1 = new List<PackedDTO>
         {
-            new PackedDTO {Meal_id = 1, Ingredient_id = 1, Order_number = 1 },
-            new PackedDTO {Meal_id = 1, Ingredient_id = 2, Order_number = 2 }
+            new PackedDTO {Meal_id = 1, Ingredient_id = 1, order_no = 1 },
+            new PackedDTO {Meal_id = 1, Ingredient_id = 2, order_no = 2 }
         };
         var packed2 = new List<PackedDTO>
         {
-            new PackedDTO {Meal_id = 2, Ingredient_id = 1, Order_number = 1 }
+            new PackedDTO {Meal_id = 2, Ingredient_id = 1, order_no = 1 }
         };
         var Cheese = new IngredientDTO { Id = 1, Name = "Cheese", User_id = 1};
         var Tomato = new IngredientDTO { Id = 2, Name = "Tomato", User_id = 1};
