@@ -252,10 +252,10 @@ builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepositor
 builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));
 builder.Services.AddScoped(typeof(IChatRepository), typeof(ChatRepository));
 builder.Services.AddScoped(typeof(IOneTimePasswordRepository), typeof(OneTimePasswordRepository));
-builder.Services.AddScoped<IngredientsRepository>();
-builder.Services.AddScoped<MealsRepository>();
-builder.Services.AddScoped<PackedRepository>();
-builder.Services.AddScoped<SubIngredientRepository>();
+builder.Services.AddScoped<IIngredientsRepository, IngredientsRepository>();
+builder.Services.AddScoped<IMealsRepository, MealsRepository>();
+builder.Services.AddScoped<IPackedRepository, PackedRepository>();
+builder.Services.AddScoped<ISubIngredientRepository, SubIngredientRepository>();
 
 // Add Services
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
