@@ -5,14 +5,14 @@ using Moq;
 
 namespace Test.Service;
 
-public class MealServiceTests
+public class MealsServiceTests
 {
-    // Mock repositories and services
+    // Mock repositories and service
     private readonly Mock<MealsRepository> mockMealsRepository = new();
     private readonly Mock<PackedRepository> mockPackedRepository = new();
     private readonly Mock<IngredientsRepository> mockIngredientsRepository = new();
     private readonly MealsService mealsService;
-    public MealServiceTests()
+    public MealsServiceTests()
     {
         mealsService = new MealsService(
             mockMealsRepository.Object,
@@ -33,7 +33,7 @@ public class MealServiceTests
                 Name = "Pizza",
                 Date = "18/11/2022",
                 Template = false,
-                Food_image_id = null,
+                Image_id = null,
                 User_id = 1
             },
             new MealDTO
@@ -42,7 +42,7 @@ public class MealServiceTests
                 Name = "Burger",
                 Date = "19/01/2013",
                 Template = true,
-                Food_image_id = null,
+                Image_id = null,
                 User_id = 2
             }
         };
@@ -67,7 +67,7 @@ public class MealServiceTests
         // Assert
         Assert.NotNull(result);
         var resultList = result.ToList();
-        Assert.Equal(meals.Count, resultList.Count);
+        Assert.Equal(meals.Count(), resultList.Count());
         var firstMeal = resultList[0];
         Assert.Equal(1, firstMeal.Id);
         Assert.Equal("Pizza", firstMeal.Name);
@@ -75,7 +75,7 @@ public class MealServiceTests
         Assert.False(firstMeal.Template);
         Assert.Null(firstMeal.Food_image_id);
         Assert.Equal(1, firstMeal.User_id);
-        Assert.Equal(2, firstMeal.Ingredients.Count);
+        Assert.Equal(2, firstMeal.Ingredients.Count());
         Assert.Equal("Cheese", firstMeal.Ingredients[0].Name);
         Assert.Equal("Tomato", firstMeal.Ingredients[1].Name);
         var secondMeal = resultList[1];
@@ -113,7 +113,7 @@ public class MealServiceTests
                 Name = "Pizza",
                 Date = date,
                 Template = false,
-                Food_image_id = null,
+                Image_id = null,
                 User_id = userId
             }
         };
@@ -146,7 +146,7 @@ public class MealServiceTests
         Assert.False(mealWithIngredients.Template);
         Assert.Null(mealWithIngredients.Food_image_id);
         Assert.Equal(userId, mealWithIngredients.User_id);
-        Assert.Equal(2, mealWithIngredients.Ingredients.Count);
+        Assert.Equal(2, mealWithIngredients.Ingredients.Count());
     }
 
     [Fact]
@@ -171,7 +171,7 @@ public class MealServiceTests
             Name = "Pasta",
             Date = "20/03/2022",
             Template = false,
-            Food_image_id = null,
+            Image_id = null,
             User_id = 3
         };
         var packed = new List<PackedDTO>
@@ -200,7 +200,7 @@ public class MealServiceTests
         Assert.False(result.Template);
         Assert.Null(result.Food_image_id);
         Assert.Equal(3, result.User_id);
-        Assert.Equal(2, result.Ingredients.Count);
+        Assert.Equal(2, result.Ingredients.Count());
         Assert.Equal("Noodles", result.Ingredients[0].Name);
         Assert.Equal("Sauce", result.Ingredients[1].Name);
     }
@@ -276,7 +276,7 @@ public class MealServiceTests
             Name = "Updated Meal",
             Date = "22/03/2023",
             Template = true,
-            Food_image_id = null,
+            Image_id = null,
             User_id = 1
         };
         mockMealsRepository.Setup(repo => repo.UpdateAsync(meal)).ReturnsAsync(1);
@@ -298,7 +298,7 @@ public class MealServiceTests
             Name = "Updated Meal",
             Date = "22/03/2023",
             Template = true,
-            Food_image_id = null,
+            Image_id = null,
             User_id = 1
         };
         mockMealsRepository.Setup(repo => repo.UpdateAsync(meal)).ThrowsAsync(new Exception("Database error"));
@@ -345,7 +345,7 @@ public class MealServiceTests
                 Name = "Template Meal",
                 Date = "23/03/2023",
                 Template = true,
-                Food_image_id = null,
+                Image_id = null,
                 User_id = userId
             }
         };
@@ -391,7 +391,7 @@ public class MealServiceTests
                 Name = "Template Meal",
                 Date = "23/03/2023",
                 Template = false,
-                Food_image_id = null,
+                Image_id = null,
                 User_id = 1
             };
         mockMealsRepository.Setup(repo => repo.GetByIdAsync(id)).ReturnsAsync(meal);
@@ -417,7 +417,7 @@ public class MealServiceTests
                 Name = "Template Meal",
                 Date = "23/03/2023",
                 Template = false,
-                Food_image_id = null,
+                Image_id = null,
                 User_id = 2
             };
         mockMealsRepository.Setup(repo => repo.GetByIdAsync(id)).ReturnsAsync(meal);
@@ -455,7 +455,7 @@ public class MealServiceTests
                 Name = "Template Meal 1",
                 Date = "23/03/2023",
                 Template = false,
-                Food_image_id = null,
+                Image_id = null,
                 User_id = 1
             },
             new MealDTO
@@ -464,7 +464,7 @@ public class MealServiceTests
                 Name = "Template Meal 2",
                 Date = "23/03/2023",
                 Template = true,
-                Food_image_id = null,
+                Image_id = null,
                 User_id = 1
             }
         };
@@ -491,7 +491,7 @@ public class MealServiceTests
 
         // Assert
         var resultList = result.ToList();
-        Assert.Equal(2, resultList.Count);
+        Assert.Equal(2, resultList.Count());
         Assert.Equal("Cheese", resultList[0].Name);
         Assert.Equal("Tomato", resultList[1].Name);
     }
@@ -510,7 +510,7 @@ public class MealServiceTests
                 Name = "Template Meal 1",
                 Date = "23/03/2023",
                 Template = false,
-                Food_image_id = null,
+                Image_id = null,
                 User_id = 1
             },
             new MealDTO
@@ -519,7 +519,7 @@ public class MealServiceTests
                 Name = "Template Meal 2",
                 Date = "23/03/2023",
                 Template = true,
-                Food_image_id = null,
+                Image_id = null,
                 User_id = 2
             }
         };
@@ -559,7 +559,7 @@ public class MealServiceTests
                 Name = "Template Meal 1",
                 Date = "23/03/2023",
                 Template = false,
-                Food_image_id = null,
+                Image_id = null,
                 User_id = 1
             },
             new MealDTO
@@ -568,7 +568,7 @@ public class MealServiceTests
                 Name = "Template Meal 2",
                 Date = "23/03/2023",
                 Template = true,
-                Food_image_id = null,
+                Image_id = null,
                 User_id = 1
             }
         };
