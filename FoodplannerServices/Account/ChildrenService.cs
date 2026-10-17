@@ -165,7 +165,7 @@ public class ChildrenService : IChildrenService
         var user = await _userRepository.GetByIdAsync(userId); 
         
         // Throws an exception if the user does not have the parent role
-        if (!user.Role.HasFlag(UserRole.Parent))
+        if (!user.Role.HasFlag(UserRole.Teacher))
         {
             throw new InvalidOperationException("Brugeren har ikke rollen 'Teacher'");
         }
