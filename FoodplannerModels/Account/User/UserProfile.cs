@@ -38,6 +38,9 @@ namespace FoodplannerModels.Account
 
             CreateMap<User, UserCreateChildDTO>();
             CreateMap<UserCreateChildDTO, User>();
+
+            CreateMap<Children, ChildrenDTO>();
+            CreateMap<ChildrenDTO, Children>();
         }
 
         private static UserRole ParseUserRole(string roleString)
