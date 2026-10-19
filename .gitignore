@@ -63,6 +63,5 @@ FoodplannerApi/appsettings.Development.json
 docker-compose.yml
 
 # Local development data
-minio/
 postgres/
 core-postgres/
