@@ -252,6 +252,7 @@ builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepositor
 builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));
 builder.Services.AddScoped(typeof(IChatRepository), typeof(ChatRepository));
 builder.Services.AddScoped(typeof(IOneTimePasswordRepository), typeof(OneTimePasswordRepository));
+builder.Services.AddScoped<IDapperExecutor, DapperExecutor>();
 builder.Services.AddScoped<IIngredientsRepository, IngredientsRepository>();
 builder.Services.AddScoped<IMealsRepository, MealsRepository>();
 builder.Services.AddScoped<IPackedRepository, PackedRepository>();
