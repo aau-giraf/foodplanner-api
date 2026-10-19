@@ -70,6 +70,7 @@ public class MealsRepository(PostgreSQLConnectionFactory connectionFactory): IMe
             connection.Open();
             return await connection.ExecuteAsync(sql, new
             {
+                Id = entity.Id,
                 Name = entity.Name,
                 UserId = entity.User_id,
                 ImageId = entity.Image_id ?? (object)DBNull.Value,
