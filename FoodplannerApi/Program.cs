@@ -29,7 +29,6 @@ using FluentMigrator.Runner;
 using FluentMigrator.Runner.Initialization;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
-using Minio;
 
 
 // Create a builder for the web application
@@ -47,20 +46,6 @@ Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 // Add environment variables to the builder for Infisical and setup SecretsLoader
 builder.Configuration.AddEnvironmentVariables(prefix: "INFISICAL_");
 var secretsLoader = new SecretsLoader(builder.Configuration, builder.Environment.EnvironmentName);
-
-
-// Add MinIO to builder and configure it using secrets from SecretsLoader
-var endpoint = secretsLoader.GetSecret("MINIO_ENDPOINT");
-var accessKey = secretsLoader.GetSecret("MINIO_ACCESS");
-var secretKey = secretsLoader.GetSecret("MINIO_SECRET");
-builder.Services.AddMinio(configureClient =>
-    configureClient
-        .WithEndpoint(endpoint)
-        .WithCredentials(accessKey, secretKey)
-        .WithTimeout(10000).WithSSL(false)
-        .Build()
-);
-
 
 // Add CORS policy
 builder.Services.AddCors(options =>
@@ -252,6 +237,7 @@ builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepositor
 builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));
 builder.Services.AddScoped(typeof(IChatRepository), typeof(ChatRepository));
 builder.Services.AddScoped(typeof(IOneTimePasswordRepository), typeof(OneTimePasswordRepository));
+builder.Services.AddScoped<IDapperExecutor, DapperExecutor>();
 builder.Services.AddScoped<IIngredientsRepository, IngredientsRepository>();
 builder.Services.AddScoped<IMealsRepository, MealsRepository>();
 builder.Services.AddScoped<IPackedRepository, PackedRepository>();
@@ -261,7 +247,6 @@ builder.Services.AddScoped<ISubIngredientRepository, SubIngredientRepository>();
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
 builder.Services.AddScoped<IClassroomService, ClassroomService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IPasswordHandler, PasswordHandler>();
