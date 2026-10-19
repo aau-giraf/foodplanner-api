@@ -49,9 +49,9 @@ public class AdminController(IUserService userService, IChildrenService children
         return Ok(users);
     }
 
-    // URL: api/Admin/Update/UpdateUser/{id}
+    // URL: api/Admin/Update/{id}
     // Updates a users of a user by their ID. Returns either 400 Bad Request if the input is invalid, 204 No Content if the update is successful, or 404 Not Found if the user does not exist.
-    [HttpPut("updateuser/{id}")]
+    [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -87,7 +87,7 @@ public class AdminController(IUserService userService, IChildrenService children
 
     // URL: api/Admin/UpdateRole/{id}
     // Updates the role of a user by their ID. Returns 200 OK if successful, or 404 Not Found if the user does not exist.
-    [HttpPut("updaterole/{id}")]
+    [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateRoleApproved(int id, [FromBody] UserRoleDTO userRoleDTO)

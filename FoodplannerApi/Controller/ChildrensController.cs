@@ -62,9 +62,9 @@ public class ChildrensController(IChildrenService childrenService, IAuthService 
         return NotFound();
     }
 
-    // URL: api/Childrens/GetParentsByChildId/{childId}/parents
+    // URL: api/Childrens/GetParentsByChildId/{childId}
     // Retrieves all parents associated with a child ID. Returns 200 OK with the list of parents.
-    [HttpGet("{childId}/parents")]
+    [HttpGet("{childId}")]
     [ProducesResponseType(typeof(IEnumerable<User>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetParentsByChildId(int childId)
     {
@@ -145,9 +145,9 @@ public class ChildrensController(IChildrenService childrenService, IAuthService 
         return Ok(teachers);
     }
 
-    // URL: api/Childrens/GetChildrenByTeacherId/by-teacher/{teacherId}
+    // URL: api/Childrens/GetChildrenByTeacherId/{teacherId}
     // Retrieves all children associated with a teacher ID. Returns 200 OK with the list of children.
-    [HttpGet("by-teacher/{teacherId}")]
+    [HttpGet("{teacherId}")]
     [Authorize(Policy = "TeacherPolicy")]
     [ProducesResponseType(typeof(IEnumerable<Children>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetChildrenByTeacherId(int teacherId)

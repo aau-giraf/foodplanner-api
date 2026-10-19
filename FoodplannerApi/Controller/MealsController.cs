@@ -58,13 +58,13 @@ public class MealsController(IMealService mealService, IAuthService authService)
         return Ok(meals);
     }
 
-    // URL: api/Meals/Get/getmeal/{id}
+    // URL: api/Meals/GetMeal/{id}
     // Get a specific meal by ID
-    [HttpGet("getmeal/{id}")]
+    [HttpGet("{id}")]
     [Authorize(Roles = "Child, Parent, Teacher")]
     [ProducesResponseType(typeof(MealDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(NotFoundResult), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> GetMeal(int id)
     {
         var meal = await mealService.GetMealByIdAsync(id);
         if (meal == null)
@@ -96,7 +96,7 @@ public class MealsController(IMealService mealService, IAuthService authService)
             if (result > 0)
             {
                 var createdMeal = await mealService.GetMealByIdAsync(result);
-                return CreatedAtAction(nameof(Get), new { id = result }, createdMeal);
+                return CreatedAtAction(nameof(GetMeal), new { id = result }, createdMeal);
             }
             return BadRequest();
         }

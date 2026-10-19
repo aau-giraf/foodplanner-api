@@ -356,7 +356,7 @@ public class UsersController(IUserService userService, IAuthService authService,
         return NotFound();
     }
 
-    // URL: api/Users/DeleteLoggedIn
+    // URL: api/Users/DeleteLoggedInUser
     // Deletes the currently logged-in user based on the authorization token
     [HttpDelete]
     [Authorize(Roles = "Parent, Child, Teacher, Admin")]

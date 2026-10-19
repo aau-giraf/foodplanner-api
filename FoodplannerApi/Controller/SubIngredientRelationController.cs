@@ -30,13 +30,13 @@ public class SubIngredientRelationController(ISubIngredientRelationService subIn
         return Ok(relations);
     }
 
-    // URL: api/SubIngredientRelation/Get/relation/{id}
+    // URL: api/SubIngredientRelation/GetByRelation/{id}
     // Retrieves a specific subingredient relation by its ID
-    [HttpGet("relation/{id}")]
+    [HttpGet("{id}")]
     [Authorize(Policy = "AdminPolicy")]
     [ProducesResponseType(typeof(SubIngredientRelation), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> GetByRelation(int id)
     {
         var relation = await subIngredientRelationService.GetSubIngredientRelationByIdAsync(id);
         if (relation == null)
@@ -63,7 +63,7 @@ public class SubIngredientRelationController(ISubIngredientRelationService subIn
         if (result > 0)
         {
             var createdRelation = await subIngredientRelationService.GetSubIngredientRelationByIdAsync(result);
-            return CreatedAtAction(nameof(Get), new { id = result }, createdRelation);
+            return CreatedAtAction(nameof(GetByRelation), new { id = result }, createdRelation);
         }
         return BadRequest();
     }

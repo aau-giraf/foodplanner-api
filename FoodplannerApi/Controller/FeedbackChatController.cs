@@ -44,10 +44,10 @@ public class FeedbackChatController(IChatService chatService, IAuthService authS
         }
     }
 
-    // URL: api/FeedbackCHat/GetMessages/getmessage/{chatThreadId}
+    // URL: api/FeedbackCHat/GetMessages/{chatThreadId}
     // Retrieves messages for a given chatThreadId. Returns 200 OK with the list of messages if successful, or 400 Bad Request if unsuccessful.
     [Authorize(Roles = "Parent, Teacher")]
-    [HttpGet("getmessage/{chatThreadId}")]
+    [HttpGet("{chatThreadId}")]
     [ProducesResponseType(typeof(IEnumerable<UserNameFeedbackChatDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetMessages(int chatThreadId)
@@ -63,13 +63,13 @@ public class FeedbackChatController(IChatService chatService, IAuthService authS
         }
     }
     
-    // URL: api/FeedbackChat/GetChatThreadIdAndUserIdFromChildIdAndToken/{childId}
+    // URL: api/FeedbackChat/GetChatIdAndUserIdFromChildIdAndToken/{childId}
     // Retrieves chatThreadId and userId for a given childId and JWT token in Authorization header. Returns 200 OK with the data if successful, or 400 Bad Request if unsuccessful.
     [Authorize(Roles = "Teacher")]
     [HttpGet("{childId}")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetChatThreadIdAndUserIdFromChildIdAndToken(int childId, [FromHeader(Name = "Authorization")] string token)
+    public async Task<IActionResult> GetChatIdAndUserIdFromChildIdAndToken(int childId, [FromHeader(Name = "Authorization")] string token)
     {
         try
         {
@@ -96,7 +96,7 @@ public class FeedbackChatController(IChatService chatService, IAuthService authS
         }
     }
     
-    // URL: api/FeedbackChat/GetChatThreadIdAndUserIdFromToken
+    // URL: api/FeedbackChat/GetChatIdAndUserIdFromToken
     // Retrieves chatThreadId and userId from JWT token in Authorization header. Returns 200 OK with the data if successful, or 400 Bad Request if unsuccessful.
     [Authorize(Roles = "Parent")]
     [HttpGet]
@@ -104,7 +104,6 @@ public class FeedbackChatController(IChatService chatService, IAuthService authS
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetChatThreadIdAndUserIdFromToken([FromHeader(Name = "Authorization")] string token) {
         try {
-
             // Retrieve UserId from the JWT token
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id)) {
