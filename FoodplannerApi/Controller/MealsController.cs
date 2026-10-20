@@ -10,12 +10,12 @@ namespace FoodplannerApi.Controller;
 public class MealsController(IMealService mealService, IAuthService authService) : BaseController
 {
 
-    // URL: api/Meals/GetAll
+    // URL: api/Meals/GetAllMeals
     // Retrieves all meals.
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
     [ProducesResponseType(typeof(IEnumerable<MealDTO>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAllMeals()
     {
         var meals = await mealService.GetAllMealsAsync();
         return Ok(meals);

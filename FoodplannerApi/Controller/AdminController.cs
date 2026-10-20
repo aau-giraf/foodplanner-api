@@ -24,11 +24,11 @@ public class AdminController(IUserService userService, IChildrenService children
         return NotFound();
     }
 
-    // URL: api/Admin/GetAll
+    // URL: api/Admin/GetAllUsers
     // Retrieves all users. Returns 200 OK with the list of users.
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<UserDTO>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAllUsers()
     {
         var users = await userService.GetAllUsersAsync();
         return Ok(users);

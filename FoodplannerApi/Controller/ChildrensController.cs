@@ -9,23 +9,23 @@ namespace FoodplannerApi.Controller;
 public class ChildrensController(IChildrenService childrenService, IAuthService authService) : BaseController
 {
 
-    // URL: api/Childrens/GetAllChildrenClassesAsync
+    // URL: api/Childrens/GetAllChildrenClasses
     // Retrieves all children classes. Returns 200 OK with the list of children classes.
     [HttpGet]
     [Authorize(Policy = "TeacherPolicy")]
     [ProducesResponseType(typeof(IEnumerable<ChildrenGetAllDTO>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllChildrenClassesAsync()
+    public async Task<IActionResult> GetAllChildrenClasses()
     {
         var children = await childrenService.GetAllChildrenClassesAsync();
         return Ok(children);
     }
 
-    // URL: api/Childrens/GetAll
+    // URL: api/Childrens/GetAllChildren
     // Retrieves all children. Returns 200 OK with the list of children.
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
     [ProducesResponseType(typeof(IEnumerable<Children>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAllChildren()
     {
         var children = await childrenService.GetAllChildrenAsync();
         return Ok(children);

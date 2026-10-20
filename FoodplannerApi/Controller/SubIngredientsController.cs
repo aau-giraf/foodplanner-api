@@ -10,12 +10,12 @@ namespace FoodplannerApi.Controller;
 public class SubIngredientsController(ISubIngredientService subIngredientService, IAuthService authService) : BaseController
 {
 
-    // URL: api/SubIngredients/GetAll
+    // URL: api/SubIngredients/GetAllSubIngredients
     // Retrieves all subingredients
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
     [ProducesResponseType(typeof(IEnumerable<SubIngredient>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAllSubIngredients()
     {
         var subingredients = await subIngredientService.GetAllSubIngredientsAsync();
         return Ok(subingredients);
