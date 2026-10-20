@@ -234,6 +234,7 @@ public class MealsServiceTests
         // Arrange
         var mealCreateDTO = new MealCreateDTO
         {
+            Id = "1",
             Name = "Salad",
             Date = "21/03/2023",
             Template = false,
@@ -255,6 +256,7 @@ public class MealsServiceTests
         // Arrange
         var mealCreateDTO = new MealCreateDTO
         {
+            Id = "1",
             Name = "Salad",
             Date = "21/03/2023",
             Template = false,
