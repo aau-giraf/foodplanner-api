@@ -138,9 +138,10 @@ namespace FoodplannerDataAccessSql.Account
         // Given parent id, find their children by Id, and retrieve them from the database 
         public async Task<IEnumerable<Children>> GetChildrenByParentIdAsync(int parentId)
         {
-            var sql = @"SELECT c.* FROM children c
-                       JOIN child_relation cr ON c.child_id = cr.child_id
-                       WHERE cr.user_id = @ParentId AND cr.role = 'Parent'";
+            var sql = @"SELECT c.*
+                        FROM children c
+                        JOIN child_relation cr ON c.child_id = cr.child_id
+                        WHERE cr.user_id = @ParentId";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
