@@ -48,7 +48,6 @@ public class FoodImageService(IFoodImageRepository foodImageRepository, IMapper 
         {
             throw new KeyNotFoundException($"FoodImage with id {foodImageId} not found");
         }
-        Console.WriteLine(foodImage.ImageFileType);
 
         // Converts image data to a Base64 Data URL.
         return $"data:{foodImage.ImageFileType};base64," + Convert.ToBase64String(foodImage.ImageData);
