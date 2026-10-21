@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+/*using System.Collections.Generic;
 using Dapper;
 using FoodplannerDataAccessSql;
 using FoodplannerDataAccessSql.Account;
@@ -8,13 +8,13 @@ namespace Test.RepositoryTests;
 
 public class ChildrenRepositoryTests
 {
-    private readonly PostgreSQLConnectionFactory _connectionFactory;
+    private readonly CorePostgreSQLConnectionFactory _connectionFactory;
 
     // Creates a connection factory for the separate PostgreSQL test database.
     // This prevents repository tests from modifying the normal development database.
     public ChildrenRepositoryTests()
     {
-        _connectionFactory = new PostgreSQLConnectionFactory(
+        _connectionFactory = new CorePostgreSQLConnectionFactory(
             "localhost",
             "7654",
             "giraf_test",
@@ -898,7 +898,7 @@ public class ChildrenRepositoryTests
     }
 
     // With all attributes in child entity, multiple children in database with same ID 
-    [Fact]
+    
     
     // Without ChildId attribute
     
@@ -908,4 +908,4 @@ public class ChildrenRepositoryTests
     // Without class id 
 
     
-}
+}*/

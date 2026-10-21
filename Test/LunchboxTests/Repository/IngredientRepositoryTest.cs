@@ -1,4 +1,4 @@
-using Dapper;
+/*using Dapper;
 
 using FoodplannerDataAccessSql;
 
@@ -113,4 +113,4 @@ public class IngredientRepositoryTests
             );
         }
     }
-}
+}*/

@@ -1,117 +1,128 @@
 ﻿using FoodplannerModels.FeedbackChat;
-using AutoMapper;
 using FoodplannerModels.Account;
 using FoodplannerServices.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
+namespace FoodplannerServices.FeedbackChat;
 
-namespace FoodplannerServices.FeedbackChat
+public class ChatService(IChatRepository chatRepository, IChildrenRepository childrenRepository, IUserRepository userRepository, IHubContext<ChatHub> hubContext, ILogger<ChatService> logger) : IChatService
 {
-    public class ChatService : IChatService
+    // Adds a message to the database via AddMessageDTO and userId
+    public async Task<bool> AddMessageAsync(AddMessageDTO addMessageDTO, int userId)
     {
-        private readonly IChatRepository _chatRepository;
-        private readonly IMapper _mapper;
-        private readonly IChildrenRepository _childrenRepository;
-        private readonly IUserRepository _userRepository;
-        private readonly IHubContext<ChatHub> _hubContext;
-        private readonly ILogger<ChatService> _logger;
-
-        public ChatService(IChatRepository chatRepository, IMapper mapper, IChildrenRepository childrenRepository, IUserRepository userRepository, IHubContext<ChatHub> hubContext, ILogger<ChatService> logger)
+        // Create temporary entity with necessary data for message creation
+        var message = new AddMessageTemp
         {
-            _childrenRepository = childrenRepository;
-            _chatRepository = chatRepository;
-            _mapper = mapper;
-            _userRepository = userRepository;
-            _hubContext = hubContext;
-            _logger = logger;
-        }
+            ChatThreadId = addMessageDTO.ChatThreadId,
+            Content = addMessageDTO.Content,
+            Date = System.DateTime.Now,
+            UserId = userId
+        };
 
-        // Methods for ChatThread
-        public async Task<bool> AddMessageAsync(AddMessageDTO messageDTO,int userId)
+        // Validate the user
+        var user = await userRepository.GetByIdAsync(userId);
+        if (user == null)
         {
-            var message = _mapper.Map<Message>(messageDTO);
-            message.Date = System.DateTime.Now;
-            message.UserId = userId;
+            return false;
+        } 
 
-            // Insert the message into the database and try to broadcast it to the SignalR group for the chat thread
-            await _chatRepository.InsertAsync(message);
-            try
-            {
-                // Map message to DTO, and find first name of user to include in the DTO
-                var messageDto = _mapper.Map<UserNameFeedbackChatDTO>(message);
-                var user = await _userRepository.GetByIdAsync(userId);
-                if (user != null)
-                {
-                    messageDto.FirstName = user.FirstName;
-                }
-
-                // Broadcast the message to the SignalR group for the chat thread
-                await _hubContext.Clients.Group($"thread-{message.ChatThreadId}").SendAsync("ReceiveMessage", messageDto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Failed to broadcast new FeedbackChat message to group thread-{message.ChatThreadId}");
-            }
-
-            return true;
-        }
-
-        // Methods for Message
-        public async Task<IEnumerable<UserNameFeedbackChatDTO>> GetMessagesAsync(int chatThreadId)
+        // Insert the message into the database
+        int messageId = await chatRepository.AddMessageAsync(message);
+        try
         {
-            var messages = await _chatRepository.GetMessagesByChatThreadIdAsync(chatThreadId);
-            var result = messages.Select(message => _mapper.Map<UserNameFeedbackChatDTO>(message));
-            
-            foreach (UserNameFeedbackChatDTO message in result)
+            // Create MessageDTO
+            var messageDTO = new MessageDTO
             {
-                if (message.Archived)
-                {
-                    message.Content = "Denne besked er blevet slettet.";
-                }
-            }
-            return result;
+                MessageId = messageId,
+                Content = message.Content,
+                Date = message.Date,
+                UserId = message.UserId,
+                ChatThreadId = message.ChatThreadId,
+                Archived = false,
+                IsEdited = false,
+                FirstName = user.FirstName
+            };
+
+            // Broadcast the message to the SignalR group for the chat thread
+            await hubContext.Clients.Group($"thread-{message.ChatThreadId}").SendAsync("ReceiveMessage", messageDTO);
         }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, $"Failed to broadcast new FeedbackChat message to group thread-{message.ChatThreadId}");
+        }
+        return true;
+    }
+
+    // Gets all current messages for a chat thread
+    public async Task<IEnumerable<MessageDTO>> GetMessagesAsync(int chatThreadId)
+    {
+        // Get all current Message entities
+        IEnumerable<Message> messages = await chatRepository.GetMessagesByThreadIdAsync(chatThreadId);
+        List<MessageDTO> messageDTOs = new();
         
-        // Update a message
-        public async Task<bool> UpdateMessageAsync(UpdateMessageDTO message)
+        foreach (Message message in messages)
         {
-            var _message = _mapper.Map<Message>(message);
-            
-            await _chatRepository.UpdateAsync(_message);
-            return true;
-        }
+            // Set message content to placeholder if its archived
+            if (message.Archived)
+            {
+                message.Content = "Denne besked er blevet arkiveret.";
+            }
 
-        // Archive a message
-        public async Task<bool> ArchiveMessageAsync(int messageId)
-        {
-            await _chatRepository.ArchiveMessageAsync(messageId);
-            return true;
+            // Convert Message entity to MessageDTO for frontend
+            var user = await userRepository.GetByIdAsync(message.UserId);
+            var messageDTO = new MessageDTO {
+                MessageId = message.MessageId,
+                Content = message.Content,
+                Date = message.Date,
+                UserId = message.UserId,
+                ChatThreadId = message.ChatThreadId,
+                Archived = message.Archived,
+                IsEdited = message.IsEdited,
+                FirstName = user.FirstName
+            };
+            messageDTOs.Add(messageDTO);
         }
-        
-        // Get the chat thread ID for a child, creating a new chat thread if one does not exist.
-        public async Task<int> GetChatThreadIdByChildIdAsync(int ChildId)
+        return messageDTOs;
+    }
+    
+    // Edit an existing message via a changed MessageDTO
+    public async Task<bool> EditMessageAsync(EditMessageDTO message)
+    {
+        await chatRepository.EditMessageAsync(message);
+        return true;
+    }
+
+    // Archive a message
+    public async Task<bool> ArchiveMessageAsync(int messageId)
+    {
+        await chatRepository.ArchiveMessageAsync(messageId);
+        return true;
+    }
+    
+    // Get the chat thread ID for a child, creating a new chat thread if one does not exist.
+    public async Task<int> GetThreadIdByChildIdAsync(int childId)
+    {
+        int? chatThreadId = await chatRepository.GetThreadIdByChildIdAsync(childId);
+        if (chatThreadId == null)
         {
-            var chatThreadId = await _chatRepository.GetChatThreadIdByChildIdAsync(ChildId);
-            if (chatThreadId == 0)
-            {
-                chatThreadId = await _chatRepository.AddChatThreadIdByChildIdAsync(ChildId);
-            }
-            return chatThreadId;
+            return await chatRepository.CreateThreadByChildIdAsync(childId);
         }
-        
-        public async Task<int> GetChatThreadIdByUserIdAsync(int UserId)
+        return chatThreadId.Value;
+    }
+    
+    public async Task<IEnumerable<int>> GetThreadIdsByParentIdAsync(int UserId)
+    {
+        // Get all children for this parent
+        IEnumerable<Children> children = await childrenRepository.GetChildrenByParentIdAsync(UserId);
+
+        // Get list of chat thread ids from list of children
+        List<int> chatThreadIds = new();
+        foreach (Children child in children)
         {
-            // Get all children for this parent
-            var children = await _childrenRepository.GetChildrenByParentIdAsync(UserId);
-            var firstChild = children.FirstOrDefault();
-            
-            if (firstChild == null)
-            {
-                throw new InvalidOperationException("Bruger har ingen børn tilknyttet");
-            }
-            
-            return await GetChatThreadIdByChildIdAsync(firstChild.ChildId);
+            int threadId = await GetThreadIdByChildIdAsync(child.ChildId);
+            chatThreadIds.Add(threadId);
         }
+        return chatThreadIds;
     }
 }

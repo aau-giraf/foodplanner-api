@@ -276,7 +276,6 @@ builder.Services.AddScoped<SubIngredientService>();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile));
-builder.Services.AddAutoMapper(cfg => { }, typeof(ChatProfile));
 builder.Services.AddAutoMapper(cfg => { }, typeof(ImageProfile));
 
 
