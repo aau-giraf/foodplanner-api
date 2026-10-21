@@ -171,7 +171,7 @@ public class SubIngredientsRepositoryTests
         const string sql = "UPDATE subingredient SET parent_id = @NewParentId, child_id = @NewChildId, order_no = @NewOrderNumber WHERE parent_id = @OldParentId AND child_id = @OldChildId";
         
         // When call sql string, return the id 
-       mockExecutor.Setup(e => e.QuerySingleAsync<int>(sql, 
+        mockExecutor.Setup(e => e.QuerySingleAsync<int>(sql, 
         It.IsAny<object?>())).ReturnsAsync(1);
 
         // Act
@@ -189,38 +189,41 @@ public class SubIngredientsRepositoryTests
         // Times.Once);
     }
 
-    // [Fact]
-    // public async Task DeleteAsync_Success()
-    // {
-    //     // Arrange
-    //     var rnd = new Random(); 
-    //     int id = rnd.Next(); 
+    [Fact]
+    public async Task DeleteAsync_Success()
+    {
+        // Arrange
+        var rnd = new Random(); 
+        int parent_id = rnd.Next();
+        int child_id = rnd.Next();
 
-    //     var ingredient = new IngredientDTO { Id = id, Name = "Cheese", User_id = 1, Image_id = null };
 
-    //     const string sql = "DELETE FROM ingredients WHERE id = @Id";
+        // subingredient objects
+        var subingredient = new SubIngredientDTO{Parent_id = parent_id, Child_id = child_id, order_no = 1 }
+        ;
+        const string sql = "DELETE FROM subingredient WHERE parent_id = @ParentId AND child_id = @ChildId";
 
-    //     // When call sql string, return the id 
-    //     mockExecutor.Setup(e => e.QuerySingleAsync<int>(sql, 
-    //     It.IsAny<object?>())).ReturnsAsync(1);
+        // When call sql string, return the id 
+        mockExecutor.Setup(e => e.QuerySingleAsync<int>(sql, 
+        It.IsAny<object?>())).ReturnsAsync(1);
 
-    //     // Act
-    //     var result = await repository.DeleteAsync(id);
+        // Act
+        var result = await repository.DeleteAsync(subingredient);
 
-    //     // Assert
-    //     // result should be 1, since only one entry updated
-    //     Assert.Equal(1, result); 
+        // Assert
+        // result should be 1, since only one entry updated
+        Assert.Equal(1, result); 
 
-    //     // Verify that the query is called with an object 
-    //     // and the object has a properties matching properties from the object
-    //     mockExecutor.Verify(e => e.QuerySingleAsync<int>(
-    //         sql,
-    //         It.Is<object?>(p =>
-    //             HasParameter(p, "Name", ingredient.Name) &&
-    //             HasParameter(p, "UserId", ingredient.User_id) &&
-    //             HasParameter(p, "ImageId", DBNull.Value))), //Image is a special type of db null value
-    //     Times.Once);
-    // }
+        // Verify that the query is called with an object 
+        // and the object has a properties matching properties from the object
+        mockExecutor.Verify(e => e.QuerySingleAsync<int>(
+            sql,
+            It.Is<object?>(p =>
+                HasParameter(p, "ParentId", subingredient.Parent_id) &&
+                HasParameter(p, "ChildId", subingredient.Child_id) &&
+                HasParameter(p, "OrderNumber", subingredient.order_no))), 
+        Times.Once);
+    }
 
 }
 
