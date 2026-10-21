@@ -1,7 +1,7 @@
 ﻿namespace FoodplannerModels.FeedbackChat;
 
-public class UpdateMessageDTO
+public class EditMessageDTO
 {
-    public int MessageId { get; set; }
+    public required int MessageId { get; set; }
     public required string Content { get; set; }
 }
