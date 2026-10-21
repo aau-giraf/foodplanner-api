@@ -48,8 +48,7 @@ public override void Up()
         .WithColumn("user_id").AsInt32().NotNullable()
         .WithColumn("image_name").AsString().NotNullable()
         .WithColumn("image_file_type").AsString().NotNullable()
-        .WithColumn("size").AsInt64().NotNullable()
-        .WithColumn("image").AsCustom("bytea").NotNullable();
+        .WithColumn("size").AsInt64().NotNullable();
 
     Create.Table("message")
         .WithColumn("message_id").AsInt32().PrimaryKey().Identity()

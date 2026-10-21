@@ -145,7 +145,7 @@ public class MealsControllerTests
         const string token = "Bearer TestToken";
         int userId = 1;
         int mealId = 42;
-        var mealCreateDTO = new MealCreateDTO { Name = "Pizza", Date = "18/11/2022", Template = false, Image_id = null };
+        var mealCreateDTO = new MealCreateDTO { Id = "1",Name = "Pizza", Date = "18/11/2022", Template = false, Image_id = null };
         var createdMeal = new MealWithIngredientsDTO { Id = mealId, Name = "Pizza", Date = "18/11/2022", Template = false, Image_id = null, User_id = userId, Ingredients = [] };
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
         mockMealsService.Setup(service => service.CreateMealAsync(mealCreateDTO, userId)).ReturnsAsync(mealId);
@@ -171,7 +171,7 @@ public class MealsControllerTests
         // Arrange
         const string token = "Bearer TestToken";
         int userId = 1;
-        var mealCreateDTO = new MealCreateDTO { Name = "Pizza", Date = "18/11/2022", Template = false, Image_id = null };
+        var mealCreateDTO = new MealCreateDTO { Id = "1", Name = "Pizza", Date = "18/11/2022", Template = false, Image_id = null };
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
         mockMealsService.Setup(service => service.CreateMealAsync(mealCreateDTO, userId)).ReturnsAsync(0);
 
