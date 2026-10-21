@@ -1,4 +1,3 @@
-using System.Runtime.ExceptionServices;
 using AutoMapper;
 using FoodplannerModels.Account;
 using FoodplannerModels.Auth;
@@ -6,77 +5,60 @@ using FoodplannerModels.Auth;
 // Adds the UserService to the FoodplannerService.Account namespace 
 namespace FoodplannerServices.Account;
 
-public class UserService : IUserService
+public class UserService(IUserRepository userRepository, IMapper mapper, IAuthService authService,
+        IChildrenRepository childrenRepository, IPasswordHandler passwordHandler) : IUserService
 {
-    // Read only fields
-    private readonly IUserRepository _userRepository;
-    private readonly IChildrenRepository _childrenRepository;
-    private readonly IMapper _mapper;
-    private readonly IAuthService _authService;
-    private readonly IPasswordHandler _passwordHandler;
-
-    // Constructor 
-    public UserService(IUserRepository userRepository, IMapper mapper, IAuthService authService,
-        IChildrenRepository childrenRepository, IPasswordHandler passwordHandler)
-    {
-        _userRepository = userRepository;
-        _mapper = mapper;
-        _authService = authService;
-        _childrenRepository = childrenRepository;
-        _passwordHandler = passwordHandler;
-    }
-
     // Retrieves all users from database 
     public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
     {
-        var user = await _userRepository.GetAllAsync();
-        var userDTO = _mapper.Map<IEnumerable<UserDTO>>(user);
+        var user = await userRepository.GetAllAsync();
+        var userDTO = mapper.Map<IEnumerable<UserDTO>>(user);
         return userDTO;
     }
 
     // Retrieve user associated with ID
     public async Task<UserDTO?> GetUserByIdAsync(int id)
     {
-        var user = await _userRepository.GetByIdAsync(id);
-        return _mapper.Map<UserDTO?>(user);
+        var user = await userRepository.GetByIdAsync(id);
+        return mapper.Map<UserDTO?>(user);
     }
 
     // Creates a new user based on UserCreateDTO (First and Last-name, e-mail, password, and role)
     public async Task<int> CreateUserAsync(UserCreateDTO userCreateDTO)
     {
-        var user = _mapper.Map<User>(userCreateDTO);
+        var user = mapper.Map<User>(userCreateDTO);
 
-        if (await _userRepository.EmailExistsAsync(user.Email))
+        if (await userRepository.EmailExistsAsync(user.Email))
         {
             throw new InvalidOperationException("Email eksisterer allerede");
         }
 
-        user.Password = _passwordHandler.EncryptPassword(user.Password);
+        user.Password = passwordHandler.EncryptPassword(user.Password);
         user.RoleApproved = false;
 
-        var id = await _userRepository.InsertAsync(user);
+        var id = await userRepository.InsertAsync(user);
         return id;
     }
 
     // Creates a user account for the child and associates it with a parents user account
     public async Task<int> CreateChildrenUserAsync(UserCreateChildDTO userCreateChildDto, int parentId)
     {
-        var user = _mapper.Map<User>(userCreateChildDto);
-        var parentUser = await _userRepository.GetByIdAsync(parentId);
+        var user = mapper.Map<User>(userCreateChildDto);
+        var parentUser = await userRepository.GetByIdAsync(parentId);
         if (parentUser == null  || (parentUser.Role != UserRole.Parent))
         {
             throw new InvalidOperationException("Forælder ikke fundet eller ugyldig rolle");
         }
         
-        if (await _userRepository.EmailExistsAsync(user.Email.ToString()))
+        if (await userRepository.EmailExistsAsync(user.Email.ToString()))
         {
             throw new InvalidOperationException("Email eksisterer allerede");
         }
 
-        user.Password = _passwordHandler.EncryptPassword(user.Password);
+        user.Password = passwordHandler.EncryptPassword(user.Password);
         user.RoleApproved = parentUser.RoleApproved;
         user.Role = UserRole.Child;
-        var id = await _userRepository.InsertAsync(user);
+        var id = await userRepository.InsertAsync(user);
 
         var child = new Children()
         {
@@ -85,8 +67,8 @@ public class UserService : IUserService
             LastName = user.LastName,
             ClassId = userCreateChildDto.ClassId
         };
-        await _childrenRepository.InsertAsync(child);
-        await _childrenRepository.AddUserToChildAsync(parentId, child.ChildId);
+        await childrenRepository.InsertAsync(child);
+        await childrenRepository.AddUserToChildAsync(parentId, child.ChildId);
 
         return id;
     }
@@ -94,30 +76,30 @@ public class UserService : IUserService
     // Updates user
     public async Task<int> UpdateUserAsync(UserUpdateDTO userUpdateDto, int id)
     {
-        var user = _mapper.Map<User>(userUpdateDto);
+        var user = mapper.Map<User>(userUpdateDto);
         user.Id = id;
-        user.Password = _passwordHandler.EncryptPassword(user.Password);
-        return await _userRepository.UpdateAsync(user);
+        user.Password = passwordHandler.EncryptPassword(user.Password);
+        return await userRepository.UpdateAsync(user);
     }
 
     // Deletes user
     public async Task<int> DeleteUserAsync(int id)
     {
-        return await _userRepository.DeleteAsync(id);
+        return await userRepository.DeleteAsync(id);
     }
 
     // Retrieves JWT by e-mail and password
     public async Task<UserCredsDTO?> GetJWTByEmailAndPasswordAsync(string email, string password)
     {
-        var user = await _userRepository.GetUserByEmailAsync(email);
+        var user = await userRepository.GetUserByEmailAsync(email);
 
-        if (user == null || !_passwordHandler.VerifyPassword(password, user.Password))
+        if (user == null || !passwordHandler.VerifyPassword(password, user.Password))
         {
             throw new InvalidOperationException("Forkert brugernavn eller adgangskode");
         }
 
 
-        var jwt = _authService.GenerateJWTToken(user);
+        var jwt = authService.GenerateJWTToken(user);
         var userCreds = new UserCredsDTO
         {
             JWT = jwt,
@@ -131,22 +113,18 @@ public class UserService : IUserService
     // Retrieve JWT by Email
     public async Task<UserCredsDTO?> GetJWTByEmailAsync(string email)
     {
-        var user = await _userRepository.GetUserByEmailAsync(email);
-
+        var user = await userRepository.GetUserByEmailAsync(email);
         if (user == null)
         {
             throw new InvalidOperationException("Forkert email");
         }
-
-
-        var jwt = _authService.GenerateJWTToken(user);
+        var jwt = authService.GenerateJWTToken(user);
         var userCreds = new UserCredsDTO
         {
             JWT = jwt,
             Role = user.Role.ToString(),
             RoleApproved = user.RoleApproved
         };
-
         return userCreds;
     }
 
@@ -158,8 +136,8 @@ public class UserService : IUserService
             throw new InvalidOperationException("Pinkode skal være 4 cifre");
         }
 
-        pinCode = _passwordHandler.EncryptPassword(pinCode);
-        var pincode = await _userRepository.UpdatePinCodeAsync(pinCode, id);
+        pinCode = passwordHandler.EncryptPassword(pinCode);
+        var pincode = await userRepository.UpdatePinCodeAsync(pinCode, id);
 
         return pincode;
     }
@@ -167,17 +145,17 @@ public class UserService : IUserService
     // Retrieve user ID and their pin code
     public async Task<UserCredsDTO> GetUserByIdAndPinCodeAsync(int id, string pinCode)
     {
-        var pincode = await _userRepository.GetPinCodeByIdAsync(id);
+        var pincode = await userRepository.GetPinCodeByIdAsync(id);
         if (pincode == null)
         {
             throw new InvalidOperationException("Bruger har ikke en pinkode");
         }
-        else if (_passwordHandler.VerifyPassword(pinCode, pincode))
+        else if (passwordHandler.VerifyPassword(pinCode, pincode))
         {
             throw new InvalidOperationException("Forkert pinkode");
         }
 
-        var user = await _userRepository.GetByIdAsync(id);
+        var user = await userRepository.GetByIdAsync(id);
         if (user == null)
         {
             throw new InvalidOperationException("Bruger ikke fundet");
@@ -185,7 +163,7 @@ public class UserService : IUserService
 
         user.Id = id;
 
-        var jwt = _authService.GenerateJWTToken(user);
+        var jwt = authService.GenerateJWTToken(user);
         var userCreds = new UserCredsDTO
         {
             JWT = jwt,
@@ -199,20 +177,20 @@ public class UserService : IUserService
     // Checks if the user has a pin code
     public async Task<bool> UserHasPinCodeAsync(int id)
     {
-        return await _userRepository.HasPinCodeAsync(id);
+        return await userRepository.HasPinCodeAsync(id);
     }
 
     // Retrieve all not-approved users 
     public async Task<IEnumerable<UserDTO>> GetUsersNotApprovedAsync()
     {
-        var users = await _userRepository.GetAllNotApprovedAsync();
-        return _mapper.Map<IEnumerable<UserDTO>>(users);
+        var users = await userRepository.GetAllNotApprovedAsync();
+        return mapper.Map<IEnumerable<UserDTO>>(users);
     }
 
     // Updates the user's 'archived'-status
     public async Task<bool> UserUpdateArchivedAsync(int id)
     {
-        var user = await _userRepository.GetByIdAsync(id);
+        var user = await userRepository.GetByIdAsync(id);
         if (user == null)
         {
             throw new InvalidOperationException("Bruger ikke fundet");
@@ -221,48 +199,48 @@ public class UserService : IUserService
         // Flip archived status 
         archived = !archived;
         
-        return await _userRepository.UpdateArchivedAsync(id, archived);
+        return await userRepository.UpdateArchivedAsync(id, archived);
     }
 
     // Updates user's role to approved
     public async Task<bool> UserUpdateRoleApprovedAsync(int id, bool roleApproved)
     {
-        return await _userRepository.UpdateRoleApprovedAsync(id, roleApproved);
+        return await userRepository.UpdateRoleApprovedAsync(id, roleApproved);
     }
 
     // Selects all not-archived users
     public async Task<IEnumerable<User?>> UserSelectAllNotArchivedAsync()
     {
-        return await _userRepository.SelectAllNotArchivedAsync();
+        return await userRepository.SelectAllNotArchivedAsync();
     }
 
     // Retrieves the logged-in user by ID
     public async Task<UserDTO> GetLoggedInUserAsync(int id)
     {
-        var user = await _userRepository.GetLoggedInAsync(id);
+        var user = await userRepository.GetLoggedInAsync(id);
         if (user == null) throw new InvalidOperationException("Bruger ikke fundet");
-        return _mapper.Map<UserDTO>(user);
+        return mapper.Map<UserDTO>(user);
     }
 
     // Updates logged-in user information by ID
     public async Task<int> UpdateUserLoggedInAsync(int id, UserUpdateLoggedInDTO userUpdateLoggedInDto)
     {
-        var user = await _userRepository.UpdateLoggedInAsync(id, userUpdateLoggedInDto);
+        var user = await userRepository.UpdateLoggedInAsync(id, userUpdateLoggedInDto);
         return user;
     }
 
     // Update user's password
     public async Task<int> UpdateUserPasswordAsync(string password, int id)
     {
-        password = _passwordHandler.EncryptPassword(password);
-        var _password = await _userRepository.UpdatePasswordAsync(password, id);
+        password = passwordHandler.EncryptPassword(password);
+        var _password = await userRepository.UpdatePasswordAsync(password, id);
         return _password;
     }
 
     // Checks if user's e-mail already exists
     public async Task<bool> UserEmailExistsAsync(string email)
     {
-        var _email = await _userRepository.EmailExistsAsync(email);
+        var _email = await userRepository.EmailExistsAsync(email);
         return _email;
     }
 }
