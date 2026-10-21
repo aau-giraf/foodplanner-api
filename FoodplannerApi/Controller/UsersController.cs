@@ -2,11 +2,10 @@ using FoodplannerModels.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FoodplannerModels.Auth;
-using FoodplannerModels.Codes;
 
 namespace FoodplannerApi.Controller;
 
-public class UsersController(IUserService userService, IAuthService authService, IOneTimePasswordService oneTimePasswordService) : BaseController
+public class UsersController(IUserService userService, IAuthService authService) : BaseController
 {
 
     // URL: api/Users/GetBearerTest

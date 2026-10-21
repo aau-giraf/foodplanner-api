@@ -146,30 +146,45 @@ public class CreateCoreMockDatabaseTests
     }
 
     [Fact]
-    public void Up_CreatesFoodImageWithBinaryImageColumn()
+    public void Up_CreatesFoodImageWithCorrectColumns()
     {
         // Arrange
         var migration = new CreateCoreMockDatabase();
 
         // Act
         var expressions = GetExpressions(migration, up: true);
+        var table = Assert.Single(
+            expressions.OfType<CreateTableExpression>()
+                .Where(t => t.TableName == "food_image"));
 
         // Assert
-        var table = Assert.Single(expressions.OfType<CreateTableExpression>()
-            .Where(t => t.TableName == "food_image"));
+        Assert.Contains(table.Columns, c =>
+            c.Name == "id" && c.IsPrimaryKey && c.IsIdentity);
 
-        var id = Assert.Single(table.Columns.Where(c => c.Name == "id"));
-        Assert.True(id.IsPrimaryKey);
-        Assert.True(id.IsIdentity);
+        Assert.Contains(table.Columns, c =>
+            c.Name == "image_id" &&
+            c.Type == DbType.String &&
+            c.IsNullable == false);
 
-        var image = Assert.Single(table.Columns.Where(c => c.Name == "image"));
-        Assert.Equal("bytea", image.CustomType);
-        Assert.False(image.IsNullable);
+        Assert.Contains(table.Columns, c =>
+            c.Name == "user_id" &&
+            c.Type == DbType.Int32 &&
+            c.IsNullable == false);
 
-        Assert.Contains(table.Columns, c => c.Name == "user_id"
-            && c.Type == DbType.Int32 && c.IsNullable == false);
-        Assert.Contains(table.Columns, c => c.Name == "size"
-            && c.Type == DbType.Int64 && c.IsNullable == false);
+        Assert.Contains(table.Columns, c =>
+            c.Name == "image_name" &&
+            c.Type == DbType.String &&
+            c.IsNullable == false);
+
+        Assert.Contains(table.Columns, c =>
+            c.Name == "image_file_type" &&
+            c.Type == DbType.String &&
+            c.IsNullable == false);
+
+        Assert.Contains(table.Columns, c =>
+            c.Name == "size" &&
+            c.Type == DbType.Int64 &&
+            c.IsNullable == false);
     }
 
     [Fact]
