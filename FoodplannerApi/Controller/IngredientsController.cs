@@ -91,18 +91,18 @@ public class IngredientsController(IIngredientsService ingredientService, IAuthS
         return BadRequest();
     }
 
-    // URL: api/Ingredients/Update/{id}
+    // URL: api/Ingredients/Update
     // Updates an existing ingredient by its ID using provided IngredientDTO.
-    [HttpPut("{id}")]
+    [HttpPut]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(IngredientDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Update([FromBody] IngredientDTO ingredientDto, int id)
+    public async Task<IActionResult> Update([FromBody] IngredientDTO ingredientDTO)
     {
-        var result = await ingredientService.UpdateIngredientAsync(ingredientDto);
+        var result = await ingredientService.UpdateIngredientAsync(ingredientDTO);
         if (result > 0)
         {
-            var changedIngredient = await ingredientService.GetIngredientByIdAsync(id);
+            var changedIngredient = await ingredientService.GetIngredientByIdAsync(ingredientDTO.Id);
             return Ok(changedIngredient);
         }
         return BadRequest();

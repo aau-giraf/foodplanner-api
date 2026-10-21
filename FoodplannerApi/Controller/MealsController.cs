@@ -107,13 +107,13 @@ public class MealsController(IMealsService mealService, IAuthService authService
         }
     }
 
-    // URL: api/Meals/Update/{id}
+    // URL: api/Meals/Update
     // Update an existing meal by ID with MealDTO and return the updated meal with a 200 OK status.
-    [HttpPut("{id}")]
+    [HttpPut]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(MealDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Update([FromHeader(Name = "Authorization")] string token, [FromBody] MealDTO mealDto, int id)
+    public async Task<IActionResult> Update([FromHeader(Name = "Authorization")] string token, [FromBody] MealDTO mealDTO)
     {
         try
         {
@@ -125,10 +125,10 @@ public class MealsController(IMealsService mealService, IAuthService authService
             }
 
             // Update the meal and return the updated meal with a 200 OK status.
-            var result = await mealService.UpdateMealAsync(mealDto);
+            var result = await mealService.UpdateMealAsync(mealDTO);
             if (result > 0)
             {
-                var changedMeal = await mealService.GetMealByIdAsync(id);
+                var changedMeal = await mealService.GetMealByIdAsync(mealDTO.Id);
                 return Ok(changedMeal);
             }
             return BadRequest();

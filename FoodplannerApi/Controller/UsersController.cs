@@ -116,24 +116,6 @@ public class UsersController(IUserService userService, IAuthService authService,
         try
         {
             var result = await userService.GetJWTByEmailAndPasswordAsync(login.Email, login.Password);
-            
-            //TODO: Handle usecase for parent using one time password
-            /*if (!string.IsNullOrEmpty(user.Code) && result != null)
-            {
-                if (Enum.TryParse<UserRole>(result.Role, true, out var parsedRole) && parsedRole == UserRole.Child)
-                {
-                    return BadRequest(new ErrorResponse { Message = ["Børn må ikke laves med dette endpoint, istedet skal LoginChild bruges."] });
-                }
-                var code = await oneTimePasswordService.GetOneTimePassword(user.Code);
-                code.Used = true;
-                code.UsedByUser = int.Parse(authService.RetrieveIdFromJwtTokenNoBearer(result.JWT));
-
-                if (await oneTimePasswordService.UpdateOneTimePassword(code) == 0)
-                    return BadRequest(new ErrorResponse { Message = ["Fejlede i at opdatere engangskode"] });
-                if (await oneTimePasswordService.RedeemOneTimePassword(code.Code) == 0)
-                    return BadRequest(new ErrorResponse{ Message = ["Fejlede i at indløse engangskode"] });
-            }*/
-
             if (result != null)
             {
                 return Ok(result);
@@ -163,15 +145,6 @@ public class UsersController(IUserService userService, IAuthService authService,
         {
             // Calls the service to authenticate the child user and retrieve a JWT token
             var result = await userService.GetJWTByEmailAsync(user.Email);
-            if (!string.IsNullOrEmpty(user.Code) && result != null)
-            {
-                // If a one-time password is provided, redeem it for the user
-                int id = int.Parse(authService.RetrieveIdFromJwtTokenNoBearer(result.JWT));
-                if (await oneTimePasswordService.RedeemOneTimePassword(user.Code, id) == 0)
-                    return BadRequest("Failed while trying to redeem the one time code");
-            }
-
-            // Return the JWT token if authentication is successful, otherwise return a bad request response
             if (result != null)
             {
                 return Ok(result);
