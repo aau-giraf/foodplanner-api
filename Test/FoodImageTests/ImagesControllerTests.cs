@@ -162,7 +162,7 @@ public class ImagesControllerTests
         {
             Id = foodImageId,
             UserId = userId,
-            ImageId = "dummy-id",
+            ImageData = [],
             ImageName = "dummy-name.jpg",
             ImageFileType = "image/jpeg",
         };
