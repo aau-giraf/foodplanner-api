@@ -180,10 +180,10 @@ public class SubIngredientsRepositoryTests
         };
 
         const string sql = "UPDATE subingredient SET parent_id = @NewParentId, child_id = @NewChildId, order_no = @NewOrderNumber WHERE parent_id = @OldParentId AND child_id = @OldChildId";
-        
-        // When call sql string, return the id 
-        mockExecutor.Setup(e => e.QuerySingleAsync<int>(sql, 
-        It.IsAny<object?>())).ReturnsAsync(1);
+
+        // When SQL is executed, return 1 affected row
+        mockExecutor.Setup(e => e.ExecuteAsync(
+            sql, It.IsAny<object?>())).ReturnsAsync(1);
 
         // Act
         var result = await repository.UpdateAsync(subingredient_old, subingredient_new);
@@ -207,36 +207,32 @@ public class SubIngredientsRepositoryTests
     public async Task DeleteAsync_Success()
     {
         // Arrange
-        var rnd = new Random(); 
+        var rnd = new Random();
+
         int parent_id = rnd.Next();
         int child_id = rnd.Next();
 
+        var subingredient = new SubIngredientDTO{Parent_id = parent_id, Child_id = child_id, order_no = 1};
 
-        // subingredient objects
-        var subingredient = new SubIngredientDTO{Parent_id = parent_id, Child_id = child_id, order_no = 1 }
-        ;
         const string sql = "DELETE FROM subingredient WHERE parent_id = @ParentId AND child_id = @ChildId";
 
-        // When call sql string, return the id 
-        mockExecutor.Setup(e => e.QuerySingleAsync<int>(sql, 
-        It.IsAny<object?>())).ReturnsAsync(1);
+        // When SQL is executed, return 1 affected row
+        mockExecutor.Setup(e => e.ExecuteAsync(
+            sql, It.IsAny<object?>())).ReturnsAsync(1);
 
         // Act
         var result = await repository.DeleteAsync(subingredient);
 
         // Assert
-        // result should be 1, since only one entry updated
-        Assert.Equal(1, result); 
+        Assert.Equal(1, result);
 
-        // Verify that the query is called with an object 
-        // and the object has a properties matching properties from the object
-        mockExecutor.Verify(e => e.QuerySingleAsync<int>(
+        // Verify that the correct parameters were passed
+        mockExecutor.Verify(e => e.ExecuteAsync(
             sql,
             It.Is<object?>(p =>
                 HasParameter(p, "ParentId", subingredient.Parent_id) &&
-                HasParameter(p, "ChildId", subingredient.Child_id) &&
-                HasParameter(p, "OrderNumber", subingredient.order_no))), 
-        Times.Once);
+                HasParameter(p, "ChildId", subingredient.Child_id))),
+            Times.Once);
     }
 
 }
