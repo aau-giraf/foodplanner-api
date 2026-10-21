@@ -163,7 +163,7 @@ public class IngredientsControllerTests
         mockIngredientsService.Setup(service => service.GetIngredientByIdAsync(ingredientId)).ReturnsAsync(ingredientDto);
 
         // Act
-        var result = await ingredientsController.Update(ingredientDto, ingredientId);
+        var result = await ingredientsController.Update(ingredientDto);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -184,7 +184,7 @@ public class IngredientsControllerTests
         mockIngredientsService.Setup(service => service.UpdateIngredientAsync(ingredientDto)).ReturnsAsync(0);
 
         // Act
-        var result = await ingredientsController.Update(ingredientDto, ingredientId);
+        var result = await ingredientsController.Update(ingredientDto);
 
         // Assert
         Assert.IsType<BadRequestResult>(result);

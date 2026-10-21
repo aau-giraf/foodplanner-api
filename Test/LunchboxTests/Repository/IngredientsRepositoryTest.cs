@@ -181,68 +181,59 @@ public class IngredientsRepositoryTests
     public async Task UpdateAsync_Success()
     {
         // Arrange
-        var rnd = new Random(); 
+        var rnd = new Random();
         int id = rnd.Next();
 
         var ingredient = new IngredientDTO { Id = id, Name = "Cheese", User_id = 5, Image_id = null };
 
         const string sql = "UPDATE ingredients SET name = @Name, user_id = @UserId, image_id = @ImageId WHERE id = @Id";
 
-        // When call sql string, return the id 
-       mockExecutor.Setup(e => e.QuerySingleAsync<int>(sql, 
-        It.IsAny<object?>())).ReturnsAsync(1);
+        // When the SQL statement is executed, return 1 affected row
+        mockExecutor.Setup(e => e.ExecuteAsync(sql, It.IsAny<object?>()))
+            .ReturnsAsync(1);
 
         // Act
         var result = await repository.UpdateAsync(ingredient);
 
         // Assert
-        // result should be 1, since only one entry updated
-        Assert.Equal(1, result); 
+        Assert.Equal(1, result);
 
-        // Verify that the query is called with an object that is not null 
-        // and the object has a properties matching properties from the object
-        // Verify that the query is called with an object 
-        // and the object has a properties matching properties from the object
-        mockExecutor.Verify(e => e.QuerySingleAsync<int>(
+        // Verify that the correct SQL and parameters were passed
+        mockExecutor.Verify(e => e.ExecuteAsync(
             sql,
             It.Is<object?>(p =>
+                HasParameter(p, "Id", ingredient.Id) &&
                 HasParameter(p, "Name", ingredient.Name) &&
                 HasParameter(p, "UserId", ingredient.User_id) &&
-                HasParameter(p, "ImageId", DBNull.Value))), //Image is a special type of db null value
-        Times.Once);
+                HasParameter(p, "ImageId", ingredient.Image_id))),
+            Times.Once);
     }
 
     [Fact]
     public async Task DeleteAsync_Success()
     {
         // Arrange
-        var rnd = new Random(); 
-        int id = rnd.Next(); 
-
-        var ingredient = new IngredientDTO { Id = id, Name = "Cheese", User_id = 1, Image_id = null };
+        var rnd = new Random();
+        int id = rnd.Next();
 
         const string sql = "DELETE FROM ingredients WHERE id = @Id";
 
-        // When call sql string, return the id 
-        mockExecutor.Setup(e => e.QuerySingleAsync<int>(sql, 
-        It.IsAny<object?>())).ReturnsAsync(1);
+        // When the SQL statement is executed, return 1 affected row
+        mockExecutor.Setup(e => e.ExecuteAsync(sql, It.IsAny<object?>()))
+            .ReturnsAsync(1);
 
         // Act
         var result = await repository.DeleteAsync(id);
 
         // Assert
-        // result should be 1, since only one entry updated
-        Assert.Equal(1, result); 
+        Assert.Equal(1, result);
 
-        // Verify that the query is called with an object 
-        // and the object has a properties matching properties from the object
-        mockExecutor.Verify(e => e.QuerySingleAsync<int>(
+        // Verify that the correct SQL and ID were passed
+        mockExecutor.Verify(e => e.ExecuteAsync(
             sql,
             It.Is<object?>(p =>
-                HasParameter(p, "Name", ingredient.Name) &&
-                HasParameter(p, "UserId", ingredient.User_id) &&
-                HasParameter(p, "ImageId", DBNull.Value))), //Image is a special type of db null value
-        Times.Once);
+                HasParameter(p, "Id", id))),
+            Times.Once);
     }
 }
 
