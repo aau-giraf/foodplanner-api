@@ -1,0 +1,226 @@
+using FoodplannerDataAccessSql;
+using FoodplannerDataAccessSql.Lunchbox;
+using FoodplannerModels.Lunchbox;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.IdentityModel.Abstractions;
+using Moq;
+using SQLitePCL;
+using Xunit;
+
+
+
+public class SubIngredientsRepositoryTests
+{
+    private readonly Mock<IDapperExecutor> mockExecutor = new();
+    private readonly SubIngredientRepository repository;
+
+    public SubIngredientsRepositoryTests()
+    {
+        repository = new SubIngredientRepository(mockExecutor.Object);
+    }
+
+    private static bool HasParameter(object? parameters, string name, object? expectedValue)
+    {
+        if (parameters == null)
+            return false;
+
+        var property = parameters.GetType().GetProperty(name);
+
+        if (property == null)
+            return false;
+
+        return Equals(property.GetValue(parameters), expectedValue);
+    }
+
+    [Fact]
+    public async Task GetAllAsync_Success()
+    {
+        // Arrange
+        var rnd = new Random(); 
+        int parent_id1 = rnd.Next();
+        int parent_id2 = rnd.Next();
+        int child_id1 = rnd.Next();
+        int child_id2 = rnd.Next();
+
+        // Create subingredient objects
+        var subingredients = new List<SubIngredientDTO>
+        {
+            new() { Parent_id = parent_id1, Child_id = child_id1, order_no = 1 },
+            new() { Parent_id = parent_id2, Child_id = child_id2, order_no = 2 }
+        };
+
+        const string sql = "SELECT * FROM subingredient";
+
+        // When call with sql string, return subingredient objects
+        mockExecutor.Setup(e => e.QueryAsync<SubIngredientDTO>(
+            sql, It.IsAny<object?>())).ReturnsAsync(subingredients);
+
+        // Act
+        // Call the repository method
+        var result = await repository.GetAllAsync();
+
+        // Assert
+        // Convert result into a list 
+        var resultList = result.ToList();
+
+        Assert.Equal(2, resultList.Count);
+
+        Assert.Equal(parent_id1, resultList[0].Parent_id);
+        Assert.Equal(child_id1, resultList[0].Child_id);
+        Assert.Equal(1, resultList[0].order_no);
+        Assert.Equal(parent_id2, resultList[1].Parent_id);
+        Assert.Equal(child_id2, resultList[1].Child_id);
+        Assert.Equal(2, resultList[1].order_no);
+
+        // Verifies the sql string is called once and with parameter null
+        mockExecutor.Verify(e => e.QueryAsync<SubIngredientDTO>(sql, null), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetAllByParentIdAsync_Success()
+    {
+        // Arrange
+        // Random seed for the id 
+        var rnd = new Random(); 
+        int parent_id = rnd.Next();
+        int child_id1 = rnd.Next();
+        int child_id2 = rnd.Next();
+
+
+        // subingredient objects
+        var subingredients = new List<SubIngredientDTO>
+        {
+            new() { Parent_id = parent_id, Child_id = child_id1, order_no = 1 },
+            new() { Parent_id = parent_id, Child_id = child_id2, order_no = 2 }
+        };
+
+        const string sql = "SELECT * FROM subingredient WHERE user_id = @Id";
+
+        // When call the sql string, return the ingredient objects
+        mockExecutor.Setup(e => e.QueryAsync<SubIngredientDTO>(
+            sql, It.IsAny<object?>())).ReturnsAsync(subingredients);
+
+        // Act
+        var result = await repository.GetAllByParentIdAsync(parent_id);
+
+        // Assert
+        var resultList = result.ToList();
+
+        Assert.Equal(parent_id, resultList[0].Parent_id);
+        Assert.Equal(child_id1, resultList[0].Child_id);
+        Assert.Equal(1, resultList[0].order_no);
+        Assert.Equal(parent_id, resultList[1].Parent_id);
+        Assert.Equal(child_id2, resultList[1].Child_id);
+        Assert.Equal(2, resultList[1].order_no);
+
+        // Verifies that the sql is called once, 
+        // and the parameter object is not null and has property "id" that has the same value as id
+        mockExecutor.Verify(e => e.QueryAsync<IngredientDTO>(sql, It.Is<object>(p => p != null && 
+            Equals(p.GetType().GetProperty("Id")!.GetValue(p), parent_id))), Times.Once);
+    }
+
+    [Fact]
+    public async Task InsertAsync_Success()
+    {
+        // Arrange
+        var rnd = new Random(); 
+        int parent_id = rnd.Next();
+        int child_id = rnd.Next();
+
+        var subingredient = new SubIngredientDTO{ Parent_id = parent_id, Child_id = child_id, order_no = 1 }; 
+
+        const string sql = "INSERT INTO subingredient (parent_id, child_id, order_no) VALUES (@ParentId, @ChildId, @OrderNumber)";
+        
+        // Key for subingredient is parent_id + child_id
+        int newKey = int.Parse(parent_id.ToString() + child_id.ToString());
+
+        mockExecutor.Setup(e => e.QuerySingleAsync<int>(sql, 
+        It.IsAny<object?>())).ReturnsAsync(newKey);
+
+        // Act
+        var result = await repository.InsertAsync(subingredient);
+
+        // Assert
+        // Id should be same as result 
+        Assert.Equal(newKey, result); 
+
+        // Verify that the query is called with an object 
+        // and the object has a properties matching properties from the object
+        mockExecutor.Verify(e => e.QuerySingleAsync<int>(
+            sql,
+            It.Is<object?>(p =>
+                HasParameter(p, "ParentId", subingredient.Parent_id) &&
+                HasParameter(p, "ChildId", subingredient.Child_id) &&
+                HasParameter(p, "OrderNumber", subingredient.order_no))), 
+        Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_Success()
+    {
+        // Arrange
+        var rnd = new Random(); 
+        int parent_id_new = rnd.Next();
+        int child_id_new = rnd.Next();
+        int parent_id_old = rnd.Next();
+        int child_id_old = rnd.Next();
+
+        var subingredient_new = new SubIngredientDTO{ Parent_id = parent_id_new, Child_id = child_id_new, order_no = 1 }; 
+        var subingredient_old = new SubIngredientDTO{ Parent_id = parent_id_old, Child_id = child_id_old, order_no = 2 }; 
+
+        const string sql = "UPDATE subingredient SET parent_id = @NewParentId, child_id = @NewChildId, order_no = @NewOrderNumber WHERE parent_id = @OldParentId AND child_id = @OldChildId";
+        
+        // When call sql string, return the id 
+       mockExecutor.Setup(e => e.QuerySingleAsync<int>(sql, 
+        It.IsAny<object?>())).ReturnsAsync(1);
+
+        // Act
+        var result = await repository.UpdateAsync(subingredient_old, subingredient_old);
+
+        // Assert
+        // result should be 1, since only one entry updated
+        Assert.Equal(1, result); 
+
+        // Verify that the query is called with an object 
+        // and the object has a properties matching properties from the object
+        // mockExecutor.Verify(e => e.QuerySingleAsync<int>(
+        //     sql,
+        //     It.IsAny<object?>()),
+        // Times.Once);
+    }
+
+    // [Fact]
+    // public async Task DeleteAsync_Success()
+    // {
+    //     // Arrange
+    //     var rnd = new Random(); 
+    //     int id = rnd.Next(); 
+
+    //     var ingredient = new IngredientDTO { Id = id, Name = "Cheese", User_id = 1, Image_id = null };
+
+    //     const string sql = "DELETE FROM ingredients WHERE id = @Id";
+
+    //     // When call sql string, return the id 
+    //     mockExecutor.Setup(e => e.QuerySingleAsync<int>(sql, 
+    //     It.IsAny<object?>())).ReturnsAsync(1);
+
+    //     // Act
+    //     var result = await repository.DeleteAsync(id);
+
+    //     // Assert
+    //     // result should be 1, since only one entry updated
+    //     Assert.Equal(1, result); 
+
+    //     // Verify that the query is called with an object 
+    //     // and the object has a properties matching properties from the object
+    //     mockExecutor.Verify(e => e.QuerySingleAsync<int>(
+    //         sql,
+    //         It.Is<object?>(p =>
+    //             HasParameter(p, "Name", ingredient.Name) &&
+    //             HasParameter(p, "UserId", ingredient.User_id) &&
+    //             HasParameter(p, "ImageId", DBNull.Value))), //Image is a special type of db null value
+    //     Times.Once);
+    // }
+
+}
+
