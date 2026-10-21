@@ -1,10 +1,8 @@
-using AutoMapper;
 using FoodplannerApi.Controller;
 using FoodplannerModels.Account;
 using FoodplannerModels.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Test.Builder;
 
 namespace Test.Controller;
 
@@ -12,14 +10,14 @@ public class ChildrenControllerTest
 {
     private readonly Mock<IChildrenService> _mockChildrenService;
     private readonly Mock<IAuthService> _mockAuthService;
-    private readonly ChildrensController _childrenController;
+    private readonly ChildrenController _childrenController;
 
     public ChildrenControllerTest()
     {
         _mockChildrenService = new Mock<IChildrenService>();
         _mockAuthService = new Mock<IAuthService>();
 
-        _childrenController = new ChildrensController(
+        _childrenController = new ChildrenController(
             _mockChildrenService.Object,
             _mockAuthService.Object
         );
