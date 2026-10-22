@@ -72,11 +72,15 @@ public class OneTimePasswordController(IOneTimePasswordService passwordService, 
 
             // Redeem the one-time password for the user
             var userRole = authService.RetrieveRoleFromJwtToken(token);
-            var result = await passwordService.RedeemOneTimePassword(code, id);
-            if (result > 0)
-                return Ok("Code redeemed successfully.");
-
-            return BadRequest("Could not redeem code.");
+            var affectedRows = await passwordService.RedeemOneTimePassword(code, id);
+            if (affectedRows == 0)
+            {
+                return BadRequest("Relation already present");
+            }
+            else
+            {
+                return Ok("Added new relation");
+            }
         }
         catch
         {

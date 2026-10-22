@@ -44,6 +44,7 @@ namespace FoodplannerModels.Account
 
             CreateMap<CreateClassroomDTO, Classroom>();
             CreateMap<Classroom, ClassroomDTO>();
+            CreateMap<ClassroomDTO, Classroom>();
         }
 
         private static UserRole ParseUserRole(string roleString)

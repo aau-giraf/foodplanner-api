@@ -66,7 +66,7 @@ public class ChatHubTests
         const int userId = 42;
         SetCallerIdentity(userId, "Parent");
 
-        _mockChatRepository.Setup(repo => repo.GetChatThreadByIdAsync(chatThreadId))
+        _mockChatRepository.Setup(repo => repo.GetThreadByIdAsync(chatThreadId))
             .ReturnsAsync(new ChatThread { ChatThreadId = chatThreadId, ChildId = childId });
 
         _mockChildrenRepository.Setup(repo => repo.GetParentsByChildIdAsync(childId))
@@ -89,7 +89,7 @@ public class ChatHubTests
         const int userId = 42;
         SetCallerIdentity(userId, "Teacher");
 
-        _mockChatRepository.Setup(repo => repo.GetChatThreadByIdAsync(chatThreadId))
+        _mockChatRepository.Setup(repo => repo.GetThreadByIdAsync(chatThreadId))
             .ReturnsAsync(new ChatThread { ChatThreadId = chatThreadId, ChildId = childId });
 
         _mockChildrenRepository.Setup(repo => repo.GetTeachersByChildIdAsync(childId))
@@ -112,7 +112,7 @@ public class ChatHubTests
         const int userId = 42;
         SetCallerIdentity(userId, "Parent");
 
-        _mockChatRepository.Setup(repo => repo.GetChatThreadByIdAsync(chatThreadId))
+        _mockChatRepository.Setup(repo => repo.GetThreadByIdAsync(chatThreadId))
             .ReturnsAsync(new ChatThread { ChatThreadId = chatThreadId, ChildId = childId });
 
         // The caller is a Parent, but not one of the parents actually linked to this child.
@@ -135,7 +135,7 @@ public class ChatHubTests
         const int userId = 42;
         SetCallerIdentity(userId, "Parent");
 
-        _mockChatRepository.Setup(repo => repo.GetChatThreadByIdAsync(chatThreadId))
+        _mockChatRepository.Setup(repo => repo.GetThreadByIdAsync(chatThreadId))
             .ReturnsAsync(new ChatThread { ChatThreadId = chatThreadId, ChildId = childId });
 
         _mockChildrenRepository.Setup(repo => repo.GetParentsByChildIdAsync(childId))

@@ -162,25 +162,25 @@ public class ImagesControllerTests
         {
             Id = foodImageId,
             UserId = userId,
-            ImageId = "dummy-id",
+            ImageData = [],
             ImageName = "dummy-name.jpg",
             ImageFileType = "image/jpeg",
         };
 
 
-        mockFoodImageService.Setup(service => service.GetFoodImage(foodImageId)).ReturnsAsync(expectedImage);
+         mockFoodImageService.Setup(service => service.GetFoodImage(foodImageId)).ReturnsAsync(expectedImage);
 
-        var controller = new ImagesController(mockFoodImageService.Object, mockAuthService.Object);
+         var controller = new ImagesController(mockFoodImageService.Object, mockAuthService.Object);
 
-        // Act
-        var result = await controller.GetFoodImage(foodImageId);
+         // Act
+         var result = await controller.GetFoodImage(foodImageId);
 
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.Equal(200, okResult.StatusCode);
+         // Assert
+         var okResult = Assert.IsType<OkObjectResult>(result);
+         Assert.Equal(200, okResult.StatusCode);
 
-        var returnedImage = Assert.IsAssignableFrom<FoodImageDTO>(okResult.Value);
-        Assert.Equal(expectedImage.Id, returnedImage.Id);
+         var returnedImage = Assert.IsAssignableFrom<FoodImageDTO>(okResult.Value);
+         Assert.Equal(expectedImage.Id, returnedImage.Id);
         Assert.Equal(expectedImage.UserId, returnedImage.UserId);
     }
 

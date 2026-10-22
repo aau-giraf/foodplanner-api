@@ -9,7 +9,84 @@ namespace Test.AccountTests.Controller;
 
 public class UsersControllerTests
 {
+    [Fact]
+    public async Task EmailExists_ReturnsOkObjectResult_WhenEmailIsValid()
+    {
+        // Arrange
+        var email = "test@example.com";
 
+        var mockUserService = new Mock<IUserService>();
+        var authService = new Mock<IAuthService>();
+        var otpService = new Mock<IOneTimePasswordService>();
+        mockUserService
+            .Setup(s => s.UserEmailExistsAsync(email))
+            .ReturnsAsync(true);
+
+
+        var usersController = new UsersController(mockUserService.Object, authService.Object);
+
+        // Act
+        var result = await usersController.EmailExists(email);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        dynamic value = okResult.Value!;
+        bool exists = (bool)value.GetType().GetProperty("EmailExists").GetValue(value);
+        Assert.True(exists);
+    }
+
+
+    [Fact]
+    public async Task EmailExists_ReturnsBadRequest_WhenEmailIsNullOrEmpty()
+    {
+        // Arrange
+        string email = ""; // could also test null
+
+        var mockUserService = new Mock<IUserService>();
+        var authService = new Mock<IAuthService>();
+        var otpService = new Mock<IOneTimePasswordService>();
+
+        var usersController = new UsersController(mockUserService.Object, authService.Object);
+
+        // Act
+        var result = await usersController.EmailExists(email);
+
+        // Assert
+        var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+        dynamic value = badRequest.Value!;
+        Assert.IsType<string[]>(value.Message);
+        var messages = (string[])value.Message;
+
+        Assert.Contains("Email is required", messages);
+
+    }
+
+    [Fact]
+    public async Task EmailExists_ReturnsOkObjectResult_WhenEmailDoesNotExist()
+    {
+        // Arrange
+        var email = "nonexistent@example.com";
+
+        var mockUserService = new Mock<IUserService>();
+        var authService = new Mock<IAuthService>();
+        var otpService = new Mock<IOneTimePasswordService>();
+        mockUserService
+            .Setup(s => s.UserEmailExistsAsync(email))
+            .ReturnsAsync(false);
+
+
+        var usersController = new UsersController(mockUserService.Object, authService.Object);
+
+        // Act
+        var result = await usersController.EmailExists(email);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        dynamic value = okResult.Value!;
+        bool exists = (bool)value.GetType().GetProperty("EmailExists").GetValue(value);
+        Assert.False(exists);
+    }
+    
     [Fact]
     public async Task GetBearerTest_ReturnsOkObjectResult()
     {
@@ -23,7 +100,7 @@ public class UsersControllerTests
             .Setup(a => a.GenerateJWTToken(It.IsAny<User>()))
             .Returns(JWTToken);
 
-        var controller = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
+        var controller = new UsersController(mockUserService.Object, authService.Object);
 
         //act
         var result = await controller.GetBearerTest();
@@ -53,7 +130,7 @@ public class UsersControllerTests
             .Setup(service => service.CreateUserAsync(userCreateDto))
             .ReturnsAsync(1);
 
-        var usersController = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
+        var usersController = new UsersController(mockUserService.Object, authService.Object);
 
         //act
         var result = await usersController.Create(userCreateDto);
@@ -85,7 +162,7 @@ public class UsersControllerTests
             .Setup(s => s.CreateUserAsync(userCreateDTO))
             .ReturnsAsync(0);
 
-        var controller = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
+        var controller = new UsersController(mockUserService.Object, authService.Object);
 
         //act
         var result = await controller.Create(userCreateDTO);
@@ -115,7 +192,7 @@ public class UsersControllerTests
             .Setup(s => s.CreateUserAsync(It.IsAny<UserCreateDTO>()))
             .ThrowsAsync(new InvalidOperationException("An error occurred while creating the user"));
 
-        var controller = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
+        var controller = new UsersController(mockUserService.Object, authService.Object);
 
         // Act
         var result = await controller.Create(userCreateDto);
@@ -151,7 +228,7 @@ public class UsersControllerTests
                 RoleApproved = true
             });
 
-        var controller = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
+        var controller = new UsersController(mockUserService.Object, authService.Object);
 
         var result = await controller.Login(login);
 
@@ -178,7 +255,7 @@ public class UsersControllerTests
             .Setup(s => s.GetJWTByEmailAndPasswordAsync(loginDto.Email, loginDto.Password))
             .ReturnsAsync((UserCredsDTO?)null);
 
-        var controller = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
+        var controller = new UsersController(mockUserService.Object, authService.Object);
 
         // Act
         var result = await controller.Login(loginDto);
@@ -209,7 +286,7 @@ public class UsersControllerTests
             .Setup(s => s.GetJWTByEmailAndPasswordAsync(loginDto.Email, loginDto.Password))
             .ThrowsAsync(new InvalidOperationException("An unexpected error occurred"));
 
-        var controller = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
+        var controller = new UsersController(mockUserService.Object, authService.Object);
 
         var result = await controller.Login(loginDto);
 
@@ -232,7 +309,7 @@ public class UsersControllerTests
         var mockAuthService = new Mock<IAuthService>();
         var otpService = new Mock<IOneTimePasswordService>();
 
-        var controller = new UsersController(mockUserService.Object, mockAuthService.Object, otpService.Object);
+        var controller = new UsersController(mockUserService.Object, mockAuthService.Object);
 
         mockAuthService
             .Setup(auth => auth.RetrieveIdFromJwtToken($"Bearer {validToken}"))
@@ -278,7 +355,7 @@ public class UsersControllerTests
             .Setup(s => s.UserHasPinCodeAsync(user.Id))
             .ReturnsAsync(false);
 
-        var controller = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
+        var controller = new UsersController(mockUserService.Object, authService.Object);
 
         //act
         var result = await controller.HasPinCode(JWTToken);
@@ -313,7 +390,7 @@ public class UsersControllerTests
         var authService = new Mock<IAuthService>();
         var otpService = new Mock<IOneTimePasswordService>();
 
-        var _controller = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
+        var _controller = new UsersController(mockUserService.Object, authService.Object);
 
         var userCredsDTO = new UserCredsDTO
         {
@@ -347,7 +424,7 @@ public class UsersControllerTests
         var authService = new Mock<IAuthService>();
         var otpService = new Mock<IOneTimePasswordService>();
 
-        var _controller = new UsersController(mockUserService.Object, authService.Object, otpService.Object);
+        var _controller = new UsersController(mockUserService.Object, authService.Object);
 
         authService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Throws(new InvalidOperationException("Invalid token"));
 
@@ -387,7 +464,7 @@ public class UsersControllerTests
         mockAuthService
             .Setup(a => a.RetrieveIdFromJwtToken(token))
             .Returns(parentId.ToString());
-        var controller = new UsersController(mockUserService.Object, mockAuthService.Object, mockOneTimePassword.Object);
+        var controller = new UsersController(mockUserService.Object, mockAuthService.Object);
 
         // Act
         var result = await controller.CreateUserChildren(token, childDto);

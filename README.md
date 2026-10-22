@@ -14,7 +14,6 @@ The Foodplanner API is a backend service for the GIRAF Foodplanner application, 
 
 -   **Framework**: ASP.NET Core
 -   **Database**: PostgreSQL
--   **Image Database**: Minio
 -   **Authentication**: JWT (JSON Web Token)
 -   **Containerization**: Docker (optional)
 
@@ -128,13 +127,13 @@ TODO: vi skal lige have skrevet den her færdig når vi ved hvad der skal gøres
 
 ### Server Setup
 
-The server will consist of docker containers such as a staging and production API, PostgreSQL database and a Minio database. It will integrate with Github actions to streamline development and automaticly update Staging and Production API to follow newest releases.
+The server will consist of docker containers such as a staging and production API, PostgreSQL database. It will integrate with Github actions to streamline development and automaticly update Staging and Production API to follow newest releases.
 To set this up correctly please follow these steps.
 
 1. First step is to figure out where to host the server. A great place is AAU's own hosting platform https://strato-new.claaudia.aau.dk here the most important thing is to pick a server running Ubuntu.
 
 > [!IMPORTANT]
-> If Strato is decided then remember to open all the ports that are expected to be used. This can be done in Security Groups under the Network section. These ports could be 5432, 8080, 8081, 9000 and 9001
+> If Strato is decided then remember to open all the ports that are expected to be used. This can be done in Security Groups under the Network section. These ports could be 5432, 8080, and 8081.
 
 2. Install the following on the server:
 
@@ -149,8 +148,7 @@ To set this up correctly please follow these steps.
     docker compose -f docker-compose.yml up
     ```
 
-    This will create two containers containing **Minio** for image storage and PostgreSQL for data storage.
-    The Minio server can now be accessed and managed on `http://<server-ip>:9001`
+    This will create an container containing PostgreSQL for data storage.
 
 4. Connect to the newly created PostgreSQL container using your prefered PostgreSQL database tool ex. [pgAdmin](https://www.pgadmin.org/download/).
 
@@ -290,10 +288,6 @@ This will run the bash script once every minute and write the output to `docker-
         "ClientSecret": "<ClientSecret>",
         "Workspace": "<Workspace>",
 
-        "MINIO_ENDPOINT": "localhost:9000",
-        "MINIO_ACCESS": "girafminio",
-        "MINIO_SECRET": "girafminio",
-
         "DB_HOST": "localhost",
         "DB_PORT": "7654",
         "DB_NAME": "giraf",
@@ -328,10 +322,7 @@ This will run the bash script once every minute and write the output to `docker-
 > The credentials must match the Infisical setup for development in secrets.
 
 > [!NOTE]
-> ***Minio and Adminer are interfaces to alter Minio bucket and PostgreSQL database. (You can also use pgAdmin or any other tools for the database)*** <br>
-> **Minio**: http://localhost:9001/login<br>
-**Username**: girafminio<br>
-**Password**: girafminio <br> <br>
+> ***Adminer are interfaces to alter PostgreSQL database. (You can also use pgAdmin or any other tools for the database)*** <br>
 > **Adminer**: http://localhost:8000/ <br>
 **Server**: postgres<br>
 **Username**: postgres<br>

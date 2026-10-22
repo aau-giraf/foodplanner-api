@@ -198,7 +198,7 @@ public class MealsControllerTests
         mockMealsService.Setup(service => service.GetMealByIdAsync(mealId)).ReturnsAsync(updatedMeal);
 
         // Act
-        var result = await mealsController.Update(token, meal, mealId);
+        var result = await mealsController.Update(token, meal);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -221,7 +221,7 @@ public class MealsControllerTests
         mockMealsService.Setup(service => service.UpdateMealAsync(meal)).ReturnsAsync(0);
 
         // Act
-        var result = await mealsController.Update(token, meal, mealId);
+        var result = await mealsController.Update(token, meal);
 
         // Assert
         Assert.IsType<BadRequestResult>(result);

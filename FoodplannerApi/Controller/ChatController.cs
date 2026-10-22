@@ -7,10 +7,17 @@ using Microsoft.AspNetCore.Mvc;
 // Adds the FeedbackChatController to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
 
-public class FeedbackChatController(IChatService chatService, IAuthService authService) : BaseController
+public class ChatController(IChatService chatService, IAuthService authService) : BaseController
 {
-    
-    // URL: api/FeedbackChat/AddMessage
+    // URL: api/Chat/GetIdFromToken
+    // Gets the users id from their JWT token
+    [HttpGet]
+    public async Task<string> GetIdFromToken([FromHeader(Name = "Authorization")] string token)
+    {
+        return authService.RetrieveIdFromJwtToken(token);
+    }
+
+    // URL: api/Chat/AddMessage
     // Adds message from AddMessageDTO and retrieves UserId from JWT token in Authorization header. Returns 201 Created if successful, or 400 Bad Request if unsuccessful.
     [Authorize(Roles = "Parent, Teacher")]
     [HttpPost]
@@ -20,7 +27,6 @@ public class FeedbackChatController(IChatService chatService, IAuthService authS
     {
         try
         {
-
             // Retrieve UserId from the JWT token
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int userId))
@@ -44,10 +50,10 @@ public class FeedbackChatController(IChatService chatService, IAuthService authS
         }
     }
 
-    // URL: api/FeedbackCHat/GetMessages/getmessage/{chatThreadId}
+    // URL: api/Chat/GetMessages/{chatThreadId}
     // Retrieves messages for a given chatThreadId. Returns 200 OK with the list of messages if successful, or 400 Bad Request if unsuccessful.
     [Authorize(Roles = "Parent, Teacher")]
-    [HttpGet("getmessage/{chatThreadId}")]
+    [HttpGet("{chatThreadId}")]
     [ProducesResponseType(typeof(IEnumerable<UserNameFeedbackChatDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetMessages(int chatThreadId)
@@ -63,17 +69,16 @@ public class FeedbackChatController(IChatService chatService, IAuthService authS
         }
     }
     
-    // URL: api/FeedbackChat/GetChatThreadIdAndUserIdFromChildIdAndToken/{childId}
+    // URL: api/Chat/GetThreadIdsForChild/{childId}
     // Retrieves chatThreadId and userId for a given childId and JWT token in Authorization header. Returns 200 OK with the data if successful, or 400 Bad Request if unsuccessful.
     [Authorize(Roles = "Teacher")]
     [HttpGet("{childId}")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetChatThreadIdAndUserIdFromChildIdAndToken(int childId, [FromHeader(Name = "Authorization")] string token)
+    public async Task<IActionResult> GetThreadIdsForChild(int childId, [FromHeader(Name = "Authorization")] string token)
     {
         try
         {
-
             // Retrieve UserId from the JWT token            
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id)) {
@@ -81,14 +86,8 @@ public class FeedbackChatController(IChatService chatService, IAuthService authS
             }
 
             // Call the service layer to get the chatThreadId by childId
-            var chatThreadId = await chatService.GetChatThreadIdByChildIdAsync(childId);
-
-            // Returns response object containing UserId and ChatThreadId
-            var response = new {
-                UserId = id,
-                ChatThreadId = chatThreadId
-            };
-            return Ok(response);
+            var chatThreadId = await chatService.GetThreadIdByChildIdAsync(childId);
+            return Ok(chatThreadId);
         }
         catch (Exception )
         {
@@ -96,38 +95,31 @@ public class FeedbackChatController(IChatService chatService, IAuthService authS
         }
     }
     
-    // URL: api/FeedbackChat/GetChatThreadIdAndUserIdFromToken
+    // URL: api/Chat/GetThreadIdsFromParentToken
     // Retrieves chatThreadId and userId from JWT token in Authorization header. Returns 200 OK with the data if successful, or 400 Bad Request if unsuccessful.
     [Authorize(Roles = "Parent")]
     [HttpGet]
-    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetChatThreadIdAndUserIdFromToken([FromHeader(Name = "Authorization")] string token) {
+    public async Task<IActionResult> GetThreadIdsFromParentToken([FromHeader(Name = "Authorization")] string token) {
         try {
-
             // Retrieve UserId from the JWT token
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id)) {
                 return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
             }
 
-            // Call the service layer to get the chatThreadId by userId
-            var chatThreadId = await chatService.GetChatThreadIdByUserIdAsync(id);
-            
-            // Returns response object containing UserId and ChatThreadId
-            var response = new {
-                UserId = id,
-                ChatThreadId = chatThreadId
-            };
-            return Ok(response);
+            // Call the service layer to get the chatThreadIds by userId
+            IEnumerable<int> chatThreadIds = await chatService.GetThreadIdsByParentIdAsync(id);
+            return Ok(chatThreadIds);
         }
-        catch (Exception )
+        catch (Exception exception)
         {
-            return BadRequest();
+            return BadRequest(exception.Message);
         }
     }
     
-    // URL: api/FeedbackChat/ArchiveMessage/{messageId}
+    // URL: api/Chat/ArchiveMessage/{messageId}
     // Archives a message by its ID. Returns 200 OK if successful, or 400 Bad Request if unsuccessful.
     [Authorize(Roles = "Parent, Teacher")]
     [HttpDelete("{messageId}")]
@@ -150,17 +142,17 @@ public class FeedbackChatController(IChatService chatService, IAuthService authS
         }
     }
     
-    // URL: api/FeedbackChat/UpdateMessage
+    // URL: api/Chat/EditMessage
     // Updates a message from UpdateMessageDTO. Returns 200 OK if successful, or 400 Bad Request if unsuccessful.
     [Authorize(Roles = "Parent, Teacher")]
     [HttpPut]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> UpdateMessage([FromBody] UpdateMessageDTO message)
+    public async Task<IActionResult> EditMessage([FromBody] EditMessageDTO message)
     {
         try
         {
-            var result = await chatService.UpdateMessageAsync(message);
+            var result = await chatService.EditMessageAsync(message);
             if (result)
             {
                 return Ok();

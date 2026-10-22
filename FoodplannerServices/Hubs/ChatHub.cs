@@ -36,7 +36,7 @@ public class ChatHub : Hub
     private async Task EnsureCallerIsAuthorizedForThreadAsync(int chatThreadId)
     {
         // Retrieve chat thread id and user role
-        var chatThread = await _chatRepository.GetChatThreadByIdAsync(chatThreadId);
+        var chatThread = await _chatRepository.GetThreadByIdAsync(chatThreadId);
         var userIdClaim = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (!int.TryParse(userIdClaim, out var userId))
         {

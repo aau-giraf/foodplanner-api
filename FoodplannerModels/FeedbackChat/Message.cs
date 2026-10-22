@@ -1,25 +1,13 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+namespace FoodplannerModels.FeedbackChat;
 
 // Represents a message in a feedback chat thread.
 public class Message
 {
-    [Key]
-    public int MessageId { get; set; }
-
-    [Required(ErrorMessage = "Shanice, your mouth is moving like a waterfall, but nothing is coming out")]
-    [StringLength(500, ErrorMessage = "Shanice, your mouth is ehhh moving alot like a rat, yappa yappa yappa yappa, shut it please!")]
+    public required int MessageId { get; init; }
     public required string Content { get; set; }
-
-    [Required]
-    public DateTime Date { get; set; }
-
-    [ForeignKey("UserId")]
-    public int UserId { get; set; }
-
-    [ForeignKey("ChatThreadId")]
-    public int ChatThreadId { get; set; }
-    
-    public bool Archived { get; set; }
-    public bool IsDeleted { get; set; }
+    public required DateTime Date { get; init; }
+    public required int UserId { get; init; }
+    public required int ChatThreadId { get; init; }
+    public required bool Archived { get; set; }
+    public required bool IsEdited { get; set; }
 }
