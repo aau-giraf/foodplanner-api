@@ -60,7 +60,7 @@ public class PackedIngredientController(IPackedService packedIngredientService) 
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update([FromBody] PackedDTO newPackedDTO, int ingredient_id, int meal_id)
     {
-        var oldPackedDTO = new PackedDTO{Ingredient_id = ingredient_id, Meal_id = meal_id };
+        var oldPackedDTO = new PackedDTO{Ingredient_id = ingredient_id, Meal_id = meal_id, order_no = 0};
         var result = await packedIngredientService.UpdatePackedAsync(oldPackedDTO, newPackedDTO);
         if (result > 0)
         {

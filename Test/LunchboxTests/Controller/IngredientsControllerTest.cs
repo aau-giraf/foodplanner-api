@@ -31,7 +31,7 @@ public class IngredientsControllerTests
         mockIngredientsService.Setup(service => service.GetAllIngredientsAsync()).ReturnsAsync(ingredients);
 
         // Act
-        var result = await ingredientsController.GetAll();
+        var result = await ingredientsController.GetAllIngredients();
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
