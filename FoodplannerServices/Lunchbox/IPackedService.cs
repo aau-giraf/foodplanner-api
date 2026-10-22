@@ -7,7 +7,6 @@ namespace FoodplannerServices.Lunchbox;
 public interface IPackedService
 {
     Task<IEnumerable<PackedDTO>> GetAllPackedAsync();
-
     Task<IEnumerable<PackedDTO>> GetAllPackedByMealIdAsync(int id);
 
     Task<int> CreatePackedAsync(PackedDTO packed);

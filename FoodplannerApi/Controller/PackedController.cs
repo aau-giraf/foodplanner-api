@@ -2,6 +2,7 @@ using FoodplannerModels.Lunchbox;
 using FoodplannerServices.Lunchbox;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Polly;
 
 // Adds the PackedIngredientController to the FoodPlannerApi.Controller namespace
 namespace FoodplannerApi.Controller;
@@ -52,14 +53,15 @@ public class PackedIngredientController(IPackedService packedIngredientService) 
         return BadRequest();
     }
 
-    // URL: api/PackedIngredient/Update/{id}
-    // Updates an existing packed ingredient by its ID and PackedIngredientDTO
-    [HttpPut("{id}")]
+    // URL: api/PackedIngredient/Update/{meal_id}/{ingredient_id}
+    // Updates the order no. of ingredients in a packed
+    [HttpPut("{meal_id}/{ingredient_id}")]
     [Authorize(Policy = "AdminPolicy")]
     [ProducesResponseType(typeof(PackedDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Update([FromBody] PackedDTO oldPackedDTO, [FromBody] PackedDTO newPackedDTO)
+    public async Task<IActionResult> Update([FromBody] PackedDTO newPackedDTO, int ingredient_id, int meal_id)
     {
+        var oldPackedDTO = new PackedDTO{Ingredient_id = ingredient_id, Meal_id = meal_id };
         var result = await packedIngredientService.UpdatePackedAsync(oldPackedDTO, newPackedDTO);
         if (result > 0)
         {
