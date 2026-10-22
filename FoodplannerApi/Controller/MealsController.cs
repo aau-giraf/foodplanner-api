@@ -3,19 +3,20 @@ using FoodplannerModels.Lunchbox;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FoodplannerModels.Auth;
+using FoodplannerServices.Lunchbox;
 
 // Adds the MealsController to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
 
-public class MealsController(IMealService mealService, IAuthService authService) : BaseController
+public class MealsController(IMealsService mealService, IAuthService authService) : BaseController
 {
 
-    // URL: api/Meals/GetAll
+    // URL: api/Meals/GetAllMeals
     // Retrieves all meals.
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
     [ProducesResponseType(typeof(IEnumerable<MealDTO>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAllMeals()
     {
         var meals = await mealService.GetAllMealsAsync();
         return Ok(meals);
@@ -38,7 +39,7 @@ public class MealsController(IMealService mealService, IAuthService authService)
             }
 
             // Retrieve all meals for the user on the specified date.
-            var meals = await mealService.GetAllMealsByUserAsync(id, date);
+            var meals = await mealService.GetAllMealsByUserAndDateAsync(id, date);
             return Ok(meals);
         }
         catch (InvalidOperationException e)
@@ -47,24 +48,24 @@ public class MealsController(IMealService mealService, IAuthService authService)
         }
     }
 
-    // URL: api/Meals/TeacherGetUserMeals
-    // (change this in the future so route is /api/Meals/TeacherGetUserMeals/{date}/{id})
-    [HttpGet]
+    // URL: api/Meals/TeacherGetUserMeals/{date}/{id}
+    // Get all meals associated for a user
+    [HttpGet("{date}/{id}")]
     [Authorize(Roles = "Teacher, Admin")]
     [ProducesResponseType(typeof(IEnumerable<MealDTO>), StatusCodes.Status200OK)]
     public async Task<IActionResult> TeacherGetUserMeals(string date, int id)
     {
-        var meals = await mealService.GetAllMealsByUserAsync(id, date);
+        var meals = await mealService.GetAllMealsByUserAndDateAsync(id, date);
         return Ok(meals);
     }
 
-    // URL: api/Meals/Get/getmeal/{id}
+    // URL: api/Meals/GetMeal/{id}
     // Get a specific meal by ID
-    [HttpGet("getmeal/{id}")]
+    [HttpGet("{id}")]
     [Authorize(Roles = "Child, Parent, Teacher")]
     [ProducesResponseType(typeof(MealDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(NotFoundResult), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> GetMeal(int id)
     {
         var meal = await mealService.GetMealByIdAsync(id);
         if (meal == null)
@@ -80,7 +81,7 @@ public class MealsController(IMealService mealService, IAuthService authService)
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(MealDTO), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] MealCreateDTO meal)
+    public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] MealCreateDTO mealCreateDTO)
     {
         try
         {
@@ -92,11 +93,11 @@ public class MealsController(IMealService mealService, IAuthService authService)
             }
 
             // Create the meal and return the created meal with a 201 Created status.
-            var result = await mealService.CreateMealAsync(meal, id);
+            var result = await mealService.CreateMealAsync(mealCreateDTO, id);
             if (result > 0)
             {
                 var createdMeal = await mealService.GetMealByIdAsync(result);
-                return CreatedAtAction(nameof(Get), new { id = result }, createdMeal);
+                return CreatedAtAction(nameof(GetMeal), new { id = result }, createdMeal);
             }
             return BadRequest();
         }
@@ -106,13 +107,13 @@ public class MealsController(IMealService mealService, IAuthService authService)
         }
     }
 
-    // URL: api/Meals/Update/{id}
+    // URL: api/Meals/Update
     // Update an existing meal by ID with MealDTO and return the updated meal with a 200 OK status.
-    [HttpPut("{id}")]
+    [HttpPut]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(MealDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Update([FromHeader(Name = "Authorization")] string token, [FromBody] MealDTO mealDto, int id)
+    public async Task<IActionResult> Update([FromHeader(Name = "Authorization")] string token, [FromBody] MealDTO mealDTO)
     {
         try
         {
@@ -124,11 +125,10 @@ public class MealsController(IMealService mealService, IAuthService authService)
             }
 
             // Update the meal and return the updated meal with a 200 OK status.
-            mealDto.UserId = user_id;
-            var result = await mealService.UpdateMealAsync(mealDto, id);
+            var result = await mealService.UpdateMealAsync(mealDTO);
             if (result > 0)
             {
-                var changedMeal = await mealService.GetMealByIdAsync(id);
+                var changedMeal = await mealService.GetMealByIdAsync(mealDTO.Id);
                 return Ok(changedMeal);
             }
             return BadRequest();
@@ -183,9 +183,9 @@ public class MealsController(IMealService mealService, IAuthService authService)
         }
     }
 
-    // URL: api/Meals/UpdateTemplateStatus/{id}/template
+    // URL: api/Meals/UpdateTemplateStatus/{id}
     // Update the template status of a meal by ID and return a success message with a 200 OK status.
-    [HttpPut("{id}/template")]
+    [HttpPut("{id}")]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]

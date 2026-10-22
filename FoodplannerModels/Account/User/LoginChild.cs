@@ -10,8 +10,6 @@ namespace FoodplannerModels.Account
         [EmailAddress(ErrorMessage = "Email er ikke gyldig")]
         [StringLength(100, ErrorMessage = "Email er for lang")]
         public required string Email { get; set; }
-
-        [StringLength(6)]
-        public string? Code { get; set; }
+        public required string? Code { get; set; }
     }
 }

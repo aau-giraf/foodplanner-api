@@ -128,9 +128,9 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
         return Ok("Images deleted successfully");
     }
 
-    // URL: api/Images/GetFoodImage
+    // URL: api/Images/GetFoodImage/{id}
     // Retrieves food image from id. Returns 200 OK with the food image data if found, or 400 Bad Request if the foodImageId is invalid, or 404 Not Found if the food image does not exist.
-    [HttpGet]
+    [HttpGet("{id}")]
     [AuthorizeImageOwnerFilter]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(FoodImageDTO), StatusCodes.Status200OK)]
@@ -145,9 +145,9 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
         return Ok(image);
     }
 
-    // URL: api/Images/GetPresignedImageLink
+    // URL: api/Images/GetPresignedImageLink/{id}
     // Retrieves presigned image link for a given foodImageId. Returns 200 OK with the presigned link if successful.
-    [HttpGet]
+    [HttpGet("{id}")]
     [Authorize(Roles = "Parent, Child, Teacher, Admin")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPresignedImageLink(int foodImageId)
@@ -163,7 +163,7 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
         {
 
             // Retrieve services from the request context
-            var authService = context.HttpContext.RequestServices.GetService<AuthService>();
+            var authService = context.HttpContext.RequestServices.GetRequiredService<IAuthService>();
             var foodImageService = context.HttpContext.RequestServices.GetService<IFoodImageService>();
             var token = context.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
             var foodImageIds = context.HttpContext.Request.Query["foodImageId"];
@@ -197,14 +197,27 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
                 // Check if the user is the owner of all the food images
                 foreach (var foodImageId in foodImageIds)
                 {
-                    if (foodImageId == null)
+                    if (!int.TryParse(foodImageId, out int imageId))
                     {
-                        continue;
+                        context.Result = new BadRequestResult();
+                        return;
                     }
-                    var foodImage = await foodImageService.GetFoodImage(int.Parse(foodImageId));
-                    if (userId == foodImage.UserId) continue;
-                    context.Result = new UnauthorizedResult();
-                    break;
+
+                    var foodImage = await foodImageService.GetFoodImage(imageId);
+
+                    // Check if the image exists
+                    if (foodImage == null)
+                    {
+                        context.Result = new NotFoundResult();
+                        return;
+                    }
+
+                    // Check if the user owns the image
+                    if (userId != foodImage.UserId)
+                    {
+                        context.Result = new ForbidResult();
+                        return;
+                    }
                 }
             }
         }

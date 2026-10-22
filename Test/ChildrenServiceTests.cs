@@ -47,7 +47,7 @@ public class ChildrenServiceTests
 
         _mockUserRepository.Setup(repo => repo.GetByIdAsync(userId))
             .ReturnsAsync(parentUser);
-        _mockChildrenRepository.Setup(repo => repo.AddParentToChildAsync(userId, childId))
+        _mockChildrenRepository.Setup(repo => repo.AddUserToChildAsync(userId, childId))
             .ReturnsAsync(1);
 
         // Act
@@ -56,7 +56,7 @@ public class ChildrenServiceTests
         // Assert
         Assert.Equal(1, result);
         _mockUserRepository.Verify(repo => repo.GetByIdAsync(userId), Times.Once);
-        _mockChildrenRepository.Verify(repo => repo.AddParentToChildAsync(userId, childId), Times.Once);
+        _mockChildrenRepository.Verify(repo => repo.AddUserToChildAsync(userId, childId), Times.Once);
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class ChildrenServiceTests
 
         Assert.Equal("Kun brugere med rolle 'Parent' kan tilføjes som forældre", exception.Message);
         _mockUserRepository.Verify(repo => repo.GetByIdAsync(userId), Times.Once);
-        _mockChildrenRepository.Verify(repo => repo.AddParentToChildAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+        _mockChildrenRepository.Verify(repo => repo.AddUserToChildAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public class ChildrenServiceTests
 
         Assert.Equal("Brugerens rolle er ikke godkendt", exception.Message);
         _mockUserRepository.Verify(repo => repo.GetByIdAsync(userId), Times.Once);
-        _mockChildrenRepository.Verify(repo => repo.AddParentToChildAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+        _mockChildrenRepository.Verify(repo => repo.AddUserToChildAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -121,7 +121,7 @@ public class ChildrenServiceTests
 
         Assert.Equal("Bruger ikke fundet", exception.Message);
         _mockUserRepository.Verify(repo => repo.GetByIdAsync(userId), Times.Once);
-        _mockChildrenRepository.Verify(repo => repo.AddParentToChildAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
+        _mockChildrenRepository.Verify(repo => repo.AddUserToChildAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -158,7 +158,7 @@ public class ChildrenServiceTests
         _mockUserRepository.Setup(repo => repo.GetByIdAsync(parent3Id))
             .ReturnsAsync(parent3);
 
-        _mockChildrenRepository.Setup(repo => repo.AddParentToChildAsync(It.IsAny<int>(), childId))
+        _mockChildrenRepository.Setup(repo => repo.AddUserToChildAsync(It.IsAny<int>(), childId))
             .ReturnsAsync(1);
 
         // Act - Add multiple parents to the same child
@@ -172,9 +172,9 @@ public class ChildrenServiceTests
         Assert.Equal(1, result3);
 
         // Verify that all three parents were added to the same child
-        _mockChildrenRepository.Verify(repo => repo.AddParentToChildAsync(parent1Id, childId), Times.Once);
-        _mockChildrenRepository.Verify(repo => repo.AddParentToChildAsync(parent2Id, childId), Times.Once);
-        _mockChildrenRepository.Verify(repo => repo.AddParentToChildAsync(parent3Id, childId), Times.Once);
+        _mockChildrenRepository.Verify(repo => repo.AddUserToChildAsync(parent1Id, childId), Times.Once);
+        _mockChildrenRepository.Verify(repo => repo.AddUserToChildAsync(parent2Id, childId), Times.Once);
+        _mockChildrenRepository.Verify(repo => repo.AddUserToChildAsync(parent3Id, childId), Times.Once);
 
         // Verify that GetByIdAsync was called for each parent
         _mockUserRepository.Verify(repo => repo.GetByIdAsync(parent1Id), Times.Once);

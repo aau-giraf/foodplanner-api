@@ -87,7 +87,7 @@ namespace Test.Codes
                 .ReturnsAsync(otp);
 
             _mockChildrenRepository
-                .Setup(r => r.AddParentToChildAsync(10, 20))
+                .Setup(r => r.AddUserToChildAsync(10, 20))
                 .ReturnsAsync(99);
 
             // Act
@@ -96,7 +96,7 @@ namespace Test.Codes
             // Assert
             Assert.Equal(99, result);
             _mockOtpRepository.Verify(r => r.DeleteAsync("111111"), Times.Once);
-            _mockChildrenRepository.Verify(r => r.AddParentToChildAsync(10, 20), Times.Once);
+            _mockChildrenRepository.Verify(r => r.AddUserToChildAsync(10, 20), Times.Once);
         }
 
         [Fact]
@@ -121,10 +121,10 @@ namespace Test.Codes
                 .ReturnsAsync(otp);
 
             // Since ChildUser != null:
-            // AddParentToChildAsync(UsedByUser, ChildUser)
+            // AddUserToChildAsync(UsedByUser, ChildUser)
             // UsedByUser is overwritten to 20 during method call.
             _mockChildrenRepository
-                .Setup(r => r.AddParentToChildAsync(20, 3))
+                .Setup(r => r.AddUserToChildAsync(20, 3))
                 .ReturnsAsync(123);
 
             // Act
@@ -133,7 +133,7 @@ namespace Test.Codes
             // Assert
             Assert.Equal(123, result);
             _mockOtpRepository.Verify(r => r.DeleteAsync("222222"), Times.Once);
-            _mockChildrenRepository.Verify(r => r.AddParentToChildAsync(20, 3), Times.Once);
+            _mockChildrenRepository.Verify(r => r.AddUserToChildAsync(20, 3), Times.Once);
         }
 
 
@@ -159,10 +159,10 @@ namespace Test.Codes
                 .ReturnsAsync(otp);
 
             // ChildUser == null:
-            // AddParentToChildAsync(GeneratedBy, UsedByUser)
+            // AddUserToChildAsync(GeneratedBy, UsedByUser)
             // UsedByUser becomes 20
             _mockChildrenRepository
-                .Setup(r => r.AddParentToChildAsync(1, 20))
+                .Setup(r => r.AddUserToChildAsync(1, 20))
                 .ReturnsAsync(456);
 
             // Act
@@ -171,7 +171,7 @@ namespace Test.Codes
             // Assert
             Assert.Equal(456, result);
             _mockOtpRepository.Verify(r => r.DeleteAsync("333333"), Times.Once);
-            _mockChildrenRepository.Verify(r => r.AddParentToChildAsync(1, 20), Times.Once);
+            _mockChildrenRepository.Verify(r => r.AddUserToChildAsync(1, 20), Times.Once);
         }
 
     }

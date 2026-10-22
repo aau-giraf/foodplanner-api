@@ -8,10 +8,9 @@ namespace FoodplannerDataAccessSql.Account
     public class UserRepository : IUserRepository
     {
 
-        private readonly PostgreSQLConnectionFactory _connectionFactory;
+        private readonly CorePostgreSQLConnectionFactory _connectionFactory;
 
-        // Constructor for user repository
-        public UserRepository(PostgreSQLConnectionFactory connectionFactory)
+        public UserRepository(CorePostgreSQLConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
@@ -22,25 +21,28 @@ namespace FoodplannerDataAccessSql.Account
         {
             var deleteUserSql = "DELETE FROM users WHERE id = @Id";
 
-            using var connection = _connectionFactory.Create();
-            connection.Open();
-
-            using var transaction = connection.BeginTransaction();
-            try
+            using (var connection = _connectionFactory.Create())
             {
-                var result = await connection.ExecuteAsync(deleteUserSql, new { Id = id }, transaction);
+                connection.Open();
 
-                transaction.Commit();
-                return result;
+                using var transaction = connection.BeginTransaction();
+                try
+                {
+                    var result = await connection.ExecuteAsync(deleteUserSql, new { Id = id }, transaction);
+
+                    transaction.Commit();
+                    return result;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }   
             }
-            catch
-            {
-                transaction.Rollback();
-                throw;
-            }
+            
         }
 
-        //Asynchronously retrieves all users from the users table, ordered by first name
+        //Asynchronously retrieves all users from the users table, ordered by first name (a-z)
         public async Task<IEnumerable<User>> GetAllAsync()
         {
             var sql = "SELECT id, first_name, last_name, email, role, archived FROM users ORDER BY first_name";
@@ -204,19 +206,13 @@ namespace FoodplannerDataAccessSql.Account
         }
 
         // Asynchronously toggles a user's archived status, returns true if the archived status was sucessfully updated
-        public async Task<bool> UpdateArchivedAsync(int id)
+        public async Task<bool> UpdateArchivedAsync(int id, bool archived)
         {
-            var selectSql = "SELECT archived FROM users WHERE id = @Id";
-            var updateSql = " UPDATE users SET archived = @Archived WHERE id = @Id";
+            var sql = "UPDATE users SET archived = @Archived WHERE id = @Id";
             using (var connection = _connectionFactory.Create())
             {
                 connection.Open();
-
-                var currentArchived = await connection.ExecuteScalarAsync<bool>(selectSql, new { Id = id });
-
-                var newArchived = !currentArchived;
-
-                var result = await connection.ExecuteAsync(updateSql, new { Archived = newArchived, Id = id });
+                var result = await connection.ExecuteAsync(sql, new { Archived = archived, Id = id });
                 return result > 0;
             }
         }

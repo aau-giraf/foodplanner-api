@@ -26,8 +26,9 @@ using System.Security.Claims;
 using System.Text;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using FluentMigrator.Runner;
+using FluentMigrator.Runner.Initialization;
+using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
-using Minio;
 
 
 // Create a builder for the web application
@@ -45,20 +46,6 @@ Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 // Add environment variables to the builder for Infisical and setup SecretsLoader
 builder.Configuration.AddEnvironmentVariables(prefix: "INFISICAL_");
 var secretsLoader = new SecretsLoader(builder.Configuration, builder.Environment.EnvironmentName);
-
-
-// Add MinIO to builder and configure it using secrets from SecretsLoader
-var endpoint = secretsLoader.GetSecret("MINIO_ENDPOINT");
-var accessKey = secretsLoader.GetSecret("MINIO_ACCESS");
-var secretKey = secretsLoader.GetSecret("MINIO_SECRET");
-builder.Services.AddMinio(configureClient =>
-    configureClient
-        .WithEndpoint(endpoint)
-        .WithCredentials(accessKey, secretKey)
-        .WithTimeout(10000).WithSSL(false)
-        .Build()
-);
-
 
 // Add CORS policy
 builder.Services.AddCors(options =>
@@ -130,6 +117,19 @@ builder.Services.AddSingleton(serviceProvider =>
     return new PostgreSQLConnectionFactory(host, port, database, username, password);
 });
 
+// the same as before but just for the core mock database
+builder.Services.AddSingleton(serviceProvider =>
+{
+    var host = secretsLoader.GetSecret("CORE_DB_HOST");
+    var port = secretsLoader.GetSecret("CORE_DB_PORT");
+    var database = secretsLoader.GetSecret("CORE_DB_NAME");
+    var username = secretsLoader.GetSecret("CORE_DB_USER");
+    var password = secretsLoader.GetSecret("CORE_DB_PASS");
+
+    return new CorePostgreSQLConnectionFactory(
+        host, port, database, username, password);
+});
+
 
 // Configure user authentication
 var configuration = builder.Configuration;
@@ -157,13 +157,13 @@ builder.Services.AddAuthentication(cfg =>
         ClockSkew = TimeSpan.Zero
     };
 
-    // Adds an additional check for user approval status after JWT validation
+    // Adds additional checks after JWT validation
     x.Events = new JwtBearerEvents
     {
+        // When recieving feedbackchat message, check if the access token is present in the query string and set it as the token for the request
         OnMessageReceived = context =>
         {
             var accessToken = context.Request.Query["access_token"];
-
             if (!string.IsNullOrEmpty(accessToken) &&
                 context.HttpContext.Request.Path.StartsWithSegments("/hubs/chat"))
             {
@@ -172,6 +172,8 @@ builder.Services.AddAuthentication(cfg =>
 
             return Task.CompletedTask;
         },
+
+        // If token is validated, check if users role is approved for endpoint access
         OnTokenValidated = context =>
         {
             // Get the claims principal created from the JWT
@@ -217,55 +219,49 @@ builder.Services.AddFluentMigratorCore()
             $"Username={secretsLoader.GetSecret("DB_USER")};" +
             $"Password={secretsLoader.GetSecret("DB_PASS")}")
         .ScanIn(typeof(InitTables).Assembly).For.Migrations())
+    .Configure<RunnerOptions>(options =>
+    {
+        // Only run migrations tagged for the Foodplanner database.
+        options.Tags = new[] { "FoodPlanner" };
+        // Exclude migrations without tags to prevent unintended execution.
+        options.IncludeUntaggedMigrations = false;
+    })
     .AddLogging(lb => lb.AddFluentMigratorConsole());
-
 
 //Dependency Injection Starts Here !
 // Add Repositories
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
-builder.Services.AddScoped(typeof(IMealRepository), typeof(MealRepository));
-builder.Services.AddScoped(typeof(IIngredientRepository), typeof(IngredientRepository));
-builder.Services.AddScoped(typeof(IPackedIngredientRepository), typeof(PackedIngredientRepository));
 builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
 builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepository));
 builder.Services.AddScoped(typeof(IClassroomRepository), typeof(ClassroomRepository));
 builder.Services.AddScoped(typeof(IChatRepository), typeof(ChatRepository));
-builder.Services.AddScoped<ISubIngredientRepository, SubIngredientRepository>();
-builder.Services.AddScoped<ISubIngredientRelationRepository, SubIngredientRelationRepository>();
 builder.Services.AddScoped(typeof(IOneTimePasswordRepository), typeof(OneTimePasswordRepository));
+builder.Services.AddScoped<IDapperExecutor, DapperExecutor>();
+builder.Services.AddScoped<IIngredientsRepository, IngredientsRepository>();
+builder.Services.AddScoped<IMealsRepository, MealsRepository>();
+builder.Services.AddScoped<IPackedRepository, PackedRepository>();
+builder.Services.AddScoped<ISubIngredientRepository, SubIngredientRepository>();
 
 // Add Services
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
 builder.Services.AddScoped<IClassroomService, ClassroomService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddSingleton<IImageService, ImageService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
 builder.Services.AddScoped<IChatService, ChatService>();
-builder.Services.AddScoped<ISubIngredientService, SubIngredientService>();
-builder.Services.AddScoped<ISubIngredientRelationService, SubIngredientRelationService>();
 builder.Services.AddScoped<IPasswordHandler, PasswordHandler>();
-builder.Services.AddScoped<IIngredientService, IngredientService>();
-builder.Services.AddScoped<IMealService, MealService>();
-builder.Services.AddScoped<IPackedIngredientService, PackedIngredientService>();
 builder.Services.AddScoped<IOneTimePasswordService, OneTimePasswordService>();
 builder.Services.AddSingleton<ISecretLoader, SecretsLoader>(_ => secretsLoader);
-
-builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile), typeof(PackedIngredientProfile));
-builder.Services.AddAutoMapper(cfg => { }, typeof(SubIngredientProfile));
-
 builder.Services.AddSingleton<IAuthService, AuthService>();
 builder.Services.AddSignalR();
+builder.Services.AddScoped<IIngredientsService,IngredientsService>();
+builder.Services.AddScoped<IMealsService, MealsService>();
+builder.Services.AddScoped<IPackedService,PackedService>();
+builder.Services.AddScoped<SubIngredientService>();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile));
-builder.Services.AddAutoMapper(cfg => { }, typeof(ChatProfile));
-builder.Services.AddAutoMapper(cfg => { }, typeof(PackedIngredientProfile));
-builder.Services.AddAutoMapper(cfg => { }, typeof(IngredientProfile));
-builder.Services.AddAutoMapper(cfg => { }, typeof(MealProfile));
 builder.Services.AddAutoMapper(cfg => { }, typeof(ImageProfile));
-builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile), typeof(PackedIngredientProfile));
-builder.Services.AddAutoMapper(cfg => { }, typeof(SubIngredientProfile));
 
 
 
@@ -276,12 +272,14 @@ builder.Services.AddAutoMapper(cfg => { }, typeof(SubIngredientProfile));
 var app = builder.Build();
 
 
-// Run migrations at application startup
+// Run Foodplanner migrations
+/*
+// Original setup, can be used when mock database is gone
 using (var scope = app.Services.CreateScope())
 {
-    // Finds the FluentMigrator service
-    var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
-
+    var runner = scope.ServiceProvider
+        .GetRequiredService<IMigrationRunner>();
+        
     // Goes through any migrations not yet applied
     if (runner.HasMigrationsToApplyUp())
     {
@@ -289,7 +287,81 @@ using (var scope = app.Services.CreateScope())
         runner.MigrateUp();
     }
 }
+*/
+// Run Foodplanner migrations up to version 15
+using (var scope = app.Services.CreateScope())
+{
+    var runner = scope.ServiceProvider
+        .GetRequiredService<IMigrationRunner>();
 
+    runner.MigrateUp(15);
+}
+
+
+// Only initialize CoreMock in development
+if (app.Environment.IsDevelopment())
+{
+    var connectionBuilder = new NpgsqlConnectionStringBuilder
+    {
+        Host = secretsLoader.GetSecret("CORE_DB_HOST"),
+        Port = int.Parse(secretsLoader.GetSecret("CORE_DB_PORT")), // CoreMock's separate PostgreSQL container
+        Username = secretsLoader.GetSecret("CORE_DB_USER"),
+        Password = secretsLoader.GetSecret("CORE_DB_PASS"),
+        Database = "core-postgres"
+    };
+
+    // Configure CoreMock connection
+    connectionBuilder.Database = "giraf_core_mock";
+
+    // Connection to the original Foodplanner database
+    var sourceConnection = new NpgsqlConnectionStringBuilder
+    {
+        Host = secretsLoader.GetSecret("DB_HOST"),
+        Port = int.Parse(secretsLoader.GetSecret("DB_PORT")),
+        Database = secretsLoader.GetSecret("DB_NAME"),
+        Username = secretsLoader.GetSecret("DB_USER"),
+        Password = secretsLoader.GetSecret("DB_PASS")
+    }.ConnectionString;
+
+    // Run CoreMock migrations separately
+    using var serviceProvider = new ServiceCollection()
+        .AddSingleton(new DataMigrationSource(sourceConnection))
+        .AddFluentMigratorCore()
+        .ConfigureRunner(rb => rb
+            .AddPostgres()
+            .WithGlobalConnectionString(connectionBuilder.ConnectionString)
+            .ScanIn(typeof(CreateCoreMockDatabase).Assembly)
+            .For.Migrations())
+        .Configure<RunnerOptions>(options =>
+        {
+            // Only run migrations tagged for the CoreMock database.
+            options.Tags = new[] { "CoreMock" };
+            // Exclude migrations without tags to prevent unintended execution.
+            options.IncludeUntaggedMigrations = false;
+        })
+        .AddLogging(lb => lb.AddFluentMigratorConsole())
+        .BuildServiceProvider();
+
+    using var scope = serviceProvider.CreateScope();
+
+    var runner = scope.ServiceProvider
+        .GetRequiredService<IMigrationRunner>();
+
+    if (runner.HasMigrationsToApplyUp())
+    {
+        runner.ListMigrations();
+        runner.MigrateUp();
+    }
+}
+
+// Run remaining Foodplanner migrations after data migration
+using (var scope = app.Services.CreateScope())
+{
+    var runner = scope.ServiceProvider
+        .GetRequiredService<IMigrationRunner>();
+
+    runner.MigrateUp();
+}
 
 // Generates swagger page if the application is in development mode
 if (app.Environment.IsDevelopment())

@@ -120,13 +120,20 @@ public class ChildrenService : IChildrenService
             throw new InvalidOperationException("Brugerens rolle er ikke godkendt");
         }
 
-        return await _childrenRepository.AddParentToChildAsync(userId, childId);
+        return await _childrenRepository.AddUserToChildAsync(userId, childId);
     }
 
     // Remove parents from child 
     public async Task<int> RemoveParentFromChildAsync(int userId, int childId)
     {
-        return await _childrenRepository.RemoveParentFromChildAsync(userId, childId);
+        var user = await _userRepository.GetByIdAsync(userId); 
+
+        // Throws an exception if the user does not have the parent role
+        if (!user.Role.HasFlag(UserRole.Parent))
+        {
+            throw new InvalidOperationException("Brugeren har ikke rollen 'Parent'");
+        }
+        return await _childrenRepository.RemoveUserFromChildAsync(userId, childId);
     }
 
     // Adds Teacher to Child
@@ -149,13 +156,21 @@ public class ChildrenService : IChildrenService
             throw new InvalidOperationException("Brugerens rolle er ikke godkendt");
         }
 
-        return await _childrenRepository.AddTeacherToChildAsync(userId, childId);
+        return await _childrenRepository.AddUserToChildAsync(userId, childId);
     }
 
     // Removes Teacher from Child 
     public async Task<int> RemoveTeacherFromChildAsync(int userId, int childId)
     {
-        return await _childrenRepository.RemoveTeacherFromChildAsync(userId, childId);
+        var user = await _userRepository.GetByIdAsync(userId); 
+        
+        // Throws an exception if the user does not have the parent role
+        if (!user.Role.HasFlag(UserRole.Teacher))
+        {
+            throw new InvalidOperationException("Brugeren har ikke rollen 'Teacher'");
+        }
+
+        return await _childrenRepository.RemoveUserFromChildAsync(userId, childId);
     }
 
     // Retrieves teachers associated with child's ID

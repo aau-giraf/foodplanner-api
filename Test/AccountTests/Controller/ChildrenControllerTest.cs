@@ -1,10 +1,8 @@
-using AutoMapper;
 using FoodplannerApi.Controller;
 using FoodplannerModels.Account;
 using FoodplannerModels.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Test.Builder;
 
 namespace Test.Controller;
 
@@ -12,14 +10,14 @@ public class ChildrenControllerTest
 {
     private readonly Mock<IChildrenService> _mockChildrenService;
     private readonly Mock<IAuthService> _mockAuthService;
-    private readonly ChildrensController _childrenController;
+    private readonly ChildrenController _childrenController;
 
     public ChildrenControllerTest()
     {
         _mockChildrenService = new Mock<IChildrenService>();
         _mockAuthService = new Mock<IAuthService>();
 
-        _childrenController = new ChildrensController(
+        _childrenController = new ChildrenController(
             _mockChildrenService.Object,
             _mockAuthService.Object
         );
@@ -38,7 +36,7 @@ public class ChildrenControllerTest
             .ReturnsAsync(children);
 
         // Act
-        var result = await _childrenController.GetAllChildrenClassesAsync();
+        var result = await _childrenController.GetAllChildrenClasses();
 
         // Assert
         Assert.IsType<OkObjectResult>(result);
@@ -58,7 +56,7 @@ public class ChildrenControllerTest
             .ReturnsAsync(childrenDto);
 
         // Act
-        var result = await _childrenController.GetAll();
+        var result = await _childrenController.GetAllChildren();
 
         // Assert
         Assert.IsType<OkObjectResult>(result);

@@ -1,15 +1,11 @@
-namespace FoodplannerModels.FeedbackChat
-{
-    public interface IChatService
-    {
-        // Methods for ChatThread
-        Task<bool> AddMessageAsync(AddMessageDTO message, int userId);
-        Task<int> GetChatThreadIdByChildIdAsync(int chatThreadId);
-        Task<int> GetChatThreadIdByUserIdAsync(int UserId);
+namespace FoodplannerModels.FeedbackChat;
 
-        // Methods for Message
-        Task<IEnumerable<UserNameFeedbackChatDTO>> GetMessagesAsync(int chatThreadId);
-        Task<bool> UpdateMessageAsync(UpdateMessageDTO message);
-        Task<bool> ArchiveMessageAsync(int messageId);
-    }
+public interface IChatService
+{
+    Task<bool> AddMessageAsync(AddMessageDTO addMessageDTO, int userId);
+    Task<IEnumerable<MessageDTO>> GetMessagesAsync(int chatThreadId);
+    Task<bool> EditMessageAsync(EditMessageDTO message);
+    Task<bool> ArchiveMessageAsync(int messageId);
+    Task<int> GetThreadIdByChildIdAsync(int ChildId);
+    Task<IEnumerable<int>> GetThreadIdsByParentIdAsync(int UserId);
 }

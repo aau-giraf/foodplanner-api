@@ -1,5 +1,6 @@
 using FoodplannerModels.Account;
 using FoodplannerModels.Lunchbox;
+using FoodplannerServices.Lunchbox;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using FoodplannerModels.Auth;
@@ -7,15 +8,15 @@ using FoodplannerModels.Auth;
 // Adds the IngredientsController to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
 
-public class IngredientsController(IIngredientService ingredientService, IAuthService authService) : BaseController
+public class IngredientsController(IIngredientsService ingredientService, IAuthService authService) : BaseController
 {
 
-    // URL: api/Ingredients/GetAll
+    // URL: api/Ingredients/GetAllIngredients
     // Retrieves all ingredients. Returns 200 OK with the list of ingredients.
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
     [ProducesResponseType(typeof(IEnumerable<IngredientDTO>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAllIngredients()
     {
         var ingredients = await ingredientService.GetAllIngredientsAsync();
         return Ok(ingredients);
@@ -81,7 +82,7 @@ public class IngredientsController(IIngredientService ingredientService, IAuthSe
         }
 
         // Calls the service to create a new ingredient associated with the user ID
-        var result = await ingredientService.CreateIngredientAsync(ingredient, id);
+        var result = await ingredientService.CreateIngredientAsync(ingredient);
         if (result > 0)
         {
             var createdIngredient = await ingredientService.GetIngredientByIdAsync(result);
@@ -90,18 +91,18 @@ public class IngredientsController(IIngredientService ingredientService, IAuthSe
         return BadRequest();
     }
 
-    // URL: api/Ingredients/Update/{id}
+    // URL: api/Ingredients/Update
     // Updates an existing ingredient by its ID using provided IngredientDTO.
-    [HttpPut("{id}")]
+    [HttpPut]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(IngredientDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Update([FromBody] IngredientDTO ingredientDto, int id)
+    public async Task<IActionResult> Update([FromBody] IngredientDTO ingredientDTO)
     {
-        var result = await ingredientService.UpdateIngredientAsync(ingredientDto, id);
+        var result = await ingredientService.UpdateIngredientAsync(ingredientDTO);
         if (result > 0)
         {
-            var changedIngredient = await ingredientService.GetIngredientByIdAsync(id);
+            var changedIngredient = await ingredientService.GetIngredientByIdAsync(ingredientDTO.Id);
             return Ok(changedIngredient);
         }
         return BadRequest();

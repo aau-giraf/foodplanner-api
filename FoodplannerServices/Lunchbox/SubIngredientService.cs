@@ -1,47 +1,74 @@
 using FoodplannerModels.Lunchbox;
+using FoodplannerDataAccessSql.Lunchbox;
 
+// Adds the SubIngredientService class to the FoodplannerServices.Lunchbox namespace
 namespace FoodplannerServices.Lunchbox;
 
-/// <summary>
-/// Service implementation for SubIngredient business logic
-/// </summary>
-public class SubIngredientService : ISubIngredientService
+// Service implementation for SubIngredient business logic
+public class SubIngredientService(ISubIngredientRepository subIngredientRepository)
 {
-    private readonly ISubIngredientRepository _subIngredientRepository;
-
-    public SubIngredientService(ISubIngredientRepository subIngredientRepository)
+    // Retrieves all sub-ingredients
+    public async Task<IEnumerable<SubIngredientDTO>> GetAllSubIngredientsAsync()
     {
-        _subIngredientRepository = subIngredientRepository;
+        try
+        {
+            return await subIngredientRepository.GetAllAsync();
+        }
+        catch (Exception exception)
+        {
+            throw new Exception($"Error retrieving all sub-ingredients: {exception.Message}", exception);
+        }
+    }
+    
+    // Get all sub-ingredients based on a parent ingredient Id
+    public async Task<IEnumerable<SubIngredientDTO>> GetAllSubIngredientsByParentIdAsync(int id)
+    {
+        try 
+        {
+            return await subIngredientRepository.GetAllByParentIdAsync(id);
+        }
+        catch (Exception exception)
+        {
+            throw new Exception($"Error retrieving sub-ingredients for parent ingredient ID {id}: {exception.Message}", exception);
+        }
     }
 
-    public async Task<IEnumerable<SubIngredient>> GetAllSubIngredientsAsync()
+    // Creates a new sub-ingredient
+    public async Task<int> CreateSubIngredientAsync(SubIngredientDTO subIngredient)
     {
-        return await _subIngredientRepository.GetAllAsync();
+        try
+        {
+            return await subIngredientRepository.InsertAsync(subIngredient);
+        }
+        catch (Exception exception)
+        {
+            throw new Exception($"Error creating sub-ingredient: {exception.Message}", exception);
+        }
     }
 
-    public async Task<IEnumerable<SubIngredient>> GetAllSubIngredientsByUserAsync(int userId)
+    // Updates an existing sub-ingredient
+    public async Task<int> UpdateSubIngredientAsync(SubIngredientDTO oldSubIngredient, SubIngredientDTO newSubIngredient)
     {
-        var subingredients = await _subIngredientRepository.GetAllByUserAsync(userId);
-        return subingredients.ToList();
+        try
+        {
+            return await subIngredientRepository.UpdateAsync(oldSubIngredient, newSubIngredient);
+        }
+        catch (Exception exception)
+        {
+            throw new Exception($"Error updating sub-ingredient: {exception.Message}", exception);
+        }
     }
 
-    public async Task<SubIngredient?> GetSubIngredientByIdAsync(int id)
+    // Deletes a sub-ingredient
+    public async Task<int> DeleteSubIngredientAsync(SubIngredientDTO subIngredient)
     {
-        return await _subIngredientRepository.GetByIdAsync(id);
-    }
-
-    public async Task<int> CreateSubIngredientAsync(SubIngredientDTO subingredient, int userId)
-    {
-        return await _subIngredientRepository.InsertAsync(subingredient, userId);
-    }
-
-    public async Task<int> UpdateSubIngredientAsync(SubIngredient subingredient, int id)
-    {
-        return await _subIngredientRepository.UpdateAsync(subingredient, id);
-    }
-
-    public async Task<int> DeleteSubIngredientAsync(int id)
-    {
-        return await _subIngredientRepository.DeleteAsync(id);
+        try
+        {
+            return await subIngredientRepository.DeleteAsync(subIngredient);
+        }
+        catch (Exception exception)
+        {
+            throw new Exception($"Error deleting sub-ingredient: {exception.Message}", exception);
+        }
     }
 }
