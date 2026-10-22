@@ -786,4 +786,5 @@ public class UserServiceTests
         // Act & Assert: missing parent should cause an InvalidOperationException
         await Assert.ThrowsAsync<InvalidOperationException>(() => _userService.CreateChildrenUserAsync(newUser, invalidParentId));
     }
+
 }

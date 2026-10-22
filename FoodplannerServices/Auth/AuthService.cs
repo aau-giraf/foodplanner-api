@@ -45,6 +45,13 @@ namespace FoodplannerServices.Auth
             // Converts secret to bytes
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secretsLoader.GetSecret("JWT_SECRET")));
 
+            // Check the length of the JWT_SECRET
+            if (key.KeySize < 256)
+            {
+                Console.WriteLine($"JWT_SECRET must be at least 256 bits long. Current size: {key.KeySize}");
+                throw new InvalidOperationException($"JWT_SECRET must be at least 256 bits long. Current size: {key.KeySize}");
+            }
+
             // Combines HmacSha256 and key to a signing credential
             // HmacSha256 = cryptographic algorithm 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -59,16 +66,7 @@ namespace FoodplannerServices.Auth
                 signingCredentials: creds
             );
 
-            // Check the length of the JWT_SECRET
-            try
-            {
-                return new JwtSecurityTokenHandler().WriteToken(token);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-                throw;
-            }
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         // Retrieves ID from JWT with the "Bearer " prefix
