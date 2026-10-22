@@ -2,7 +2,6 @@ using FoodplannerModels.Lunchbox;
 using FoodplannerServices.Lunchbox;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Polly;
 
 // Adds the PackedIngredientController to the FoodPlannerApi.Controller namespace
 namespace FoodplannerApi.Controller;

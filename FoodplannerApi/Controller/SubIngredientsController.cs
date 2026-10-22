@@ -11,7 +11,7 @@ namespace FoodplannerApi.Controller;
 public class SubIngredientsController(SubIngredientService subIngredientService, IAuthService authService) : BaseController
 {
 
-    // URL: api/SubIngredients/GetAll
+    // URL: api/SubIngredients/GetAllSubIngredients
     // Retrieves all subingredients
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
