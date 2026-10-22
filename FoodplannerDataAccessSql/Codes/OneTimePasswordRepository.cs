@@ -1,31 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FoodplannerModels.Codes;
 using Dapper;
-using FoodplannerModels.Account;
-using FoodplannerModels.Codes;
-using static System.Net.WebRequestMethods;
 
 namespace FoodplannerDataAccessSql.Codes
 {
     // Handles database interaction related to one time passwords 
-    public class OneTimePasswordRepository : IOneTimePasswordRepository
+    public class OneTimePasswordRepository(CorePostgreSQLConnectionFactory connectionFactory) : IOneTimePasswordRepository
     {
-        private readonly PostgreSQLConnectionFactory _connectionFactory;
-
-        // Constructor
-        public OneTimePasswordRepository(PostgreSQLConnectionFactory connectionFactory)
-        {
-            _connectionFactory = connectionFactory;
-        }
-
         // Returns a bool depending if code exist in the database 
         public async Task<bool> CheckIfCodeExistsAsync(string code)
         {
             const string sql = "SELECT code_id FROM one_time_password WHERE code = @Code";
-            using (var connection = _connectionFactory.Create())
+            using (var connection = connectionFactory.Create())
             {
                 connection.Open();
                 var result = await connection.QuerySingleOrDefaultAsync<int?>(sql, new { Code = code });
@@ -40,8 +25,8 @@ namespace FoodplannerDataAccessSql.Codes
         // Retrieve all one time passwords from database 
         public async Task<IEnumerable<string>> GetListOfCodes()
         {
-            var sql = @"SELECT code FROM one_time_password";
-            using (var connection = _connectionFactory.Create())
+            var sql = "SELECT code FROM one_time_password";
+            using (var connection = connectionFactory.Create())
             {
                 connection.Open();
                 var result = await connection.QueryAsync<string>(sql);
@@ -53,7 +38,7 @@ namespace FoodplannerDataAccessSql.Codes
         public async Task<bool> CheckIfCodeExpiredAsync(string code)
         {
             const string sql = "SELECT expires_on FROM one_time_password WHERE code = @Code";
-            using (var connection = _connectionFactory.Create())
+            using (var connection = connectionFactory.Create())
             {
                 connection.Open();
                 var result = await connection.QuerySingleOrDefaultAsync<DateTime?>(sql, new { Code = code });
@@ -61,7 +46,6 @@ namespace FoodplannerDataAccessSql.Codes
                 // We assume if none found it is an expired code
                 if (result == null)
                     return true;
-
                 return result <= DateTime.UtcNow;
             }
        
@@ -71,13 +55,10 @@ namespace FoodplannerDataAccessSql.Codes
         public async Task<int> DeleteAsync(string code)
         {
             const string sql = "DELETE FROM one_time_password WHERE code = @Code";
-
-            using (var connection = _connectionFactory.Create())
+            using (var connection = connectionFactory.Create())
             {
-                 connection.Open();
-
+                connection.Open();
                 var rowsAffected = await connection.ExecuteAsync(sql, new { Code = code });
-
                 return rowsAffected;
             }
         }
@@ -86,12 +67,10 @@ namespace FoodplannerDataAccessSql.Codes
         public async Task<OneTimePasswordDTO> GetFromCodeAsync(string code)
         {
             const string sql = "SELECT code_id, generated_by, used, used_by_user, child_user FROM one_time_password WHERE code = @Code";
-
-            using (var connection = _connectionFactory.Create())
+            using (var connection = connectionFactory.Create())
             {
                 connection.Open();
                 var result = await connection.QuerySingleOrDefaultAsync<OneTimePasswordDTO>(sql, new { Code = code });
-
                 if(result != null)
                 {
                     return result;
@@ -108,8 +87,7 @@ namespace FoodplannerDataAccessSql.Codes
         public async Task<int> InsertAsync(OneTimePassword createOTP)
         {
             var sql = "INSERT INTO one_time_password (generated_by, code, created_on, expires_on, used, used_by_user, child_user) VALUES (@GeneratedBy, @Code, @CreatedOn, @ExpiresOn, @Used, @UsedByUser, @ChildUser) RETURNING code_id";
-
-            using (var connection = _connectionFactory.Create())
+            using (var connection = connectionFactory.Create())
             {
                 connection.Open();
                 var result = await connection.QuerySingleAsync<int>(sql, new
@@ -139,8 +117,7 @@ namespace FoodplannerDataAccessSql.Codes
                         child_user = @ChildUser
                     WHERE code_id = @CodeId;
                     ";
-
-            using (var connection = _connectionFactory.Create())
+            using (var connection = connectionFactory.Create())
             {
                 connection.Open();
                 var result = await connection.ExecuteAsync(sql, new

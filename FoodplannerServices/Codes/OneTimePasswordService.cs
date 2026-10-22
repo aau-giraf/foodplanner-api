@@ -1,27 +1,10 @@
-﻿using System.Collections.Concurrent;
-using FoodplannerModels.Account;
+﻿using FoodplannerModels.Account;
 using FoodplannerModels.Codes;
-using FoodplannerServices.Codes;
 
-// Adds the OneTimePasswordService to the FoodplannerService.Codes namespace 
 namespace FoodplannerServices.Codes;
 
-public class OneTimePasswordService : IOneTimePasswordService
+public class OneTimePasswordService(IOneTimePasswordRepository oneTimePasswordRepository, IChildrenRepository childrenRepository) : IOneTimePasswordService
 {
-    // Read only fields
-    private readonly IOneTimePasswordRepository _oneTimePasswordRepository;
-    private readonly IChildrenRepository _childrenRepository;
-    private readonly Random _random = new();
-
-    // Constructor
-    public OneTimePasswordService(
-        IOneTimePasswordRepository oneTimePasswordRepository,
-        IChildrenRepository childrenRepository)
-    {
-        _oneTimePasswordRepository = oneTimePasswordRepository;
-        _childrenRepository = childrenRepository;
-    }
-
     // Creates a one time password (otp)
     // The opt expires after 24 hours
     public async Task<int> CreateOneTimePassword(int userID, int? childUser)
@@ -36,10 +19,9 @@ public class OneTimePasswordService : IOneTimePasswordService
             ChildUser = childUser,
             Code = await GenerateUniqueSixDigitCodeAsync()
         };
-        var status = await _oneTimePasswordRepository.InsertAsync(otp);
+        var status = await oneTimePasswordRepository.InsertAsync(otp);
         if (status == 0)
             throw new Exception("One Time Password failed creation");
-
         return int.Parse(otp.Code);
     }
 
@@ -47,26 +29,26 @@ public class OneTimePasswordService : IOneTimePasswordService
     public async Task<int> RedeemOneTimePassword(string code, int usedByUser)
     {
         // Checks if otp has expired
-        if (await _oneTimePasswordRepository.CheckIfCodeExpiredAsync(code))
+        if (await oneTimePasswordRepository.CheckIfCodeExpiredAsync(code))
             return 0;
 
         // Retrieves otp from repository
-        var otp = await _oneTimePasswordRepository.GetFromCodeAsync(code);
+        var otp = await oneTimePasswordRepository.GetFromCodeAsync(code);
         if (otp == null)
             return 0;
 
         // Links the otp to the user
         otp.UsedByUser = usedByUser;
-        await _oneTimePasswordRepository.UpdateAsync(otp);
+        await oneTimePasswordRepository.UpdateAsync(otp);
 
         // Child is being added to parent
         if (otp.ChildUser == null)
         {
             // Deletes the otp from the repository
-            await _oneTimePasswordRepository.DeleteAsync(code);
+            await oneTimePasswordRepository.DeleteAsync(code);
 
             // Adds a relation between child and parent
-            return await _childrenRepository.AddUserToChildAsync(
+            return await childrenRepository.AddUserToChildAsync(
                 otp.GeneratedBy,
                 otp.UsedByUser.Value
             );
@@ -75,10 +57,10 @@ public class OneTimePasswordService : IOneTimePasswordService
         else
         {   
             // Deletes the otp from the repository
-            await _oneTimePasswordRepository.DeleteAsync(code);
+            await oneTimePasswordRepository.DeleteAsync(code);
 
             // Adds a relation between parent and child
-            return await _childrenRepository.AddUserToChildAsync(
+            return await childrenRepository.AddUserToChildAsync(
                 otp.UsedByUser.Value,
                 otp.ChildUser.Value
             );
@@ -88,9 +70,8 @@ public class OneTimePasswordService : IOneTimePasswordService
     // Generates a unique 6 digit otp
     public async Task<string> GenerateUniqueSixDigitCodeAsync()
     {
-        int code = _random.Next(100000, 1000000);
-
-        var codes = await _oneTimePasswordRepository.GetListOfCodes();
+        int code = Random.Shared.Next(100000, 1000000);
+        var codes = await oneTimePasswordRepository.GetListOfCodes();
 
         //Iterate code with linear probing until no collision (if it happens at all)
         while (codes.Contains(code.ToString()))
@@ -99,7 +80,6 @@ public class OneTimePasswordService : IOneTimePasswordService
             if (code > 999999)
                 code = 100000;
         }
-
         return code.ToString();
     }
 }
