@@ -128,9 +128,9 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
         return Ok("Images deleted successfully");
     }
 
-    // URL: api/Images/GetFoodImage
+    // URL: api/Images/GetFoodImage/{id}
     // Retrieves food image from id. Returns 200 OK with the food image data if found, or 400 Bad Request if the foodImageId is invalid, or 404 Not Found if the food image does not exist.
-    [HttpGet]
+    [HttpGet("{id}")]
     [AuthorizeImageOwnerFilter]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(FoodImageDTO), StatusCodes.Status200OK)]
@@ -145,9 +145,9 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
         return Ok(image);
     }
 
-    // URL: api/Images/GetPresignedImageLink
+    // URL: api/Images/GetPresignedImageLink/{id}
     // Retrieves presigned image link for a given foodImageId. Returns 200 OK with the presigned link if successful.
-    [HttpGet]
+    [HttpGet("{id}")]
     [Authorize(Roles = "Parent, Child, Teacher, Admin")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPresignedImageLink(int foodImageId)
