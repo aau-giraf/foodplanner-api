@@ -53,10 +53,9 @@ public class OneTimePasswordController(IOneTimePasswordService passwordService, 
         }
     }
 
-    // URL: api/OneTimePassword/Redeem
+    // URL: api/OneTimePassword/Redeem/{code}
     // Redeems a one-time password for the authenticated user
-    // Should maybe change to /api/OneTimePassword/Redeem/{code}
-    [HttpPost]
+    [HttpPost("{code}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Redeem([FromHeader(Name = "Authorization")] string token, string code)
