@@ -59,7 +59,16 @@ namespace FoodplannerServices.Auth
                 signingCredentials: creds
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            // Check the length of the JWT_SECRET
+            try
+            {
+                return new JwtSecurityTokenHandler().WriteToken(token);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                throw;
+            }
         }
 
         // Retrieves ID from JWT with the "Bearer " prefix

@@ -1,4 +1,5 @@
 using Infisical.Sdk;
+using Infisical.Sdk.Model;
 using Microsoft.Extensions.Configuration;
 
 namespace FoodplannerServices.Secret;
@@ -6,6 +7,10 @@ namespace FoodplannerServices.Secret;
 public class SecretsLoader : ISecretLoader
 {
     private readonly IConfiguration _localConfiguration;
+    private readonly string _clientId;
+    private readonly string _clientSecret;
+    private bool _authenticated;
+
     private record Configuration(string environmentSlug, string workspaceId, InfisicalClient Client);
     private readonly Configuration _configuration;
 
@@ -15,29 +20,25 @@ public class SecretsLoader : ISecretLoader
     public SecretsLoader(IConfiguration config, string environment)
     {
         _localConfiguration = config;
+
         var clientId = config.GetValue<string>("Infisical:ClientId") ?? Environment.GetEnvironmentVariable("CLIENT_ID");
         var clientSecret = config.GetValue<string>("Infisical:ClientSecret") ?? Environment.GetEnvironmentVariable("CLIENT_SECRET");
         var workspaceId = config.GetValue<string>("Infisical:Workspace") ?? Environment.GetEnvironmentVariable("WORKSPACE");
+
         if (string.IsNullOrWhiteSpace(clientId) || 
             string.IsNullOrWhiteSpace(clientSecret) || 
             string.IsNullOrWhiteSpace(workspaceId))
         {
             throw new ApplicationException("Missing environment variables");
         }
-        
-        var settings = new ClientSettings
-        {
-            Auth = new AuthenticationOptions
-            {
-                UniversalAuth = new UniversalAuthMethod
-                {
-                    ClientId = clientId,
-                    ClientSecret = clientSecret,
-                }
-            }
-        };
-        
-        _configuration = new Configuration(MapEnvironmentToSlug(environment), workspaceId, new InfisicalClient(settings));
+
+        _clientId = clientId;
+        _clientSecret = clientSecret;
+
+        var settings = new InfisicalSdkSettingsBuilder().Build();
+        var client = new InfisicalClient(settings);
+
+        _configuration = new Configuration(MapEnvironmentToSlug(environment), workspaceId, client);
     }
 
     // Gets a secret from Infisical. If an overwrite value is found in the local configuration, it will be returned instead.
@@ -49,20 +50,37 @@ public class SecretsLoader : ISecretLoader
         }
 
         var overwriteValue = _localConfiguration.GetValue<string>($"Infisical:{secretName}");
+
         if (overwriteValue != null)
         {
             return overwriteValue;
         }
-        
+
+        if (!_authenticated)
+        {
+            _configuration.Client
+                .Auth()
+                .UniversalAuth()
+                .LoginAsync(_clientId, _clientSecret)
+                .GetAwaiter()
+                .GetResult();
+
+            _authenticated = true;
+        }
+
         var getSecretOptions = new GetSecretOptions
         {
-            Path = path,
+            SecretPath = path,
             SecretName = secretName,
             ProjectId = _configuration.workspaceId,
-            Environment = _configuration.environmentSlug,
+            EnvironmentSlug = _configuration.environmentSlug,
         };
-        
-        return _configuration.Client.GetSecret(getSecretOptions).SecretValue;
+
+        return _configuration.Client.Secrets()
+            .GetAsync(getSecretOptions)
+            .GetAwaiter()
+            .GetResult()
+            .SecretValue;
     }
 
     // Maps the environment name to a slug used in Infisical.

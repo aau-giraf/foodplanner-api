@@ -368,7 +368,7 @@ public class UserServiceTests
             .Setup(repo => repo.GetPinCodeByIdAsync(inputUser.Id))
             .ReturnsAsync(encryptedPin);
         _mockPasswordHandler
-            .Setup(handler => handler.VerifyPassword(encryptedPin, pin))
+            .Setup(handler => handler.VerifyPassword(pin, encryptedPin))
             .Returns(true);
         _mockUserRepository
             .Setup(repo => repo.GetByIdAsync(inputUser.Id))
@@ -485,10 +485,21 @@ public class UserServiceTests
     {
         // Arrange
         var id = 1;
+        var archived = true;
+        var user = new User
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "JohnDoe.Sexy@google.com",
+            Role = UserRole.Parent,
+            RoleApproved = true,
+            Password = "123"
+        };
 
         _mockUserRepository
-            .Setup(repo => repo.UpdateArchivedAsync(id))
+            .Setup(repo => repo.UpdateArchivedAsync(id, archived))
             .ReturnsAsync(true);
+        _mockUserRepository.Setup(repo => repo.GetByIdAsync(id)).ReturnsAsync(user);
 
         // Act
         var result = await _userService.UserUpdateArchivedAsync(id);
@@ -704,7 +715,7 @@ public class UserServiceTests
             .Setup(repo => repo.InsertAsync(It.IsAny<Children>()))
             .ReturnsAsync(expectedId);
         _mockChildrenRepository
-            .Setup(repo => repo.AddParentToChildAsync(It.IsAny<int>(), It.IsAny<int>()))
+            .Setup(repo => repo.AddUserToChildAsync(It.IsAny<int>(), It.IsAny<int>()))
             .ReturnsAsync(1);
         // The service now requires a parentId; mock the parent lookup
         _mockUserRepository
@@ -723,7 +734,7 @@ public class UserServiceTests
                 c.LastName == mappedUser.LastName
             )), Times.Once);
 
-        _mockChildrenRepository.Verify(repo => repo.AddParentToChildAsync(parentId, expectedId), Times.Once);
+        _mockChildrenRepository.Verify(repo => repo.AddUserToChildAsync(parentId, expectedId), Times.Once);
     }
 
 

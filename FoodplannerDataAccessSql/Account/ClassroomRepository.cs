@@ -1,8 +1,7 @@
 
 using Dapper;
 using FoodplannerModels.Account;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Npgsql;
+
 
 namespace FoodplannerDataAccessSql.Account
 {
@@ -12,10 +11,9 @@ namespace FoodplannerDataAccessSql.Account
     {
 
         
-        private readonly PostgreSQLConnectionFactory _connectionFactory;
+        private readonly CorePostgreSQLConnectionFactory _connectionFactory;
 
-        // Constructor 
-        public ClassroomRepository(PostgreSQLConnectionFactory connectionFactory)
+        public ClassroomRepository(CorePostgreSQLConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }

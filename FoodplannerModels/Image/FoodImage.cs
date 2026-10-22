@@ -4,7 +4,7 @@
 public class FoodImage
 {
     public int Id;
-    public required string ImageId { get; set; }
+    public required byte[] ImageData { get; set; }
     public int UserId { get; set; }
     public required string ImageName { get; set; }
     public required string ImageFileType { get; set; }

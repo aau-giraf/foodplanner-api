@@ -4,19 +4,18 @@ The Foodplanner API is a backend service for the GIRAF Foodplanner application, 
 
 ## Features
 
--   **User Management**: Role-based access control for teachers and parents.
--   **Meal Planning**: Endpoints for creating, updating, and managing meal plans.
--   **Database Integration**: Utilizes PostgreSQL for reliable data storage.
--   **Database Migration**: Utilizes FlutentMigrator for scalable data storage.
--   **RESTful API**: Follows REST principles for easy integration and development.
+- **User Management**: Role-based access control for teachers and parents.
+- **Meal Planning**: Endpoints for creating, updating, and managing meal plans.
+- **Database Integration**: Utilizes PostgreSQL for reliable data storage.
+- **Database Migration**: Utilizes FlutentMigrator for scalable data storage.
+- **RESTful API**: Follows REST principles for easy integration and development.
 
 ## Technologies Used
 
--   **Framework**: ASP.NET Core
--   **Database**: PostgreSQL
--   **Image Database**: Minio
--   **Authentication**: JWT (JSON Web Token)
--   **Containerization**: Docker (optional)
+- **Framework**: ASP.NET Core
+- **Database**: PostgreSQL
+- **Authentication**: JWT (JSON Web Token)
+- **Containerization**: Docker (optional)
 
 ## Project Structure
 
@@ -58,13 +57,11 @@ New migrations are added by including a new file in the [Migrations folder](http
 
 Ensure you have the following installed:
 
--   [ASP.NET Core SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
--   [Docker](https://www.docker.com) (optional, for containerized deployment)
+- [ASP.NET Core SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
+- [Docker](https://www.docker.com) (optional, for containerized deployment)
 
-An active [Infisical](https://infisical.com/) project must exist for managing secrets, either use the existing project, create a new one or overwrite all secrets. 
+An active [Infisical](https://infisical.com/) project must exist for managing secrets, either use the existing project, create a new one or overwrite all secrets.
 Refer to [Installation 4. Setup development environment](#Installation) on how to overwrite secrets locally.
-
-
 
 ### Installation
 
@@ -92,17 +89,17 @@ Make sure to have a JSON file called `appsettings.Development.json` in the same 
 
 ```json
 {
-	"Logging": {
-		"LogLevel": {
-			"Default": "Information",
-			"Microsoft.AspNetCore": "Warning"
-		}
-	},
-	"Infisical": {
-		"ClientId": "<ClientId>",
-		"ClientSecret": "<ClientSecret>",
-		"Workspace": "<Workspace>"
-	}
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "Infisical": {
+    "ClientId": "<ClientId>",
+    "ClientSecret": "<ClientSecret>",
+    "Workspace": "<Workspace>"
+  }
 }
 ```
 
@@ -128,142 +125,141 @@ TODO: vi skal lige have skrevet den her færdig når vi ved hvad der skal gøres
 
 ### Server Setup
 
-The server will consist of docker containers such as a staging and production API, PostgreSQL database and a Minio database. It will integrate with Github actions to streamline development and automaticly update Staging and Production API to follow newest releases.
+The server will consist of docker containers such as a staging and production API, PostgreSQL database. It will integrate with Github actions to streamline development and automaticly update Staging and Production API to follow newest releases.
 To set this up correctly please follow these steps.
 
 1. First step is to figure out where to host the server. A great place is AAU's own hosting platform https://strato-new.claaudia.aau.dk here the most important thing is to pick a server running Ubuntu.
 
 > [!IMPORTANT]
-> If Strato is decided then remember to open all the ports that are expected to be used. This can be done in Security Groups under the Network section. These ports could be 5432, 8080, 8081, 9000 and 9001
+> If Strato is decided then remember to open all the ports that are expected to be used. This can be done in Security Groups under the Network section. These ports could be 5432, 8080, and 8081.
 
 2. Install the following on the server:
 
--   [Docker](https://docs.docker.com/engine/install/ubuntu/)
--   [Cron](https://www.digitalocean.com/community/tutorials/how-to-use-cron-to-automate-tasks-ubuntu-1804)
+- [Docker](https://docs.docker.com/engine/install/ubuntu/)
+- [Cron](https://www.digitalocean.com/community/tutorials/how-to-use-cron-to-automate-tasks-ubuntu-1804)
 
 3. Rename the file called `docker-compose-example.yml` to `docker-compose.yml` and update the credentials
 
-    Go ahead and run the docker compose file using the following command:
+   Go ahead and run the docker compose file using the following command:
 
-    ```bash
-    docker compose -f docker-compose.yml up
-    ```
+   ```bash
+   docker compose -f docker-compose.yml up
+   ```
 
-    This will create two containers containing **Minio** for image storage and PostgreSQL for data storage.
-    The Minio server can now be accessed and managed on `http://<server-ip>:9001`
+   This will create an container containing PostgreSQL for data storage.
 
 4. Connect to the newly created PostgreSQL container using your prefered PostgreSQL database tool ex. [pgAdmin](https://www.pgadmin.org/download/).
 
 > [!TIP]
 > **Host name/address**: This is your server-ip<br>
-**Port**: 5432 unless changed in docker-compose.yml<br>
-**Username**: The one you wrote in docker-compose.yml<br>
-**Password**: The one you wrote in docker-compose.yml
+> **Port**: 5432 unless changed in docker-compose.yml<br>
+> **Username**: The one you wrote in docker-compose.yml<br>
+> **Password**: The one you wrote in docker-compose.yml
 
     When connected go ahead and create two new databases called `giraf_foodplanner_db_stage` and `giraf_foodplanner_db_prod` You dont have to create any new tables these will be automaticly generated when the dotnet application runs.
 
 6. Create a new file called `docker-auto-deploy.sh` and open it using the following command.
 
-    ```bash
-      touch docker-auto-deploy.sh
-      nano docker-auto-deploy.sh
-    ```
+   ```bash
+     touch docker-auto-deploy.sh
+     nano docker-auto-deploy.sh
+   ```
 
-    Paste the following code into the file. **Remember to update the variables with your own information.**
+   Paste the following code into the file. **Remember to update the variables with your own information.**
 
-    ```bash
-    # Variables
+   ```bash
+   # Variables
 
-    DOCKER_IMAGE="<docker-hub-name>/foodplanner-api" # Replace with your Docker image name
-    CONTAINER_NAME="foodplanner-api" # Name of your running container
-    LAST_IMAGE_FILE="/var/tmp/last_image_version_stage.txt" # File to store the last pulled image version
-    LAST_IMAGE_FILE_PROD="/var/tmp/last_image_version_prod.txt"
+   DOCKER_IMAGE="<docker-hub-name>/foodplanner-api" # Replace with your Docker image name
+   CONTAINER_NAME="foodplanner-api" # Name of your running container
+   LAST_IMAGE_FILE="/var/tmp/last_image_version_stage.txt" # File to store the last pulled image version
+   LAST_IMAGE_FILE_PROD="/var/tmp/last_image_version_prod.txt"
 
-    CLIENT_ID="<client-id>"
-    CLIENT_SECRET="<client-secret>"
-    WORKSPACE="<workspace>"
+   CLIENT_ID="<client-id>"
+   CLIENT_SECRET="<client-secret>"
+   WORKSPACE="<workspace>"
 
-    # Function to pull and deploy
+   # Function to pull and deploy
 
-    pull_and_deploy() {
-    echo "New image found, pulling and deploying..."
-    sudo docker pull $DOCKER_IMAGE:staging
+   pull_and_deploy() {
+   echo "New image found, pulling and deploying..."
+   sudo docker pull $DOCKER_IMAGE:staging
 
-        # Stop the existing container
-        sudo docker stop $CONTAINER_NAME-stage
-        sudo docker rm $CONTAINER_NAME-stage
+       # Stop the existing container
+       sudo docker stop $CONTAINER_NAME-stage
+       sudo docker rm $CONTAINER_NAME-stage
 
-        # Start a new container with the updated image
-        sudo docker run -d --name $CONTAINER_NAME-stage -p 8080:8080 -e CLIENT_ID=$CLIENT_ID -e CLIENT_SECRET=$CLIENT_SECRET -e WORKSPACE=$WORKSPACE -e ASPNETCORE_ENVIRONMENT=Staging  $DOCKER_IMAGE:staging
+       # Start a new container with the updated image
+       sudo docker run -d --name $CONTAINER_NAME-stage -p 8080:8080 -e CLIENT_ID=$CLIENT_ID -e CLIENT_SECRET=$CLIENT_SECRET -e WORKSPACE=$WORKSPACE -e ASPNETCORE_ENVIRONMENT=Staging  $DOCKER_IMAGE:staging
 
-        # Store the new image digest in the file
-        echo $LATEST_DIGEST > $LAST_IMAGE_FILE
-        echo "Deployment successful."
+       # Store the new image digest in the file
+       echo $LATEST_DIGEST > $LAST_IMAGE_FILE
+       echo "Deployment successful."
 
-    }
+   }
 
-    pull_and_deploy_prod() {
-    echo "New image found, pulling and deploying..."
-    sudo docker pull $DOCKER_IMAGE:prod
+   pull_and_deploy_prod() {
+   echo "New image found, pulling and deploying..."
+   sudo docker pull $DOCKER_IMAGE:prod
 
-        # Stop the existing container
-        sudo docker stop $CONTAINER_NAME-prod
-        sudo docker rm $CONTAINER_NAME-prod
+       # Stop the existing container
+       sudo docker stop $CONTAINER_NAME-prod
+       sudo docker rm $CONTAINER_NAME-prod
 
-        # Start a new container with the updated image
-        sudo docker run -d --name $CONTAINER_NAME-prod -p 8081:8080 -e CLIENT_ID=$CLIENT_ID -e CLIENT_SECRET=$CLIENT_SECRET -e WORKSPACE=$WORKSPACE -e ASPNETCORE_ENVIRONMENT=Production $DOCKER_IMAGE:prod
+       # Start a new container with the updated image
+       sudo docker run -d --name $CONTAINER_NAME-prod -p 8081:8080 -e CLIENT_ID=$CLIENT_ID -e CLIENT_SECRET=$CLIENT_SECRET -e WORKSPACE=$WORKSPACE -e ASPNETCORE_ENVIRONMENT=Production $DOCKER_IMAGE:prod
 
-        # Store the new image digest in the file
-        echo $LATEST_DIGEST_PROD > $LAST_IMAGE_FILE_PROD
-        echo "Deployment successful."
+       # Store the new image digest in the file
+       echo $LATEST_DIGEST_PROD > $LAST_IMAGE_FILE_PROD
+       echo "Deployment successful."
 
-    }
+   }
 
-    # Get the current latest image digest from Docker Hub
+   # Get the current latest image digest from Docker Hub
 
-    LATEST_DIGEST=$(curl -s https://hub.docker.com/v2/repositories/$DOCKER_IMAGE/tags/staging/ | jq -r '.images[0].digest')
-    LATEST_DIGEST_PROD=$(curl -s https://hub.docker.com/v2/repositories/$DOCKER_IMAGE/tags/prod/ | jq -r '.images[0].digest')
+   LATEST_DIGEST=$(curl -s https://hub.docker.com/v2/repositories/$DOCKER_IMAGE/tags/staging/ | jq -r '.images[0].digest')
+   LATEST_DIGEST_PROD=$(curl -s https://hub.docker.com/v2/repositories/$DOCKER_IMAGE/tags/prod/ | jq -r '.images[0].digest')
 
-    # For staging
+   # For staging
 
-    # Check if the last image version file exists
+   # Check if the last image version file exists
 
-    if [ ! -f "$LAST_IMAGE_FILE" ]; then
-    echo "No previous image found, pulling the latest version..."
-    pull_and_deploy
-    else # Read the last pulled image digest
-    LAST_DIGEST=$(cat $LAST_IMAGE_FILE)
+   if [ ! -f "$LAST_IMAGE_FILE" ]; then
+   echo "No previous image found, pulling the latest version..."
+   pull_and_deploy
+   else # Read the last pulled image digest
+   LAST_DIGEST=$(cat $LAST_IMAGE_FILE)
 
-        # Compare the latest digest with the last pulled one
-        if [ "$LATEST_DIGEST" != "$LAST_DIGEST" ]; then
-            pull_and_deploy
-        else
-            echo "No new image found."
-        fi
+       # Compare the latest digest with the last pulled one
+       if [ "$LATEST_DIGEST" != "$LAST_DIGEST" ]; then
+           pull_and_deploy
+       else
+           echo "No new image found."
+       fi
 
-        fi
+       fi
 
-    # For production
+   # For production
 
-    if [ ! -f "$LAST_IMAGE_FILE_PROD" ]; then
-    echo "No previous image found, pulling the latest version..."
-    pull_and_deploy_prod
-    else
+   if [ ! -f "$LAST_IMAGE_FILE_PROD" ]; then
+   echo "No previous image found, pulling the latest version..."
+   pull_and_deploy_prod
+   else
 
-    # Read the last pulled image digest
+   # Read the last pulled image digest
 
-    LAST_DIGEST_PROD=$(cat $LAST_IMAGE_FILE_PROD)
+   LAST_DIGEST_PROD=$(cat $LAST_IMAGE_FILE_PROD)
 
-    # Compare the latest digest with the last pulled one
+   # Compare the latest digest with the last pulled one
 
-    if [ "$LATEST_DIGEST_PROD" != "$LAST_DIGEST_PROD" ]; then
-    pull_and_deploy_prod
-    else
-    echo "No new image found."
-    fi
-    fi
+   if [ "$LATEST_DIGEST_PROD" != "$LAST_DIGEST_PROD" ]; then
+   pull_and_deploy_prod
+   else
+   echo "No new image found."
+   fi
+   fi
 
-    ```
+   ```
 
 7. Last but not least, we need to set up a cron job to run the `docker-auto-deploy.sh` script periodically.
    Open Cron using the following command
@@ -281,81 +277,86 @@ Then add the following line to the end of the file.
 This will run the bash script once every minute and write the output to `docker-deploy.log`
 
 ### Running the API Locally
+
 1. Overwriting environment variables, by adding to the `"Infisical"` group in the `appsettings.Development.json`.
 
-    ```json
-    ...
-    "Infisical": {
-        "ClientId": "<ClientId>",
-        "ClientSecret": "<ClientSecret>",
-        "Workspace": "<Workspace>",
+   ```json
+   ...
+   "Infisical": {
+       "ClientId": "<ClientId>",
+       "ClientSecret": "<ClientSecret>",
+       "Workspace": "<Workspace>",
 
-        "MINIO_ENDPOINT": "localhost:9000",
-        "MINIO_ACCESS": "girafminio",
-        "MINIO_SECRET": "girafminio",
+       "DB_HOST": "localhost",
+       "DB_PORT": "7654",
+       "DB_NAME": "giraf",
+       "DB_USER": "postgres",
+       "DB_PASS": "postgres",
 
-        "DB_HOST": "localhost",
-        "DB_PORT": "7654",
-        "DB_NAME": "giraf",
-        "DB_USER": "postgres",
-        "DB_PASS": "postgres",
+       "CORE_DB_HOST": "localhost",
+       "CORE_DB_PORT": "7655",
+       "CORE_DB_NAME": "giraf_core_mock",
+       "CORE_DB_USER": "postgres",
+       "CORE_DB_PASS": "postgres",
 
-        "JWT_SECRET": "<TopSecret>",
-        "BACKEND_PORT": "8080"
-    }
-    ...
-    ```
+       "JWT_SECRET": "local-development-secret-key-123",
+       "BACKEND_PORT": "8080"
+   }
+   ...
+   ```
 
 2. Have docker installed. Rename the file called `docker-compose-example.yml` to `docker-compose.yml` and update the credentials.
 
 3. Change directory to the folder containing the yml file:
-    ```bash
-    cd PATH TO YOUR FOLDER.
-    ```
+
+   ```bash
+   cd PATH TO YOUR FOLDER.
+   ```
 
 4. Run the docker compose file using the following command:
-    ```bash
-    docker compose -f docker-compose.yml up
-    ```
+   ```bash
+   docker compose -f docker-compose.yml up
+   ```
 
 > [!IMPORTANT]
 > The credentials must match the Infisical setup for development in secrets.
 
 > [!NOTE]
-> ***Minio and Adminer are interfaces to alter Minio bucket and PostgreSQL database. (You can also use pgAdmin or any other tools for the database)*** <br>
-> **Minio**: http://localhost:9001/login<br>
-**Username**: girafminio<br>
-**Password**: girafminio <br> <br>
+> **_Adminer are interfaces to alter PostgreSQL database. (You can also use pgAdmin or any other tools for the database)_** <br>
 > **Adminer**: http://localhost:8000/ <br>
-**Server**: postgres<br>
-**Username**: postgres<br>
-**Password**: postgres<br>
-**Database**: giraf
+> **Server**: postgres<br>
+> **Username**: postgres<br>
+> **Password**: postgres<br>
+> **Database**: giraf
 
 6. Navigate to the project directory:
 
-    ```bash
-    cd foodplanner-api/FoodplannerApi
-    ```
+   ```bash
+   cd foodplanner-api/FoodplannerApi
+   ```
 
 7. Start the API locally:
 
-    ```bash
-    dotnet run
-    ```
+   ```bash
+   dotnet run
+   ```
 
 ## API Documentation
 
 The API is documented using Swagger, available at:
 
--   http://localhost:8080/swagger/index.html
+- http://localhost:8080/swagger/index.html
 
 ## Testing
+
 Navigate to the `Test` directory.
+
 ```bash
 cd foodplanner-api/Test
 ```
+
 Run all tests with:
+
 ```bash
 dotnet test
 ```
@@ -383,3 +384,50 @@ git push origin feature-name
 ```
 
 4. Open a pull request to the staging branch, test it, and then create a new pull request for main.
+
+# Rules for endpoints
+
+All endpoints have the following base format:
+
+"api/[controller]/[action]"
+
+The [controller] and [action] are placeholders to find the correct file and method.
+The [action] can be followed by "/{id}"
+
+- [Controller]: The name of the controller file handling the http requests
+- [action]: The method or operation used
+- /{id}: Specifies the user or entity the method operates on
+
+## Naming convention
+
+The controller and action uses PascalCase as naming convention
+
+## Endpoints regarding operations for a specific entity:
+
+Endpoints for get, update, and delete operations for a specific user or entity must end with "/{id}"
+
+Example:
+"api/Admin/Update/{id}"
+"api/Admin/Delete/{id}"
+"api/Admin/Get/{id}"
+
+## Retrieve all data
+
+Endpoints that retrieves all data must use the action name GetAll
+
+Example:
+"api/Classrooms/GetAll"
+
+For controller with more than one endpoints to retrieve all data, the action name must specify which entity is being retrieved.
+
+Example:
+"api/Admin/GetAllUsers"
+"api/Admin/GetAllChildren"
+
+## Operations with a specific condition
+
+Endpoints that retrieves data for a specific condition must specify the condition in the action name.
+
+Example:
+"api/Admin/GetNotArchived"
+"api/SubIngredientRelation/UpdateOrder"

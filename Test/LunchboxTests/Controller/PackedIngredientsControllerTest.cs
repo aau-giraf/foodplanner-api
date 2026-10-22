@@ -1,218 +1,221 @@
-        using Moq;
-        using FoodplannerModels.Lunchbox;
-        using FoodplannerApi.Controller;
-        using Microsoft.AspNetCore.Mvc;
-        
-        namespace Test.LunchboxTests.Controller;
-        
-        public class PackedPackedIngredientControllerTests
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using FoodplannerApi.Controller;
+using FoodplannerModels.Lunchbox;
+using FoodplannerServices.Lunchbox;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using Xunit;
+
+namespace Test.LunchboxTests.Controller;
+
+public class PackedPackedIngredientControllerTests
+{
+    private readonly Mock<IPackedService> mockPackedService = new();
+    private readonly PackedIngredientController packedIngredientController;
+
+    public PackedPackedIngredientControllerTests()
+    {
+        packedIngredientController = new PackedIngredientController(mockPackedService.Object);
+    }
+
+    [Fact]
+    public async Task GetAll_ReturnsOkObjectResult()
+    {
+        // Arrange
+        var packedIngredients = new List<PackedDTO>
         {
-            [Fact]
-            public async Task GetAll_ReturnsOkObjectResult()
-            {
-                // Arrange
-                var mockPackedIngredientService = new Mock<IPackedIngredientService>();
-        
-                var packedIngredients = new List<PackedIngredientProperDTO>
-                {
-                    new() { Ingredient_id = 1, Meal_id = 1 },
-                    new() { Ingredient_id = 2, Meal_id = 1 }
-                };
-        
-                mockPackedIngredientService
-                    .Setup(repo => repo.GetAllPackedIngredientsAsync())
-                    .ReturnsAsync(packedIngredients);
-        
-                var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
-        
-                // Act
-                var result = await packedIngredientController.GetAll();
-        
-                // Assert
-                Assert.IsType<OkObjectResult>(result);
-            }
-        
-            [Fact]
-            public async Task Get_ReturnsOkObjectResult_WhenPackedIngredientDoesExist()
-            {
-                // Arrange
-                var mockPackedIngredientService = new Mock<IPackedIngredientService>();
-        
-                int packedIngredientId = 1;
-                PackedIngredientDTO packedIngredient = new() { Id = packedIngredientId, Ingredient_id = 1, Meal_id = 1, order_number = 1 };
-        
-                mockPackedIngredientService
-                    .Setup(repo => repo.GetPackedIngredientByIdAsync(packedIngredientId))
-                    .ReturnsAsync(packedIngredient);
-        
-                var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
-        
-                // Act
-                var result = await packedIngredientController.Get(packedIngredientId);
-        
-                // Assert
-                Assert.IsType<OkObjectResult>(result);
-            }
-        
-            [Fact]
-            public async Task Get_ReturnsNotFoundResult_WhenPackedIngredientDoesNotExist()
-            {
-                // Arrange
-                var mockPackedIngredientService = new Mock<IPackedIngredientService>();
-        
-                int packedIngredientId = 1;
-                PackedIngredientDTO packedIngredient = null!;
-        
-                mockPackedIngredientService
-                    .Setup(repo => repo.GetPackedIngredientByIdAsync(packedIngredientId))
-                    .ReturnsAsync(packedIngredient);
-        
-                var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
-        
-                // Act
-                var result = await packedIngredientController.Get(packedIngredientId);
-        
-                // Assert
-                Assert.IsType<NotFoundResult>(result);
-            }
-        
-            [Fact]
-            public async Task Create_ReturnsCreatedAtActionResult_WhenPackedIngredientIsCreated()
-            {
-                // Arrange
-                var mockPackedIngredientService = new Mock<IPackedIngredientService>();
-        
-                int ingredientId = 1;
-                int mealId = 1;
-                PackedIngredientProperDTO packedIngredientProperDto = new() { Ingredient_id = ingredientId, Meal_id = mealId};
-                int packedIngredientId = 1;
-                PackedIngredientDTO packedIngredient = new() { Id = packedIngredientId, Ingredient_id = 1, Meal_id = 1, order_number = 1 };
-        
-                mockPackedIngredientService
-                    .Setup(repo => repo.CreatePackedIngredientAsync(packedIngredientProperDto))
-                    .ReturnsAsync(packedIngredientId);
-                mockPackedIngredientService
-                    .Setup(repo => repo.GetPackedIngredientByIdAsync(packedIngredientId))
-                    .ReturnsAsync(packedIngredient);
-        
-                var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
-        
-                // Act
-                var result = await packedIngredientController.Create(packedIngredientProperDto);
-        
-                // Assert
-                Assert.IsType<CreatedAtActionResult>(result);
-            }
-        
-            [Fact]
-            public async Task Create_ReturnsCreatedAtActionResult_WhenPackedIngredientIsNotCreated()
-            {
-                // Arrange
-                var mockPackedIngredientService = new Mock<IPackedIngredientService>();
-        
-                int ingredientId = 1;
-                int mealId = 1;
-                PackedIngredientProperDTO packedIngredientProperDto = new() { Ingredient_id = ingredientId, Meal_id = mealId};
-        
-                mockPackedIngredientService
-                    .Setup(repo => repo.CreatePackedIngredientAsync(packedIngredientProperDto))
-                    .ReturnsAsync(0);
-        
-                var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
-        
-                // Act
-                var result = await packedIngredientController.Create(packedIngredientProperDto);
-        
-                // Assert
-                Assert.IsType<BadRequestResult>(result);
-            }
-        
-            [Fact]
-            public async Task Update_ReturnsOkObjectResult_WhenPackedIngredientIsUpdated()
-            {
-                // Arrange
-                var mockPackedIngredientService = new Mock<IPackedIngredientService>();
-        
-                int packedIngredientId = 1;
-                PackedIngredientDTO packedIngredient = new() { Id = packedIngredientId, Ingredient_id = 1, Meal_id = 1, order_number = 1 };
-        
-                mockPackedIngredientService
-                    .Setup(repo => repo.UpdatePackedIngredientAsync(packedIngredient, packedIngredientId))
-                    .ReturnsAsync(packedIngredientId);
-                mockPackedIngredientService
-                    .Setup(repo => repo.GetPackedIngredientByIdAsync(packedIngredientId))
-                    .ReturnsAsync(packedIngredient);
-        
-                var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
-        
-                // Act
-                var result = await packedIngredientController.Update(packedIngredient, packedIngredientId);
-        
-                // Assert
-                Assert.IsType<OkObjectResult>(result);
-            }
-        
-            [Fact]
-            public async Task Update_ReturnsOkObjectResult_WhenPackedIngredientIsNotUpdated()
-            {
-                // Arrange
-                var mockPackedIngredientService = new Mock<IPackedIngredientService>();
-        
-                int packedIngredientId = 1;
-                PackedIngredientDTO packedIngredient = new() { Id = packedIngredientId, Ingredient_id = 1, Meal_id = 1, order_number = 1 };
-        
-                mockPackedIngredientService
-                    .Setup(repo => repo.UpdatePackedIngredientAsync(packedIngredient, packedIngredientId))
-                    .ReturnsAsync(0);
-        
-                var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
-        
-                // Act
-                var result = await packedIngredientController.Update(packedIngredient, packedIngredientId);
-        
-                // Assert
-                Assert.IsType<BadRequestResult>(result);
-            }
-        
-            [Fact]
-            public async Task Delete_ReturnsOkObjectResult_WhenPackedIngredientDoesExist()
-            {
-                // Arrange
-                var mockPackedIngredientService = new Mock<IPackedIngredientService>();
-        
-                int packedIngredientId = 1;
-        
-                mockPackedIngredientService
-                    .Setup(repo => repo.DeletePackedIngredientAsync(packedIngredientId))
-                    .ReturnsAsync(1);
-        
-                var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
-        
-                // Act
-                var result = await packedIngredientController.Delete(packedIngredientId);
-        
-                // Assert
-                Assert.IsType<NoContentResult>(result);
-            }
-        
-            [Fact]
-            public async Task Delete_ReturnsNotFoundResult_WhenPackedIngredientDoesNotExist()
-            {
-                // Arrange
-                var mockPackedIngredientService = new Mock<IPackedIngredientService>();
-        
-                int packedIngredientId = 1;
-        
-                mockPackedIngredientService
-                    .Setup(repo => repo.DeletePackedIngredientAsync(packedIngredientId))
-                    .ReturnsAsync(0);
-        
-                var packedIngredientController = new PackedIngredientController(mockPackedIngredientService.Object);
-        
-                // Act
-                var result = await packedIngredientController.Delete(packedIngredientId);
-        
-                // Assert
-                Assert.IsType<NotFoundResult>(result);
-            }
-        }
+            new() { Ingredient_id = 1, Meal_id = 1, order_no = 1 },
+            new() { Ingredient_id = 2, Meal_id = 1, order_no = 2 }
+        };
+
+        mockPackedService.Setup(service => service.GetAllPackedAsync()).ReturnsAsync(packedIngredients);
+
+        // Act
+        var result = await packedIngredientController.GetAll();
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var returnedPacked = Assert.IsAssignableFrom<IEnumerable<PackedDTO>>(okResult.Value).ToList();
+        Assert.Equal(2, returnedPacked.Count);
+        Assert.Equal(1, returnedPacked[0].Ingredient_id);
+        Assert.Equal(2, returnedPacked[1].Ingredient_id);
+        Assert.All(returnedPacked, packed => Assert.Equal(1, packed.Meal_id));
+        mockPackedService.Verify(service => service.GetAllPackedAsync(), Times.Once());
+    }
+
+    [Fact]
+    public async Task Get_ReturnsOkObjectResult_WhenPackedIngredientDoesExist()
+    {
+        // Arrange
+        int mealId = 1;
+        var packedIngredients = new List<PackedDTO>
+        {
+            new() { Ingredient_id = 1, Meal_id = mealId, order_no = 1 },
+            new() { Ingredient_id = 2, Meal_id = mealId, order_no = 2 }
+        };
+
+        mockPackedService.Setup(service => service.GetAllPackedByMealIdAsync(mealId)).ReturnsAsync(packedIngredients);
+
+        // Act
+        var result = await packedIngredientController.Get(mealId);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var returnedPacked = Assert.IsAssignableFrom<IEnumerable<PackedDTO>>(okResult.Value).ToList();
+        Assert.Equal(2, returnedPacked.Count);
+        Assert.Equal(1, returnedPacked[0].Ingredient_id);
+        Assert.Equal(2, returnedPacked[1].Ingredient_id);
+        Assert.All(returnedPacked, packed => Assert.Equal(mealId, packed.Meal_id));
+        mockPackedService.Verify(service => service.GetAllPackedByMealIdAsync(mealId), Times.Once());
+    }
+
+    [Fact]
+    public async Task Get_ReturnsNotFoundResult_WhenPackedIngredientDoesNotExist()
+    {
+        // Arrange
+        int mealId = 999;
+        mockPackedService.Setup(service => service.GetAllPackedByMealIdAsync(mealId))
+            .ReturnsAsync((IEnumerable<PackedDTO>)null!);
+
+        // Act
+        var result = await packedIngredientController.Get(mealId);
+
+        // Assert
+        Assert.IsType<NotFoundResult>(result);
+        mockPackedService.Verify(service => service.GetAllPackedByMealIdAsync(mealId), Times.Once());
+    }
+
+    [Fact]
+    public async Task Create_ReturnsCreatedAtActionResult_WhenPackedIngredientIsCreated()
+    {
+        // Arrange
+        int createdId = 1;
+        var packedIngredient = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 1 };
+        mockPackedService.Setup(service => service.CreatePackedAsync(packedIngredient)).ReturnsAsync(createdId);
+
+        // Act
+        var result = await packedIngredientController.Create(packedIngredient);
+
+        // Assert
+        var createdResult = Assert.IsType<CreatedAtActionResult>(result);
+        Assert.Equal(nameof(PackedIngredientController.Get), createdResult.ActionName);
+        Assert.Equal(createdId, createdResult.RouteValues!["id"]);
+        Assert.Same(packedIngredient, createdResult.Value);
+        mockPackedService.Verify(service => service.CreatePackedAsync(packedIngredient), Times.Once());
+    }
+
+    [Fact]
+    public async Task Create_ReturnsCreatedAtActionResult_WhenPackedIngredientIsNotCreated()
+    {
+        // Arrange
+        var packedIngredient = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 1 };
+        mockPackedService.Setup(service => service.CreatePackedAsync(packedIngredient)).ReturnsAsync(0);
+
+        // Act
+        var result = await packedIngredientController.Create(packedIngredient);
+
+        // Assert
+        Assert.IsType<BadRequestResult>(result);
+        mockPackedService.Verify(service => service.CreatePackedAsync(packedIngredient), Times.Once());
+    }
+
+    [Fact]
+    public async Task Update_ReturnsOkObjectResult_WhenPackedIngredientIsUpdated()
+    {
+        // Arrange
+        var oldPacked = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 0 };
+        var newPacked = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 2 };
+        mockPackedService.Setup(service => service.UpdatePackedAsync(
+            It.Is<PackedDTO>(p =>
+                p.Ingredient_id == oldPacked.Ingredient_id &&
+                p.Meal_id == oldPacked.Meal_id &&
+                p.order_no == oldPacked.order_no),
+            It.Is<PackedDTO>(p =>
+                p.Ingredient_id == newPacked.Ingredient_id &&
+                p.Meal_id == newPacked.Meal_id &&
+                p.order_no == newPacked.order_no)))
+            .ReturnsAsync(1);
+
+        // Act
+        var result = await packedIngredientController.Update(newPacked, 1, 1);
+
+        // Assert
+        Assert.IsType<OkObjectResult>(result);
+        mockPackedService.Verify(service => service.UpdatePackedAsync(
+            It.Is<PackedDTO>(p =>
+                p.Ingredient_id == 1 &&
+                p.Meal_id == 1 &&
+                p.order_no == 0),
+            It.Is<PackedDTO>(p =>
+                p.Ingredient_id == 1 &&
+                p.Meal_id == 1 &&
+                p.order_no == 2)),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Update_ReturnsBadRequest_WhenPackedIngredientIsNotUpdated()
+    {
+        // Arrange
+        var oldPacked = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 0 };
+        var newPacked = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 2 };
+        mockPackedService.Setup(service => service.UpdatePackedAsync(
+            It.Is<PackedDTO>(p =>
+                p.Ingredient_id == oldPacked.Ingredient_id &&
+                p.Meal_id == oldPacked.Meal_id &&
+                p.order_no == oldPacked.order_no),
+            It.Is<PackedDTO>(p =>
+                p.Ingredient_id == newPacked.Ingredient_id &&
+                p.Meal_id == newPacked.Meal_id &&
+                p.order_no == newPacked.order_no)))
+            .ReturnsAsync(0);
+
+        // Act
+        var result = await packedIngredientController.Update(newPacked, 1, 1);
+
+        // Assert
+        Assert.IsType<BadRequestResult>(result);
+        mockPackedService.Verify(service => service.UpdatePackedAsync(
+            It.Is<PackedDTO>(p =>
+                p.Ingredient_id == 1 &&
+                p.Meal_id == 1 &&
+                p.order_no == 0),
+            It.Is<PackedDTO>(p =>
+                p.Ingredient_id == 1 &&
+                p.Meal_id == 1 &&
+                p.order_no == 2)),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Delete_ReturnsOkObjectResult_WhenPackedIngredientDoesExist()
+    {
+        // Arrange
+        var packedIngredient = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 1 };
+        mockPackedService.Setup(service => service.DeletePackedAsync(packedIngredient)).ReturnsAsync(1);
+
+        // Act
+        var result = await packedIngredientController.Delete(packedIngredient);
+
+        // Assert
+        Assert.IsType<NoContentResult>(result);
+        mockPackedService.Verify(service => service.DeletePackedAsync(packedIngredient), Times.Once());
+    }
+
+    [Fact]
+    public async Task Delete_ReturnsNotFoundResult_WhenPackedIngredientDoesNotExist()
+    {
+        // Arrange
+        var packedIngredient = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 1 };
+        mockPackedService.Setup(service => service.DeletePackedAsync(packedIngredient)).ReturnsAsync(0);
+
+        // Act
+        var result = await packedIngredientController.Delete(packedIngredient);
+
+        // Assert
+        Assert.IsType<NotFoundResult>(result);
+        mockPackedService.Verify(service => service.DeletePackedAsync(packedIngredient), Times.Once());
+    }
+}

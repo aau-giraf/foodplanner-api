@@ -8,23 +8,27 @@ using FoodplannerModels.Image;
 namespace FoodplannerServices.Image;
 
 // Service implementation for FoodImage business logic
-public class FoodImageService(IImageService imageService, IFoodImageRepository foodImageRepository, IMapper _mapper) : IFoodImageService
+public class FoodImageService(IFoodImageRepository foodImageRepository, IMapper _mapper) : IFoodImageService
 {
-    // Creates a new food image by saving the image to the image service and storing its metadata in the repository.
+    // Creates a new food image.
     public async Task<int> CreateFoodImage(int userid, Stream imageStream, string imageName, string imageType, long imageFileSize)
     {
-        var imageId = await imageService.SaveImageAsync(userid, imageStream, imageType);
+        // Convert the image data to byte
+        using var memoryStream = new MemoryStream();
+        await imageStream.CopyToAsync(memoryStream);
+        byte[] imageBytes = memoryStream.ToArray();
 
         FoodImage foodImage = new FoodImage
         {
-            ImageId = imageId.ToString(),
+            ImageData = imageBytes,
             UserId = userid,
             ImageName = imageName,
             ImageFileType = imageType,
             Size = imageFileSize
         };
+        
+        // Save image in DB and return it's ID
         int foodImageId = await foodImageRepository.InsertAsync(foodImage);
-
         return foodImageId;
     }
 
@@ -38,31 +42,20 @@ public class FoodImageService(IImageService imageService, IFoodImageRepository f
     // Get a URL for the food image by ID.
     public async Task<string> GetFoodImageLink(int foodImageId)
     {
-
+        // Find Image in repo
         var foodImage = await foodImageRepository.GetByIdAsync(foodImageId);
         if (foodImage == null)
         {
             throw new KeyNotFoundException($"FoodImage with id {foodImageId} not found");
         }
-        var foodImageLink = await imageService
-            .LoadImagePresignedAsync(foodImage.UserId, Guid.Parse(foodImage.ImageId), foodImage.ImageFileType);
-        if (foodImageLink == null)
-        {
-            throw new NullReferenceException("Image link could not be retrieved.");
-        }
-        return foodImageLink;
+
+        // Converts image data to a Base64 Data URL.
+        return $"data:{foodImage.ImageFileType};base64," + Convert.ToBase64String(foodImage.ImageData);
     }
 
     // Delete food image by ID.
-    public async Task<bool> DeleteImage(int foodImageId)
+    public async void DeleteImage(int foodImageId)
     {
-
-        var foodImage = await foodImageRepository.GetByIdAsync(foodImageId);
         await foodImageRepository.DeleteAsync(foodImageId);
-        if (foodImage == null)
-        {
-            throw new KeyNotFoundException($"FoodImage with id {foodImageId} not found");
-        }
-        return await imageService.DeleteImageAsync(foodImage.UserId, Guid.Parse(foodImage.ImageId), foodImage.ImageFileType);
     }
 }
