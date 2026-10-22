@@ -36,7 +36,7 @@ public class ChildrenControllerTest
             .ReturnsAsync(children);
 
         // Act
-        var result = await _childrenController.GetAllChildrenClassesAsync();
+        var result = await _childrenController.GetAllChildrenClasses();
 
         // Assert
         Assert.IsType<OkObjectResult>(result);
@@ -56,7 +56,7 @@ public class ChildrenControllerTest
             .ReturnsAsync(childrenDto);
 
         // Act
-        var result = await _childrenController.GetAll();
+        var result = await _childrenController.GetAllChildren();
 
         // Assert
         Assert.IsType<OkObjectResult>(result);

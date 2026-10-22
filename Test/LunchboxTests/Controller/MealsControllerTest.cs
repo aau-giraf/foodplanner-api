@@ -31,7 +31,7 @@ public class MealsControllerTests
         mockMealsService.Setup(service => service.GetAllMealsAsync()).ReturnsAsync(meals);
 
         // Act
-        var result = await mealsController.GetAll();
+        var result = await mealsController.GetAllMeals();
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -109,7 +109,7 @@ public class MealsControllerTests
         mockMealsService.Setup(service => service.GetMealByIdAsync(mealId)).ReturnsAsync(meal);
 
         // Act
-        var result = await mealsController.Get(mealId);
+        var result = await mealsController.GetMeal(mealId);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -131,7 +131,7 @@ public class MealsControllerTests
             .ReturnsAsync((MealWithIngredientsDTO?)null);
 
         // Act
-        var result = await mealsController.Get(mealId);
+        var result = await mealsController.GetMeal(mealId);
 
         // Assert
         Assert.IsType<NotFoundResult>(result);
@@ -156,7 +156,7 @@ public class MealsControllerTests
 
         // Assert
         var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-        Assert.Equal(nameof(MealsController.Get), createdResult.ActionName);
+        Assert.Equal(nameof(MealsController.GetMeal), createdResult.ActionName);
         Assert.Equal(mealId, createdResult.RouteValues!["id"]);
         var returnedMeal = Assert.IsType<MealWithIngredientsDTO>(createdResult.Value);
         Assert.Equal(mealId, returnedMeal.Id);

@@ -125,34 +125,68 @@ public class PackedPackedIngredientControllerTests
     public async Task Update_ReturnsOkObjectResult_WhenPackedIngredientIsUpdated()
     {
         // Arrange
-        var oldPacked = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 1 };
+        var oldPacked = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 0 };
         var newPacked = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 2 };
-        mockPackedService.Setup(service => service.UpdatePackedAsync(oldPacked, newPacked)).ReturnsAsync(1);
+        mockPackedService.Setup(service => service.UpdatePackedAsync(
+            It.Is<PackedDTO>(p =>
+                p.Ingredient_id == oldPacked.Ingredient_id &&
+                p.Meal_id == oldPacked.Meal_id &&
+                p.order_no == oldPacked.order_no),
+            It.Is<PackedDTO>(p =>
+                p.Ingredient_id == newPacked.Ingredient_id &&
+                p.Meal_id == newPacked.Meal_id &&
+                p.order_no == newPacked.order_no)))
+            .ReturnsAsync(1);
 
         // Act
-        var result = await packedIngredientController.Update(oldPacked, 1, 1);
-        Console.WriteLine(result);
+        var result = await packedIngredientController.Update(newPacked, 1, 1);
 
         // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.Equal(1, Assert.IsType<int>(okResult.Value));
-        mockPackedService.Verify(service => service.UpdatePackedAsync(oldPacked, newPacked), Times.Once());
+        Assert.IsType<OkObjectResult>(result);
+        mockPackedService.Verify(service => service.UpdatePackedAsync(
+            It.Is<PackedDTO>(p =>
+                p.Ingredient_id == 1 &&
+                p.Meal_id == 1 &&
+                p.order_no == 0),
+            It.Is<PackedDTO>(p =>
+                p.Ingredient_id == 1 &&
+                p.Meal_id == 1 &&
+                p.order_no == 2)),
+            Times.Once);
     }
 
     [Fact]
-    public async Task Update_ReturnsOkObjectResult_WhenPackedIngredientIsNotUpdated()
+    public async Task Update_ReturnsBadRequest_WhenPackedIngredientIsNotUpdated()
     {
         // Arrange
-        var oldPacked = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 1 };
+        var oldPacked = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 0 };
         var newPacked = new PackedDTO { Ingredient_id = 1, Meal_id = 1, order_no = 2 };
-        mockPackedService.Setup(service => service.UpdatePackedAsync(oldPacked, newPacked)).ReturnsAsync(0);
+        mockPackedService.Setup(service => service.UpdatePackedAsync(
+            It.Is<PackedDTO>(p =>
+                p.Ingredient_id == oldPacked.Ingredient_id &&
+                p.Meal_id == oldPacked.Meal_id &&
+                p.order_no == oldPacked.order_no),
+            It.Is<PackedDTO>(p =>
+                p.Ingredient_id == newPacked.Ingredient_id &&
+                p.Meal_id == newPacked.Meal_id &&
+                p.order_no == newPacked.order_no)))
+            .ReturnsAsync(0);
 
         // Act
-        var result = await packedIngredientController.Update(oldPacked, 1, 1);
+        var result = await packedIngredientController.Update(newPacked, 1, 1);
 
         // Assert
         Assert.IsType<BadRequestResult>(result);
-        mockPackedService.Verify(service => service.UpdatePackedAsync(oldPacked, newPacked), Times.Once());
+        mockPackedService.Verify(service => service.UpdatePackedAsync(
+            It.Is<PackedDTO>(p =>
+                p.Ingredient_id == 1 &&
+                p.Meal_id == 1 &&
+                p.order_no == 0),
+            It.Is<PackedDTO>(p =>
+                p.Ingredient_id == 1 &&
+                p.Meal_id == 1 &&
+                p.order_no == 2)),
+            Times.Once);
     }
 
     [Fact]
