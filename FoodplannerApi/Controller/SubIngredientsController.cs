@@ -96,7 +96,7 @@ public class SubIngredientsController(SubIngredientService subIngredientService,
         }
     }
 
-    // URL: api/SubIngredients/Update/{id}
+    // URL: api/SubIngredients/Update/{parent_id}/{child_id}
     // Updates an existing subingredient by its parent and child id
     [HttpPut("{parent_id}/{child_id}")]
     [Authorize(Roles = "Child, Parent")]
