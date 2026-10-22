@@ -14,18 +14,18 @@ public class ChildrenController(IChildrenService childrenService, IAuthService a
     [HttpGet]
     [Authorize(Policy = "TeacherPolicy")]
     [ProducesResponseType(typeof(IEnumerable<ChildrenGetAllDTO>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllChildrenClassesAsync()
+    public async Task<IActionResult> GetAllChildrenClasses()
     {
         var children = await childrenService.GetAllChildrenClassesAsync();
         return Ok(children);
     }
 
-    // URL: api/Children/GetAll
+    // URL: api/Children/GetAllChilden
     // Retrieves all children. Returns 200 OK with the list of children.
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
     [ProducesResponseType(typeof(IEnumerable<Children>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAllChildren()
     {
         var children = await childrenService.GetAllChildrenAsync();
         return Ok(children);
@@ -62,9 +62,9 @@ public class ChildrenController(IChildrenService childrenService, IAuthService a
         return NotFound();
     }
 
-    // URL: api/Children/GetParentsByChildId/{childId}/parents
+    // URL: api/Children/GetParentsByChildId/{childId}
     // Retrieves all parents associated with a child ID. Returns 200 OK with the list of parents.
-    [HttpGet("{childId}/parents")]
+    [HttpGet("{childId}")]
     [ProducesResponseType(typeof(IEnumerable<User>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetParentsByChildId(int childId)
     {
@@ -134,9 +134,9 @@ public class ChildrenController(IChildrenService childrenService, IAuthService a
         return NotFound(new ErrorResponse { Message = new[] { "Lærer ikke fundet" } });
     }
 
-    // URL: api/Children/GetTeachersByChildId/{childId}/teachers
+    // URL: api/Children/GetTeachersByChildId/{childId}
     // Retrieves all teachers associated with a child ID. Returns 200 OK with the list of teachers.
-    [HttpGet("{childId}/teachers")]
+    [HttpGet("{childId}")]
     [Authorize(Policy = "TeacherPolicy")]
     [ProducesResponseType(typeof(IEnumerable<User>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetTeachersByChildId(int childId)

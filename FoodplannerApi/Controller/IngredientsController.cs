@@ -11,12 +11,12 @@ namespace FoodplannerApi.Controller;
 public class IngredientsController(IIngredientsService ingredientService, IAuthService authService) : BaseController
 {
 
-    // URL: api/Ingredients/GetAll
+    // URL: api/Ingredients/GetAllIngredients
     // Retrieves all ingredients. Returns 200 OK with the list of ingredients.
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
     [ProducesResponseType(typeof(IEnumerable<IngredientDTO>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAllIngredients()
     {
         var ingredients = await ingredientService.GetAllIngredientsAsync();
         return Ok(ingredients);
