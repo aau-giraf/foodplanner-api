@@ -150,7 +150,7 @@ public class UserService(IUserRepository userRepository, IMapper mapper, IAuthSe
         {
             throw new InvalidOperationException("Bruger har ikke en pinkode");
         }
-        else if (passwordHandler.VerifyPassword(pinCode, pincode))
+        else if (!passwordHandler.VerifyPassword(pinCode, pincode))
         {
             throw new InvalidOperationException("Forkert pinkode");
         }

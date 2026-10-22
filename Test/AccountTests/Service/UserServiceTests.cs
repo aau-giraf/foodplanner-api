@@ -368,7 +368,7 @@ public class UserServiceTests
             .Setup(repo => repo.GetPinCodeByIdAsync(inputUser.Id))
             .ReturnsAsync(encryptedPin);
         _mockPasswordHandler
-            .Setup(handler => handler.VerifyPassword(encryptedPin, pin))
+            .Setup(handler => handler.VerifyPassword(pin, encryptedPin))
             .Returns(true);
         _mockUserRepository
             .Setup(repo => repo.GetByIdAsync(inputUser.Id))

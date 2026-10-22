@@ -130,7 +130,8 @@ public class PackedPackedIngredientControllerTests
         mockPackedService.Setup(service => service.UpdatePackedAsync(oldPacked, newPacked)).ReturnsAsync(1);
 
         // Act
-        var result = await packedIngredientController.Update(oldPacked, newPacked);
+        var result = await packedIngredientController.Update(oldPacked, 1, 1);
+        Console.WriteLine(result);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -147,7 +148,7 @@ public class PackedPackedIngredientControllerTests
         mockPackedService.Setup(service => service.UpdatePackedAsync(oldPacked, newPacked)).ReturnsAsync(0);
 
         // Act
-        var result = await packedIngredientController.Update(oldPacked, newPacked);
+        var result = await packedIngredientController.Update(oldPacked, 1, 1);
 
         // Assert
         Assert.IsType<BadRequestResult>(result);
