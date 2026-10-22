@@ -97,13 +97,14 @@ public class SubIngredientsController(SubIngredientService subIngredientService,
     }
 
     // URL: api/SubIngredients/Update/{id}
-    // Updates an existing subingredient by its ID and SubIngredient
-    [HttpPut("{id}")]
+    // Updates an existing subingredient by its parent and child id
+    [HttpPut("{parent_id}/{child_id}")]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(SubIngredientDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Update([FromBody] SubIngredientDTO oldSubIngredient, [FromBody] SubIngredientDTO newSubIngredient)
+    public async Task<IActionResult> Update([FromBody] SubIngredientDTO newSubIngredient, int parent_id, int child_id)
     {
+        var oldSubIngredient = new SubIngredientDTO { Parent_id = parent_id, Child_id = child_id, order_no = 0};
         var result = await subIngredientService.UpdateSubIngredientAsync(oldSubIngredient, newSubIngredient);
         if (result > 0)
         {
@@ -113,8 +114,8 @@ public class SubIngredientsController(SubIngredientService subIngredientService,
     }
 
     // URL: api/SubIngredients/Delete
-    // Delete a subingredient by ID
-    [HttpDelete("{id}")]
+    // Delete a subingredient
+    [HttpDelete]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(SubIngredientDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
