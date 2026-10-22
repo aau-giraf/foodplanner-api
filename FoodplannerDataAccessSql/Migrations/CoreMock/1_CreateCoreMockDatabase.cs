@@ -84,7 +84,7 @@ public override void Up()
     //Children foriegn keys
     Create.ForeignKey("FK_children_users")
         .FromTable("children").ForeignColumn("child_id")
-        .ToTable("users").PrimaryColumn("id");
+        .ToTable("users").PrimaryColumn("id").OnDelete(Rule.Cascade);;
     Create.ForeignKey("FK_children_classroom")
         .FromTable("children").ForeignColumn("class_id")
         .ToTable("classroom").PrimaryColumn("class_id");
@@ -92,39 +92,39 @@ public override void Up()
     //child relation foreign keys:
     Create.ForeignKey("FK_child_relation_users")
         .FromTable("child_relation").ForeignColumn("user_id")
-        .ToTable("users").PrimaryColumn("id");
+        .ToTable("users").PrimaryColumn("id").OnDelete(Rule.Cascade);;
     Create.ForeignKey("FK_child_relation_children")
         .FromTable("child_relation").ForeignColumn("child_id")
-        .ToTable("children").PrimaryColumn("child_id");
+        .ToTable("children").PrimaryColumn("child_id").OnDelete(Rule.Cascade);;
 
     //Message foreign keys
     Create.ForeignKey("FK_message_chat_thread")
         .FromTable("message").ForeignColumn("chat_thread_id")
-        .ToTable("chat_thread").PrimaryColumn("chat_thread_id");
+        .ToTable("chat_thread").PrimaryColumn("chat_thread_id").OnDelete(Rule.Cascade);;
     Create.ForeignKey("FK_message_users")
         .FromTable("message").ForeignColumn("user_id")
-        .ToTable("users").PrimaryColumn("id");
+        .ToTable("users").PrimaryColumn("id").OnDelete(Rule.Cascade);;
 
     //chat thread foreign keys
     Create.ForeignKey("FK_chat_thread_children")
         .FromTable("chat_thread").ForeignColumn("child_id")
-        .ToTable("children").PrimaryColumn("child_id");
+        .ToTable("children").PrimaryColumn("child_id").OnDelete(Rule.Cascade);;
 
     //image foreign keys
     Create.ForeignKey("FK_food_image_users")
         .FromTable("food_image").ForeignColumn("user_id")
-        .ToTable("users").PrimaryColumn("id");
+        .ToTable("users").PrimaryColumn("id").OnDelete(Rule.Cascade);;
 
     //one time password foreign keys
     Create.ForeignKey("FK_otp_generated_by")
         .FromTable("one_time_password").ForeignColumn("generated_by")
-        .ToTable("users").PrimaryColumn("id");
+        .ToTable("users").PrimaryColumn("id").OnDelete(Rule.Cascade);;
     Create.ForeignKey("FK_otp_used_by_user")
         .FromTable("one_time_password").ForeignColumn("used_by_user")
-        .ToTable("users").PrimaryColumn("id");
+        .ToTable("users").PrimaryColumn("id").OnDelete(Rule.SetNull);;
     Create.ForeignKey("FK_otp_child_user")
         .FromTable("one_time_password").ForeignColumn("child_user")
-        .ToTable("children").PrimaryColumn("child_id");
+        .ToTable("children").PrimaryColumn("child_id").OnDelete(Rule.Cascade);;
 }
     /* Down() is a function from the FluentMigrator framework
     that defines how the migration is rolled back */
