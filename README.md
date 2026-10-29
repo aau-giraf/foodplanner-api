@@ -385,49 +385,99 @@ git push origin feature-name
 
 4. Open a pull request to the staging branch, test it, and then create a new pull request for main.
 
-# Rules for endpoints
+# Rules for Endpoints
 
-All endpoints have the following base format:
+All endpoints must follow the base format:
 
-"api/[controller]/[action]"
+`api/[controller]/[action]`
 
-The [controller] and [action] are placeholders to find the correct file and method.
-The [action] can be followed by "/{id}"
+The `[controller]` and `[action]` are placeholders identifying the controller and the method handling the HTTP request.
 
-- [Controller]: The name of the controller file handling the http requests
-- [action]: The method or operation used
-- /{id}: Specifies the user or entity the method operates on
+Additional route parameters may be appended when necessary:
 
-## Naming convention
+`api/[controller]/[action]/{parameter}`
 
-The controller and action uses PascalCase as naming convention
+- **[controller]:** The name of the controller handling the HTTP requests.
+- **[action]:** The method or operation being performed.
+- **{parameter}:** A value required by the endpoint, typically an entity's primary key, but other values may be used when appropriate.
 
-## Endpoints regarding operations for a specific entity:
+Endpoints may contain multiple route parameters if required by the operation.
 
-Endpoints for get, update, and delete operations for a specific user or entity must end with "/{id}"
+## Naming Convention
 
-Example:
-"api/Admin/Update/{id}"
-"api/Admin/Delete/{id}"
-"api/Admin/Get/{id}"
+Controller and action names must use **PascalCase**.
 
-## Retrieve all data
+Action names should clearly describe the operation being performed and, when necessary, the entity or condition involved.
 
-Endpoints that retrieves all data must use the action name GetAll
+## Operations on a Specific Entity
 
-Example:
-"api/Classrooms/GetAll"
+Endpoints performing Get, Update, or Delete operations on a specific entity must include the identifier in the URL path.
 
-For controller with more than one endpoints to retrieve all data, the action name must specify which entity is being retrieved.
+The identifier will typically be the entity's primary key, represented by `/{id}`. However, other identifiers or parameters may be used when appropriate and should be named descriptively.
 
-Example:
-"api/Admin/GetAllUsers"
-"api/Admin/GetAllChildren"
+Examples:
 
-## Operations with a specific condition
+- `api/Admin/Get/{id}`
+- `api/Admin/Update/{id}`
+- `api/Admin/Delete/{id}`
+- `api/Admin/GetByUsername/{username}`
 
-Endpoints that retrieves data for a specific condition must specify the condition in the action name.
+## Retrieving All Data
+
+Endpoints retrieving all entities of a given type without additional conditions must use the action name `GetAll`.
 
 Example:
-"api/Admin/GetNotArchived"
-"api/SubIngredientRelation/UpdateOrder"
+
+`api/Classrooms/GetAll`
+
+For controllers that provide multiple endpoints retrieving different entity types, the action name must specify which entity is being retrieved.
+
+Examples:
+
+- `api/Admin/GetAllUsers`
+- `api/Admin/GetAllChildren`
+
+## Operations with Specific Conditions
+
+Endpoints performing operations with specific conditions must clearly describe the condition or operation in the action name.
+
+Examples:
+
+- `api/Admin/GetNotArchived`
+- `api/SubIngredientRelation/UpdateOrder`
+
+This ensures that the purpose of each endpoint can be understood from its URL.
+
+## Parameter Passing
+
+Parameters must primarily be passed through either **route parameters** or the **request body**, depending on their purpose.
+
+### Route Parameters
+
+Route parameters should be used for identifying the entity or resource involved in an operation, or for passing simple values that form part of the endpoint's path.
+
+These parameters will typically represent primary keys, but other identifiers or values may be used when appropriate.
+
+Examples:
+
+- `api/Admin/Get/{id}`
+- `api/Admin/GetByUsername/{username}`
+- `api/SubIngredientRelation/Get/{parentId}/{childId}`
+
+### Request Body
+
+The request body should be used when an operation requires additional data, particularly when creating or updating entities.
+
+For example, an endpoint such as:
+
+`api/Admin/Update/{id}`
+
+May use the route parameter to identify the entity being updated, while the request body contains the updated data.
+
+### Query Parameters
+
+The use of query parameters should generally be avoided to maintain consistency across the API.
+
+Whenever possible, parameters should instead be passed through the URL path or request body, depending on the operation.
+
+Exceptions may be made when query parameters are more appropriate for the endpoint's functionality.
