@@ -85,9 +85,9 @@ public static class UserSeeder
             },
             new
             {
-                first_name = "Hera",
-                last_name = "Diep",
-                email = "hera@teacher.com",
+                first_name = "Susanne",
+                last_name = "Jensen",
+                email = "sus@teacher.com",
                 password = BCrypt.Net.BCrypt.HashPassword("1234"),
                 role = "Teacher",
                 pincode = BCrypt.Net.BCrypt.HashPassword("1234"),
