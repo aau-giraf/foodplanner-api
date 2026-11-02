@@ -192,8 +192,6 @@ public static class ImageSeeder
             command.Parameters.Add("image_data", NpgsqlDbType.Bytea).Value = imageData;
 
             await command.ExecuteNonQueryAsync();
-
-            Console.WriteLine($"Seeded image: {image.image_name}");
         }
 
         Console.WriteLine("Images seeded successfully.");

@@ -10,7 +10,7 @@ public static class CoreMockSeeder
     {
         Console.WriteLine("Seeding CoreMock database...");
 
-        // Add individual seeders here
+        // seeders
         await UserSeeder.SeedAsync(connection, transaction);
         await ClassroomSeeder.SeedAsync(connection, transaction);
         await ChildrenSeeder.SeedAsync(connection, transaction);
