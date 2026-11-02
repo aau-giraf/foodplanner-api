@@ -12,11 +12,10 @@ public static class CoreMockSeeder
 
         // Add individual seeders here
         await UserSeeder.SeedAsync(connection, transaction);
-        // Future seeders
-        // await ClassroomSeeder.SeedAsync(connection, transaction);
-        // await ChildrenSeeder.SeedAsync(connection, transaction);
-        // await ChildrenRelationSeeder.SeedAsync(connection, transaction);
-        // await ImageSeeder.SeedAsync(connection, transaction);
+        await ClassroomSeeder.SeedAsync(connection, transaction);
+        await ChildrenSeeder.SeedAsync(connection, transaction);
+        await ChildrenRelationSeeder.SeedAsync(connection, transaction);
+        await ImageSeeder.SeedAsync(connection, transaction);
 
         await Task.CompletedTask;
     }

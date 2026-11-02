@@ -17,14 +17,105 @@ public static class UserSeeder
             {
                 first_name = "Test",
                 last_name = "Parent",
-                email = "test@example.com",
+                email = "parent@example.com",
                 password = BCrypt.Net.BCrypt.HashPassword("1234"),
                 role = "Parent",
                 pincode = BCrypt.Net.BCrypt.HashPassword("1234"),
                 role_approved = true,
-            }
+            },
+            new
+            {
+                first_name = "Alex",
+                last_name = "Jensen",
+                email = "alex@parent.com",
+                password = BCrypt.Net.BCrypt.HashPassword("1234"),
+                role = "Parent",
+                pincode = BCrypt.Net.BCrypt.HashPassword("1234"),
+                role_approved = true,
+            },
+            new
+            {
+                first_name = "Test",
+                last_name = "Child",
+                email = "child@example.com",
+                password = BCrypt.Net.BCrypt.HashPassword("1234"),
+                role = "Child",
+                pincode = BCrypt.Net.BCrypt.HashPassword("1234"),
+                role_approved = true,
+            },
+            new
+            {
+                first_name = "Sebastian",
+                last_name = "Jensen",
+                email = "sebas@child.com",
+                password = BCrypt.Net.BCrypt.HashPassword("1234"),
+                role = "Child",
+                pincode = BCrypt.Net.BCrypt.HashPassword("1234"),
+                role_approved = true,
+            },
+            new
+            {
+                first_name = "Sara",
+                last_name = "Jensen",
+                email = "sara@child.com",
+                password = BCrypt.Net.BCrypt.HashPassword("1234"),
+                role = "Child",
+                pincode = BCrypt.Net.BCrypt.HashPassword("1234"),
+                role_approved = true,
+            },
+            new
+            {
+                first_name = "Frederik",
+                last_name = "Jensen",
+                email = "frederik@child.com",
+                password = BCrypt.Net.BCrypt.HashPassword("1234"),
+                role = "Child",
+                pincode = BCrypt.Net.BCrypt.HashPassword("1234"),
+                role_approved = true,
+            },
+            new
+            {
+                first_name = "Test",
+                last_name = "Teacher",
+                email = "teacher@example.com",
+                password = BCrypt.Net.BCrypt.HashPassword("1234"),
+                role = "Teacher",
+                pincode = BCrypt.Net.BCrypt.HashPassword("1234"),
+                role_approved = true,
+            },
+            new
+            {
+                first_name = "Hera",
+                last_name = "Diep",
+                email = "hera@teacher.com",
+                password = BCrypt.Net.BCrypt.HashPassword("1234"),
+                role = "Teacher",
+                pincode = BCrypt.Net.BCrypt.HashPassword("1234"),
+                role_approved = true,
+            },
+            new
+            {
+                first_name = "Test",
+                last_name = "Admin",
+                email = "admin@example.com",
+                password = BCrypt.Net.BCrypt.HashPassword("1234"),
+                role = "Admin",
+                pincode = BCrypt.Net.BCrypt.HashPassword("1234"),
+                role_approved = true,
+            },
+            new
+            {
+                first_name = "Nikolai",
+                last_name = "Jensen",
+                email = "nikolai@admin.com",
+                password = BCrypt.Net.BCrypt.HashPassword("1234"),
+                role = "Admin",
+                pincode = BCrypt.Net.BCrypt.HashPassword("1234"),
+                role_approved = true,
+            },
         };
 
+        //insert each user one at a time
         foreach (var user in users)
         {
             const string sql = """

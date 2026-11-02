@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FoodplannerServices\FoodplannerServices.csproj" />
+    <None Update="CoreMock\Images\**\*.png" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
