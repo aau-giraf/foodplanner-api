@@ -1,10 +1,7 @@
 using FoodplannerDataAccessSql;
 using FoodplannerDataAccessSql.Lunchbox;
 using FoodplannerModels.Lunchbox;
-
 using Npgsql;
-using Xunit;
-
 using Test.Integration;
 
 [Collection("IntegrationDatabase")]
@@ -20,12 +17,12 @@ public class PackedRepositorytests
 
     [Fact]
     [Trait("Category", "Integration")]
-    public async Task GetAllAsync_Success()
+    public async Task GetAllAsync()
     {
         // Arrange
         List<MealDTO> meals = new List<MealDTO>
         {
-            new MealDTO { Id = 1, Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
+            new MealDTO { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
             new MealDTO { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
         };
         List<IngredientDTO> ingredients = new List<IngredientDTO>
@@ -36,33 +33,92 @@ public class PackedRepositorytests
         };
         List<PackedDTO> packed = new List<PackedDTO>
         {
-            new PackedDTO { Meal_id = 0, Ingredient_id = 0, order_no = 1},
-            new PackedDTO { Meal_id = 0, Ingredient_id = 1, order_no = 2},
+            new PackedDTO { Meal_id = 0, Ingredient_id = 0, order_no = 2},
+            new PackedDTO { Meal_id = 0, Ingredient_id = 1, order_no = 1},
             new PackedDTO { Meal_id = 1, Ingredient_id = 2, order_no = 1}
         };
 
-        var createdIds = await SetupTestEnvironmentAsync(meals, ingredients, packed);
-        
-        await using var connection = connectionFactory.Create();
-        await connection.OpenAsync();
-
-        
-
         try
         {
+            var createdIds = await SetupTestEnvironmentAsync(meals, ingredients, packed);
+
             // Act
             var result = await repository.GetAllAsync();
 
             // Assert
+            Assert.NotNull(result);
+            var resultList = result.ToList();
+            Assert.Equal(3, resultList.Count);
+            Assert.Contains(resultList, item =>
+                item.Meal_id == createdIds[0][0] &&
+                item.Ingredient_id == createdIds[1][1] &&
+                item.order_no == 1);
+            Assert.Contains(resultList, item =>
+                item.Meal_id == createdIds[0][0] &&
+                item.Ingredient_id == createdIds[1][0] &&
+                item.order_no == 2);
+            Assert.Contains(resultList, item =>
+                item.Meal_id == createdIds[0][1] &&
+                item.Ingredient_id == createdIds[1][2] &&
+                item.order_no == 1);
         }
         finally
         {
-            await CleanupTestEnvironmentAsync(createdIds);
+            await CleanupTestEnvironmentAsync();
+        }
+    }
+
+    [Fact]
+    [Trait("Category", "Integration")]
+    public async Task GetAllByMealIdAsync()
+    {
+        // Arrange
+        List<MealDTO> meals = new List<MealDTO>
+        {
+            new MealDTO { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
+            new MealDTO { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
+        };
+        List<IngredientDTO> ingredients = new List<IngredientDTO>
+        {
+            new IngredientDTO { Id = 1, Name = "Ingredient 1", User_id = 1, Image_id = null },
+            new IngredientDTO { Id = 2, Name = "Ingredient 2", User_id = 2, Image_id = null },
+            new IngredientDTO { Id = 3, Name = "Ingredient 3", User_id = 2, Image_id = null }
+        };
+        List<PackedDTO> packed = new List<PackedDTO>
+        {
+            new PackedDTO { Meal_id = 0, Ingredient_id = 0, order_no = 2},
+            new PackedDTO { Meal_id = 0, Ingredient_id = 1, order_no = 1},
+            new PackedDTO { Meal_id = 1, Ingredient_id = 2, order_no = 1}
+        };
+
+        try
+        {
+            var createdIds = await SetupTestEnvironmentAsync(meals, ingredients, packed);
+
+            // Act
+            var result = await repository.GetAllByMealIdAsync(createdIds[0][0]);
+
+            // Assert
+            Assert.NotNull(result);
+            var resultList = result.ToList();
+            Assert.Equal(2, resultList.Count);
+            Assert.Contains(resultList, item =>
+                item.Meal_id == createdIds[0][0] &&
+                item.Ingredient_id == createdIds[1][1] &&
+                item.order_no == 1);
+            Assert.Contains(resultList, item =>
+                item.Meal_id == createdIds[0][0] &&
+                item.Ingredient_id == createdIds[1][0] &&
+                item.order_no == 2);
+        }
+        finally
+        {
+            await CleanupTestEnvironmentAsync();
         }
     }
 
     // Helper function to set up environment for tests
-    private async Task<CreatedIds> SetupTestEnvironmentAsync(List<MealDTO> meals, List<IngredientDTO> ingredients, List<PackedDTO>? packed = null)
+    private async Task<List<List<int>>> SetupTestEnvironmentAsync(List<MealDTO> meals, List<IngredientDTO> ingredients, List<PackedDTO>? packed = null)
     {
         // Open a connection to the database
         await using var connection = connectionFactory.Create();
@@ -71,7 +127,6 @@ public class PackedRepositorytests
         // Lists to store the IDs of inserted meals, ingredients, and packed items
         var meal_ids = new List<int>();
         var ingredient_ids = new List<int>();
-        var packed_ids = new List<List<int>>();
 
         // Insert all meals into the database
         for (int i = 0; i < meals.Count; i++)
@@ -87,7 +142,7 @@ public class PackedRepositorytests
             insertCommand.Parameters.AddWithValue("user_id", meals[i].User_id);
             insertCommand.Parameters.AddWithValue("template", meals[i].Template);
 
-            int id = await insertCommand.ExecuteNonQueryAsync();
+            int id = (int)(await insertCommand.ExecuteScalarAsync())!;
             meal_ids.Add(id);
         }
 
@@ -103,7 +158,7 @@ public class PackedRepositorytests
             insertCommand.Parameters.AddWithValue("user_id", ingredients[i].User_id);
             insertCommand.Parameters.AddWithValue("image_id", ingredients[i].Image_id ?? (object)DBNull.Value);
 
-            int id = await insertCommand.ExecuteNonQueryAsync();
+            int id = (int)(await insertCommand.ExecuteScalarAsync())!;
             ingredient_ids.Add(id);
         }
 
@@ -113,71 +168,40 @@ public class PackedRepositorytests
             for (int i = 0; i < packed.Count; i++)
             {
                 await using var insertCommand = new NpgsqlCommand(
-                    "INSERT INTO packed (meal_id, ingredient_id) " +
-                    "VALUES (@meal_id, @ingredient_id)",
+                    "INSERT INTO packed (meal_id, ingredient_id, order_no) " +
+                    "VALUES (@meal_id, @ingredient_id, @order_no)",
                     connection);
 
                 insertCommand.Parameters.AddWithValue("meal_id", meal_ids[packed[i].Meal_id]);
                 insertCommand.Parameters.AddWithValue("ingredient_id", ingredient_ids[packed[i].Ingredient_id]);
+                insertCommand.Parameters.AddWithValue("order_no", packed[i].order_no);
 
                 await insertCommand.ExecuteNonQueryAsync();
-                packed_ids.Add(new List<int> {meal_ids[packed[i].Meal_id], ingredient_ids[packed[i].Ingredient_id]});
             }
-
-            var createdIdsWithPacked = new CreatedIds {MealIds = meal_ids, IngredientIds = ingredient_ids, PackedIds = packed_ids};
-            return createdIdsWithPacked;
         }
-
-        var createdIdsWithoutPacked = new CreatedIds {MealIds = meal_ids, IngredientIds = ingredient_ids};
-        return createdIdsWithoutPacked;
+        var createdIds = new List<List<int>> {meal_ids, ingredient_ids};
+        return createdIds;
     }
 
     // Helper function to clean up test environment
-    private async Task CleanupTestEnvironmentAsync(CreatedIds createdIds)
+    private async Task CleanupTestEnvironmentAsync()
     {
-        // Gather values from the CreatedIds struct
-        var meal_ids = createdIds.MealIds;
-        var ingredient_ids = createdIds.IngredientIds;
-        var packed_ids = createdIds.PackedIds;
-
         // Open connection to the database
         await using var connection = connectionFactory.Create();
         await connection.OpenAsync();
 
-        // Delete all meals from ids
-        foreach (var meal_id in meal_ids)
+        // Delete packed, meals, and ingredients from the database
+        await using (var command = new NpgsqlCommand("DELETE FROM packed", connection))
         {
-            await using var deleteCommand = new NpgsqlCommand("DELETE FROM meals WHERE id = @id", connection);
-            deleteCommand.Parameters.AddWithValue("id", meal_id);
-            await deleteCommand.ExecuteNonQueryAsync();
+            await command.ExecuteNonQueryAsync();
         }
-
-        // Delete all ingredients from ids
-        foreach (var ingredient_id in ingredient_ids)
+        await using (var command = new NpgsqlCommand("DELETE FROM meals", connection))
         {
-            await using var deleteCommand = new NpgsqlCommand("DELETE FROM ingredients WHERE id = @id", connection);
-            deleteCommand.Parameters.AddWithValue("id", ingredient_id);
-            await deleteCommand.ExecuteNonQueryAsync();
+            await command.ExecuteNonQueryAsync();
         }
-
-        // If packed_ids is not null, delete all packed items from ids
-        if (packed_ids != null)
+        await using (var command = new NpgsqlCommand("DELETE FROM ingredients", connection))
         {
-            foreach (var packed_id in packed_ids)
-            {
-                await using var deleteCommand = new NpgsqlCommand("DELETE FROM packed WHERE meal_id = @meal_id AND ingredient_id = @ingredient_id", connection);
-                deleteCommand.Parameters.AddWithValue("meal_id", packed_id[0]);
-                deleteCommand.Parameters.AddWithValue("ingredient_id", packed_id[1]);
-                await deleteCommand.ExecuteNonQueryAsync();
-            }
+            await command.ExecuteNonQueryAsync();
         }
-    }
-
-    // Struct to hold the IDs of created meals, ingredients, and packed items
-    private struct CreatedIds
-    {
-        public List<int> MealIds { get; set; }
-        public List<int> IngredientIds { get; set; }
-        public List<List<int>>? PackedIds { get; set; }
     }
 }
