@@ -324,10 +324,16 @@ This will run the bash script once every minute and write the output to `docker-
 > [!NOTE]
 > **_Adminer are interfaces to alter PostgreSQL database. (You can also use pgAdmin or any other tools for the database)_** <br>
 > **Adminer**: http://localhost:8000/ <br>
+#### Foodplanner DB
 > **Server**: postgres<br>
 > **Username**: postgres<br>
 > **Password**: postgres<br>
-> **Database**: giraf
+> **Database**: giraf<br>
+#### Core DB
+> **Server**: core-postgres<br>
+> **Username**: postgres<br>
+> **Password**: postgres<br>
+> **Database**: giraf_core_mock<br>
 
 6. Navigate to the project directory:
 
