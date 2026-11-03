@@ -40,7 +40,11 @@ src/
 │   ├── FeedbackChat/                      # Feedback services
 │   ├── Image/                             # Image services
 │   └── LunchBox/                          # LunchBox services
-└── Test/                                  # Tests
+├── Test/                                  # Tests
+└── Development/                           # Development tools and utilities
+    └── DummyData/                         # Development database seeders
+        ├── CoreMock/                      # CoreMock dummy data seeders
+        └── Foodplanner/                   # Foodplanner dummy data seeders
 ```
 
 ## Migrations
@@ -366,6 +370,97 @@ Run all tests with:
 ```bash
 dotnet test
 ```
+## Dummy Data
+
+The project includes a dummy data generator located in `Development/DummyData`, which can populate both the CoreMock and Foodplanner databases with predefined test data for development purposes.
+
+### Prerequisites
+
+Before generating dummy data, the following requirements must be met:
+
+1. The application must be configured to run locally, with `appsettings.Development.json` providing the necessary local database configuration through the Infisical settings.
+2. The PostgreSQL Docker containers must be running.
+3. The backend application must have been started at least once to initialize both databases and apply the required migrations through FluentMigrator.
+
+Once the databases have been initialized, the backend application does not need to remain running while generating dummy data. However, the PostgreSQL containers must remain active.
+
+### Database Requirements
+
+The dummy data generator is currently designed to work with clean databases, as some seeders rely on predefined IDs and relationships between records.
+
+If either database already contains data, the generated IDs may not match the expected values, potentially causing foreign key constraint violations.
+
+To ensure a clean database, the existing development database data can be removed by resetting the PostgreSQL storage used by the Docker containers.
+
+The relevant directories in the current local setup are:
+
+- `core-postgres`
+- `postgres`
+
+**Warning:** Removing these directories will permanently delete any database data stored within them. Stop the relevant containers before removing their data, and ensure that the directories are the actual storage locations used by Docker.
+
+After resetting the databases, restart the Docker containers and run the backend application again to recreate the database schemas through FluentMigrator.
+
+**Note:** PostgreSQL auto-increment sequences are not necessarily reset when records are deleted or transactions are rolled back. Therefore, a database with no records is not necessarily equivalent to a newly initialized database.
+
+### Running the Dummy Data Generator
+
+The dummy data generator can be executed from the repository root using the following commands:
+
+**Generate data for both databases (default):**
+
+```bash
+dotnet run --project Development/DummyData
+```
+
+Alternatively, explicitly specify the `all` argument:
+
+```bash
+dotnet run --project Development/DummyData -- all
+```
+
+**Generate data for the Foodplanner database only:**
+
+```bash
+dotnet run --project Development/DummyData -- foodplanner
+```
+
+**Generate data for the CoreMock database only:**
+
+```bash
+dotnet run --project Development/DummyData -- core
+```
+
+The generator can only be executed in the `Development` environment.
+
+### Adding or Modifying Dummy Data
+
+All dummy data definitions are located within the `Development/DummyData` directory.
+
+The generator is divided into two main directories:
+
+- `CoreMock/` — Contains seeders for users, classrooms, children, relationships, images, and other CoreMock data.
+- `Foodplanner/` — Contains seeders for meals, ingredients, packed items, and other Foodplanner data.
+
+Each seeder is responsible for inserting predefined records into its corresponding database tables.
+
+To add or modify dummy data, locate the relevant seeder and update its predefined data. New seeders must be registered in either `CoreMockSeeder.cs` or `FoodplannerSeeder.cs` to be executed.
+
+The order of execution is important, as records referenced by foreign keys must be inserted before their dependent records.
+
+### Transactions and Error Handling
+
+The generator uses PostgreSQL transactions to ensure that database operations are handled consistently.
+
+When generating dummy data:
+
+- All seeders for a selected database execute within a single transaction.
+- If every seeder completes successfully, the transaction is committed.
+- If a seeder fails, the transaction is rolled back, preventing partial data insertion within that database.
+- When using `all`, the CoreMock and Foodplanner databases are processed in separate transactions. A successful CoreMock transaction is not rolled back if Foodplanner subsequently fails.
+
+**Important:** Although failed transactions are rolled back, PostgreSQL auto-increment sequences may still advance. Since some seeders currently depend on predefined IDs, a failed execution may require resetting the affected development database before attempting another run.
+
 
 # Contributing
 
