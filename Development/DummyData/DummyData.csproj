@@ -1,4 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -14,8 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FoodplannerServices\FoodplannerServices.csproj" />
-    <None Update="CoreMock\Images\**\*.png" CopyToOutputDirectory="PreserveNewest" />
+    <ProjectReference Include="..\..\FoodplannerServices\FoodplannerServices.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="CoreMock\Images\**\*"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
