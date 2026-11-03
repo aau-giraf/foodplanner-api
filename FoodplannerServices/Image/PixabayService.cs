@@ -1,16 +1,20 @@
-using FoodplannerModels.Image;
-using FoodplannerApi;
 using AutoMapper;
+using FoodplannerModels.Image;
+using FoodplannerApi.PixabayApi;
+
+
 
 namespace FoodplannerServices.Image;
 
-public class PixabayService(IMapper mapper) 
+// Service implementation for Pixabay business logic
+public class PixabayService() : IPixabayService
 {
-    // Get URL
-    public async Task GetPixabayImage (PixabayDTO pixabayDTO)
+    // Method for retrieving a list of pixabay images 
+    public async Task<List<string>> GetPixabayImage (string language, string searchWord) 
     {
-    
+        // Method from Pixabay API
+        return
+    }
 
-    } 
 }
 

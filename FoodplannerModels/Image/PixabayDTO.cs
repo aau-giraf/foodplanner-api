@@ -1,5 +1,5 @@
 public class PixabayDTO
 {
-    public required string language { get; set; }
-    public required string searchWord { get; set; } 
+    public required string Language { get; set; }
+    public required string SearchWord { get; set; } 
 }
