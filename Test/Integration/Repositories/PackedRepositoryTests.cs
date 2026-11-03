@@ -117,6 +117,142 @@ public class PackedRepositorytests
         }
     }
 
+    [Fact]
+    [Trait("Category", "Integration")]
+    public async Task InsertAsync()
+    {
+        // Arrange
+        List<MealDTO> meals = new List<MealDTO>
+        {
+            new MealDTO { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
+            new MealDTO { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
+        };
+        List<IngredientDTO> ingredients = new List<IngredientDTO>
+        {
+            new IngredientDTO { Id = 1, Name = "Ingredient 1", User_id = 1, Image_id = null },
+            new IngredientDTO { Id = 2, Name = "Ingredient 2", User_id = 2, Image_id = null },
+            new IngredientDTO { Id = 3, Name = "Ingredient 3", User_id = 2, Image_id = null }
+        };
+
+        try
+        {
+            var createdIds = await SetupTestEnvironmentAsync(meals, ingredients);
+            PackedDTO packed = new PackedDTO { Meal_id = createdIds[0][0], Ingredient_id = createdIds[1][0], order_no = 1 };
+
+            // Act
+            var result = await repository.InsertAsync(packed);
+
+            // Assert
+            Assert.Equal(1, result);
+            var allPacked = await repository.GetAllAsync();
+            Assert.Contains(allPacked, item =>
+                item.Meal_id == packed.Meal_id &&
+                item.Ingredient_id == packed.Ingredient_id &&
+                item.order_no == packed.order_no);
+            var resultList = allPacked.ToList();
+            Assert.Single(resultList);
+        }
+        finally
+        {
+            await CleanupTestEnvironmentAsync();
+        }    
+    }
+
+    [Fact]
+    [Trait("Category", "Integration")]
+    public async Task UpdateAsync()
+    {
+        // Arrange
+        List<MealDTO> meals = new List<MealDTO>
+        {
+            new MealDTO { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
+            new MealDTO { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
+        };
+        List<IngredientDTO> ingredients = new List<IngredientDTO>
+        {
+            new IngredientDTO { Id = 1, Name = "Ingredient 1", User_id = 1, Image_id = null },
+            new IngredientDTO { Id = 2, Name = "Ingredient 2", User_id = 2, Image_id = null },
+            new IngredientDTO { Id = 3, Name = "Ingredient 3", User_id = 2, Image_id = null }
+        };
+        List<PackedDTO> packed = new List<PackedDTO>
+        {
+            new PackedDTO { Meal_id = 0, Ingredient_id = 0, order_no = 2},
+            new PackedDTO { Meal_id = 0, Ingredient_id = 1, order_no = 1},
+            new PackedDTO { Meal_id = 1, Ingredient_id = 2, order_no = 1}
+        };
+
+        try
+        {
+            var createdIds = await SetupTestEnvironmentAsync(meals, ingredients, packed);
+            PackedDTO oldPacked = new PackedDTO { Meal_id = createdIds[0][1], Ingredient_id = createdIds[1][2], order_no = 1 };
+            PackedDTO newPacked = new PackedDTO { Meal_id = createdIds[0][0], Ingredient_id = createdIds[1][2], order_no = 0 };
+
+            // Act
+            var result = await repository.UpdateAsync(oldPacked, newPacked);
+
+            // Assert
+            Assert.Equal(1, result);
+            var packedFromMeal = await repository.GetAllByMealIdAsync(createdIds[0][0]);
+            Assert.Contains(packedFromMeal, item =>
+                item.Meal_id == newPacked.Meal_id &&
+                item.Ingredient_id == newPacked.Ingredient_id &&
+                item.order_no == newPacked.order_no);
+            var resultList = packedFromMeal.ToList();
+            Assert.Equal(3, resultList.Count);
+        }
+        finally
+        {
+            await CleanupTestEnvironmentAsync();
+        }
+    }
+
+    [Fact]
+    [Trait("Category", "Integration")]
+    public async Task DeleteAsync()
+    {
+        // Arrange
+        List<MealDTO> meals = new List<MealDTO>
+        {
+            new MealDTO { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
+            new MealDTO { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
+        };
+        List<IngredientDTO> ingredients = new List<IngredientDTO>
+        {
+            new IngredientDTO { Id = 1, Name = "Ingredient 1", User_id = 1, Image_id = null },
+            new IngredientDTO { Id = 2, Name = "Ingredient 2", User_id = 2, Image_id = null },
+            new IngredientDTO { Id = 3, Name = "Ingredient 3", User_id = 2, Image_id = null }
+        };
+        List<PackedDTO> packed = new List<PackedDTO>
+        {
+            new PackedDTO { Meal_id = 0, Ingredient_id = 0, order_no = 2},
+            new PackedDTO { Meal_id = 0, Ingredient_id = 1, order_no = 1},
+            new PackedDTO { Meal_id = 1, Ingredient_id = 2, order_no = 1}
+        };
+
+        try
+        {
+            var createdIds = await SetupTestEnvironmentAsync(meals, ingredients, packed);
+            PackedDTO toDelete = new PackedDTO { Meal_id = createdIds[0][0], Ingredient_id = createdIds[1][1], order_no = 1 };
+
+            // Act
+            var result = await repository.DeleteAsync(toDelete);
+
+            // Assert
+            Assert.Equal(1, result);
+            var packedFromMeal = await repository.GetAllByMealIdAsync(createdIds[0][0]);
+            Assert.DoesNotContain(packedFromMeal, item =>
+                item.Meal_id == toDelete.Meal_id &&
+                item.Ingredient_id == toDelete.Ingredient_id &&
+                item.order_no == toDelete.order_no);
+            var resultList = packedFromMeal.ToList();
+            Assert.Single(resultList);
+        }
+        finally
+        {
+            await CleanupTestEnvironmentAsync();
+        }
+    }
+
     // Helper function to set up environment for tests
     private async Task<List<List<int>>> SetupTestEnvironmentAsync(List<MealDTO> meals, List<IngredientDTO> ingredients, List<PackedDTO>? packed = null)
     {
