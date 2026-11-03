@@ -13,8 +13,8 @@ public static class FoodplannerSeeder
         // Add individual seeders here
         await MealSeeder.SeedAsync(connection, transaction);
         await IngredientSeeder.SeedAsync(connection, transaction);
-        //await SubingredientSeeder.SeedAsync(connection, transaction);
-        //await PackedSeeder.SeedAsync(connection, transaction);
+        await SubingredientSeeder.SeedAsync(connection, transaction);
+        await PackedSeeder.SeedAsync(connection, transaction);
         await Task.CompletedTask;
     }
 }
