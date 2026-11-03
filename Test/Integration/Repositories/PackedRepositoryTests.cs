@@ -34,15 +34,14 @@ public class PackedRepositorytests
             new IngredientDTO { Id = 2, Name = "Ingredient 2", User_id = 2, Image_id = null },
             new IngredientDTO { Id = 3, Name = "Ingredient 3", User_id = 2, Image_id = null }
         };
-
-        var createdIds = await SetupTestEnvironmentAsync(meals, ingredients);
-
         List<PackedDTO> packed = new List<PackedDTO>
         {
-            new PackedDTO { Meal_id = createdIds.MealIds[0], Ingredient_id = createdIds.IngredientIds[0], order_no = 1},
-            new PackedDTO { Meal_id = createdIds.MealIds[0], Ingredient_id = createdIds.IngredientIds[1], order_no = 2},
-            new PackedDTO { Meal_id = createdIds.MealIds[1], Ingredient_id = createdIds.IngredientIds[2], order_no = 1}
+            new PackedDTO { Meal_id = 0, Ingredient_id = 0, order_no = 1},
+            new PackedDTO { Meal_id = 0, Ingredient_id = 1, order_no = 2},
+            new PackedDTO { Meal_id = 1, Ingredient_id = 2, order_no = 1}
         };
+
+        var createdIds = await SetupTestEnvironmentAsync(meals, ingredients, packed);
         
         await using var connection = connectionFactory.Create();
         await connection.OpenAsync();
@@ -118,18 +117,18 @@ public class PackedRepositorytests
                     "VALUES (@meal_id, @ingredient_id)",
                     connection);
 
-                insertCommand.Parameters.AddWithValue("meal_id", packed[i].Meal_id);
-                insertCommand.Parameters.AddWithValue("ingredient_id", packed[i].Ingredient_id);
+                insertCommand.Parameters.AddWithValue("meal_id", meal_ids[packed[i].Meal_id]);
+                insertCommand.Parameters.AddWithValue("ingredient_id", ingredient_ids[packed[i].Ingredient_id]);
 
                 await insertCommand.ExecuteNonQueryAsync();
-                packed_ids.Add(new List<int> { packed[i].Meal_id, packed[i].Ingredient_id });
+                packed_ids.Add(new List<int> {meal_ids[packed[i].Meal_id], ingredient_ids[packed[i].Ingredient_id]});
             }
 
-            var createdIdsWithPacked = new CreatedIds { MealIds = meal_ids, IngredientIds = ingredient_ids, PackedIds = packed_ids };
+            var createdIdsWithPacked = new CreatedIds {MealIds = meal_ids, IngredientIds = ingredient_ids, PackedIds = packed_ids};
             return createdIdsWithPacked;
         }
 
-        var createdIdsWithoutPacked = new CreatedIds { MealIds = meal_ids, IngredientIds = ingredient_ids};
+        var createdIdsWithoutPacked = new CreatedIds {MealIds = meal_ids, IngredientIds = ingredient_ids};
         return createdIdsWithoutPacked;
     }
 
