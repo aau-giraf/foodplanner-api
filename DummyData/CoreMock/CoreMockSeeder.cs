@@ -1,9 +1,10 @@
 using Npgsql;
 
 namespace DummyData.CoreMock;
-
+//seeder for the core database 
 public static class CoreMockSeeder
 {
+    //create connection and transaction between the different async seed processes
     public static async Task SeedAsync(
         NpgsqlConnection connection,
         NpgsqlTransaction transaction)

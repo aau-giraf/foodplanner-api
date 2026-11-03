@@ -2,10 +2,12 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 
+//check target command, if its less then 1 set it to all, else set all lovercase
 var target = args.Length > 0
     ? args[0].ToLowerInvariant()
     : "all";
 
+//if target is all, core or foodplanner approve, else print invalid argument
 if (target is not ("all" or "core" or "foodplanner"))
 {
     Console.WriteLine("Invalid argument.");
@@ -35,5 +37,5 @@ if (!builder.Environment.IsDevelopment())
 }
 
 Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
-
+//await seed runners
 await SeedRunner.RunAsync(target, builder.Configuration);

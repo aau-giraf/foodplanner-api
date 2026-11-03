@@ -18,26 +18,27 @@ public static class SeedRunner
             "Development"
         );
 
+        //check if command targets all or core, if so build connection to core db
         if (target is "all" or "core")
         {
             var connectionString = BuildConnectionString(
                 secretsLoader,
                 "CORE_DB"
             );
-
+            //await core seeders
             await SeedDatabaseAsync(
                 connectionString,
                 CoreMockSeeder.SeedAsync
             );
         }
-
+        //check if command targets all or foodplanner, if so build connection to foodplanner db
         if (target is "all" or "foodplanner")
         {
             var connectionString = BuildConnectionString(
                 secretsLoader,
                 "DB"
             );
-
+            //await foodplanner seeders
             await SeedDatabaseAsync(
                 connectionString,
                 FoodplannerSeeder.SeedAsync
@@ -46,11 +47,12 @@ public static class SeedRunner
 
         Console.WriteLine("Dummy data generation completed.");
     }
-
+    //database connection builder
     private static string BuildConnectionString(
         SecretsLoader secretsLoader,
         string prefix)
     {
+        //getting infiscial acces, based on CORE_DB or DB
         var connectionBuilder = new NpgsqlConnectionStringBuilder
         {
             Host = secretsLoader.GetSecret($"{prefix}_HOST"),
@@ -63,10 +65,12 @@ public static class SeedRunner
         return connectionBuilder.ConnectionString;
     }
 
+    //database insertion function
     private static async Task SeedDatabaseAsync(
         string connectionString,
         Func<NpgsqlConnection, NpgsqlTransaction, Task> seeder)
     {
+        //await database connection
         await using var connection =
             new NpgsqlConnection(connectionString);
 
@@ -75,6 +79,7 @@ public static class SeedRunner
         await using var transaction =
             await connection.BeginTransactionAsync();
 
+        //try to call seeders, if seeders succed commit changes to DB, if seeders fail rollback all changes made
         try
         {
             await seeder(connection, transaction);
