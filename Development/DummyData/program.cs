@@ -3,15 +3,9 @@ using DummyData;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 
-// Get target command, defaulting to "all"
-var target = args.Length > 0
-    ? args[0].ToLowerInvariant()
-    : "all";
-
-// Validate target command
-if (target is not ("all" or "core" or "foodplanner"))
+if (!DummyData.Program.TryParseTarget(args, out var target))
 {
-    Console.WriteLine("Invalid argument. Use: all, core or foodplanner.");
+    Console.WriteLine("Invalid argument.");
     return;
 }
 
@@ -62,4 +56,20 @@ static string FindApiDirectory()
     throw new DirectoryNotFoundException(
         "Could not locate FoodplannerApi directory."
     );
+}
+
+namespace DummyData
+{
+    public partial class Program
+    {
+        // Get target command, defaulting to "all"
+        public static bool TryParseTarget(string[] args, out string target)
+        {
+            target = args.Length > 0
+                ? args[0].ToLowerInvariant()
+                : "all";
+
+            return target is "all" or "core" or "foodplanner";
+        }
+    }
 }
