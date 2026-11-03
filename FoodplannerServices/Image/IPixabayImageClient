@@ -1,0 +1,7 @@
+namespace FoodplannerServices.Image;
+
+// Interface used to connect to PixabayAPI
+public interface IPixabayConnect
+{
+    Task<List<string>> SearchImages(string searchTerm, string language);
+}

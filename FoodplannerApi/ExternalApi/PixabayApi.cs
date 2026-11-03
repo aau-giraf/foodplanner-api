@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Runtime.InteropServices.JavaScript;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using FoodplannerServices.Image;
 using Newtonsoft.Json.Linq;
 
 namespace FoodplannerApi.ExternalApi;
 
-public class PixabayAPI
+public class PixabayApi (HttpClient httpClient)
 {
     private const string API_KEY = "API_KEY";
 
@@ -33,7 +36,7 @@ public class PixabayAPI
         string url = "https://pixabay.com/api/?" + string.Join("&", parameters);
         string res = await client.GetStringAsync(url);
 
-        JObject data = JObject.Parse(res);
+        XObject data = JSObject.Parse(res);
 
         List<string> results = new List<string>();
 

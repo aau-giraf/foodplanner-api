@@ -39,6 +39,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 
+
+
 // Configure Dapper to match column names with underscores to property names with PascalCase
 Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
@@ -262,7 +264,7 @@ builder.Services.AddScoped<SubIngredientService>();
 // Add AutoMapper
 builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile));
 builder.Services.AddAutoMapper(cfg => { }, typeof(ImageProfile));
-
+builder.Services.AddAutoMapper(cfg => { }, typeof(PixabayProfile));
 
 
 
