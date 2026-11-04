@@ -180,7 +180,6 @@ public class MealsRepositoryTests
 
         var meal = new MealCreateDTO
         {
-            Id = "0",
             Name = "Pizza",
             Date = "18/11/2022",
             Template = false,
