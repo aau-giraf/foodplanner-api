@@ -127,6 +127,11 @@ public class ChildrenService : IChildrenService
     public async Task<int> RemoveParentFromChildAsync(int userId, int childId)
     {
         var user = await _userRepository.GetByIdAsync(userId); 
+        // Throws an exception if the user is not found
+        if (user == null)
+        {
+            throw new InvalidOperationException("Bruger ikke fundet");
+        }
 
         // Throws an exception if the user does not have the parent role
         if (!user.Role.HasFlag(UserRole.Parent))
@@ -162,7 +167,12 @@ public class ChildrenService : IChildrenService
     // Removes Teacher from Child 
     public async Task<int> RemoveTeacherFromChildAsync(int userId, int childId)
     {
-        var user = await _userRepository.GetByIdAsync(userId); 
+        var user = await _userRepository.GetByIdAsync(userId);
+        // Throws an exception if the user is not found
+        if (user == null)
+        {
+            throw new InvalidOperationException("Bruger ikke fundet");
+        } 
         
         // Throws an exception if the user does not have the parent role
         if (!user.Role.HasFlag(UserRole.Teacher))

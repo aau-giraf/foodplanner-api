@@ -71,6 +71,12 @@ public class ChatService(IChatRepository chatRepository, IChildrenRepository chi
 
             // Convert Message entity to MessageDTO for frontend
             var user = await userRepository.GetByIdAsync(message.UserId);
+            // Throws an exception if the user is not found
+            if (user == null)
+            {
+                throw new InvalidOperationException("Bruger ikke fundet");
+            }
+
             var messageDTO = new MessageDTO {
                 MessageId = message.MessageId,
                 Content = message.Content,
