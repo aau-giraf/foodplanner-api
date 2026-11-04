@@ -8,76 +8,54 @@ namespace DummyData;
 
 public static class SeedRunner
 {
-    public static async Task RunAsync(
-        string target,
-        IConfiguration configuration)
+    public static async Task RunAsync(string target,IConfiguration configuration)
     {
         // Initialize SecretsLoader
-        var secretsLoader = new SecretsLoader(
-            configuration,
-            "Development"
-        );
+        var secretsLoader = new SecretsLoader(configuration,"Development");
 
         //check if command targets all or core, if so build connection to core db
-        if (target is "all" or "core")
+        if (ShouldSeed(target, "core"))
         {
-            var connectionString = BuildConnectionString(
-                secretsLoader,
-                "CORE_DB"
-            );
+            var connectionString = BuildConnectionString(key => secretsLoader.GetSecret(key),"CORE_DB");
             //await core seeders
-            await SeedDatabaseAsync(
-                connectionString,
-                CoreMockSeeder.SeedAsync
-            );
+            await SeedDatabaseAsync(connectionString,CoreMockSeeder.SeedAsync);
         }
         //check if command targets all or foodplanner, if so build connection to foodplanner db
-        if (target is "all" or "foodplanner")
+        if (ShouldSeed(target, "foodplanner"))
         {
-            var connectionString = BuildConnectionString(
-                secretsLoader,
-                "DB"
-            );
+            var connectionString = BuildConnectionString(key => secretsLoader.GetSecret(key),"DB");
             //await foodplanner seeders
-            await SeedDatabaseAsync(
-                connectionString,
-                FoodplannerSeeder.SeedAsync
-            );
+            await SeedDatabaseAsync(connectionString,FoodplannerSeeder.SeedAsync);
         }
 
         Console.WriteLine("Dummy data generation completed.");
     }
-    //database connection builder
-    private static string BuildConnectionString(
-        SecretsLoader secretsLoader,
-        string prefix)
+
+    // Build a PostgreSQL connection string using the provided secret values
+    // The prefix determines whether CoreMock or Foodplanner settings are used
+    public static string BuildConnectionString(Func<string, string> getSecret,string prefix)
     {
-        //getting infiscial acces, based on CORE_DB or DB
         var connectionBuilder = new NpgsqlConnectionStringBuilder
         {
-            Host = secretsLoader.GetSecret($"{prefix}_HOST"),
-            Port = int.Parse(secretsLoader.GetSecret($"{prefix}_PORT")),
-            Database = secretsLoader.GetSecret($"{prefix}_NAME"),
-            Username = secretsLoader.GetSecret($"{prefix}_USER"),
-            Password = secretsLoader.GetSecret($"{prefix}_PASS")
+            Host = getSecret($"{prefix}_HOST"),
+            Port = int.Parse(getSecret($"{prefix}_PORT")),
+            Database = getSecret($"{prefix}_NAME"),
+            Username = getSecret($"{prefix}_USER"),
+            Password = getSecret($"{prefix}_PASS")
         };
 
         return connectionBuilder.ConnectionString;
     }
 
     //database insertion function
-    private static async Task SeedDatabaseAsync(
-        string connectionString,
-        Func<NpgsqlConnection, NpgsqlTransaction, Task> seeder)
+    private static async Task SeedDatabaseAsync(string connectionString,Func<NpgsqlConnection, NpgsqlTransaction, Task> seeder)
     {
         //await database connection
-        await using var connection =
-            new NpgsqlConnection(connectionString);
+        await using var connection = new NpgsqlConnection(connectionString);
 
         await connection.OpenAsync();
 
-        await using var transaction =
-            await connection.BeginTransactionAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
 
         //try to call seeders, if seeders succed commit changes to DB, if seeders fail rollback all changes made
         try
@@ -91,4 +69,12 @@ public static class SeedRunner
             throw;
         }
     }
+
+    // Check if the selected target should seed the specified database
+    // Returns true if the target is "all" or matches the database
+    public static bool ShouldSeed(string target, string database)
+    {
+        return target == "all" || target == database;
+    }
 }
+
