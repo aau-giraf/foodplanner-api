@@ -7,11 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Make secrets available for step conditions
-    env:
-      CLIENT_ID: ${{ secrets.CLIENT_ID }}
-      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-      WORKSPACE: ${{ secrets.WORKSPACE }}
     services:
       postgres:
         image: postgres:latest
@@ -37,7 +32,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Run backend in background
-      if: ${{ env.CLIENT_ID != '' && env.CLIENT_SECRET != '' && env.WORKSPACE != '' }}
+      if: ${{ secrets.CLIENT_ID != '' && secrets.CLIENT_SECRET != '' && secrets.WORKSPACE != '' }}
       env:
         CLIENT_ID: ${{ secrets.CLIENT_ID }}
         CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
@@ -52,10 +47,10 @@ jobs:
         echo $! > backend.pid &
         sleep 30
     - name: Generate OpenAPI JSON
-      if: ${{ env.CLIENT_ID != '' && env.CLIENT_SECRET != '' && env.WORKSPACE != '' }}
+      if: ${{ secrets.CLIENT_ID != '' && secrets.CLIENT_SECRET != '' && secrets.WORKSPACE != '' }}
       run: curl http://localhost:8080/swagger/v1/swagger.json -o openapi.json
     - name: Upload OpenAPI JSON as artifact
-      if: ${{ env.CLIENT_ID != '' && env.CLIENT_SECRET != '' && env.WORKSPACE != '' }}
+      if: ${{ secrets.CLIENT_ID != '' && secrets.CLIENT_SECRET != '' && secrets.WORKSPACE != '' }}
       uses: actions/upload-artifact@v4
       with:
         name: openapi-json
