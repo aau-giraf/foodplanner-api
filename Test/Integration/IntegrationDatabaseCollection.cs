@@ -1,10 +1,4 @@
-using Xunit;
+namespace Test.Integration;
 
-namespace Test.Integration
-{
-    [CollectionDefinition("IntegrationDatabase")]
-    public class IntegrationDatabaseCollection
-        : ICollectionFixture<DatabaseFixture>
-    {
-    }
-}
+[CollectionDefinition("IntegrationDatabase")]
+public class IntegrationDatabaseCollection: ICollectionFixture<DatabaseFixture>{}
