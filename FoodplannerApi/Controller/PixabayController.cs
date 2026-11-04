@@ -1,4 +1,7 @@
 
+using FoodplannerModels.Account;
+using FoodplannerModels.Image;
+using FoodplannerServices.Image;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodplannerApi.Controller; 
@@ -6,17 +9,17 @@ namespace FoodplannerApi.Controller;
 public class PixabayController(IPixabayService pixabayService) : BaseController
 {
 
-    // URL: api/Pixabay/Get 
-    [ProducesResponseType(typeof(IEnumerable<PixaBayDTO>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)] 
-    public async Task<IActionResult> Get()
+    // URL: api/Pixabay/Get
+    [ProducesResponseType(typeof(IEnumerable<Pixabay>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Get([FromBody] PixabayDTO imageSearch)
     {
-        var image = await pixabayService.Get(); 
+        var image = await pixabayService.GetPixabayImage(imageSearch); 
         if (image == null)
         {
             return NotFound();
         }
-        return Ok(); 
+        return Ok(image);
     }
     
 }

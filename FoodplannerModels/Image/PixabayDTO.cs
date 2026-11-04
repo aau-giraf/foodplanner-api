@@ -1,5 +1,7 @@
+namespace FoodplannerModels.Image;
+
 public class PixabayDTO
 {
-    public required string Language { get; set; }
+    public string Language { get; set; }
     public required string SearchWord { get; set; } 
 }

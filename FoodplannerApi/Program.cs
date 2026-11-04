@@ -14,6 +14,7 @@ using FoodplannerModels.Codes;
 using FoodplannerServices.Account;
 using FoodplannerServices.Lunchbox;
 using FoodplannerServices.Image;
+using FoodplannerServices.ExternalApi;
 using FoodplannerServices.Auth;
 using FoodplannerServices.FeedbackChat;
 using FoodplannerServices.Secret;
@@ -250,6 +251,7 @@ builder.Services.AddScoped<IChildrenService, ChildrenService>();
 builder.Services.AddScoped<IClassroomService, ClassroomService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
+builder.Services.AddScoped<IPixabayService, PixabayService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IPasswordHandler, PasswordHandler>();
 builder.Services.AddScoped<IOneTimePasswordService, OneTimePasswordService>();
@@ -260,14 +262,11 @@ builder.Services.AddScoped<IIngredientsService,IngredientsService>();
 builder.Services.AddScoped<IMealsService, MealsService>();
 builder.Services.AddScoped<IPackedService,PackedService>();
 builder.Services.AddScoped<SubIngredientService>();
+builder.Services.AddScoped<IPixabayApi, PixabayApi>();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile));
 builder.Services.AddAutoMapper(cfg => { }, typeof(ImageProfile));
-builder.Services.AddAutoMapper(cfg => { }, typeof(PixabayProfile));
-
-
-
 
 
 // Builds the application
@@ -424,3 +423,6 @@ app.Urls.Add($"http://0.0.0.0:{backendPort}");
 
 // Runs the finalized application
 app.Run();
+
+
+
