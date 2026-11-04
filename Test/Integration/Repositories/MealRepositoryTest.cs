@@ -1,11 +1,9 @@
 using FoodplannerDataAccessSql;
 using FoodplannerDataAccessSql.Lunchbox;
 using FoodplannerModels.Lunchbox;
-
 using Npgsql;
-using Xunit;
 
-using Test.Integration;
+namespace Test.Integration.Repositories;
 
 [Collection("IntegrationDatabase")]
 public class MealRepositorytests

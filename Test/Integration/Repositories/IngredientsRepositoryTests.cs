@@ -2,8 +2,6 @@ using FoodplannerDataAccessSql;
 using FoodplannerDataAccessSql.Lunchbox;
 using FoodplannerModels.Lunchbox;
 using Npgsql;
-using Test.Integration;
-using Xunit;
 
 namespace Test.Integration.Repositories;
 
@@ -232,8 +230,7 @@ public class IngredientsRepositoryIntegrationTests
         return id;
     }
 
-    private async Task<(int Id, string Name, int UserId, int? ImageId)?>
-        GetStoredIngredientAsync(int id)
+    private async Task<(int Id, string Name, int UserId, int? ImageId)?>GetStoredIngredientAsync(int id)
     {
         await using var connection = connectionFactory.Create();
         await connection.OpenAsync();
