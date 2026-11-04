@@ -71,11 +71,13 @@ public class MealRepositorytests
         int originalUserId = 12345;
         int updatedUserId = 67890;
 
-        int mealId = await InsertTestMealAsync(
-            "Original Meal", originalUserId, "2026-11-02", false);
+        int mealId = 0;
 
         try
         {
+            mealId = await InsertTestMealAsync(
+                "Original Meal", originalUserId, "2026-11-02", false);
+
             var updatedMeal = new MealDTO
             {
                 Id = mealId,
@@ -105,7 +107,8 @@ public class MealRepositorytests
         finally
         {
             // Cleanup
-            await DeleteTestMealAsync(mealId);
+            if (mealId > 0)
+                await DeleteTestMealAsync(mealId);
         }
     }
 
@@ -116,11 +119,13 @@ public class MealRepositorytests
         // Arrange
         int userId = 12345;
 
-        int mealId = await InsertTestMealAsync(
-            "Test Meal", userId, "2026-11-02", false);
+        int mealId = 0;
 
         try
         {
+            mealId = await InsertTestMealAsync(
+                "Test Meal", userId, "2026-11-02", false);
+
             // Act
             var result = await repository.GetAllAsync();
 
@@ -140,7 +145,8 @@ public class MealRepositorytests
         finally
         {
             // Cleanup
-            await DeleteTestMealAsync(mealId);
+            if (mealId > 0)
+                await DeleteTestMealAsync(mealId);
         }
     }
 
@@ -151,11 +157,13 @@ public class MealRepositorytests
         // Arrange
         int userId = 12345;
 
-        int mealId = await InsertTestMealAsync(
-            "Test Meal", userId, "2026-11-02", false);
+        int mealId = 0;
 
         try
         {
+            mealId = await InsertTestMealAsync(
+                "Test Meal", userId, "2026-11-02", false);
+
             // Act
             var result = await repository.GetByIdAsync(mealId);
 
@@ -171,7 +179,8 @@ public class MealRepositorytests
         finally
         {
             // Cleanup
-            await DeleteTestMealAsync(mealId);
+            if (mealId > 0)
+                await DeleteTestMealAsync(mealId);
         }
     }
 
