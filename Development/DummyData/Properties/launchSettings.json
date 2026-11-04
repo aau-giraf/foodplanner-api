@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DummyData": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
