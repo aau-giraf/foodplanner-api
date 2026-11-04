@@ -88,4 +88,27 @@ public class SeedRunnerTest
             )
         );
     }
+
+    // Test that missing configuration values throw an exception
+    [Fact]
+    public void BuildConnectionString_MissingSecret_ThrowsException()
+    {
+        // Arrange
+        var secrets = new Dictionary<string, string>
+        {
+            ["DB_HOST"] = "localhost",
+            ["DB_PORT"] = "7654",
+            ["DB_NAME"] = "giraf",
+            ["DB_USER"] = "postgres"
+            // DB_PASS is intentionally missing
+        };
+
+        // Act & Assert
+        Assert.Throws<KeyNotFoundException>(() =>
+            global::DummyData.SeedRunner.BuildConnectionString(
+                key => secrets[key],
+                "DB"
+            )
+        );
+    }
 }
