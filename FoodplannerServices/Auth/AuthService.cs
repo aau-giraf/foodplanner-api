@@ -48,7 +48,7 @@ namespace FoodplannerServices.Auth
             // Check the length of the JWT_SECRET
             if (key.KeySize < 256)
             {
-                Console.WriteLine($"JWT_SECRET must be at least 256 bits long. Current size: {key.KeySize}");
+                // Console.WriteLine($"JWT_SECRET must be at least 256 bits long. Current size: {key.KeySize}");
                 throw new InvalidOperationException($"JWT_SECRET must be at least 256 bits long. Current size: {key.KeySize}");
             }
 
