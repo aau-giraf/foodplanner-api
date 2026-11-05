@@ -1,4 +1,4 @@
-using AutoMapper;
+using Mapster;
 using FoodplannerApi.Controller;
 using FoodplannerModels.Account;
 using Microsoft.AspNetCore.Mvc;

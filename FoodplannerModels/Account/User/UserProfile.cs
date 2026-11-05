@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Mapster;
+using MapsterMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,44 +8,44 @@ using System.Threading.Tasks;
 
 namespace FoodplannerModels.Account
 {
-    public class UserProfile : Profile
+    public class UserProfile : IRegister
     {
         // Entity for user profile 
-        public UserProfile()
+        public void Register(TypeAdapterConfig config)
         {
-            CreateMap<User, UserCreateDTO>();
-            CreateMap<UserCreateDTO, User>();
+            config.NewConfig<User, UserCreateDTO>();
+            config.NewConfig<UserCreateDTO, User>();
 
-            CreateMap<User, UserArchivedDTO>();
-            CreateMap<UserArchivedDTO, User>();
+            config.NewConfig<User, UserArchivedDTO>();
+            config.NewConfig<UserArchivedDTO, User>();
 
-            CreateMap<User, UserCredsDTO>();
-            CreateMap<UserCredsDTO, User>();
+            config.NewConfig<User, UserCredsDTO>();
+            config.NewConfig<UserCredsDTO, User>();
 
-            CreateMap<User, UserRoleDTO>();
-            CreateMap<UserRoleDTO, User>();
+            config.NewConfig<User, UserRoleDTO>();
+            config.NewConfig<UserRoleDTO, User>();
 
-            CreateMap<User, UserDTO>();
-            CreateMap<UserDTO, User>();
+            config.NewConfig<User, UserDTO>();
+            config.NewConfig<UserDTO, User>();
 
-            CreateMap<User, UserUpdateDTO>();
-            CreateMap<UserUpdateDTO, User>();
+            config.NewConfig<User, UserUpdateDTO>();
+            config.NewConfig<UserUpdateDTO, User>();
 
-            CreateMap<User, UserUpdateLoggedInDTO>();
-            CreateMap<UserUpdateLoggedInDTO, User>();
+            config.NewConfig<User, UserUpdateLoggedInDTO>();
+            config.NewConfig<UserUpdateLoggedInDTO, User>();
 
-            CreateMap<Login, LoginDTO>();
-            CreateMap<LoginDTO, Login>();
+            config.NewConfig<Login, LoginDTO>();
+            config.NewConfig<LoginDTO, Login>();
 
-            CreateMap<User, UserCreateChildDTO>();
-            CreateMap<UserCreateChildDTO, User>();
+            config.NewConfig<User, UserCreateChildDTO>();
+            config.NewConfig<UserCreateChildDTO, User>();
 
-            CreateMap<Children, ChildrenDTO>();
-            CreateMap<ChildrenDTO, Children>();
+            config.NewConfig<Children, ChildrenDTO>();
+            config.NewConfig<ChildrenDTO, Children>();
 
-            CreateMap<CreateClassroomDTO, Classroom>();
-            CreateMap<Classroom, ClassroomDTO>();
-            CreateMap<ClassroomDTO, Classroom>();
+            config.NewConfig<CreateClassroomDTO, Classroom>();
+            config.NewConfig<Classroom, ClassroomDTO>();
+            config.NewConfig<ClassroomDTO, Classroom>();
         }
 
         private static UserRole ParseUserRole(string roleString)
