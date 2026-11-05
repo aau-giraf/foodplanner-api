@@ -27,7 +27,7 @@ public class FoodImageService(IFoodImageRepository foodImageRepository, IMapper 
             Size = imageFileSize
         };
         
-        // Save image in DB and return it's ID
+        // Save image in DB and return its ID
         int foodImageId = await foodImageRepository.InsertAsync(foodImage);
         return foodImageId;
     }
