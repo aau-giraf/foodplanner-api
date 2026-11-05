@@ -300,7 +300,9 @@ This will run the bash script once every minute and write the output to `docker-
        "CORE_DB_PASS": "postgres",
 
        "JWT_SECRET": "local-development-secret-key-123",
-       "BACKEND_PORT": "8080"
+       "BACKEND_PORT": "8080",
+       "PIXABAY_API_KEY": "<PixaBayApiKey>", // Get the Pixabay API key from https://pixabay.com/api/docs/
+       "PIXABAY_API_URL": "https://pixabay.com/api/"
    }
    ...
    ```
