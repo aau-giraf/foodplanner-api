@@ -42,7 +42,7 @@ public class PixabayController(IPixabayService pixabayService, IAuthService auth
             }
 
             // Call the service to save the image URL
-            var imageId = await pixabayService.SaveImageUrl(userId, keyword, url);
+            var imageId = await pixabayService.SavePixabayUrl(userId, keyword, url);
             return Ok(imageId);
         }
         catch (InvalidOperationException e)

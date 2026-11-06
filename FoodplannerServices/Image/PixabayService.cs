@@ -23,7 +23,7 @@ public class PixabayService(IPixabayApi pixabayApi, IFoodImageService foodImageS
         return images;
     }
 
-    private async Task<int> SavePixabayUrl (int userid, string keyword, string url)
+    public async Task<int> SavePixabayUrl (int userid, string keyword, string url)
     {
         byte[] imageStream = null;
         // Convert the pixabay url to a stream 
