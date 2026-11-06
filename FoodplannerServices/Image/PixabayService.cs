@@ -14,7 +14,7 @@ public class PixabayService(IPixabayApi pixabayApi, IFoodImageService foodImageS
     // Method for retrieving a list of pixabay images 
 
     // Method from Pixabay API
-    public async Task<Pixabay> GetPixabayImage (PixabayDTO search){ 
+    public async Task<Pixabay> GetPixabayImage (GetPixabayImageDTO search){ 
         if (search.Language == null)
         {
             search.Language = "da";

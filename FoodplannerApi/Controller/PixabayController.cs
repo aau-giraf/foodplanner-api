@@ -17,7 +17,7 @@ public class PixabayController(IPixabayService pixabayService, IAuthService auth
     [Authorize(Roles = "Parent, Teacher, Admin")]
     [ProducesResponseType(typeof(IEnumerable<Pixabay>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Get([FromBody] PixabayDTO imageSearch)
+    public async Task<IActionResult> Get([FromBody] GetPixabayImageDTO imageSearch)
     {
         var image = await pixabayService.GetPixabayImage(imageSearch); 
         if (image == null)
@@ -31,7 +31,7 @@ public class PixabayController(IPixabayService pixabayService, IAuthService auth
     [Authorize(Roles = "Parent, Teacher, Admin")]
     [ProducesResponseType(typeof(IEnumerable<Pixabay>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> SavePixabayUrl([FromHeader(Name = "Authorization")] string token, [FromBody] string keyword, string url)
+    public async Task<IActionResult> SavePixabayUrl([FromHeader(Name = "Authorization")] string token, [FromBody] SavePixabayImageDTO pixabayDTO)
     {
         try{
             // Retrieve UserId from the JWT token
@@ -42,7 +42,7 @@ public class PixabayController(IPixabayService pixabayService, IAuthService auth
             }
 
             // Call the service to save the image URL
-            var imageId = await pixabayService.SavePixabayUrl(userId, keyword, url);
+            var imageId = await pixabayService.SavePixabayUrl(userId, pixabayDTO.SearchWord, pixabayDTO.Url);
             return Ok(imageId);
         }
         catch (InvalidOperationException e)
