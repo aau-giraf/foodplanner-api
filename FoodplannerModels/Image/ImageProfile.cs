@@ -1,12 +1,13 @@
-using AutoMapper;
+using Mapster;
+using MapsterMapper;
 
 namespace FoodplannerModels.Image;
 
-public class ImageProfile : Profile
+public class ImageProfile : IRegister
 {
-        public ImageProfile()
+        public void Register(TypeAdapterConfig config)
         {
-                CreateMap<FoodImage, FoodImageDTO>().ForMember(dest => dest.ImageSize,opt => opt.MapFrom(src => src.Size));
-                CreateMap<FoodImageDTO, FoodImage>();
+                config.NewConfig<FoodImage, FoodImageDTO>().Map(dest => dest.ImageSize, src => src.Size);
+                config.NewConfig<FoodImageDTO, FoodImage>();
         }
 }

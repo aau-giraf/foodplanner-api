@@ -29,6 +29,8 @@ using FluentMigrator.Runner;
 using FluentMigrator.Runner.Initialization;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
+using Mapster;
+using MapsterMapper;
 
 
 // Create a builder for the web application
@@ -259,10 +261,15 @@ builder.Services.AddScoped<IMealsService, MealsService>();
 builder.Services.AddScoped<IPackedService,PackedService>();
 builder.Services.AddScoped<SubIngredientService>();
 
-// Add AutoMapper
-builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile));
-builder.Services.AddAutoMapper(cfg => { }, typeof(ImageProfile));
+// Add Mapster
+var config = new TypeAdapterConfig();
 
+// Register mappings from FoodplannerModels
+config.Scan(typeof(UserProfile).Assembly);
+config.Scan(typeof(ImageProfile).Assembly);
+
+builder.Services.AddSingleton(config);
+builder.Services.AddScoped<IMapper, ServiceMapper>();
 
 
 

@@ -1,6 +1,7 @@
 using Moq;
 using Xunit;
-using AutoMapper;
+using Mapster;
+using MapsterMapper;
 using FoodplannerModels.Account;
 using FoodplannerServices.Account;
 using FoodplannerModels.Auth;

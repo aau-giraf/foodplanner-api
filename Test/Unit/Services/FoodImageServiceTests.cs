@@ -1,4 +1,5 @@
- using AutoMapper;
+ using Mapster;
+ using MapsterMapper;
  using FoodplannerDataAccessSql.Image;
  using FoodplannerModels.Image;
  using FoodplannerServices.Image;

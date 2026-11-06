@@ -1,4 +1,5 @@
-using AutoMapper;
+using Mapster;
+using MapsterMapper;
 using FoodplannerModels.Account;
 using FoodplannerModels.Auth;
 using FoodplannerServices.Account;
