@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using MapsterMapper;
 using FoodplannerDataAccessSql.Image;
 using FoodplannerModels.Account;
 using FoodplannerModels.Image;
@@ -8,7 +7,7 @@ using FoodplannerModels.Image;
 namespace FoodplannerServices.Image;
 
 // Service implementation for FoodImage business logic
-public class FoodImageService(IFoodImageRepository foodImageRepository, IMapper _mapper) : IFoodImageService
+public class FoodImageService(IFoodImageRepository foodImageRepository) : IFoodImageService
 {
     // Creates a new food image.
     public async Task<int> CreateFoodImage(int userid, Stream imageStream, string imageName, string imageType, long imageFileSize)
@@ -32,11 +31,26 @@ public class FoodImageService(IFoodImageRepository foodImageRepository, IMapper 
         return foodImageId;
     }
 
+
     // Return food image by ID.
     public async Task<FoodImageDTO> GetFoodImage(int foodImageId)
     {
         var foodImage = await foodImageRepository.GetByIdAsync(foodImageId);
-        return _mapper.Map<FoodImageDTO>(foodImage);
+
+        if (foodImage == null)
+        {
+            throw new KeyNotFoundException($"FoodImage with id {foodImageId} not found");
+        }
+
+        return new FoodImageDTO
+        {
+            Id = foodImage.Id,
+            ImageData = foodImage.ImageData,
+            UserId = foodImage.UserId,
+            ImageName = foodImage.ImageName,
+            ImageFileType = foodImage.ImageFileType,
+            ImageSize = foodImage.Size
+        };
     }
 
     // Get a URL for the food image by ID.

@@ -1,5 +1,3 @@
-using Mapster;
-using MapsterMapper;
 using FoodplannerModels.Account;
 using FoodplannerServices.Account;
 using Moq;
@@ -10,16 +8,13 @@ public class ClassroomServiceTests
 {
     private readonly Mock<IClassroomRepository> _mockClassroomRepository;
     private readonly ClassroomService _classService;
-    private readonly Mock<IMapper> _mockMapper;
 
     public ClassroomServiceTests()
     {
         _mockClassroomRepository = new Mock<IClassroomRepository>();
-        _mockMapper = new Mock<IMapper>();
 
         _classService = new ClassroomService(
-            _mockClassroomRepository.Object,
-            _mockMapper.Object
+            _mockClassroomRepository.Object
         );
     }
 
@@ -35,14 +30,6 @@ public class ClassroomServiceTests
         _mockClassroomRepository
             .Setup(repo => repo.GetAllAsync())
             .ReturnsAsync(expectedClassrooms);
-        
-        _mockMapper
-            .Setup(m => m.Map<ClassroomDTO>(It.IsAny<Classroom>()))
-            .Returns((Classroom src) => new ClassroomDTO()
-            {
-                ClassId = src.ClassId,
-                ClassName = src.ClassName
-            });
         
         // Act
         var result = await _classService.GetAllClassroomAsync();
@@ -63,14 +50,6 @@ public class ClassroomServiceTests
         _mockClassroomRepository
             .Setup(repo => repo.UpdateAsync(It.IsAny<Classroom>()))
             .ReturnsAsync(id);
-        
-        _mockMapper
-            .Setup(m => m.Map<Classroom>(It.IsAny<CreateClassroomDTO>()))
-            .Returns((CreateClassroomDTO src) => new Classroom
-            {
-                ClassId = id,
-                ClassName = src.ClassName
-            });
         
         var createClassroomDto = new CreateClassroomDTO() { ClassName = "1.A" };
         
