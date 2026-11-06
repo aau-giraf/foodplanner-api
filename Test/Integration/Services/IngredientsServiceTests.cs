@@ -3,8 +3,6 @@ using FoodplannerDataAccessSql.Lunchbox;
 using FoodplannerModels.Lunchbox;
 using FoodplannerServices.Lunchbox;
 using Npgsql;
-using Test.Integration;
-using Xunit;
 
 namespace Test.Integration.Services;
 
