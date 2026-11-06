@@ -6,12 +6,12 @@ using Npgsql;
 namespace Test.Integration.Repositories;
 
 [Collection("IntegrationDatabase")]
-public class MealRepositorytests
+public class MealTests
 {
     private readonly PostgreSQLConnectionFactory connectionFactory;
     private readonly MealsRepository repository;
 
-    public MealRepositorytests(DatabaseFixture fixture)
+    public MealTests(DatabaseFixture fixture)
     {
         connectionFactory = fixture.ConnectionFactory;
 

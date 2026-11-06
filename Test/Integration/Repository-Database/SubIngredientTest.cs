@@ -6,14 +6,14 @@ using Npgsql;
 namespace Test.Integration.Repositories;
 
 [Collection("IntegrationDatabase")]
-public class SubIngredientsRepositoryTests
+public class SubIngredientTests
 {
     private readonly PostgreSQLConnectionFactory connectionFactory;
     private readonly SubIngredientRepository repository;
 
     private readonly List<int> createdIngredientIds = new();
 
-    public SubIngredientsRepositoryTests(DatabaseFixture fixture)
+    public SubIngredientTests(DatabaseFixture fixture)
     {
         connectionFactory = fixture.ConnectionFactory;
 

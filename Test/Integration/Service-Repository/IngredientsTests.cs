@@ -7,13 +7,13 @@ using Npgsql;
 namespace Test.Integration.Services;
 
 [Collection("IntegrationDatabase")]
-public class IngredientsServiceTests
+public class IngredientsTests
 {
     private readonly PostgreSQLConnectionFactory connectionFactory;
     private readonly IngredientsService service;
     private readonly List<int> createdIngredientIds = new();
 
-    public IngredientsServiceTests(DatabaseFixture fixture)
+    public IngredientsTests(DatabaseFixture fixture)
     {
         connectionFactory = fixture.ConnectionFactory;
         var repository = new IngredientsRepository(new DapperExecutor(connectionFactory));
