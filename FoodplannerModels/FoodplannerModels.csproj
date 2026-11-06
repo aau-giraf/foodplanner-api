@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />
-    <PackageReference Include="Mapster" Version="10.0.14" />
   </ItemGroup>
   
 </Project>

@@ -29,9 +29,6 @@ using FluentMigrator.Runner;
 using FluentMigrator.Runner.Initialization;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
-using Mapster;
-using MapsterMapper;
-
 
 // Create a builder for the web application
 var builder = WebApplication.CreateBuilder(args);
@@ -261,17 +258,6 @@ builder.Services.AddScoped<IMealsService, MealsService>();
 builder.Services.AddScoped<IPackedService,PackedService>();
 builder.Services.AddScoped<SubIngredientService>();
 
-// Add Mapster
-var config = new TypeAdapterConfig();
-
-// Register mappings from FoodplannerModels
-config.Scan(typeof(UserProfile).Assembly);
-config.Scan(typeof(ImageProfile).Assembly);
-
-builder.Services.AddSingleton(config);
-builder.Services.AddScoped<IMapper, ServiceMapper>();
-
-
 
 
 
@@ -331,6 +317,7 @@ if (app.Environment.IsDevelopment())
     }.ConnectionString;
 
     // Run CoreMock migrations separately
+    #pragma warning disable ASP0000
     using var serviceProvider = new ServiceCollection()
         .AddSingleton(new DataMigrationSource(sourceConnection))
         .AddFluentMigratorCore()
@@ -348,7 +335,8 @@ if (app.Environment.IsDevelopment())
         })
         .AddLogging(lb => lb.AddFluentMigratorConsole())
         .BuildServiceProvider();
-
+    #pragma warning restore ASP0000
+    
     using var scope = serviceProvider.CreateScope();
 
     var runner = scope.ServiceProvider

@@ -1,5 +1,3 @@
- using Mapster;
- using MapsterMapper;
  using FoodplannerDataAccessSql.Image;
  using FoodplannerModels.Image;
  using FoodplannerServices.Image;
@@ -15,7 +13,7 @@
     public async void FoodImageIsCreatedWithCorrectUserId()
     {
         var expectedUserId = 42;
-        var foodImageService = new FoodImageService(foodImageServiceFixture.FoodImageRepository, new Mock<IMapper>().Object);
+        var foodImageService = new FoodImageService(foodImageServiceFixture.FoodImageRepository);
 
          var imageStream = new MemoryStream([0]);
          var actualUserId = await foodImageService.CreateFoodImage(expectedUserId, imageStream, "someImage", "someType", imageStream.Length);
