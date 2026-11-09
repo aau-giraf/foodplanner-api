@@ -4,7 +4,7 @@ using FoodplannerModels.Auth;
 using FoodplannerServices.Account;
 using Moq;
 
-namespace Test.Service;
+namespace Test.Unit.Service;
 
 public class ChildrenServiceTests 
 {

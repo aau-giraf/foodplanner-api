@@ -1,7 +1,7 @@
 using FoodplannerModels.Account;
 using Test.Builder;
 
-namespace Test.BuilderTest;
+namespace Test.Unit.BuilderTest;
 
 public class UserBuilderTest
 {

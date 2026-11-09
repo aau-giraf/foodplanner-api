@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
-namespace Test.MigrationTests;
+namespace Test.Unit.MigrationTests;
 
 public class MigrateUserDataTests
 {

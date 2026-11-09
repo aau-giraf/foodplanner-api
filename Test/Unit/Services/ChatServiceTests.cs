@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace Test.Service;
+namespace Test.Unit.Service;
 
 public class ChatServiceTests
 {

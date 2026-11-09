@@ -6,7 +6,7 @@ using FoodplannerServices.Account;
 using FoodplannerModels.Auth;
 using Test.Builder;
 
-namespace Test;
+namespace Test.Unit;
 
 public class ChildrenServiceTests
 {

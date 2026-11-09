@@ -4,7 +4,7 @@ using System.Text;
 using FoodplannerModels.Account;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Test.JwtTest
+namespace Test.Unit.JwtTest
 {
     public class MissingClaimsException : Exception
     {

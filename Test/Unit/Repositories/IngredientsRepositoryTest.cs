@@ -1,13 +1,9 @@
 using FoodplannerDataAccessSql;
 using FoodplannerDataAccessSql.Lunchbox;
 using FoodplannerModels.Lunchbox;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.IdentityModel.Abstractions;
 using Moq;
-using SQLitePCL;
-using Xunit;
 
-
+namespace Test.Unit.RepositoryTests;
 
 public class IngredientsRepositoryTests
 {

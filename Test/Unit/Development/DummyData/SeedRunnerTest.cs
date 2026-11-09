@@ -2,7 +2,7 @@
 using Xunit;
 using Npgsql;
 
-namespace Test.Development.DummyData;
+namespace Test.Unit.DummyData;
 
 public class SeedRunnerTest
 {

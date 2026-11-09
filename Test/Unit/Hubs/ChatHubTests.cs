@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using Moq;
 
 // Adds the ChatHubTests to the Test.Service namespace
-namespace Test.Service;
+namespace Test.Unit.Service;
 
 public class ChatHubTests
 {

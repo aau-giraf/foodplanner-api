@@ -5,7 +5,7 @@
  using Microsoft.Extensions.Logging;
  using Moq;
 
- namespace testing;
+ namespace Test.Unit.Service;
 
  public class FoodImageServiceTests(FoodImageServiceFixture foodImageServiceFixture) : IClassFixture<FoodImageServiceFixture>
  {

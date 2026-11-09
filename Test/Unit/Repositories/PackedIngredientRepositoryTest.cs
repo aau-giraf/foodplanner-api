@@ -5,7 +5,7 @@ using FoodplannerModels.Lunchbox;
 using Moq;
 using Xunit;
 
-namespace Test.RepositoryTests;
+namespace Test.Unit.RepositoryTests;
 
 public class PackedRepositoryTests
 {

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Test.Codes
+namespace Test.Unit.Service
 {
     public class OneTimePasswordServiceTests
     {

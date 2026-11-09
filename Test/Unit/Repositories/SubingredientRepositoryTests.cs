@@ -4,6 +4,8 @@ using FoodplannerModels.Lunchbox;
 using Moq;
 using Xunit;
 
+namespace Test.Unit.RepositoryTests;
+
 public class SubIngredientsRepositoryTests
 {
     private readonly Mock<IDapperExecutor> mockExecutor = new();

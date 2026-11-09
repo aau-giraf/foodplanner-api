@@ -5,7 +5,7 @@ using FoodplannerModels.Account;
 using FoodplannerModels.Auth;
 using FoodplannerModels.Codes;
 
-namespace Test.AccountTests.Controller;
+namespace Test.Unit.Controller;
 
 public class UsersControllerTests
 {

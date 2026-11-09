@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace Test.Development.DummyData;
+namespace Test.Unit.DummyData;
 
 public class ProgramTest
 {

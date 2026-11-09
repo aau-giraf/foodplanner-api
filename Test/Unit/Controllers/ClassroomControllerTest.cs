@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Test.Builder;
 
-namespace Test.Controller;
+namespace Test.Unit.Controller;
 
 public class ClassroomControllerTest
 {

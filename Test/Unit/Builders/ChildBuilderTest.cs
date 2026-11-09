@@ -2,7 +2,7 @@ using Test.Builder;
 using FoodplannerModels.Account;
 using Xunit;
 
-namespace Test.BuilderTest;
+namespace Test.Unit.BuilderTest;
 
 public class ChildBuilderTest
 {

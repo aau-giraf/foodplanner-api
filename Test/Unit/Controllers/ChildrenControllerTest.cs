@@ -4,7 +4,7 @@ using FoodplannerModels.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
-namespace Test.Controller;
+namespace Test.Unit.Controller;
 
 public class ChildrenControllerTest
 {

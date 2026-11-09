@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
-namespace Test.LunchboxTests.Controller;
+namespace Test.Unit.Controller;
 
 public class PackedPackedIngredientControllerTests
 {

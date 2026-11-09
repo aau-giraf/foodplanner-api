@@ -6,7 +6,7 @@ using FoodplannerModels.Auth;
 using Microsoft.AspNetCore.Identity;
 using Test.Builder;
 
-namespace Test.Service;
+namespace Test.Unit.Service;
 
 public class UserServiceTests
 {

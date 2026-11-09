@@ -3,7 +3,7 @@ using FoodplannerServices.Lunchbox;
 using FoodplannerModels.Lunchbox;
 using Moq;
 
-namespace Test.Service;
+namespace Test.Unit.Service;
 
 public class MealsServiceTests
 {

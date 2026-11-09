@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Moq; //Library used for mocking
 
 
-namespace Test.Service;
+namespace Test.Unit.Service;
 
 public class AuthServiceTests{
 

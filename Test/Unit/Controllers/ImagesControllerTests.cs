@@ -6,7 +6,7 @@ using FoodplannerServices.Image;
 using FoodplannerModels.Image;
 using FoodplannerModels.Auth;
 
-namespace Test.FoodImageTests;
+namespace Test.Unit.FoodImageTests;
 
 public class ImagesControllerTests
 {

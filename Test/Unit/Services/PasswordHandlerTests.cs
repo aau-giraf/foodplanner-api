@@ -4,7 +4,7 @@ using Moq;
 using AutoMapper;
 using FoodplannerModels.Auth;
 
-namespace Test.Service;
+namespace Test.Unit.Service;
 
 public class PasswordhandlerTests
 {

@@ -2,7 +2,7 @@ using FoodplannerServices.Secret;
 using Infisical.Sdk;
 using Microsoft.Extensions.Configuration;
 
-namespace Test.Secret;
+namespace Test.Unit.Secret;
 
 public class SecretsLoaderTests
 {
