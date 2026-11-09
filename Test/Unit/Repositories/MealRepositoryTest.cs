@@ -28,6 +28,7 @@ public class MealsRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllAsync_Success()
     {
         // Arrange
@@ -61,6 +62,7 @@ public class MealsRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllByUserAndDateAsync_Success()
     {
         // Arrange
@@ -108,6 +110,7 @@ public class MealsRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetByIdAsync_Success()
     {
         // Arrange
@@ -147,6 +150,7 @@ public class MealsRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetByIdAsync_MealDoesNotExist()
     {
         // Arrange
@@ -172,6 +176,7 @@ public class MealsRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task InsertAsync_Success()
     {
         // Arrange
@@ -212,6 +217,7 @@ public class MealsRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateAsync_Success()
     {
         // Arrange
@@ -249,6 +255,7 @@ public class MealsRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task DeleteAsync_Success()
     {
         // Arrange
@@ -274,6 +281,7 @@ public class MealsRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllTemplatesByUserAsync_Success()
     {
         // Arrange
@@ -316,6 +324,7 @@ public class MealsRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateTemplateStatusAsync_Success()
     {
         // Arrange

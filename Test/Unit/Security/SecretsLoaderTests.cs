@@ -7,6 +7,7 @@ namespace Test.Secret;
 public class SecretsLoaderTests
 {
     [Fact]
+    [Trait("Category", "Unit")]
     public void Configure_ConfigContainsStrings_DoesNotThrow()
     {
         // Arrange
@@ -37,6 +38,7 @@ public class SecretsLoaderTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Configure_EnvironmentContainsStrings_DoesNotThrow()
     {
         // Arrange
@@ -69,6 +71,7 @@ public class SecretsLoaderTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Configure_NoConfigOrEnvironmentStrings_ThrowsApplicationException()
     {
         // Arrange
@@ -85,6 +88,7 @@ public class SecretsLoaderTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void GetSecret_ValidSecretKey_ReturnsSecret()
     {
         // Arrange
@@ -120,6 +124,7 @@ public class SecretsLoaderTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void GetSecret_InvalidSecretKey_ThrowsInfisicalException()
     {
         // Arrange
