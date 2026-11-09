@@ -16,7 +16,7 @@ public class ChildrenDTO
     [StringLength(100, ErrorMessage = "Efternavn er for langt")]
     public required string LastName { get; set; }
 
-    public int parentId { get; set; }
+    public int ParentId { get; set; }
 
-    public int classId { get; set; }
+    public int? ClassId { get; set; }
 }
