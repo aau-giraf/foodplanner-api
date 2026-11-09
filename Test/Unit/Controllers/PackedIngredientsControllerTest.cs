@@ -21,6 +21,7 @@ public class PackedPackedIngredientControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAll_ReturnsOkObjectResult()
     {
         // Arrange
@@ -46,6 +47,7 @@ public class PackedPackedIngredientControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Get_ReturnsOkObjectResult_WhenPackedIngredientDoesExist()
     {
         // Arrange
@@ -72,6 +74,7 @@ public class PackedPackedIngredientControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Get_ReturnsNotFoundResult_WhenPackedIngredientDoesNotExist()
     {
         // Arrange
@@ -88,6 +91,7 @@ public class PackedPackedIngredientControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Create_ReturnsCreatedAtActionResult_WhenPackedIngredientIsCreated()
     {
         // Arrange
@@ -107,6 +111,7 @@ public class PackedPackedIngredientControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Create_ReturnsCreatedAtActionResult_WhenPackedIngredientIsNotCreated()
     {
         // Arrange
@@ -122,6 +127,7 @@ public class PackedPackedIngredientControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Update_ReturnsOkObjectResult_WhenPackedIngredientIsUpdated()
     {
         // Arrange
@@ -156,6 +162,7 @@ public class PackedPackedIngredientControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Update_ReturnsBadRequest_WhenPackedIngredientIsNotUpdated()
     {
         // Arrange
@@ -190,6 +197,7 @@ public class PackedPackedIngredientControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Delete_ReturnsOkObjectResult_WhenPackedIngredientDoesExist()
     {
         // Arrange
@@ -205,6 +213,7 @@ public class PackedPackedIngredientControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Delete_ReturnsNotFoundResult_WhenPackedIngredientDoesNotExist()
     {
         // Arrange

@@ -7,6 +7,7 @@ namespace Test.BuilderTest;
 public class ChildBuilderTest
 {
     [Fact]
+    [Trait("Category", "Unit")]
     public void Build_ShouldCreateChildWithCorrectProperties()
     {
         // Arrange
@@ -27,6 +28,7 @@ public class ChildBuilderTest
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Build_ShouldCreateChildWithDefaultValues()
     {
         // Arrange & Act

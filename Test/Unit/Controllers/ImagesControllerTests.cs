@@ -11,6 +11,7 @@ namespace Test.FoodImageTests;
 public class ImagesControllerTests
 {
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UploadImage_ValidTokenAndValidImage_ReturnsOkWithImageId()
     {
         //arrange
@@ -45,6 +46,7 @@ public class ImagesControllerTests
         Assert.Equal(imageId, okResult.Value);
     }
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UploadImages_ValidTokenAndValidImages_ReturnsOkWithImageIds()
     {
         // Arrange
@@ -117,6 +119,7 @@ public class ImagesControllerTests
         Assert.Contains(imageIds, id => id == imageId2);
     }
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task DeleteImages_ValidTokenAndValidImageIds_ReturnsOkWithSuccessMessage()
     {
         // Arrange
@@ -146,6 +149,7 @@ public class ImagesControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetFoodImage_ValidTokenAndValidImageId_ReturnsOkWithImageData()
     {
         // Arrange
@@ -185,6 +189,7 @@ public class ImagesControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetPresignedImageLink_ValidTokenAndValidImageId_ReturnsOkWithPresignedLink()
     {
         // Arrange

@@ -24,6 +24,7 @@ public class ChildrenControllerTest
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllChildrenClassesAsync_ReturnsOkObjectResult()
     {
         // Arrange
@@ -43,6 +44,7 @@ public class ChildrenControllerTest
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAll_ReturnsOkObjectResult()
     {
         // Arrange

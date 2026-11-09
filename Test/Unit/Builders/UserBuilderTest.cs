@@ -6,6 +6,7 @@ namespace Test.BuilderTest;
 public class UserBuilderTest
 {
     [Fact]
+    [Trait("Category", "Unit")]
     public void UserBuilder_ReturnsUser_ThatIsNotNull()
     {
         //Arrange
@@ -21,6 +22,7 @@ public class UserBuilderTest
     [Theory]
     [InlineData("Lars", "Larsen", "LarsLarsen@jysk.dk", "Lars1234", UserRole.Parent, true, "1234", false)]
     [InlineData("Anna", "Andersen", "anna.andersen@email.com", "Anna5678", UserRole.Parent, false, "5678", true)]
+    [Trait("Category", "Unit")]
     public void UserBuilder_ReturnsUser_WithExpectedValues(string firstName, string lastName, string email,
         string password, UserRole role, bool approved, string pincode, bool archived)
     {

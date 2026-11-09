@@ -20,6 +20,7 @@ public class MealsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAll_ReturnsOkObjectResult()
     {
         // Arrange
@@ -48,6 +49,7 @@ public class MealsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllByUser_ReturnsOkObjectResult()
     {
         // Arrange
@@ -76,6 +78,7 @@ public class MealsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task TeacherGetUserMeals_ReturnsOkObjectResult()
     {
         // Arrange
@@ -101,6 +104,7 @@ public class MealsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Get_ReturnsOkObjectResult_WhenMealDoesExist()
     {
         // Arrange
@@ -123,6 +127,7 @@ public class MealsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Get_ReturnsNotFoundResult_WhenMealDoesNotExist()
     {
         // Arrange
@@ -139,6 +144,7 @@ public class MealsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Create_ReturnsCreatedAtActionResult_WhenMealIsCreated()
     {
         // Arrange
@@ -166,6 +172,7 @@ public class MealsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Create_ReturnsBadRequest_WhenMealIsNotCreated()
     {
         // Arrange
@@ -185,6 +192,7 @@ public class MealsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Update_ReturnsOkObjectResult_WhenMealIsUpdated()
     {
         // Arrange
@@ -211,6 +219,7 @@ public class MealsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Update_ReturnsBadRequest_WhenMealIsNotUpdated()
     {
         // Arrange
@@ -230,6 +239,7 @@ public class MealsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Delete_ReturnsOkObjectResult_WhenMealExist()
     {
         // Arrange
@@ -250,6 +260,7 @@ public class MealsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Delete_ReturnsNotFoundResult_WhenMealDoesNotExist()
     {
         // Arrange
