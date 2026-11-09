@@ -30,6 +30,7 @@ namespace Test.Codes
         }
 
         [Fact]
+        [Trait("Category", "Unit")]
         public async Task CreateOneTimePassword_InsertsOtpAndReturnsGeneratedCode()
         {
             // Arrange
@@ -52,6 +53,7 @@ namespace Test.Codes
         }
 
         [Fact]
+        [Trait("Category", "Unit")]
         public async Task RedeemOneTimePassword_WhenExpired_Returns0()
         {
             // Arrange
@@ -67,6 +69,7 @@ namespace Test.Codes
         }
 
         [Fact]
+        [Trait("Category", "Unit")]
         public async Task RedeemOneTimePassword_ValidCode_AddsParentAndDeletesOtp()
         {
             // Arrange
@@ -100,6 +103,7 @@ namespace Test.Codes
         }
 
         [Fact]
+        [Trait("Category", "Unit")]
         public async Task RedeemOneTimePassword_ParentInvitesChild_BindsParentToChild()
         {
             // Arrange: ChildUser is set → parent is being added to child
@@ -138,6 +142,7 @@ namespace Test.Codes
 
 
         [Fact]
+        [Trait("Category", "Unit")]
         public async Task RedeemOneTimePassword_ParentInvitesParent_BindsChildToParent()
         {
             // Arrange: ChildUser null → child is being added to parent

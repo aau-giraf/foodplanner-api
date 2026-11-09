@@ -18,6 +18,7 @@ public class PackedServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllPackedAsync_Success()
     {
         // Arrange
@@ -39,6 +40,7 @@ public class PackedServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllPackedAsync_RepositoryError()
     {
         // Arrange
@@ -49,6 +51,7 @@ public class PackedServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllPackedByMealIdAsync_Success()
     {
         // Arrange
@@ -71,6 +74,7 @@ public class PackedServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllPackedByMealIdAsync_RepositoryError()
     {
         // Arrange
@@ -82,6 +86,7 @@ public class PackedServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task CreatePackedAsync_Success()
     {
         // Arrange
@@ -96,6 +101,7 @@ public class PackedServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task CreatePackedAsync_RepositoryError()
     {
         // Arrange
@@ -107,6 +113,7 @@ public class PackedServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdatePackedAsync_Success()
     {
         // Arrange
@@ -122,6 +129,7 @@ public class PackedServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdatePackedAsync_RepositoryError()
     {
         // Arrange
@@ -134,6 +142,7 @@ public class PackedServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task DeletePackedAsync_Success()
     {
         // Arrange
@@ -148,6 +157,7 @@ public class PackedServiceTests
     }
     
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task DeletePackedAsync_RepositoryError()
     {
         // Arrange

@@ -16,6 +16,7 @@ public class PasswordhandlerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void EncryptPassword_CreatesNewEncryptedPassword()
     {
         // Arrange
@@ -31,6 +32,7 @@ public class PasswordhandlerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void VerifyPassword_VerifiesEncryptedPassword()
     {
         // Arrange

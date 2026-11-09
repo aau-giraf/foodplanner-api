@@ -23,6 +23,7 @@ public class ClassroomServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllClassroomAsync_ReturnsAllClassrooms()
     {
         // Arrange
@@ -55,6 +56,7 @@ public class ClassroomServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateClassroomAsync_UpdatesValueInRepository()
     {
         // Arrange
@@ -82,6 +84,7 @@ public class ClassroomServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task CheckChildrenInClassroom_ChecksValueInRepository()
     {
         // Arrange
@@ -98,6 +101,7 @@ public class ClassroomServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task DeleteClassroomAsync_UpdatesValueInRepository()
     {
         // Arrange

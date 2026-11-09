@@ -57,6 +57,7 @@ public class ChatServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task AddMessageAsync_Success()
     {
         // Arrange
@@ -102,6 +103,7 @@ public class ChatServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task AddMessageAsync_UserNotFound()
     {
         // Arrange
@@ -128,6 +130,7 @@ public class ChatServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task AddMessageAsync_BroadcastThrows()
     {
         // Arrange
@@ -161,6 +164,7 @@ public class ChatServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetMessagesAsync_ReturnsMessagesIncludingMessageIdAndChatThreadId()
     {
         // Arrange

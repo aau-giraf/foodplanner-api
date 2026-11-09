@@ -18,6 +18,7 @@ public class IngredientsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllIngredientsAsync_Success()
     {
         // Arrange
@@ -38,6 +39,7 @@ public class IngredientsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllIngredientsAsync_RepositoryError()
     {
         // Arrange
@@ -48,6 +50,7 @@ public class IngredientsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllIngredientsByUserAsync_Success()
     {
         // Arrange
@@ -69,6 +72,7 @@ public class IngredientsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllIngredientsByUserAsync_RepositoryError()
     {
         // Arrange
@@ -80,6 +84,7 @@ public class IngredientsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetIngredientByIdAsync_Success()
     {
         // Arrange
@@ -103,6 +108,7 @@ public class IngredientsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetIngredientByIdAsync_IngredientDoesNotExist()
     {
         // Arrange
@@ -117,6 +123,7 @@ public class IngredientsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetIngredientByIdAsync_RepositoryError()
     {
         // Arrange
@@ -128,6 +135,7 @@ public class IngredientsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task CreateIngredientAsync_Success()
     {
         // Arrange
@@ -148,6 +156,7 @@ public class IngredientsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task CreateIngredientAsync_RepositoryError()
     {
         // Arrange
@@ -164,6 +173,7 @@ public class IngredientsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateIngredientAsync_Success()
     {
         // Arrange
@@ -179,6 +189,7 @@ public class IngredientsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateIngredientAsync_RepositoryError()
     {
         // Arrange
@@ -195,6 +206,7 @@ public class IngredientsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task DeleteIngredientAsync_Success()
     {
         // Arrange
@@ -210,6 +222,7 @@ public class IngredientsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task DeleteIngredientAsync_RepositoryError()
     {
         // Arrange

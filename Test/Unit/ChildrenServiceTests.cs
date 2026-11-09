@@ -35,6 +35,7 @@ public class ChildrenServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task AddParentToChildAsync_WithValidParentRole_ShouldSucceed()
     {
         // Arrange
@@ -60,6 +61,7 @@ public class ChildrenServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task AddParentToChildAsync_WithNonParentRole_ShouldThrowException()
     {
         // Arrange
@@ -83,6 +85,7 @@ public class ChildrenServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task AddParentToChildAsync_WithUnapprovedRole_ShouldThrowException()
     {
         // Arrange
@@ -106,6 +109,7 @@ public class ChildrenServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task AddParentToChildAsync_WithNonExistentUser_ShouldThrowException()
     {
         // Arrange
@@ -125,6 +129,7 @@ public class ChildrenServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task AddParentToChildAsync_ChildCanHaveMultipleParents_ShouldSucceed()
     {
         // Arrange

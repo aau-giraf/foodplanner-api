@@ -11,6 +11,7 @@
  {
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async void FoodImageIsCreatedWithCorrectUserId()
     {
         var expectedUserId = 42;

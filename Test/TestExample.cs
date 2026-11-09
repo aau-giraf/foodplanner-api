@@ -10,7 +10,9 @@ public class TestExample
     // But these are the most important and most test variation can be implemented using these.
 
     // Use [Fact] to test a single variation of inputs or changing expected values
+    // Use [Trait("Category", "Unit")] to categorize the test as a unit test
     [Fact]
+    [Trait("Category", "Unit")]
     public void Example1() {
         bool actual = true;
 
@@ -21,6 +23,7 @@ public class TestExample
     [Theory]
     [InlineData(true, "this will pass")]
     [InlineData(false, "this will fail")]
+    [Trait("Category", "Unit")]
     public void Example2(bool expected, string input) {
         Assert.NotNull(input);
         var actual = input == "this will pass";

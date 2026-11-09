@@ -30,6 +30,7 @@ public class ChildrenServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllChildrenAsync_ReturnsAllChildren()
     {
         // Arrange
@@ -63,6 +64,7 @@ public class ChildrenServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateChildrenAsync_UpdatesValueInRepository()
     {
         // Arrange
@@ -88,6 +90,7 @@ public class ChildrenServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task DeleteChildrenAsync_UpdatesValueInRepository()
     {
         // Arrange

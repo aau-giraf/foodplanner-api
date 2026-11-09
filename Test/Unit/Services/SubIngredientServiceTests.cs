@@ -18,6 +18,7 @@ public class SubIngredientServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllSubIngredientsAsync_Success()
     {
         // Arrange
@@ -39,6 +40,7 @@ public class SubIngredientServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllSubIngredientsAsync_RepositoryError()
     {
         // Arrange
@@ -49,6 +51,7 @@ public class SubIngredientServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllSubIngredientsByParentIdAsync_Success()
     {
         // Arrange
@@ -71,6 +74,7 @@ public class SubIngredientServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllSubIngredientsByParentIdAsync_RepositoryError()
     {
         // Arrange
@@ -82,6 +86,7 @@ public class SubIngredientServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task CreateSubIngredientAsync_Success()
     {
         // Arrange
@@ -96,6 +101,7 @@ public class SubIngredientServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task CreateSubIngredientAsync_RepositoryError()
     {
         // Arrange
@@ -107,6 +113,7 @@ public class SubIngredientServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateSubIngredientAsync_Success()
     {
         // Arrange
@@ -122,6 +129,7 @@ public class SubIngredientServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateIngredientAsync_RepositoryError()
     {
         // Arrange
@@ -134,6 +142,7 @@ public class SubIngredientServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task DeleteSubIngredientAsync_Success()
     {
         // Arrange
@@ -148,6 +157,7 @@ public class SubIngredientServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task DeleteSubIngredientAsync_RepositoryError()
     {
         // Arrange

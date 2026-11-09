@@ -35,6 +35,7 @@ public class UserServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllUsersAsync_ReturnsAllUsers()
     {
         // Arrange
@@ -111,6 +112,7 @@ public class UserServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetUserByIdAsync_ReturnsAUser_WhenIdIsValid()
     {
         // Arrange
@@ -138,6 +140,7 @@ public class UserServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task CreateUserAsync_CreatesANewUser()
     {
         // Arrange
@@ -164,6 +167,7 @@ public class UserServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task CreateUserAsync_ThrowsAnException_WhenEmailAlreadyExists()
     {
         // Arrange
@@ -187,6 +191,7 @@ public class UserServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateUserAsync_UpdatesValueInRepository()
     {
         // Arrange
@@ -217,6 +222,7 @@ public class UserServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task DeleteUserAsync_UpdatesValueInRepository()
     {
         // Arrange
@@ -236,6 +242,7 @@ public class UserServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetJWTByEmailAndPasswordAsync_ReturnsUser_WithMatchingCredentials()
     {
         // Arrange
@@ -267,6 +274,7 @@ public class UserServiceTests
     [Theory]
     [InlineData(UserRole.Parent)]
     [InlineData(UserRole.Child)]
+    [Trait("Category", "Unit")]
     public async Task GetJWTByEmailAndPasswordAsync_ReturnsUser_WithChildCredentials(UserRole inputUserRole)
     {
         // Arrange
@@ -296,6 +304,7 @@ public class UserServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetJWTByEmailAndPasswordAsync_ThrowsAnException_WhenGivenWrongEmailOrPassword()
     {
         // Arrange
@@ -315,6 +324,7 @@ public class UserServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateUserPinCodeAsync_UpdatesPincode_WhenCodeIsFourCharacters()
     {
         // Arrange
@@ -340,6 +350,7 @@ public class UserServiceTests
     [Theory]
     [InlineData("123")]
     [InlineData("12345")]
+    [Trait("Category", "Unit")]
     public async Task UpdateUserPinCodeAsync_ThrowException_WhenCodeIsNotFourCharacters(string pin)
     {
         // Arrange
@@ -355,6 +366,7 @@ public class UserServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetUserByIdAndPinCodeAsync_ReturnsAUser_WhenGivenProperCredentials()
     {
         // Arrange
@@ -388,6 +400,7 @@ public class UserServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UserHasPinCodeAsync_ChecksValueInRepository()
     {
         // Arrange
@@ -405,6 +418,7 @@ public class UserServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetUsersNotApprovedAsync_ReturnsUsers()
     {
         // Arrange
@@ -481,6 +495,7 @@ public class UserServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UserUpdateArchivedAsync_UpdatesValueInRepository()
     {
         // Arrange
@@ -509,6 +524,7 @@ public class UserServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UserUpdateRoleApprovedAsync_UpdatesValueInRepository()
     {
         // Arrange
@@ -527,6 +543,7 @@ public class UserServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UserSelectAllNotArchivedAsync_ReturnsUsers()
     {
         // Arrange
@@ -579,6 +596,7 @@ public class UserServiceTests
 
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetLoggedInUserAsync_ReturnsAUser()
     {
         // Arrange
@@ -621,6 +639,7 @@ public class UserServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateUserLoggedInAsync_UpdatesValueInRepository()
     {
         // Arrange
@@ -644,6 +663,7 @@ public class UserServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateUserPasswordAsync_UpdatesValueInRepository()
     {
         // Arrange
@@ -667,6 +687,7 @@ public class UserServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task CreateChildrenUserAsync_CreatesParentRelation()
     {
         // Arrange
@@ -739,6 +760,7 @@ public class UserServiceTests
 
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task CreateChildrenUserAsync_NoParents_CreatesChildOnly()
     {
         // Arrange
