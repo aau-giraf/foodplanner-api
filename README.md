@@ -370,6 +370,19 @@ Run all tests with:
 ```bash
 dotnet test
 ```
+
+Run all Unit tests with:
+
+```bash
+dotnet test --filter "Category=Unit"
+```
+
+Run all Integration tests with:
+
+```bash
+dotnet test --filter "Category=Integration"
+```
+
 ## Dummy Data
 
 The project includes a dummy data generator located in `Development/DummyData`, which can populate both the CoreMock and Foodplanner databases with predefined test data for development purposes.
