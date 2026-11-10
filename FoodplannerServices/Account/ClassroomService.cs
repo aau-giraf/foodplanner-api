@@ -1,4 +1,3 @@
-using AutoMapper;
 using FoodplannerModels.Account;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -10,37 +9,35 @@ public class ClassroomService : IClassroomService {
 
     // Declares read only fields
     private readonly IClassroomRepository _classroomRepository;
-    private readonly IMapper _mapper;
 
     // Constructor
-    public ClassroomService(IClassroomRepository classroomRepository, IMapper mapper){
+    public ClassroomService(IClassroomRepository classroomRepository){
        _classroomRepository = classroomRepository;
-       _mapper = mapper;
     }
 
     // Retrieves all classrooms from database
     public async Task<IEnumerable<ClassroomDTO>> GetAllClassroomAsync()
     {
-        var classroom = await _classroomRepository.GetAllAsync();
-        return classroom.Select(m => _mapper.Map<ClassroomDTO>(m));
+        var classrooms = await _classroomRepository.GetAllAsync();
+
+        return classrooms.Select(classroom => new ClassroomDTO{ClassId = classroom.ClassId,ClassName = classroom.ClassName}).ToList();
     }
 
     // Creates a new classroom
     public async Task<int> InsertClassroomAsync(CreateClassroomDTO createClassroomDto)
     {
-        var classroom = _mapper.Map<Classroom>(createClassroomDto);
-        var id = await _classroomRepository.InsertAsync(classroom);
-        return id;
+
+        var classroom = new Classroom{ClassName = createClassroomDto.ClassName};
+
+        return await _classroomRepository.InsertAsync(classroom);
     }
 
     // Updates classroom
     public async Task<int> UpdateClassroomAsync(CreateClassroomDTO createClassroomDto, int id)
     {
-        var classroomDto = new ClassroomDTO{ClassId = id, ClassName = createClassroomDto.ClassName}; 
+        var classroom = new Classroom{ClassId = id, ClassName = createClassroomDto.ClassName}; 
 
-        var classroom = _mapper.Map<Classroom>(classroomDto);
-        var resultId = await _classroomRepository.UpdateAsync(classroom);
-        return resultId;
+        return await _classroomRepository.UpdateAsync(classroom);
     }
 
     // Checks if there is children in the classroom 

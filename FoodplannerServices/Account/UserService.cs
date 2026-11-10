@@ -1,32 +1,38 @@
-using AutoMapper;
 using FoodplannerModels.Account;
 using FoodplannerModels.Auth;
 
 // Adds the UserService to the FoodplannerService.Account namespace 
 namespace FoodplannerServices.Account;
 
-public class UserService(IUserRepository userRepository, IMapper mapper, IAuthService authService,
+public class UserService(IUserRepository userRepository, IAuthService authService,
         IChildrenRepository childrenRepository, IPasswordHandler passwordHandler) : IUserService
 {
     // Retrieves all users from database 
     public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
     {
-        var user = await userRepository.GetAllAsync();
-        var userDTO = mapper.Map<IEnumerable<UserDTO>>(user);
-        return userDTO;
+        var users = await userRepository.GetAllAsync();
+        return users.Select(ToUserDTO).ToList();
     }
 
     // Retrieve user associated with ID
     public async Task<UserDTO?> GetUserByIdAsync(int id)
     {
         var user = await userRepository.GetByIdAsync(id);
-        return mapper.Map<UserDTO?>(user);
+        return user == null ? null : ToUserDTO(user);
     }
 
     // Creates a new user based on UserCreateDTO (First and Last-name, e-mail, password, and role)
     public async Task<int> CreateUserAsync(UserCreateDTO userCreateDTO)
     {
-        var user = mapper.Map<User>(userCreateDTO);
+        var user = new User
+        {
+            FirstName = userCreateDTO.FirstName,
+            LastName = userCreateDTO.LastName,
+            Email = userCreateDTO.Email,
+            Password = userCreateDTO.Password,
+            Role = ParseUserRole(userCreateDTO.Role),
+            RoleApproved = false
+        };
 
         if (await userRepository.EmailExistsAsync(user.Email))
         {
@@ -34,51 +40,76 @@ public class UserService(IUserRepository userRepository, IMapper mapper, IAuthSe
         }
 
         user.Password = passwordHandler.EncryptPassword(user.Password);
-        user.RoleApproved = false;
 
-        var id = await userRepository.InsertAsync(user);
-        return id;
+        return await userRepository.InsertAsync(user);
     }
 
     // Creates a user account for the child and associates it with a parents user account
-    public async Task<int> CreateChildrenUserAsync(UserCreateChildDTO userCreateChildDto, int parentId)
+    public async Task<int> CreateChildrenUserAsync(
+        UserCreateChildDTO userCreateChildDto, int parentId)
     {
-        var user = mapper.Map<User>(userCreateChildDto);
         var parentUser = await userRepository.GetByIdAsync(parentId);
-        if (parentUser == null  || (parentUser.Role != UserRole.Parent))
+
+        if (parentUser == null || parentUser.Role != UserRole.Parent)
         {
-            throw new InvalidOperationException("Forælder ikke fundet eller ugyldig rolle");
+            throw new InvalidOperationException(
+                "Forælder ikke fundet eller ugyldig rolle");
         }
-        
-        if (await userRepository.EmailExistsAsync(user.Email.ToString()))
+
+        // Manually maps UserCreateChildDTO to User
+        var user = new User
+        {
+            FirstName = userCreateChildDto.FirstName,
+            LastName = userCreateChildDto.LastName,
+            Email = userCreateChildDto.Email,
+            Password = userCreateChildDto.Password,
+            Role = UserRole.Child,
+            RoleApproved = parentUser.RoleApproved
+        };
+
+        if (await userRepository.EmailExistsAsync(user.Email))
         {
             throw new InvalidOperationException("Email eksisterer allerede");
         }
 
         user.Password = passwordHandler.EncryptPassword(user.Password);
-        user.RoleApproved = parentUser.RoleApproved;
-        user.Role = UserRole.Child;
+
         var id = await userRepository.InsertAsync(user);
 
-        var child = new Children()
+        // Manually maps User to Children
+        var child = new Children
         {
             ChildId = id,
             FirstName = user.FirstName,
             LastName = user.LastName,
             ClassId = userCreateChildDto.ClassId
         };
+
         await childrenRepository.InsertAsync(child);
         await childrenRepository.AddUserToChildAsync(parentId, child.ChildId);
 
         return id;
     }
 
+
+
     // Updates user
     public async Task<int> UpdateUserAsync(UserUpdateDTO userUpdateDto, int id)
     {
-        var user = mapper.Map<User>(userUpdateDto);
-        user.Id = id;
-        user.Password = passwordHandler.EncryptPassword(user.Password);
+        // Retrieve existing user
+        var user = await userRepository.GetByIdAsync(id);
+
+        if (user == null)
+        {
+            throw new InvalidOperationException("Bruger ikke fundet");
+        }
+
+        // Manually update user properties
+        user.FirstName = userUpdateDto.FirstName;
+        user.LastName = userUpdateDto.LastName;
+        user.Email = userUpdateDto.Email;
+        user.Password = passwordHandler.EncryptPassword(userUpdateDto.Password);
+
         return await userRepository.UpdateAsync(user);
     }
 
@@ -184,7 +215,7 @@ public class UserService(IUserRepository userRepository, IMapper mapper, IAuthSe
     public async Task<IEnumerable<UserDTO>> GetUsersNotApprovedAsync()
     {
         var users = await userRepository.GetAllNotApprovedAsync();
-        return mapper.Map<IEnumerable<UserDTO>>(users);
+        return users.Select(ToUserDTO).ToList();
     }
 
     // Updates the user's 'archived'-status
@@ -218,8 +249,13 @@ public class UserService(IUserRepository userRepository, IMapper mapper, IAuthSe
     public async Task<UserDTO> GetLoggedInUserAsync(int id)
     {
         var user = await userRepository.GetLoggedInAsync(id);
-        if (user == null) throw new InvalidOperationException("Bruger ikke fundet");
-        return mapper.Map<UserDTO>(user);
+
+        if (user == null)
+        {
+            throw new InvalidOperationException("Bruger ikke fundet");
+        }
+
+        return ToUserDTO(user);
     }
 
     // Updates logged-in user information by ID
@@ -242,5 +278,34 @@ public class UserService(IUserRepository userRepository, IMapper mapper, IAuthSe
     {
         var _email = await userRepository.EmailExistsAsync(email);
         return _email;
+    }
+
+    // Manually maps User to UserDTO
+    private static UserDTO ToUserDTO(User user)
+    {
+        return new UserDTO
+        {
+            Id = user.Id,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            Role = user.Role,
+            RoleApproved = user.RoleApproved,
+            Archived = user.Archived
+        };
+    }
+
+    // Converts a role string to UserRole
+    private static UserRole ParseUserRole(string roleString)
+    {
+        if (string.IsNullOrWhiteSpace(roleString) ||
+            !Enum.TryParse<UserRole>(roleString, true, out var role) ||
+            !Enum.IsDefined(role))
+        {
+            throw new ArgumentException(
+                $"Invalid role value: '{roleString}'");
+        }
+
+        return role;
     }
 }
