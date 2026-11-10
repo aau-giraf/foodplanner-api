@@ -5,7 +5,7 @@ using FoodplannerModels.Lunchbox;
 using Moq;
 using Xunit;
 
-namespace Test.RepositoryTests;
+namespace Test.Unit.RepositoryTests;
 
 public class PackedRepositoryTests
 {
@@ -31,6 +31,7 @@ public class PackedRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllAsync_Success()
     {
         // Arrange
@@ -66,6 +67,7 @@ public class PackedRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllByMealIdAsync_Success()
     {
         // Arrange
@@ -107,6 +109,7 @@ public class PackedRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task InsertAsync_Success()
     {
         // Arrange
@@ -139,6 +142,7 @@ public class PackedRepositoryTests
             Times.Once);
     }
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task InsertAsync_NoRowsAffected()
     {
         // Arrange
@@ -164,6 +168,7 @@ public class PackedRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateAsync_Success()
     {
         // Arrange
@@ -206,6 +211,7 @@ public class PackedRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateAsync_NoRowsAffected()
     {
         // Arrange
@@ -237,6 +243,7 @@ public class PackedRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task DeleteAsync_Success()
     {
         // Arrange
@@ -269,6 +276,7 @@ public class PackedRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task DeleteAsync_NoRowsAffected()
     {
         // Arrange

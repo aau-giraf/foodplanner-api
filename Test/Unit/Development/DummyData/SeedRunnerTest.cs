@@ -2,7 +2,7 @@
 using Xunit;
 using Npgsql;
 
-namespace Test.Development.DummyData;
+namespace Test.Unit.DummyData;
 
 public class SeedRunnerTest
 {
@@ -12,6 +12,7 @@ public class SeedRunnerTest
     [InlineData("core", true, false)]
     [InlineData("foodplanner", false, true)]
     [InlineData("invalid", false, false)]
+    [Trait("Category", "Unit")]
     public void ShouldSeed_SelectsCorrectDatabase(
         string target,
         bool expectedCore,
@@ -33,6 +34,7 @@ public class SeedRunnerTest
     [Theory]
     [InlineData("CORE_DB", "localhost", 7655, "giraf_core_mock")]
     [InlineData("DB", "localhost", 7654, "giraf")]
+    [Trait("Category", "Unit")]
     public void BuildConnectionString_UsesCorrectConfiguration(
         string prefix,
         string host,
@@ -68,6 +70,7 @@ public class SeedRunnerTest
 
     // Test that an invalid port number throws a FormatException
     [Fact]
+    [Trait("Category", "Unit")]
     public void BuildConnectionString_InvalidPort_ThrowsException()
     {
         // Arrange
@@ -91,6 +94,7 @@ public class SeedRunnerTest
 
     // Test that missing configuration values throw an exception
     [Fact]
+    [Trait("Category", "Unit")]
     public void BuildConnectionString_MissingSecret_ThrowsException()
     {
         // Arrange

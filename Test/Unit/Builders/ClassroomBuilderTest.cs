@@ -1,10 +1,11 @@
 using Test.Builder;
 
-namespace Test.BuilderTest;
+namespace Test.Unit.BuilderTest;
 
 public class ClassroomBuilderTest
 {
     [Fact]
+    [Trait("Category", "Unit")]
     public void ClassroomBuilder_ReturnsClassroom_WithDefaultValue()
     {
         //Arrange
@@ -20,6 +21,7 @@ public class ClassroomBuilderTest
     [Theory]
     [InlineData(2,"Testroom")]
     [InlineData(2,"Cafeteria")]
+    [Trait("Category", "Unit")]
 
     public void ChildBuilder_ReturnsChild_WithExpectedValues(int classId, string className)
     {

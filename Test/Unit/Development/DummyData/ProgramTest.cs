@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace Test.Development.DummyData;
+namespace Test.Unit.DummyData;
 
 public class ProgramTest
 {
@@ -8,6 +8,7 @@ public class ProgramTest
     [InlineData("all")]
     [InlineData("core")]
     [InlineData("foodplanner")]
+    [Trait("Category", "Unit")]
     public void TryParseTarget_ValidTarget_ReturnsTrue(string input)
     {
         // Act
@@ -19,6 +20,7 @@ public class ProgramTest
         Assert.Equal(input, target);
     }
     [Fact]
+    [Trait("Category", "Unit")]
     public void TryParseTarget_NoArguments_DefaultsToAll()
     {
         // Act
@@ -36,6 +38,7 @@ public class ProgramTest
     [InlineData("test")]
     [InlineData("")]
     [InlineData(" ")]
+    [Trait("Category", "Unit")]
     public void TryParseTarget_InvalidTarget_ReturnsFalse(string input)
     {
         // Act
@@ -51,6 +54,7 @@ public class ProgramTest
     [InlineData("CORE", "core")]
     [InlineData("FOODPLANNER", "foodplanner")]
     [InlineData("FoodPlanner", "foodplanner")]
+    [Trait("Category", "Unit")]
     public void TryParseTarget_MixedCase_NormalizesTarget(
         string input,
         string expected)
@@ -68,6 +72,7 @@ public class ProgramTest
     [InlineData("core", "invalid")]
     [InlineData("foodplanner", "extra")]
     [InlineData("all", "unexpected")]
+    [Trait("Category", "Unit")]
     public void TryParseTarget_MultipleArguments_UsesFirstArgument(
         string first,
         string second)
@@ -82,6 +87,7 @@ public class ProgramTest
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void FindApiDirectory_ValidPath_ReturnsApiDirectory()
     {
         // Arrange
@@ -113,6 +119,7 @@ public class ProgramTest
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void FindApiDirectory_MissingApiDirectory_ThrowsException()
     {
         // Arrange
@@ -143,6 +150,7 @@ public class ProgramTest
     [InlineData("Testing", false)]
     [InlineData("", false)]
     [InlineData(null, false)]
+    [Trait("Category", "Unit")]
     public void IsAllowedEnvironment_ValidatesEnvironment(
         string? environment,
         bool expected)

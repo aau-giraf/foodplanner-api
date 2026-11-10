@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Test.Builder;
 
-namespace Test.Controller;
+namespace Test.Unit.Controller;
 
 public class ClassroomControllerTest
 {
@@ -18,6 +18,7 @@ public class ClassroomControllerTest
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAll_ReturnsOkObjectResult()
     {
         // Arrange
@@ -45,6 +46,7 @@ public class ClassroomControllerTest
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Create_ReturnsCreatedResult()
     {
         // Arrange
@@ -61,6 +63,7 @@ public class ClassroomControllerTest
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Create_ReturnsBadRequestResult()
     {
         // Arrange
@@ -77,6 +80,7 @@ public class ClassroomControllerTest
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Update_ReturnsOkObjectResult()
     {
         // Arrange
@@ -94,6 +98,7 @@ public class ClassroomControllerTest
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Update_ReturnsBadRequestResult()
     {
         // Arrange
@@ -111,6 +116,7 @@ public class ClassroomControllerTest
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Delete_ReturnsOkObjectResult()
     {
         // Arrange
@@ -130,6 +136,7 @@ public class ClassroomControllerTest
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Delete_ReturnsBadRequestResult_WhenChildrenArePartOfClassroom()
     {
         // Arrange
@@ -149,6 +156,7 @@ public class ClassroomControllerTest
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Delete_ReturnsBadRequestResult()
     {
         // Arrange

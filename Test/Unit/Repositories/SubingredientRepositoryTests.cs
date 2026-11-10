@@ -4,6 +4,8 @@ using FoodplannerModels.Lunchbox;
 using Moq;
 using Xunit;
 
+namespace Test.Unit.RepositoryTests;
+
 public class SubIngredientsRepositoryTests
 {
     private readonly Mock<IDapperExecutor> mockExecutor = new();
@@ -28,6 +30,7 @@ public class SubIngredientsRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllAsync_Success()
     {
         // Arrange
@@ -72,6 +75,7 @@ public class SubIngredientsRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllByParentIdAsync_Success()
     {
         // Arrange
@@ -118,6 +122,7 @@ public class SubIngredientsRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task InsertAsync_Success()
     {
         // Arrange
@@ -155,6 +160,7 @@ public class SubIngredientsRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateAsync_Success()
     {
         // Arrange
@@ -204,6 +210,7 @@ public class SubIngredientsRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task DeleteAsync_Success()
     {
         // Arrange

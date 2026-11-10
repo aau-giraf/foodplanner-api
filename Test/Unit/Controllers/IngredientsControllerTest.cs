@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
-namespace Test.LunchboxTests.Controller;
+namespace Test.Unit.Controller;
 
 public class IngredientsControllerTests
 {
@@ -20,6 +20,7 @@ public class IngredientsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAll_ReturnsOkObjectResult()
     {
         // Arrange
@@ -45,6 +46,7 @@ public class IngredientsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllByUser_ReturnsOkObjectResult()
     {
         // Arrange
@@ -72,6 +74,7 @@ public class IngredientsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Get_ReturnsOkObjectResult_WhenIngredientExists()
     {
         // Arrange
@@ -92,6 +95,7 @@ public class IngredientsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Get_ReturnsNotFoundResult_WhenIngredientDoesNotExist()
     {
         // Arrange
@@ -107,6 +111,7 @@ public class IngredientsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Create_ReturnsCreatedAtActionResult_WhenIngredientIsCreated()
     {
         // Arrange
@@ -135,6 +140,7 @@ public class IngredientsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Create_ReturnsBadRequest_WhenIngredientIsNotCreated()
     {
         // Arrange
@@ -154,6 +160,7 @@ public class IngredientsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Update_ReturnsOkObjectResult_WhenIngredientIsUpdated()
     {
         // Arrange
@@ -176,6 +183,7 @@ public class IngredientsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Update_ReturnsBadRequest_WhenIngredientIsNotUpdated()
     {
         // Arrange
@@ -193,6 +201,7 @@ public class IngredientsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Delete_ReturnsOkObjectResult_WhenIngredientDoesExist()
     {
         // Arrange
@@ -214,6 +223,7 @@ public class IngredientsControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Delete_ReturnsNotFoundResult_WhenIngredientDoesNotExist()
     {
         // Arrange

@@ -3,7 +3,7 @@ using FoodplannerModels.Auth;
 using FoodplannerServices.Account;
 using Moq;
 
-namespace Test.Service;
+namespace Test.Unit.Service;
 
 public class ChildrenServiceTests 
 {
@@ -26,6 +26,7 @@ public class ChildrenServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllChildrenAsync_ReturnsAllChildren()
     {
         // Arrange
@@ -51,6 +52,7 @@ public class ChildrenServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateChildrenAsync_UpdatesValueInRepository()
     {
         // Arrange
@@ -69,6 +71,7 @@ public class ChildrenServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task DeleteChildrenAsync_UpdatesValueInRepository()
     {
         // Arrange

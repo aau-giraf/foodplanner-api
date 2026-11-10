@@ -4,7 +4,7 @@ using System.Text;
 using FoodplannerModels.Account;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Test.JwtTest
+namespace Test.Unit.JwtTest
 {
     public class MissingClaimsException : Exception
     {
@@ -47,6 +47,7 @@ namespace Test.JwtTest
         [InlineData(UserRole.Parent)]
         [InlineData(UserRole.Teacher)]
         [InlineData(UserRole.Child)]
+        [Trait("Category", "Unit")]
         public void GenerateJwtToken_ShouldIncludeExpectedClaims(UserRole role)
         {
             // Arrange
@@ -66,6 +67,7 @@ namespace Test.JwtTest
         }
 
         [Fact]
+        [Trait("Category", "Unit")]
         public void ValidateJwtToken_ShouldPass_ForValidToken()
         {
             // Arrange
@@ -92,6 +94,7 @@ namespace Test.JwtTest
         }
 
         [Fact]
+        [Trait("Category", "Unit")]
         public void ValidateJwtToken_ShouldFail_WhenTokenIsExpired()
         {
             // Arrange
@@ -117,6 +120,7 @@ namespace Test.JwtTest
         }
         
         [Fact]
+        [Trait("Category", "Unit")]
         public void ValidateJwtToken_ShouldFail_WhenRequiredClaimIsMissing()
         {
             // Arrange
@@ -166,6 +170,7 @@ namespace Test.JwtTest
         }
 
         [Fact]
+        [Trait("Category", "Unit")]
         public void ValidateJwtToken_ShouldFail_ForInvalidIssuerOrAudience()
         {
             // Arrange
@@ -190,6 +195,7 @@ namespace Test.JwtTest
         }
 
         [Fact]
+        [Trait("Category", "Unit")]
         public void ValidateJwtToken_ShouldFail_ForTamperedToken()
         {
             // Arrange
@@ -219,6 +225,7 @@ namespace Test.JwtTest
         }
 
         [Fact]
+        [Trait("Category", "Unit")]
         public void JwtSecret_ShouldBeAtLeast256Bits()
         {
             // Arrange
@@ -234,6 +241,7 @@ namespace Test.JwtTest
         }
 
         [Fact]
+        [Trait("Category", "Unit")]
         public void GenerateJwtToken_ShouldFail_WhenSecretIsTooShort()
         {
 
@@ -267,6 +275,7 @@ namespace Test.JwtTest
     
 
     [Fact]
+    [Trait("Category", "Unit")]
     // Test that checks if if key limit is 256
     public void JwtToken_ShouldPreciselyBe256()
         {

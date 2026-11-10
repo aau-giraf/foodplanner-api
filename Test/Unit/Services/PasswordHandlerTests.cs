@@ -3,7 +3,7 @@ using FoodplannerServices.Account;
 using Moq;
 using FoodplannerModels.Auth;
 
-namespace Test.Service;
+namespace Test.Unit.Service;
 
 public class PasswordhandlerTests
 {
@@ -15,6 +15,7 @@ public class PasswordhandlerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void EncryptPassword_CreatesNewEncryptedPassword()
     {
         // Arrange
@@ -30,6 +31,7 @@ public class PasswordhandlerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void VerifyPassword_VerifiesEncryptedPassword()
     {
         // Arrange

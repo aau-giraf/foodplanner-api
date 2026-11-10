@@ -5,7 +5,7 @@ using FoodplannerServices.Account;
 using FoodplannerModels.Auth;
 using Test.Builder;
 
-namespace Test;
+namespace Test.Unit;
 
 public class ChildrenServiceTests
 {
@@ -31,6 +31,7 @@ public class ChildrenServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task AddParentToChildAsync_WithValidParentRole_ShouldSucceed()
     {
         // Arrange
@@ -56,6 +57,7 @@ public class ChildrenServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task AddParentToChildAsync_WithNonParentRole_ShouldThrowException()
     {
         // Arrange
@@ -79,6 +81,7 @@ public class ChildrenServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task AddParentToChildAsync_WithUnapprovedRole_ShouldThrowException()
     {
         // Arrange
@@ -102,6 +105,7 @@ public class ChildrenServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task AddParentToChildAsync_WithNonExistentUser_ShouldThrowException()
     {
         // Arrange
@@ -121,6 +125,7 @@ public class ChildrenServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task AddParentToChildAsync_ChildCanHaveMultipleParents_ShouldSucceed()
     {
         // Arrange

@@ -4,12 +4,13 @@
  using Microsoft.Extensions.Logging;
  using Moq;
 
- namespace testing;
+ namespace Test.Unit.Service;
 
  public class FoodImageServiceTests(FoodImageServiceFixture foodImageServiceFixture) : IClassFixture<FoodImageServiceFixture>
  {
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async void FoodImageIsCreatedWithCorrectUserId()
     {
         var expectedUserId = 42;

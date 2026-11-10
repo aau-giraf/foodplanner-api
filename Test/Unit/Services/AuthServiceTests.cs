@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Moq; //Library used for mocking
 
 
-namespace Test.Service;
+namespace Test.Unit.Service;
 
 public class AuthServiceTests{
 
@@ -52,6 +52,7 @@ private AuthService CreateAuthService(int secretLength)
 [InlineData(32)] //256 bit, limit
 [InlineData(33)] //264 bits, above limit
 [InlineData(64)] //512 bits
+[Trait("Category", "Unit")]
 public void GenerateJWTToken_ShouldPass_SecretIsEqualOrAbove256(int secretLength)
 {
     //Arrange
@@ -67,6 +68,7 @@ public void GenerateJWTToken_ShouldPass_SecretIsEqualOrAbove256(int secretLength
 [Theory]
 [InlineData(16)] //128 bits
 [InlineData(31)] //248 bits
+[Trait("Category", "Unit")]
     public void GenerateJWTToken_ShouldFail_SecretIsTooShort(int secretLength)
 {
     //Arrange
