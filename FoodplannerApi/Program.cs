@@ -30,7 +30,6 @@ using FluentMigrator.Runner.Initialization;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 
-
 // Create a builder for the web application
 var builder = WebApplication.CreateBuilder(args);
 
@@ -259,12 +258,6 @@ builder.Services.AddScoped<IMealsService, MealsService>();
 builder.Services.AddScoped<IPackedService,PackedService>();
 builder.Services.AddScoped<SubIngredientService>();
 
-// Add AutoMapper
-builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile));
-builder.Services.AddAutoMapper(cfg => { }, typeof(ImageProfile));
-
-
-
 
 
 
@@ -324,6 +317,7 @@ if (app.Environment.IsDevelopment())
     }.ConnectionString;
 
     // Run CoreMock migrations separately
+    #pragma warning disable ASP0000
     using var serviceProvider = new ServiceCollection()
         .AddSingleton(new DataMigrationSource(sourceConnection))
         .AddFluentMigratorCore()
@@ -341,7 +335,8 @@ if (app.Environment.IsDevelopment())
         })
         .AddLogging(lb => lb.AddFluentMigratorConsole())
         .BuildServiceProvider();
-
+    #pragma warning restore ASP0000
+    
     using var scope = serviceProvider.CreateScope();
 
     var runner = scope.ServiceProvider

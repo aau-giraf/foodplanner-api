@@ -1,6 +1,5 @@
 using Moq;
 using Xunit;
-using AutoMapper;
 using FoodplannerModels.Account;
 using FoodplannerServices.Account;
 using FoodplannerModels.Auth;
@@ -12,7 +11,6 @@ public class ChildrenServiceTests
 {
     private readonly Mock<IChildrenRepository> _mockChildrenRepository;
     private readonly Mock<IUserRepository> _mockUserRepository;
-    private readonly Mock<IMapper> _mockMapper;
     private readonly Mock<IAuthService> _authService;
     private readonly ChildrenService _childrenService;
 
@@ -20,7 +18,6 @@ public class ChildrenServiceTests
     {
         _mockChildrenRepository = new Mock<IChildrenRepository>();
         _mockUserRepository = new Mock<IUserRepository>();
-        _mockMapper = new Mock<IMapper>();
         
         // Create a real AuthService instance with a mock configuration
         var mockConfiguration = new Mock<Microsoft.Extensions.Configuration.IConfiguration>();
@@ -29,7 +26,6 @@ public class ChildrenServiceTests
         _childrenService = new ChildrenService(
             _mockChildrenRepository.Object,
             _mockUserRepository.Object,
-            _mockMapper.Object,
             _authService.Object
         );
     }

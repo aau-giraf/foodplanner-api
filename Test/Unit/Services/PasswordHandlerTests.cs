@@ -1,7 +1,6 @@
 using FoodplannerModels.Account;
 using FoodplannerServices.Account;
 using Moq;
-using AutoMapper;
 using FoodplannerModels.Auth;
 
 namespace Test.Unit.Service;

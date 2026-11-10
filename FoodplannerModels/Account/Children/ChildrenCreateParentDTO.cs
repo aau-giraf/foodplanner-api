@@ -23,6 +23,6 @@ namespace FoodplannerModels.Account
         public required List<int> ParentIds { get; set; }
         
         [Required(ErrorMessage = "KlasseId er påkrævet")]
-        public int? classId { get; set; }
+        public int? ClassId { get; set; }
     }
 }
