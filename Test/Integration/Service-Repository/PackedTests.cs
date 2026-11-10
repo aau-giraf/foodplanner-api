@@ -6,7 +6,6 @@ using Moq;
 
 namespace Test.Integration.Services;
 
-[Collection("IntegrationDatabase")]
 public class PackedTests
 {
     private readonly Mock<IDapperExecutor> mockDapperExecutor = new();
