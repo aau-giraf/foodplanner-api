@@ -32,7 +32,7 @@ public class CoreClassroomPactTests
         _pact
             .UponReceiving("a request for all classes") // is the description of the interaction
             .WithRequest(HttpMethod.Get, "/legacy/foodplanner/api/Classrooms/GetAll")
-            .WillRespond()
+            .WillRespond() // indicator that the next information is the response
             .WithStatus(HttpStatusCode.OK)
             .WithHeader("Content-Type", "application/json; charset=utf-8")
             .WithJsonBody(Match.MinType(new
