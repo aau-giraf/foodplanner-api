@@ -14,7 +14,7 @@ public class CoreClassroomPactTests
         {
             PactDir = Path.Combine(AppContext.BaseDirectory, "../../../../contracts"),
         };
-        
+
         // assigning consumer, provider and where to place the pact to the _pact object
         _pact = Pact.V4(
             "foodplanner-api", // consumer name, goes in the file
@@ -23,6 +23,7 @@ public class CoreClassroomPactTests
     }
 
     [Fact]
+    [Trait("Category", "Integration")]
     public async Task GetAllClassroomsAsync_satisfies_the_contract_with_core()
     {
         // IMPORTANT: This may look like it needs to reflect what is actually returned by core,
@@ -30,7 +31,9 @@ public class CoreClassroomPactTests
         // When changes are made to foodplanner-api endpoints which have a Pact test, this test should fail (which is expected and very important that it does)
         // since a change to an endpoint, means a change to a DTO, which is used by these tests. Assuming the field added or removed from the DTO is required, else it will not fail!
         _pact
+            // The body below requires at least one classroom. The provider state tells core to seed one before verifying.
             .UponReceiving("a request for all classes") // is the description of the interaction
+            .Given("at least one classroom exists")
             .WithRequest(HttpMethod.Get, "/legacy/foodplanner/api/Classrooms/GetAll")
             .WillRespond() // indicator that the next information is the response
             .WithStatus(HttpStatusCode.OK)
@@ -47,12 +50,13 @@ public class CoreClassroomPactTests
         await _pact.VerifyAsync(async context =>
         {
             // instantiating an http client where the base address, typically localhost or the ip addr. of an actual server, is the Pact mock server
-            var client = new CoreClient(new HttpClient { BaseAddress = context.MockServerUri }); // context.MockServerUri is the mock server provided by Pact
+            using var http = new HttpClient { BaseAddress = context.MockServerUri }; // context.MockServerUri is the mock server provided by Pact
+            var client = new CoreClient(http);
 
-            var classrooms = (await client.GetAllClassroomsAsync()).ToList();
+            var classroom = Assert.Single(await client.GetAllClassroomsAsync());
 
-            Assert.Equal(1, classrooms[0].ClassId);
-            Assert.Equal("1.Y", classrooms[0].ClassName);
+            Assert.Equal(1, classroom.ClassId);
+            Assert.Equal("1.Y", classroom.ClassName);
         });
     }
 }

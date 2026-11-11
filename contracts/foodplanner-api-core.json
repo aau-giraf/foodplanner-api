@@ -6,6 +6,11 @@
     {
       "description": "a request for all classes",
       "pending": false,
+      "providerStates": [
+        {
+          "name": "at least one classroom exists"
+        }
+      ],
       "request": {
         "method": "GET",
         "path": "/legacy/foodplanner/api/Classrooms/GetAll"
