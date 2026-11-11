@@ -1,13 +1,9 @@
 using FoodplannerDataAccessSql;
 using FoodplannerDataAccessSql.Lunchbox;
 using FoodplannerModels.Lunchbox;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.IdentityModel.Abstractions;
 using Moq;
-using SQLitePCL;
-using Xunit;
 
-
+namespace Test.Unit.RepositoryTests;
 
 public class IngredientsRepositoryTests
 {
@@ -33,6 +29,7 @@ public class IngredientsRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllAsync_Success()
     {
         // Arrange
@@ -70,6 +67,7 @@ public class IngredientsRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllByUserAsync_Success()
     {
         // Arrange
@@ -112,6 +110,7 @@ public class IngredientsRepositoryTests
 
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetByIdAsync_Success()
     {
         // Arrange
@@ -147,6 +146,7 @@ public class IngredientsRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task InsertAsync_Success()
     {
         // Arrange
@@ -178,6 +178,7 @@ public class IngredientsRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateAsync_Success()
     {
         // Arrange
@@ -210,6 +211,7 @@ public class IngredientsRepositoryTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task DeleteAsync_Success()
     {
         // Arrange

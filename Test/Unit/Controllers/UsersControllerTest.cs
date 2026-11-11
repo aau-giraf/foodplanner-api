@@ -5,11 +5,12 @@ using FoodplannerModels.Account;
 using FoodplannerModels.Auth;
 using FoodplannerModels.Codes;
 
-namespace Test.AccountTests.Controller;
+namespace Test.Unit.Controller;
 
 public class UsersControllerTests
 {
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task EmailExists_ReturnsOkObjectResult_WhenEmailIsValid()
     {
         // Arrange
@@ -37,6 +38,7 @@ public class UsersControllerTests
 
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task EmailExists_ReturnsBadRequest_WhenEmailIsNullOrEmpty()
     {
         // Arrange
@@ -62,6 +64,7 @@ public class UsersControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task EmailExists_ReturnsOkObjectResult_WhenEmailDoesNotExist()
     {
         // Arrange
@@ -88,6 +91,7 @@ public class UsersControllerTests
     }
     
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetBearerTest_ReturnsOkObjectResult()
     {
         //arrange
@@ -111,6 +115,7 @@ public class UsersControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Create_ReturnsCreatedResult_WhenUserIsValid()
     {
         //arrange
@@ -142,6 +147,7 @@ public class UsersControllerTests
 
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Create_ReturnsBadRequest_WhenUserNotCreated()
     {
         //arrange
@@ -172,6 +178,7 @@ public class UsersControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Create_UserThrowsException_ReturnsBadRequest()
     {
         //arrange
@@ -207,6 +214,7 @@ public class UsersControllerTests
 
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Login_ReturnsOkObjectResult_WhenValidCredentials()
     {
         var mockUserService = new Mock<IUserService>();
@@ -238,6 +246,7 @@ public class UsersControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Login_Failure_InvalidCredentials_ReturnsBadRequest()
     {
         // Arrange
@@ -270,6 +279,7 @@ public class UsersControllerTests
 
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task Login_ExceptionHandling_ReturnsBadRequest()
     {
         var mockUserService = new Mock<IUserService>();
@@ -298,6 +308,7 @@ public class UsersControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdatePinCode_ReturnsCreatedResult_WhenPinCodeIsUpdated()
     {
         // Arrange
@@ -328,6 +339,7 @@ public class UsersControllerTests
 
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task HasPinCode_ReturnsOkObjectResult_WithPinCodeFalse_WhenUserDoesNotHavePinCode()
     {
         //arrange
@@ -379,6 +391,7 @@ public class UsersControllerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task CheckPinCode_ValidTokenAndCorrectPin_ReturnsOk()
     {
         //arrange
@@ -414,6 +427,7 @@ public class UsersControllerTests
 
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task CheckPinCode_InvalidToken_ReturnsBadRequest()
     {
         //arrange
@@ -437,6 +451,7 @@ public class UsersControllerTests
     }
     
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task CreateUserChildren_ReturnsCreatedResult_WhenChildIsValid()
     {
         // Arrange

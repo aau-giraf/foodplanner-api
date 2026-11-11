@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
-namespace Test.MigrationTests;
+namespace Test.Unit.MigrationTests;
 
 public class CreateCoreMockDatabaseTests
 {
@@ -30,6 +30,7 @@ public class CreateCoreMockDatabaseTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_CreatesAllEightCoreTables()
     {
         // Arrange
@@ -51,6 +52,7 @@ public class CreateCoreMockDatabaseTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_CreatesUsersWithCorrectColumns()
     {
         // Arrange
@@ -94,6 +96,7 @@ public class CreateCoreMockDatabaseTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_ConfiguresClassroomAndChildrenKeys()
     {
         // Arrange
@@ -118,6 +121,7 @@ public class CreateCoreMockDatabaseTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_CreatesChildRelationWithCompositePrimaryKey()
     {
         // Arrange
@@ -146,6 +150,7 @@ public class CreateCoreMockDatabaseTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_CreatesFoodImageWithCorrectColumns()
     {
         // Arrange
@@ -188,6 +193,7 @@ public class CreateCoreMockDatabaseTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_CreatesChatTablesWithMessageDefaults()
     {
         // Arrange
@@ -217,6 +223,7 @@ public class CreateCoreMockDatabaseTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_CreatesOneTimePasswordWithCorrectDefaultsAndNullability()
     {
         // Arrange
@@ -246,6 +253,7 @@ public class CreateCoreMockDatabaseTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_CreatesAllElevenForeignKeysWithCorrectReferences()
     {
         // Arrange
@@ -285,6 +293,7 @@ public class CreateCoreMockDatabaseTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_CreatesForeignKeysAfterAllTables()
     {
         // Arrange
@@ -301,6 +310,7 @@ public class CreateCoreMockDatabaseTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Down_RemovesAllCoreTablesInDependencyOrder()
     {
         // Arrange

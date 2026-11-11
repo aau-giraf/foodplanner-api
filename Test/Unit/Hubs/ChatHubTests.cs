@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using Moq;
 
 // Adds the ChatHubTests to the Test.Service namespace
-namespace Test.Service;
+namespace Test.Unit.Service;
 
 public class ChatHubTests
 {
@@ -58,6 +58,7 @@ public class ChatHubTests
 
     // Test case to verify that a parent associated with a child can successfully join a chat thread group
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task JoinThread_ParentAssociatedWithChild_AddsConnectionToGroup()
     {
         // Arrange
@@ -81,6 +82,7 @@ public class ChatHubTests
 
     // Test case to verify that a teacher associated with a child can successfully join a chat thread group
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task JoinThread_TeacherAssociatedWithChild_AddsConnectionToGroup()
     {
         // Arrange
@@ -104,6 +106,7 @@ public class ChatHubTests
 
     // Test case to verify that a parent not associated with a child cannot join a chat thread group and throws a HubException
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task JoinThread_ParentNotAssociatedWithChild_ThrowsHubExceptionAndDoesNotJoinGroup()
     {
         // Arrange
@@ -127,6 +130,7 @@ public class ChatHubTests
 
     // Test case to verify that a parent not associated with a child cannot leave a chat thread group and throws a HubException
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task LeaveThread_ParentNotAssociatedWithChild_ThrowsHubExceptionAndDoesNotLeaveGroup()
     {
         // Arrange

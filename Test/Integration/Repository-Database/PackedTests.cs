@@ -6,11 +6,11 @@ using Npgsql;
 namespace Test.Integration.Repositories;
 
 [Collection("IntegrationDatabase")]
-public class PackedRepositorytests
+public class PackedTests
 {
     private readonly PostgreSQLConnectionFactory connectionFactory;
     private readonly PackedRepository repository;
-    public PackedRepositorytests(DatabaseFixture fixture)
+    public PackedTests(DatabaseFixture fixture)
     {
         connectionFactory = fixture.ConnectionFactory;
         repository = new PackedRepository(new DapperExecutor(connectionFactory));

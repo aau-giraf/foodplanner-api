@@ -3,7 +3,7 @@ using FoodplannerServices.Lunchbox;
 using FoodplannerModels.Lunchbox;
 using Moq;
 
-namespace Test.Service;
+namespace Test.Unit.Service;
 
 public class MealsServiceTests
 {
@@ -22,6 +22,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllMealsAsync_Success()
     {
     // Arrange
@@ -90,6 +91,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllMealsAsync_RepositoryError()
     {
         // Arrange
@@ -100,6 +102,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllMealsByUserAndDateAsync_Success()
     {
         // Arrange
@@ -150,6 +153,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllMealsByUserAndDateAsync_RepositoryError()
     {
         // Arrange
@@ -162,6 +166,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetMealByIdAsync_Success()
     {
         // Arrange
@@ -206,6 +211,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetMealByIdAsync_MealDoesNotExist()
     {
         // Arrange
@@ -219,6 +225,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetMealByIdAsync_RepositoryError()
     {
         // Arrange
@@ -229,6 +236,7 @@ public class MealsServiceTests
     }
     
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task CreateMealAsync_Success()
     {
         // Arrange
@@ -250,6 +258,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task CreateMealAsync_RepositoryError()
     {
         // Arrange
@@ -267,6 +276,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateMealAsync_Success()
     {
         // Arrange
@@ -289,6 +299,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateMealAsync_RepositoryError()
     {
         // Arrange
@@ -308,6 +319,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task DeleteMealAsync_Success()
     {
         // Arrange
@@ -322,6 +334,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task DeleteMealAsync_RepositoryError()
     {
         // Arrange
@@ -333,6 +346,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllTemplatesByUserAsync_Success()
     {
         // Arrange
@@ -368,6 +382,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllTemplatesByUserAsync_RepositoryError()
     {
         // Arrange
@@ -379,6 +394,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateTemplateStatusAsync_success()
     {
         // Arrange
@@ -405,6 +421,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateTemplateStatusAsync_AuthorizationError()
     {
         // Arrange
@@ -428,6 +445,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateTemplateStatusAsync_MealNotFound()
     {
         // Arrange
@@ -442,6 +460,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetUniqueIngredientsFromMealsAsync_Success()
     {
         // Arrange
@@ -497,6 +516,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetUniqueIngredientsFromMealsAsync_AuthorizationError()
     {
         // Arrange
@@ -546,6 +566,7 @@ public class MealsServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetUniqueIngredientsFromMealsAsync_RepositoryError()
     {
         // Arrange

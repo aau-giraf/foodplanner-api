@@ -4,7 +4,7 @@ using FoodplannerModels.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
-namespace Test.Controller;
+namespace Test.Unit.Controller;
 
 public class ChildrenControllerTest
 {
@@ -24,6 +24,7 @@ public class ChildrenControllerTest
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllChildrenClassesAsync_ReturnsOkObjectResult()
     {
         // Arrange
@@ -43,6 +44,7 @@ public class ChildrenControllerTest
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAll_ReturnsOkObjectResult()
     {
         // Arrange

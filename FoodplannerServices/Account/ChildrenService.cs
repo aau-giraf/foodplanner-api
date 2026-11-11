@@ -1,4 +1,3 @@
-using MapsterMapper;
 using FoodplannerModels.Account;
 using FoodplannerModels.Auth;
 
@@ -11,29 +10,43 @@ public class ChildrenService : IChildrenService
     //Read only fields 
     private readonly IChildrenRepository _childrenRepository;
     private readonly IUserRepository _userRepository;
-    private readonly IMapper _mapper;
     private readonly IAuthService _authService;
 
 
     // Constructor 
-    public ChildrenService(IChildrenRepository childrenRepository, IUserRepository userRepository, IMapper mapper, IAuthService authService)
+    public ChildrenService(IChildrenRepository childrenRepository, IUserRepository userRepository, IAuthService authService)
     {
         _childrenRepository = childrenRepository;
         _userRepository = userRepository;
-        _mapper = mapper;
         _authService = authService;
     }
 
     // Creates a child based on childrenCreateDto (first and last-name, parents, and class)
-    public async Task<int> CreateChildrenAsync(ChildrenCreateParentDTO childrenCreateDto)
+    public async Task<int> CreateChildrenAsync(
+        int childUserId,
+        ChildrenCreateParentDTO childrenCreateDto)
     {
-        // Maps childrenCreateDto to Children 
-        var children = _mapper.Map<Children>(childrenCreateDto);
+        // Check that the child user exists
+        var user = await _userRepository.GetByIdAsync(childUserId);
 
-        // Inserts the child into the database and gives it an Id
-        var childId = await _childrenRepository.InsertAsync(children);
+        if (user == null || !user.Role.HasFlag(UserRole.Child))
+        {
+            throw new InvalidOperationException("Child user not found or invalid role");
+        }
 
-        // Adds parents to child
+        // Manually map DTO to Children
+        var child = new Children
+        {
+            ChildId = childUserId,
+            FirstName = childrenCreateDto.FirstName,
+            LastName = childrenCreateDto.LastName,
+            ClassId = childrenCreateDto.ClassId
+        };
+
+        // Insert child into database
+        var childId = await _childrenRepository.InsertAsync(child);
+
+        // Add parents to child
         foreach (var parentId in childrenCreateDto.ParentIds)
         {
             await AddParentToChildAsync(parentId, childId);
@@ -42,14 +55,15 @@ public class ChildrenService : IChildrenService
         return childId;
     }
 
+
+
     // Retrieves children from database
     public async Task<IEnumerable<ChildrenDTO>> GetAllChildrenAsync()
     {
 
         var children = await _childrenRepository.GetAllAsync();
         // Maps child to ChildrenDto
-        var childrenDto = children.Select(child => _mapper.Map<ChildrenDTO>(child));
-        return childrenDto;
+        return children.Select(ToChildrenDTO).ToList();
     }
 
 
@@ -65,22 +79,28 @@ public class ChildrenService : IChildrenService
     {
         var children = await _childrenRepository.GetChildrenByParentIdAsync(parentId);
         // Maps children to ChildrenDto 
-        return _mapper.Map<IEnumerable<ChildrenDTO>>(children);
+        return children.Select(ToChildrenDTO).ToList();
     }
 
     // Retrieves parents associated with a child's ID
     public async Task<IEnumerable<UserDTO>> GetParentsByChildIdAsync(int childId)
     {
-        var parents = await _childrenRepository.GetParentsByChildIdAsync(childId);
-        return _mapper.Map<IEnumerable<UserDTO>>(parents);
+        var teachers = await _childrenRepository.GetParentsByChildIdAsync(childId);
+        return teachers.Select(ToUserDTO).ToList();
     }
 
     // Updates a child's information in the database 
     public async Task<int> UpdateChildrenAsync(ChildrenDTO childrenDto)
     {
-        var children = _mapper.Map<Children>(childrenDto);
-        var result = await _childrenRepository.UpdateAsync(children);
-        return result;
+        var child = new Children
+        {
+            ChildId = childrenDto.ChildId,
+            FirstName = childrenDto.FirstName,
+            LastName = childrenDto.LastName,
+            ClassId = childrenDto.ClassId
+        };
+
+        return await _childrenRepository.UpdateAsync(child);
     }
 
     // Deletes a child from the database
@@ -92,8 +112,14 @@ public class ChildrenService : IChildrenService
     // Retrieves child's information associated with child's ID
     public async Task<ChildrenDTO> GetChildFromChildIdAsync(int id)
     {
-        var children = await _childrenRepository.GetByIdAsync(id);
-        return _mapper.Map<ChildrenDTO>(children);
+        var child = await _childrenRepository.GetByIdAsync(id);
+
+        if (child == null)
+        {
+            throw new KeyNotFoundException($"Child with ID {id} not found");
+        }
+
+        return ToChildrenDTO(child);
     }
 
     // Adds a parent to a child
@@ -187,14 +213,41 @@ public class ChildrenService : IChildrenService
     public async Task<IEnumerable<UserDTO>> GetTeachersByChildIdAsync(int childId)
     {
         var teachers = await _childrenRepository.GetTeachersByChildIdAsync(childId);
-        return _mapper.Map<IEnumerable<UserDTO>>(teachers);
+        return teachers.Select(ToUserDTO).ToList();
     }
 
     // Retrives Children associated with Teacher's ID
     public async Task<IEnumerable<ChildrenDTO>> GetChildrenByTeacherIdAsync(int teacherId)
     {
         var children = await _childrenRepository.GetChildrenByTeacherIdAsync(teacherId);
-        return _mapper.Map<IEnumerable<ChildrenDTO>>(children);
+        return children.Select(ToChildrenDTO).ToList();
+    }
+
+
+    public static ChildrenDTO ToChildrenDTO(Children child)
+    {
+        return new ChildrenDTO
+        {
+            ChildId = child.ChildId,
+            FirstName = child.FirstName,
+            LastName = child.LastName,
+            ClassId = child.ClassId ?? 0
+        };
+    }
+
+    // Manually maps User to UserDTO
+    private static UserDTO ToUserDTO(User user)
+    {
+        return new UserDTO
+        {
+            Id = user.Id,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            Role = user.Role,
+            RoleApproved = user.RoleApproved,
+            Archived = user.Archived
+        };
     }
 }
 

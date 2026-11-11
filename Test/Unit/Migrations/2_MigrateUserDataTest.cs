@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
-namespace Test.MigrationTests;
+namespace Test.Unit.MigrationTests;
 
 public class MigrateUserDataTests
 {
@@ -42,6 +42,7 @@ public class MigrateUserDataTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_RegistersDatabaseOperation()
     {
         // Arrange
@@ -60,6 +61,7 @@ public class MigrateUserDataTests
     [Theory]
     [InlineData("users", "id")]
     [InlineData("classroom", "class_id")]
+    [Trait("Category", "Unit")]
     public void UpdateSequence_UsesCorrectTableAndIdColumn(
         string table,
         string idColumn)
@@ -85,6 +87,7 @@ public class MigrateUserDataTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void UpdateSequence_ExecutesCommandUsingGivenTransaction()
     {
         // Arrange
@@ -105,6 +108,7 @@ public class MigrateUserDataTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Down_ThrowsNotSupportedException()
     {
         // Arrange

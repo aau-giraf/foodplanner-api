@@ -1,21 +1,20 @@
- using Mapster;
- using MapsterMapper;
  using FoodplannerDataAccessSql.Image;
  using FoodplannerModels.Image;
  using FoodplannerServices.Image;
  using Microsoft.Extensions.Logging;
  using Moq;
 
- namespace testing;
+ namespace Test.Unit.Service;
 
  public class FoodImageServiceTests(FoodImageServiceFixture foodImageServiceFixture) : IClassFixture<FoodImageServiceFixture>
  {
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async void FoodImageIsCreatedWithCorrectUserId()
     {
         var expectedUserId = 42;
-        var foodImageService = new FoodImageService(foodImageServiceFixture.FoodImageRepository, new Mock<IMapper>().Object);
+        var foodImageService = new FoodImageService(foodImageServiceFixture.FoodImageRepository);
 
          var imageStream = new MemoryStream([0]);
          var actualUserId = await foodImageService.CreateFoodImage(expectedUserId, imageStream, "someImage", "someType", imageStream.Length);

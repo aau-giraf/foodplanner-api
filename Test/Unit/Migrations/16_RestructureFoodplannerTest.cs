@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
-namespace Test.MigrationTests;
+namespace Test.Unit.MigrationTests;
 
 public class RestructureFoodplannerTests
 {
@@ -31,6 +31,7 @@ public class RestructureFoodplannerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_RemovesForeignKeysToCoreOwnedTables()
     {
         // Arrange
@@ -58,6 +59,7 @@ public class RestructureFoodplannerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_RemovesCoreTablesAfterTheirForeignKeys()
     {
         // Arrange
@@ -84,6 +86,7 @@ public class RestructureFoodplannerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_RenamesImageReferences()
     {
         // Arrange
@@ -101,6 +104,7 @@ public class RestructureFoodplannerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_RenamesPackedTableAndOrderingColumn()
     {
         // Arrange
@@ -120,6 +124,7 @@ public class RestructureFoodplannerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_ReplacesPackedIdWithCompositePrimaryKey()
     {
         // Arrange
@@ -151,6 +156,7 @@ public class RestructureFoodplannerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_CreatesNewSubingredientTable()
     {
         // Arrange
@@ -174,6 +180,7 @@ public class RestructureFoodplannerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_CreatesSubingredientCompositeKeyAndTwoIngredientForeignKeys()
     {
         // Arrange
@@ -207,6 +214,7 @@ public class RestructureFoodplannerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_PreparesIdMappingAndSynchronizesIngredientSequence()
     {
         // Arrange
@@ -228,6 +236,7 @@ public class RestructureFoodplannerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_MapsOldSubingredientIdsToNewIngredientIds()
     {
         // Arrange
@@ -249,6 +258,7 @@ public class RestructureFoodplannerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Up_TransfersRelationsBeforeDeletingOldSubingredientTables()
     {
         // Arrange
@@ -276,6 +286,7 @@ public class RestructureFoodplannerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Down_RemovesNewTableAndRecreatesLegacySubingredientTables()
     {
         // Arrange
@@ -295,6 +306,7 @@ public class RestructureFoodplannerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Down_RestoresOriginalSubingredientNameColumnLength()
     {
         // Arrange
@@ -314,6 +326,7 @@ public class RestructureFoodplannerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Down_RestoresOriginalRelationOrderNumberDefault()
     {
         // Arrange
@@ -333,6 +346,7 @@ public class RestructureFoodplannerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Down_RestoresCascadeOnOriginalSubingredientForeignKeys()
     {
         // Arrange
@@ -356,6 +370,7 @@ public class RestructureFoodplannerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Down_RestoresPackedNamesIdAndPrimaryKey()
     {
         // Arrange
@@ -386,6 +401,7 @@ public class RestructureFoodplannerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Down_RecreatesCoreTablesAndRestoresImageColumnNames()
     {
         // Arrange
@@ -414,6 +430,7 @@ public class RestructureFoodplannerTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Down_RecreatesForeignKeysToCoreTables()
     {
         // Arrange

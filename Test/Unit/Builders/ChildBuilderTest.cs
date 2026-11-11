@@ -2,11 +2,12 @@ using Test.Builder;
 using FoodplannerModels.Account;
 using Xunit;
 
-namespace Test.BuilderTest;
+namespace Test.Unit.BuilderTest;
 
 public class ChildBuilderTest
 {
     [Fact]
+    [Trait("Category", "Unit")]
     public void Build_ShouldCreateChildWithCorrectProperties()
     {
         // Arrange
@@ -27,6 +28,7 @@ public class ChildBuilderTest
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public void Build_ShouldCreateChildWithDefaultValues()
     {
         // Arrange & Act

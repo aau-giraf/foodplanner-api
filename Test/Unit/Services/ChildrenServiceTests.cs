@@ -1,17 +1,14 @@
-using Mapster;
-using MapsterMapper;
 using FoodplannerModels.Account;
 using FoodplannerModels.Auth;
 using FoodplannerServices.Account;
 using Moq;
 
-namespace Test.Service;
+namespace Test.Unit.Service;
 
 public class ChildrenServiceTests 
 {
     private readonly Mock<IChildrenRepository> _mockChildrenRepository;
     private readonly Mock<IAuthService> _mockAuthService;
-    private readonly Mock<IMapper> _mockMapper;
     private readonly Mock<IUserRepository> _mockUserRepository;
     private readonly ChildrenService _childrenService;
 
@@ -20,17 +17,16 @@ public class ChildrenServiceTests
         _mockChildrenRepository = new Mock<IChildrenRepository>();
         _mockAuthService = new Mock<IAuthService>();
         _mockUserRepository = new Mock<IUserRepository>();
-        _mockMapper = new Mock<IMapper>();
 
         _childrenService = new ChildrenService(
             _mockChildrenRepository.Object,
             _mockUserRepository.Object,
-            _mockMapper.Object,
             _mockAuthService.Object
         );
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task GetAllChildrenAsync_ReturnsAllChildren()
     {
         // Arrange
@@ -42,17 +38,9 @@ public class ChildrenServiceTests
         _mockChildrenRepository
             .Setup(repo => repo.GetAllAsync())
             .ReturnsAsync(expectedChildren);
-        
-        _mockMapper.Setup(m => m.Map<ChildrenDTO>(It.IsAny<Children>()))
-            .Returns((Children src) => new ChildrenDTO
-            {
-                ChildId = src.ChildId,
-                FirstName = src.FirstName,
-                LastName = src.LastName
-            });
                 
         // Act
-        var result = await _childrenService.GetAllChildrenAsync();
+        var result = (await _childrenService.GetAllChildrenAsync()).ToList();
 
         // Assert
         Assert.NotNull(result);
@@ -64,22 +52,16 @@ public class ChildrenServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task UpdateChildrenAsync_UpdatesValueInRepository()
     {
         // Arrange
         var expectedId = 1;
+        var updateChildDto = new ChildrenDTO { ChildId = expectedId, FirstName = "frederik", LastName = "nielsen" };
         _mockChildrenRepository
             .Setup(repo => repo.UpdateAsync(It.IsAny<Children>()))
             .ReturnsAsync(expectedId);
-        
-        _mockMapper.Setup(m => m.Map<Children>(It.IsAny<ChildrenDTO>()))
-            .Returns((ChildrenDTO src) => new Children
-            {
-                ChildId = src.ChildId,
-                FirstName = src.FirstName,
-                LastName = src.LastName
-            });
-        var updateChildDto = new ChildrenDTO() { ChildId = expectedId, FirstName = "frederik", LastName = "nielsen" };
+
         
         // Act
         var result = await _childrenService.UpdateChildrenAsync(updateChildDto);
@@ -89,6 +71,7 @@ public class ChildrenServiceTests
     }
 
     [Fact]
+    [Trait("Category", "Unit")]
     public async Task DeleteChildrenAsync_UpdatesValueInRepository()
     {
         // Arrange
