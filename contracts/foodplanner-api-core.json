@@ -1,0 +1,81 @@
+{
+  "consumer": {
+    "name": "foodplanner-api"
+  },
+  "interactions": [
+    {
+      "description": "a request for all classes",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "at least one classroom exists"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/legacy/foodplanner/api/Classrooms/GetAll"
+      },
+      "response": {
+        "body": {
+          "content": [
+            {
+              "classId": 1,
+              "className": "1.Y"
+            }
+          ],
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$[*].classId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$[*].className": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9]\\.[A-Z]"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    }
+  ],
+  "metadata": {
+    "pactRust": {
+      "ffi": "0.4.27",
+      "models": "1.2.8"
+    },
+    "pactSpecification": {
+      "version": "4.0"
+    }
+  },
+  "provider": {
+    "name": "core"
+  }
+}
