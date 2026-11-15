@@ -1,0 +1,60 @@
+using System.Text.Json;
+using FoodplannerModels.Image;
+using Microsoft.Extensions.Configuration;
+
+namespace FoodplannerServices.ExternalApi;
+
+public class PixabayApi(HttpClient httpClient, IConfiguration configuration) : IPixabayApi
+{
+    // Define the API key and URL for the Pixabay API, loaded from appetsettings.Development.json
+    private readonly string API_KEY =
+        configuration["Infisical:PIXABAY_API_KEY"]
+        ?? throw new InvalidOperationException("Pixabay API key is missing.");
+
+    private readonly string API_URL =
+        configuration["Infisical:PIXABAY_API_URL"]
+        ?? throw new InvalidOperationException("Pixabay API URL is missing.");
+    
+    public async Task<Pixabay> SearchImages(
+        string language,
+        string searchTerm,
+        int perPage,
+        string imageType,
+        string order,
+        string category)
+    {
+        // Build the query parameters for the Pixabay API request
+        var parameters = new List<string>();
+        parameters.Add("key=" + API_KEY);
+        parameters.Add("q=" + Uri.EscapeDataString(searchTerm));
+        parameters.Add("lang=" + Uri.EscapeDataString(language));
+        parameters.Add("per_page=" + perPage);
+        parameters.Add("image_type=" + Uri.EscapeDataString(imageType));
+        parameters.Add("order=" + Uri.EscapeDataString(order));
+        parameters.Add("category=" + Uri.EscapeDataString(category));
+        
+        // Construct the full URL for the Pixabay API request
+        string url = $"{API_URL}?" + string.Join("&", parameters);
+        string res = await httpClient.GetStringAsync(url);
+        using JsonDocument data = JsonDocument.Parse(res);
+
+        // Create a new Pixabay object to hold the image URLs
+        var imageURLs = new Pixabay()
+        {
+            Response = []
+        };
+
+        // Check if there are any hits in the response and add the image URLs to the Pixabay object
+        if (data.RootElement.GetProperty("totalHits").GetInt32() > 0)
+        {
+            foreach (JsonElement hit in data.RootElement.GetProperty("hits").EnumerateArray())
+            {
+                imageURLs.Response.Add(hit.GetProperty("webformatURL").GetString()!);
+            }
+        }
+
+        return imageURLs;
+    }
+
+    
+}
