@@ -13,7 +13,7 @@ public class ImagesControllerTests
     [Fact]
     public async Task UploadImage_ValidTokenAndValidImage_ReturnsOkWithImageId()
     {
-        //arrange
+        // Arrange
         var token = "valid-jwt-token";
         var imageFile = new Mock<IFormFile>();
         var userId = 1;
@@ -36,10 +36,10 @@ public class ImagesControllerTests
             It.IsAny<long>()
         )).ReturnsAsync(imageId);
 
-        //act
+        // Act
         var result = await controller.UploadImage(token, imageFile.Object);
 
-        //assert
+        // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
         Assert.Equal(200, okResult.StatusCode);
         Assert.Equal(imageId, okResult.Value);
