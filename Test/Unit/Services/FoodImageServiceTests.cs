@@ -1,13 +1,13 @@
- using FoodplannerDataAccessSql.Image;
- using FoodplannerModels.Image;
- using FoodplannerServices.Image;
- using Microsoft.Extensions.Logging;
- using Moq;
+using FoodplannerDataAccessSql.Image;
+using FoodplannerModels.Image;
+using FoodplannerServices.Image;
+using Microsoft.Extensions.Logging;
+using Moq;
 
- namespace Test.Unit.Service;
+namespace Test.Unit.Service;
 
- public class FoodImageServiceTests(FoodImageServiceFixture foodImageServiceFixture) : IClassFixture<FoodImageServiceFixture>
- {
+public class FoodImageServiceTests(FoodImageServiceFixture foodImageServiceFixture) : IClassFixture<FoodImageServiceFixture>
+{
 
     [Fact]
     [Trait("Category", "Unit")]
@@ -16,11 +16,11 @@
         var expectedUserId = 42;
         var foodImageService = new FoodImageService(foodImageServiceFixture.FoodImageRepository);
 
-         var imageStream = new MemoryStream([0]);
-         var actualUserId = await foodImageService.CreateFoodImage(expectedUserId, imageStream, "someImage", "someType", imageStream.Length);
-         Assert.Equal(expectedUserId, actualUserId);
-     }
- }
+            var imageStream = new MemoryStream([0]);
+            var actualUserId = await foodImageService.CreateFoodImage(expectedUserId, imageStream, "someImage", "someType", imageStream.Length);
+            Assert.Equal(expectedUserId, actualUserId);
+    }
+}
 
 public class FoodImageServiceFixture : IDisposable
 {
@@ -39,5 +39,5 @@ public class FoodImageServiceFixture : IDisposable
     public void Dispose()
     {
 
-     }
- }
+    }
+}
