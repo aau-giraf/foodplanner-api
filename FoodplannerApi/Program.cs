@@ -263,6 +263,7 @@ builder.Services.AddScoped<IMealsService, MealsService>();
 builder.Services.AddScoped<IPackedService,PackedService>();
 builder.Services.AddScoped<SubIngredientService>();
 builder.Services.AddHttpClient<IPixabayApi, PixabayApi>();
+builder.Services.AddTransient<IWebClientWrapper, WebClientWrapper>();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(cfg => { }, typeof(UserProfile));

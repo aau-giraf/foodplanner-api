@@ -10,7 +10,7 @@ using FoodplannerModels.FeedbackChat;
 namespace FoodplannerServices.Image;
 
 // Service implementation for Pixabay business logic
-public class PixabayService(IPixabayApi pixabayApi, IFoodImageService foodImageService) : IPixabayService
+public class PixabayService(IPixabayApi pixabayApi, IFoodImageService foodImageService, IWebClientWrapper webClientWrapper) : IPixabayService
 {
     // Max image size is 100 MB
     private readonly long _maxFileSize = 100000000; 
@@ -27,25 +27,22 @@ public class PixabayService(IPixabayApi pixabayApi, IFoodImageService foodImageS
 
     public async Task<int> SavePixabayUrl (int userid, string keyword, string url)
     {
-        byte[] imageStream = null;
-        // Convert the pixabay url to a stream 
-        using ( var pixabay = new System.Net.WebClient())
-        imageStream = pixabay.DownloadData(url);
+        // Convert the pixabay url to a stream
+        byte[] imageStream = webClientWrapper.DownloadData(url);
         var image = new MemoryStream(imageStream);
 
-         // Check if image is empty or exceeds the maximum image size
-            if (image.Length == 0)
-            {
-                throw new Exception("File is empty");
-            }
-            if (image.Length >= _maxFileSize)
-            {
-                throw new Exception("File is too big");
-            }
+        // Check if image is empty or exceeds the maximum image size
+        if (image.Length == 0)
+        {
+            throw new Exception("File is empty");
+        }
+        if (image.Length >= _maxFileSize)
+        {
+            throw new Exception("File is too big");
+        }
 
-
-        return await foodImageService.CreateFoodImage(userid, image, keyword, "image/jpeg", image.Length);
-       
+        // Return the id of the created image
+        return await foodImageService.CreateFoodImage(userid, image, keyword, "image/jpeg", image.Length);      
     }
 
 }
