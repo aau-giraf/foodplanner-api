@@ -7,9 +7,14 @@ namespace FoodplannerServices.ExternalApi;
 public class PixabayApi(HttpClient httpClient, IConfiguration configuration) : IPixabayApi
 {
     // Define the API key and URL for the Pixabay API, loaded from appetsettings.Development.json
-    private readonly string API_KEY = configuration["Infisical:PIXABAY_API_KEY"];
-    private readonly string API_URL = configuration["Infisical:PIXABAY_API_URL"];
+    private readonly string API_KEY =
+        configuration["Infisical:PIXABAY_API_KEY"]
+        ?? throw new InvalidOperationException("Pixabay API key is missing.");
 
+    private readonly string API_URL =
+        configuration["Infisical:PIXABAY_API_URL"]
+        ?? throw new InvalidOperationException("Pixabay API URL is missing.");
+    
     public async Task<Pixabay> SearchImages(
         string language,
         string searchTerm,
@@ -18,12 +23,6 @@ public class PixabayApi(HttpClient httpClient, IConfiguration configuration) : I
         string order,
         string category)
     {
-        // Verify that the API key and URL are not null or empty
-        if (string.IsNullOrWhiteSpace(API_KEY) || string.IsNullOrWhiteSpace(API_URL))
-        {
-            throw new ApplicationException("Pixabay API key or URL is not configured.");
-        }
-
         // Build the query parameters for the Pixabay API request
         var parameters = new List<string>();
         parameters.Add("key=" + API_KEY);
