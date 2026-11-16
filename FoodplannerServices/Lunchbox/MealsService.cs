@@ -6,42 +6,7 @@ namespace FoodplannerServices.Lunchbox;
 
 // The service for the Meal class.
 public class MealsService(IMealsRepository mealsRepository, IPackedRepository packedRepository, IIngredientsRepository ingredientRepository) : IMealsService
-{
-    // Retrieves all meals and their ingredients from the repository.
-    public async Task<IEnumerable<MealWithIngredientsDTO>> GetAllMealsAsync()
-    {
-        try
-        {
-            // Fetch all meals and their packed ingredients.
-            var meals = await mealsRepository.GetAllAsync();
-            var packed = await packedRepository.GetAllAsync();
-            var ingredients = await ingredientRepository.GetAllAsync();
-            var ingredientsById = ingredients.ToDictionary(i => i.Id);
-
-            // Construct and return the list of MealWithIngredientsDTO.
-            var mealsWithIngredients = meals.Select(meal => new MealWithIngredientsDTO
-            {
-                Id = meal.Id,
-                Name = meal.Name,
-                Date = meal.Date,
-                Template = meal.Template,
-                Image_id = meal.Image_id,
-                User_id = meal.User_id,
-
-                Ingredients = packed
-                    .Where(p => p.Meal_id == meal.Id)
-                    .OrderBy(p => p.order_no)
-                    .Select(p => ingredientsById[p.Ingredient_id])
-                    .ToList()
-            }).ToList();
-            return mealsWithIngredients;
-        }
-        catch (Exception exception)
-        {
-            throw new Exception($"Error retrieving all meals: {exception.Message}", exception);
-        }
-    }
-
+{   
     // Retrieves all meals and their ingredients from a user id.
     public async Task<IEnumerable<MealWithIngredientsDTO>> GetAllMealsByUserAndDateAsync(int userId, string date)
     {
@@ -97,7 +62,7 @@ public class MealsService(IMealsRepository mealsRepository, IPackedRepository pa
     }
 
     // Updates an existing meal in the repository by ID.
-    public async Task<int> UpdateMealAsync(MealDTO mealDTO)
+    public async Task<int> UpdateMealAsync(Meal mealDTO)
     {
         try
         {
@@ -204,7 +169,7 @@ public class MealsService(IMealsRepository mealsRepository, IPackedRepository pa
     }
 
     // Helper method to add ingredients to a meal and return a MealWithIngredientsDTO.
-    private async Task<MealWithIngredientsDTO> AddIngredientsToMealAsync(MealDTO meal)
+    private async Task<MealWithIngredientsDTO> AddIngredientsToMealAsync(Meal meal)
     {
         var packedIngredients = await packedRepository.GetAllByMealIdAsync(meal.Id);
         var ingredients = await Task.WhenAll(packedIngredients.Select(p => ingredientRepository.GetByIdAsync(p.Ingredient_id)));

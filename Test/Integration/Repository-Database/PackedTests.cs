@@ -21,10 +21,10 @@ public class PackedTests
     public async Task GetAllAsync()
     {
         // Arrange
-        List<MealDTO> meals = new List<MealDTO>
+        List<Meal> meals = new List<Meal>
         {
-            new MealDTO { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
-            new MealDTO { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
+            new Meal { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
+            new Meal { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
         };
         List<IngredientDTO> ingredients = new List<IngredientDTO>
         {
@@ -74,10 +74,10 @@ public class PackedTests
     public async Task GetAllByMealIdAsync()
     {
         // Arrange
-        List<MealDTO> meals = new List<MealDTO>
+        List<Meal> meals = new List<Meal>
         {
-            new MealDTO { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
-            new MealDTO { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
+            new Meal { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
+            new Meal { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
         };
         List<IngredientDTO> ingredients = new List<IngredientDTO>
         {
@@ -123,10 +123,10 @@ public class PackedTests
     public async Task InsertAsync()
     {
         // Arrange
-        List<MealDTO> meals = new List<MealDTO>
+        List<Meal> meals = new List<Meal>
         {
-            new MealDTO { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
-            new MealDTO { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
+            new Meal { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
+            new Meal { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
         };
         List<IngredientDTO> ingredients = new List<IngredientDTO>
         {
@@ -164,10 +164,10 @@ public class PackedTests
     public async Task UpdateAsync()
     {
         // Arrange
-        List<MealDTO> meals = new List<MealDTO>
+        List<Meal> meals = new List<Meal>
         {
-            new MealDTO { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
-            new MealDTO { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
+            new Meal { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
+            new Meal { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
         };
         List<IngredientDTO> ingredients = new List<IngredientDTO>
         {
@@ -212,10 +212,10 @@ public class PackedTests
     public async Task DeleteAsync()
     {
         // Arrange
-        List<MealDTO> meals = new List<MealDTO>
+        List<Meal> meals = new List<Meal>
         {
-            new MealDTO { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
-            new MealDTO { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
+            new Meal { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
+            new Meal { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
         };
         List<IngredientDTO> ingredients = new List<IngredientDTO>
         {
@@ -255,7 +255,7 @@ public class PackedTests
     }
 
     // Helper function to set up environment for tests
-    private async Task<List<List<int>>> SetupTestEnvironmentAsync(List<MealDTO> meals, List<IngredientDTO> ingredients, List<PackedDTO>? packed = null)
+    private async Task<List<List<int>>> SetupTestEnvironmentAsync(List<Meal> meals, List<IngredientDTO> ingredients, List<PackedDTO>? packed = null)
     {
         // Open a connection to the database
         await using var connection = connectionFactory.Create();
