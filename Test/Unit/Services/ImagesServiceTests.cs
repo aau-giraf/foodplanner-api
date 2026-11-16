@@ -6,7 +6,7 @@
 
  namespace Test.Unit.Service;
 
- public class FoodImageServiceTests(FoodImageServiceFixture foodImageServiceFixture) : IClassFixture<FoodImageServiceFixture>
+ public class ImagesServiceTests(FoodImageServiceFixture foodImageServiceFixture) : IClassFixture<FoodImageServiceFixture>
  {
 
     [Fact]

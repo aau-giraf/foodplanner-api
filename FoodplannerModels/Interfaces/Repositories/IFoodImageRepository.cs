@@ -1,8 +1,10 @@
-﻿using FoodplannerModels;
-using FoodplannerModels.Image;
+﻿using FoodplannerModels.Image;
 
 namespace FoodplannerDataAccessSql.Image;
 
-public interface IFoodImageRepository : IGenericRepository<FoodImage>
+public interface IFoodImageRepository
 {
+    Task<FoodImage?> GetByIdAsync(int foodImageId);
+    Task<int> InsertAsync(FoodImage entity);
+    Task<int> DeleteAsync(int id);
 }

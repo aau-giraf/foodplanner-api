@@ -12,41 +12,6 @@ public class ImagesControllerTests
 {
     [Fact]
     [Trait("Category", "Unit")]
-    public async Task UploadImage_ValidTokenAndValidImage_ReturnsOkWithImageId()
-    {
-        //arrange
-        var token = "valid-jwt-token";
-        var imageFile = new Mock<IFormFile>();
-        var userId = 1;
-        var imageId = 12345;
-
-        imageFile.Setup(file => file.Length).Returns(1000);
-
-        var mockFoodImageService = new Mock<IFoodImageService>();
-        var mockAuthService = new Mock<IAuthService>();
-
-        var controller = new ImagesController(mockFoodImageService.Object, mockAuthService.Object);
-
-        mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
-
-        mockFoodImageService.Setup(service => service.CreateFoodImage(
-            userId,
-            It.IsAny<Stream>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<long>()
-        )).ReturnsAsync(imageId);
-
-        //act
-        var result = await controller.UploadImage(token, imageFile.Object);
-
-        //assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.Equal(200, okResult.StatusCode);
-        Assert.Equal(imageId, okResult.Value);
-    }
-    [Fact]
-    [Trait("Category", "Unit")]
     public async Task UploadImages_ValidTokenAndValidImages_ReturnsOkWithImageIds()
     {
         // Arrange
@@ -107,7 +72,7 @@ public class ImagesControllerTests
         );
 
         // Act
-        var result = await controller.UploadImages(token, imageFiles);
+        var result = await controller.Upload(token, imageFiles);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -138,7 +103,7 @@ public class ImagesControllerTests
         var controller = new ImagesController(mockFoodImageService.Object, mockAuthService.Object);
 
         // Act
-        var result = await controller.DeleteImages(foodImageIds);
+        var result = await controller.Delete(foodImageIds);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -162,7 +127,7 @@ public class ImagesControllerTests
 
         var mockFoodImageService = new Mock<IFoodImageService>();
 
-        var expectedImage = new FoodImageDTO
+        var expectedImage = new FoodImage
         {
             Id = foodImageId,
             UserId = userId,
@@ -183,7 +148,7 @@ public class ImagesControllerTests
          var okResult = Assert.IsType<OkObjectResult>(result);
          Assert.Equal(200, okResult.StatusCode);
 
-         var returnedImage = Assert.IsAssignableFrom<FoodImageDTO>(okResult.Value);
+         var returnedImage = Assert.IsAssignableFrom<FoodImage>(okResult.Value);
          Assert.Equal(expectedImage.Id, returnedImage.Id);
         Assert.Equal(expectedImage.UserId, returnedImage.UserId);
     }
@@ -213,7 +178,7 @@ public class ImagesControllerTests
         controller.HttpContext.Request.Headers["Authorization"] = $"Bearer {token}";
 
         // Act
-        var result = await controller.GetPresignedImageLink(foodImageId);
+        var result = await controller.GetImageLink(foodImageId);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);

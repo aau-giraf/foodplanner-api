@@ -1,9 +1,11 @@
-﻿public class FoodImageDTO
+﻿namespace FoodplannerModels.Image;
+
+public class FoodImage
 {
-    public int Id { get; set; }
+    public int Id;
     public required byte[] ImageData { get; set; }
     public int UserId { get; set; }
     public required string ImageName { get; set; }
     public required string ImageFileType { get; set; }
-    public long ImageSize { get; set; }
+    public long Size { get; set; }
 }
