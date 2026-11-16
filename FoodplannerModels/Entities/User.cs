@@ -2,6 +2,8 @@ namespace FoodplannerModels.Account;
 
 using System.ComponentModel.DataAnnotations;
 
+// user entity class with properties for user information, role, and status
+
 [Flags]
 public enum UserRole
 {
@@ -10,7 +12,6 @@ public enum UserRole
     Teacher = 1 << 2,    // 4
     Parent = 1 << 3     // 8
 }
-// User entity 
 public class User
 {
     [Key]

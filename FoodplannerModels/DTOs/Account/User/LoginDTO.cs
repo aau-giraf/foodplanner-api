@@ -2,8 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FoodplannerModels.Account;
 
-// Login DTO class
-// Used in 'user controller' to verify login 
+// Login DTO class for logging in a user
 public class LoginDTO
 {
     [Required(ErrorMessage = "Email er påkrævet")]

@@ -85,14 +85,14 @@ public class AdminController(IUserService userService, IChildrenService children
         }
     }
 
-    // URL: api/Admin/UpdateRole/{id}
+    // URL: api/Admin/UpdateRole/{id}/{role_approved}
     // Updates the role of a user by their ID. Returns 200 OK if successful, or 404 Not Found if the user does not exist.
-    [HttpPut("{id}")]
+    [HttpPut("{id}/{role_approved}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateRoleApproved(int id, [FromBody] UserRoleDTO userRoleDTO)
+    public async Task<IActionResult> UpdateRoleApproved(int id, bool role_approved)
     {
-        var result = await userService.UserUpdateRoleApprovedAsync(id, userRoleDTO.role_approved);
+        var result = await userService.UserUpdateRoleApprovedAsync(id, role_approved);
 
         if (result)
         {
