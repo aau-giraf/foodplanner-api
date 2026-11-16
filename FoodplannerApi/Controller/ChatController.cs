@@ -4,19 +4,10 @@ using FoodplannerModels.FeedbackChat;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-// Adds the FeedbackChatController to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
 
 public class ChatController(IChatService chatService, IAuthService authService) : BaseController
 {
-    // URL: api/Chat/GetIdFromToken
-    // Gets the users id from their JWT token
-    [HttpGet]
-    public async Task<string> GetIdFromToken([FromHeader(Name = "Authorization")] string token)
-    {
-        return authService.RetrieveIdFromJwtToken(token);
-    }
-
     // URL: api/Chat/AddMessage
     // Adds message from AddMessageDTO and retrieves UserId from JWT token in Authorization header. Returns 201 Created if successful, or 400 Bad Request if unsuccessful.
     [Authorize(Roles = "Parent, Teacher")]
@@ -54,7 +45,7 @@ public class ChatController(IChatService chatService, IAuthService authService) 
     // Retrieves messages for a given chatThreadId. Returns 200 OK with the list of messages if successful, or 400 Bad Request if unsuccessful.
     [Authorize(Roles = "Parent, Teacher")]
     [HttpGet("{chatThreadId}")]
-    [ProducesResponseType(typeof(IEnumerable<UserNameFeedbackChatDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<MessageDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetMessages(int chatThreadId)
     {

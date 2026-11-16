@@ -70,7 +70,7 @@ public class ChatServiceTests
         const int messageId = 123;
         var expectedGroupName = $"thread-{addMessageDTO.ChatThreadId}";
         mockUserRepository.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(CreateUser(userId));
-        mockChatRepository.Setup(repo => repo.AddMessageAsync(It.IsAny<AddMessageTemp>())).ReturnsAsync(messageId);
+        mockChatRepository.Setup(repo => repo.AddMessageAsync(It.IsAny<AddMessageDTO>(), It.IsAny<DateTime>(), It.IsAny<int>())).ReturnsAsync(messageId);
 
         // Act
         var result = await chatService.AddMessageAsync(addMessageDTO, userId);
@@ -78,10 +78,11 @@ public class ChatServiceTests
         // Assert
         Assert.True(result);
         mockChatRepository.Verify(
-            repo => repo.AddMessageAsync(It.Is<AddMessageTemp>(message =>
-                message.ChatThreadId == addMessageDTO.ChatThreadId &&
-                message.Content == addMessageDTO.Content &&
-                message.UserId == userId)),
+            repo => repo.AddMessageAsync(It.Is<AddMessageDTO>(message =>
+                    message.ChatThreadId == addMessageDTO.ChatThreadId &&
+                    message.Content == addMessageDTO.Content),
+                It.IsAny<DateTime>(),
+                userId),
             Times.Once);
         mockHubClients.Verify(clients => clients.Group(expectedGroupName),Times.Once);
 
@@ -120,7 +121,7 @@ public class ChatServiceTests
 
         // Assert
         Assert.False(result);
-        mockChatRepository.Verify(repo => repo.AddMessageAsync(It.IsAny<AddMessageTemp>()),Times.Never);
+        mockChatRepository.Verify(repo => repo.AddMessageAsync(It.IsAny<AddMessageDTO>(), It.IsAny<DateTime>(), It.IsAny<int>()),Times.Never);
         mockClientProxy.Verify(
             proxy => proxy.SendCoreAsync(
                 It.IsAny<string>(),
@@ -142,7 +143,7 @@ public class ChatServiceTests
         const int userId = 7;
         const int messageId = 123;
         mockUserRepository.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(CreateUser(userId));
-        mockChatRepository.Setup(repo => repo.AddMessageAsync(It.IsAny<AddMessageTemp>())).ReturnsAsync(messageId);
+        mockChatRepository.Setup(repo => repo.AddMessageAsync(It.IsAny<AddMessageDTO>(), It.IsAny<DateTime>(), It.IsAny<int>())).ReturnsAsync(messageId);
         mockClientProxy
             .Setup(proxy => proxy.SendCoreAsync(
                 It.IsAny<string>(),
@@ -156,10 +157,11 @@ public class ChatServiceTests
         // Assert
         Assert.True(result);
         mockChatRepository.Verify(
-            repo => repo.AddMessageAsync(It.Is<AddMessageTemp>(message =>
-                message.ChatThreadId == addMessageDTO.ChatThreadId &&
-                message.Content == addMessageDTO.Content &&
-                message.UserId == userId)),
+            repo => repo.AddMessageAsync(It.Is<AddMessageDTO>(message =>
+                    message.ChatThreadId == addMessageDTO.ChatThreadId &&
+                    message.Content == addMessageDTO.Content),
+                It.IsAny<DateTime>(),
+                userId),
             Times.Once);
     }
 
