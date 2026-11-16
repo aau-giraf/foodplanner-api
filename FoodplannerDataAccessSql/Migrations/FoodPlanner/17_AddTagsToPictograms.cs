@@ -36,7 +36,7 @@ public class AddTagsToPictograms : Migration
         .ToTable("categories").PrimaryColumn("id");
 
         // Add column to ingredient table 
-        Alter.Table("ingredients").AddColumn("is_stock_img").AsBoolean().NotNullable();
+        Alter.Table("ingredients").AddColumn("is_stock_img").AsBoolean().NotNullable().WithDefaultValue(false);
     }
 
         public override void Down()
