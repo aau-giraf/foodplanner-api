@@ -152,9 +152,9 @@ public class IngredientsRepositoryTests
         // Arrange
         var rnd = new Random(); 
         int createId = rnd.Next();
-        var ingredient = new IngredientDTO { Id = 0, Name = "Cheese", User_id = 1, Image_id = null };
+        var ingredient = new IngredientDTO { Id = 0, Name = "Cheese", User_id = 1, Image_id = null, Is_stock_img = false };
 
-        const string sql = "INSERT INTO ingredients (name, user_id, image_id) VALUES (@Name, @UserId, @ImageId) RETURNING id";
+        const string sql = "INSERT INTO ingredients (name, user_id, image_id, is_stock_img) VALUES (@Name, @UserId, @ImageId, @IsStockImg) RETURNING id";
 
         mockExecutor.Setup(e => e.QuerySingleAsync<int>(sql, 
         It.IsAny<object?>())).ReturnsAsync(createId);
@@ -173,7 +173,8 @@ public class IngredientsRepositoryTests
             It.Is<object?>(p =>
                 HasParameter(p, "Name", ingredient.Name) &&
                 HasParameter(p, "UserId", ingredient.User_id) &&
-                HasParameter(p, "ImageId", DBNull.Value))), //Image is a special type of db null value
+                HasParameter(p, "ImageId", DBNull.Value) && //Image is a special type of db null value
+                HasParameter(p, "IsStockImg", false))),
         Times.Once);
     }
 
@@ -185,9 +186,9 @@ public class IngredientsRepositoryTests
         var rnd = new Random();
         int id = rnd.Next();
 
-        var ingredient = new IngredientDTO { Id = id, Name = "Cheese", User_id = 5, Image_id = null };
+        var ingredient = new IngredientDTO { Id = id, Name = "Cheese", User_id = 5, Image_id = null, Is_stock_img = false };
 
-        const string sql = "UPDATE ingredients SET name = @Name, user_id = @UserId, image_id = @ImageId WHERE id = @Id";
+        const string sql = "UPDATE ingredients SET name = @Name, user_id = @UserId, image_id = @ImageId, is_stock_img = @IsStockImg WHERE id = @Id";
 
         // When the SQL statement is executed, return 1 affected row
         mockExecutor.Setup(e => e.ExecuteAsync(sql, It.IsAny<object?>()))
@@ -206,7 +207,8 @@ public class IngredientsRepositoryTests
                 HasParameter(p, "Id", ingredient.Id) &&
                 HasParameter(p, "Name", ingredient.Name) &&
                 HasParameter(p, "UserId", ingredient.User_id) &&
-                HasParameter(p, "ImageId", ingredient.Image_id))),
+                HasParameter(p, "ImageId", ingredient.Image_id) && 
+                HasParameter(p, "IsStockImg", ingredient.Is_stock_img))),
             Times.Once);
     }
 

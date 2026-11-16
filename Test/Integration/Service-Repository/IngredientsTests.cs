@@ -154,7 +154,7 @@ public class IngredientsTests
         int generatedId = 77;
 
         mockExecutor.Setup(e => e.QuerySingleAsync<int>(
-                "INSERT INTO ingredients (name, user_id, image_id) VALUES (@Name, @UserId, @ImageId) RETURNING id",
+                "INSERT INTO ingredients (name, user_id, image_id, is_stock_img) VALUES (@Name, @UserId, @ImageId, @IsStockImg) RETURNING id",
                 It.Is<object?>(p =>
                     HasParameter(p, "Name", ingredient.Name) &&
                     HasParameter(p, "UserId", ingredient.User_id) &&
@@ -179,7 +179,7 @@ public class IngredientsTests
         var updated = CreateIngredient(42, "Updated Ingredient", 67890);
 
         mockExecutor.Setup(e => e.ExecuteAsync(
-                "UPDATE ingredients SET name = @Name, user_id = @UserId, image_id = @ImageId WHERE id = @Id",
+                "UPDATE ingredients SET name = @Name, user_id = @UserId, image_id = @ImageId, is_stock_img = @IsStockImg WHERE id = @Id",
                 It.Is<object?>(p =>
                     HasParameter(p, "Id", updated.Id) &&
                     HasParameter(p, "Name", updated.Name) &&
