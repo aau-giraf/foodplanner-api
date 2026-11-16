@@ -1,15 +1,17 @@
 using FoodplannerModels.Image;
 using Microsoft.AspNetCore.Mvc;
 using FoodplannerServices.ExternalApi;
-using FoodplannerDataAccessSql.Image;
 using FoodplannerServices.Image;
-using FoodplannerModels.FeedbackChat;
+using FoodplannerModels.Tags;
+using FoodplannerServices.Tags;
+using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
+using FoodplannerModels.Lunchbox;
 
 
 namespace FoodplannerServices.Image;
 
 // Service implementation for Pixabay business logic
-public class PixabayService(IPixabayApi pixabayApi, IFoodImageService foodImageService, IWebClientWrapper webClientWrapper) : IPixabayService
+public class PixabayService(IPixabayApi pixabayApi, IFoodImageService foodImageService, IWebClientWrapper webClientWrapper, ITagService tagService) : IPixabayService
 {
     // Max image size is 100 MB
     private readonly long _maxFileSize = 100000000; 
@@ -24,7 +26,7 @@ public class PixabayService(IPixabayApi pixabayApi, IFoodImageService foodImageS
         return images;
     }
 
-    public async Task<int> SavePixabayUrl (int userid, string keyword, string url)
+    public async Task<int> SavePixabayUrl (int userid, string keyword, string url, Tag tags)
     {
         // Convert the pixabay url to a stream
         byte[] imageStream = webClientWrapper.DownloadData(url);
@@ -41,7 +43,7 @@ public class PixabayService(IPixabayApi pixabayApi, IFoodImageService foodImageS
         }
 
         // Return the id of the created image
-        return await foodImageService.CreateFoodImage(userid, image, keyword, "image/jpeg", image.Length);      
+        return await foodImageService.CreateFoodImage(userid, image, keyword, "image/jpeg", image.Length, tags);      
     }
 
 }

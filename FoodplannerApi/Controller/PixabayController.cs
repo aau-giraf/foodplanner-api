@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FoodplannerServices.Auth;
 using FoodplannerModels.Auth;
+using FoodplannerModels.Tags;
+using FoodplannerModels.Lunchbox;
 
 namespace FoodplannerApi.Controller; 
 

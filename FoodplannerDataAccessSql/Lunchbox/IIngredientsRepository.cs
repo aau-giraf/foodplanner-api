@@ -1,4 +1,5 @@
 using FoodplannerModels.Lunchbox;
+using FoodplannerModels.Tags;
 
 namespace FoodplannerDataAccessSql.Lunchbox;
 
@@ -10,7 +11,7 @@ public interface IIngredientsRepository
 
     Task<IngredientDTO?> GetByIdAsync(int id);
 
-    Task<int> InsertAsync(IngredientDTO entity);
+    Task<int> InsertAsync(IngredientDTO entity, Tag tag);
 
     Task<int> UpdateAsync(IngredientDTO entity);
 

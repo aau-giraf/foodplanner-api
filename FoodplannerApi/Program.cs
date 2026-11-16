@@ -11,6 +11,7 @@ using FoodplannerModels.Lunchbox;
 using FoodplannerModels.Auth;
 using FoodplannerModels.Image;
 using FoodplannerModels.Codes;
+using FoodplannerModels.Tags;
 using FoodplannerServices.Account;
 using FoodplannerServices.Lunchbox;
 using FoodplannerServices.Image;
@@ -20,6 +21,7 @@ using FoodplannerServices.FeedbackChat;
 using FoodplannerServices.Secret;
 using FoodplannerServices.Codes;
 using FoodplannerServices.Hubs;
+using FoodplannerServices.Tags;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -263,6 +265,8 @@ builder.Services.AddScoped<IPackedService,PackedService>();
 builder.Services.AddScoped<SubIngredientService>();
 builder.Services.AddHttpClient<IPixabayApi, PixabayApi>();
 builder.Services.AddTransient<IWebClientWrapper, WebClientWrapper>();
+builder.Services.AddScoped<CategoriesService>();
+builder.Services.AddScoped<ITagsService, TagService>();
 
 
 

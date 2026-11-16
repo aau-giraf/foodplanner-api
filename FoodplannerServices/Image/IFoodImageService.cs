@@ -1,11 +1,12 @@
 using FoodplannerModels.Image;
+using FoodplannerModels.Tags;
 
 namespace FoodplannerServices.Image;
 
 // Interface for FoodImage service
 public interface IFoodImageService
 {
-    public Task<int> CreateFoodImage(int userid, Stream imageStream, string imageName, string imageType, long imageFileSize);
+    public Task<int> CreateFoodImage(int userid, Stream imageStream, string imageName, string imageType, long imageFileSize, Tag tag);
     public Task<FoodImageDTO> GetFoodImage(int foodImageId);
     public Task<string> GetFoodImageLink(int foodImageId);
     public void DeleteImage(int foodImageId);

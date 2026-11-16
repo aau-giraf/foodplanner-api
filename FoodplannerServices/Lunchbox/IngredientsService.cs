@@ -1,5 +1,6 @@
 using FoodplannerModels.Lunchbox;
 using FoodplannerDataAccessSql.Lunchbox;
+using FoodplannerModels.Tags;
 
 // Adds the IngredientsService class to the FoodplannerServices.Lunchbox namespace
 namespace FoodplannerServices.Lunchbox;
@@ -51,11 +52,11 @@ public class IngredientsService(IIngredientsRepository ingredientRepository) : I
     }
 
     // Creates a new ingredient in the repository.
-    public async Task<int> CreateIngredientAsync(IngredientDTO ingredientDTO)
+    public async Task<int> CreateIngredientAsync(IngredientDTO ingredientDTO, Tag tag)
     {
         try
         {
-            return await ingredientRepository.InsertAsync(ingredientDTO);
+            return await ingredientRepository.InsertAsync(ingredientDTO, tag);
         }
         catch (Exception exception)
         {
