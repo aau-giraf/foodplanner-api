@@ -35,7 +35,7 @@ public class PackedRepositoryTests
     public async Task GetAllAsync_Success()
     {
         // Arrange
-        var packedIngredients = new List<PackedDTO>
+        var packedIngredients = new List<Packed>
         {
             new() { Meal_id = 1, Ingredient_id = 2, order_no = 1 },
             new() { Meal_id = 1, Ingredient_id = 3, order_no = 2 }
@@ -44,7 +44,7 @@ public class PackedRepositoryTests
         const string sql = "SELECT * FROM packed";
 
         mockExecutor
-            .Setup(e => e.QueryAsync<PackedDTO>(sql, It.IsAny<object?>()))
+            .Setup(e => e.QueryAsync<Packed>(sql, It.IsAny<object?>()))
             .ReturnsAsync(packedIngredients);
 
         // Act
@@ -62,7 +62,7 @@ public class PackedRepositoryTests
         Assert.Equal(2, result[1].order_no);
 
         mockExecutor.Verify(
-            e => e.QueryAsync<PackedDTO>(sql, null),
+            e => e.QueryAsync<Packed>(sql, null),
             Times.Once);
     }
 
@@ -73,7 +73,7 @@ public class PackedRepositoryTests
         // Arrange
         int mealId = 1;
 
-        var packedIngredients = new List<PackedDTO>
+        var packedIngredients = new List<Packed>
         {
             new() { Meal_id = mealId, Ingredient_id = 2, order_no = 1 },
             new() { Meal_id = mealId, Ingredient_id = 3, order_no = 2 }
@@ -82,7 +82,7 @@ public class PackedRepositoryTests
         const string sql = "SELECT * FROM packed WHERE meal_id = @Id ORDER BY order_no";
 
         mockExecutor
-            .Setup(e => e.QueryAsync<PackedDTO>(
+            .Setup(e => e.QueryAsync<Packed>(
                 sql,
                 It.Is<object?>(p => HasParameter(p, "Id", mealId))))
             .ReturnsAsync(packedIngredients);
@@ -102,7 +102,7 @@ public class PackedRepositoryTests
         Assert.Equal(2, result[1].order_no);
 
         mockExecutor.Verify(
-            e => e.QueryAsync<PackedDTO>(
+            e => e.QueryAsync<Packed>(
                 sql,
                 It.Is<object?>(p => HasParameter(p, "Id", mealId))),
             Times.Once);
@@ -113,7 +113,7 @@ public class PackedRepositoryTests
     public async Task InsertAsync_Success()
     {
         // Arrange
-        var packedIngredient = new PackedDTO
+        var packedIngredient = new Packed
         {
             Meal_id = 1,
             Ingredient_id = 2,
@@ -146,7 +146,7 @@ public class PackedRepositoryTests
     public async Task InsertAsync_NoRowsAffected()
     {
         // Arrange
-        var packedIngredient = new PackedDTO
+        var packedIngredient = new Packed
         {
             Meal_id = 1,
             Ingredient_id = 2,
@@ -172,14 +172,14 @@ public class PackedRepositoryTests
     public async Task UpdateAsync_Success()
     {
         // Arrange
-        var oldPacked = new PackedDTO
+        var oldPacked = new Packed
         {
             Meal_id = 1,
             Ingredient_id = 2,
             order_no = 1
         };
 
-        var newPacked = new PackedDTO
+        var newPacked = new Packed
         {
             Meal_id = 1,
             Ingredient_id = 3,
@@ -215,14 +215,14 @@ public class PackedRepositoryTests
     public async Task UpdateAsync_NoRowsAffected()
     {
         // Arrange
-        var oldPacked = new PackedDTO
+        var oldPacked = new Packed
         {
             Meal_id = 1,
             Ingredient_id = 2,
             order_no = 1
         };
 
-        var newPacked = new PackedDTO
+        var newPacked = new Packed
         {
             Meal_id = 1,
             Ingredient_id = 3,
@@ -247,7 +247,7 @@ public class PackedRepositoryTests
     public async Task DeleteAsync_Success()
     {
         // Arrange
-        var packedIngredient = new PackedDTO
+        var packedIngredient = new Packed
         {
             Meal_id = 1,
             Ingredient_id = 2,
@@ -280,7 +280,7 @@ public class PackedRepositoryTests
     public async Task DeleteAsync_NoRowsAffected()
     {
         // Arrange
-        var packedIngredient = new PackedDTO
+        var packedIngredient = new Packed
         {
             Meal_id = 1,
             Ingredient_id = 2,

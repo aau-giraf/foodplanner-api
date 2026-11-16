@@ -15,7 +15,7 @@ public class SubIngredientsController(SubIngredientService subIngredientService,
     // Retrieves all subingredients
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
-    [ProducesResponseType(typeof(IEnumerable<SubIngredientDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<SubIngredient>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
         var subingredients = await subIngredientService.GetAllSubIngredientsAsync();
@@ -26,7 +26,7 @@ public class SubIngredientsController(SubIngredientService subIngredientService,
     // Retrieves all subingredients associated with authorization token
     [HttpGet]
     [Authorize(Roles = "Child, Parent")]
-    [ProducesResponseType(typeof(IEnumerable<SubIngredientDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<SubIngredient>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAllByUser([FromHeader(Name = "Authorization")] string token)
     {
@@ -53,7 +53,7 @@ public class SubIngredientsController(SubIngredientService subIngredientService,
     // Retrieves all subingredients associated with a specific parent ingredient ID
     [HttpGet("{id}")]
     [Authorize(Roles = "Child, Parent")]
-    [ProducesResponseType(typeof(SubIngredientDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SubIngredient), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(int id)
     {
@@ -69,9 +69,9 @@ public class SubIngredientsController(SubIngredientService subIngredientService,
     // Creates a new subingredient from SubIngredientDTO under user associated with authorization token
     [HttpPost]
     [Authorize(Roles = "Child, Parent")]
-    [ProducesResponseType(typeof(SubIngredientDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SubIngredient), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] SubIngredientDTO subingredient)
+    public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] SubIngredient subingredient)
     {
         try
         {
@@ -100,11 +100,11 @@ public class SubIngredientsController(SubIngredientService subIngredientService,
     // Updates an existing subingredient by its parent and child id
     [HttpPut("{parent_id}/{child_id}")]
     [Authorize(Roles = "Child, Parent")]
-    [ProducesResponseType(typeof(SubIngredientDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SubIngredient), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Update([FromBody] SubIngredientDTO newSubIngredient, int parent_id, int child_id)
+    public async Task<IActionResult> Update([FromBody] SubIngredient newSubIngredient, int parent_id, int child_id)
     {
-        var oldSubIngredient = new SubIngredientDTO { Parent_id = parent_id, Child_id = child_id, order_no = 0};
+        var oldSubIngredient = new SubIngredient { Parent_id = parent_id, Child_id = child_id, order_no = 0};
         var result = await subIngredientService.UpdateSubIngredientAsync(oldSubIngredient, newSubIngredient);
         if (result > 0)
         {
@@ -117,9 +117,9 @@ public class SubIngredientsController(SubIngredientService subIngredientService,
     // Delete a subingredient
     [HttpDelete]
     [Authorize(Roles = "Child, Parent")]
-    [ProducesResponseType(typeof(SubIngredientDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SubIngredient), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Delete([FromBody] SubIngredientDTO subingredientDTO)
+    public async Task<IActionResult> Delete([FromBody] SubIngredient subingredientDTO)
     {
         var result = await subIngredientService.DeleteSubIngredientAsync(subingredientDTO);
         if (result > 0)

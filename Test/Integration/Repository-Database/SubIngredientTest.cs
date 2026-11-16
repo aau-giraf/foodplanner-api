@@ -116,7 +116,7 @@ public class SubIngredientTests
             int parentId = await InsertTestIngredientAsync();
             int childId = await InsertTestIngredientAsync();
 
-            var subIngredient = new SubIngredientDTO
+            var subIngredient = new SubIngredient
             {
                 Parent_id = parentId,
                 Child_id = childId,
@@ -165,14 +165,14 @@ public class SubIngredientTests
             await InsertTestSubIngredientAsync(
                 oldParentId, newChildId, 2);
 
-            var oldSubIngredient = new SubIngredientDTO
+            var oldSubIngredient = new SubIngredient
             {
                 Parent_id = oldParentId,
                 Child_id = oldChildId,
                 order_no = 1
             };
 
-            var updatedSubIngredient = new SubIngredientDTO
+            var updatedSubIngredient = new SubIngredient
             {
                 Parent_id = newParentId,
                 Child_id = newChildId,
@@ -266,7 +266,7 @@ public class SubIngredientTests
             await InsertTestSubIngredientAsync(parentId, childId1, 1);
             await InsertTestSubIngredientAsync(parentId, childId2, 2);
 
-            var toDelete = new SubIngredientDTO
+            var toDelete = new SubIngredient
             {
                 Parent_id = parentId,
                 Child_id = childId1,

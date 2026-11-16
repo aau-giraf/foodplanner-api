@@ -205,7 +205,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
     // Get unique ingredients from a list of meal IDs for the authenticated user.
     [HttpPost]
     [Authorize(Roles = "Child, Parent")]
-    [ProducesResponseType(typeof(IEnumerable<IngredientDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<Ingredient>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetUniqueIngredientsFromMeals([FromHeader(Name = "Authorization")] string token, [FromBody] List<int> mealIds)
     {

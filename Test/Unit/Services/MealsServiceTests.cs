@@ -48,15 +48,15 @@ public class MealsServiceTests
             Image_id = null,
             User_id = 3
         };
-        var packed = new List<PackedDTO>
+        var packed = new List<Packed>
         {
-            new PackedDTO {Meal_id = 1, Ingredient_id = 1, order_no = 1 },
-            new PackedDTO {Meal_id = 1, Ingredient_id = 2, order_no = 2 }
+            new Packed {Meal_id = 1, Ingredient_id = 1, order_no = 1 },
+            new Packed {Meal_id = 1, Ingredient_id = 2, order_no = 2 }
         };
-        var ingredients = new List<IngredientDTO>
+        var ingredients = new List<Ingredient>
         {
-            new IngredientDTO { Id = 1, Name = "Noodles", User_id = 3 },
-            new IngredientDTO { Id = 2, Name = "Sauce", User_id = 3 }
+            new Ingredient { Id = 1, Name = "Noodles", User_id = 3 },
+            new Ingredient { Id = 2, Name = "Sauce", User_id = 3 }
         };
         mockMealsRepository.Setup(repo => repo.GetByIdAsync(meal.Id)).ReturnsAsync(meal);
         mockPackedRepository.Setup(repo => repo.GetAllByMealIdAsync(meal.Id)).ReturnsAsync(packed);
@@ -356,17 +356,17 @@ public class MealsServiceTests
                 User_id = 1
             }
         };
-        var packed1 = new List<PackedDTO>
+        var packed1 = new List<Packed>
         {
-            new PackedDTO {Meal_id = 1, Ingredient_id = 1, order_no = 1 },
-            new PackedDTO {Meal_id = 1, Ingredient_id = 2, order_no = 2 }
+            new Packed {Meal_id = 1, Ingredient_id = 1, order_no = 1 },
+            new Packed {Meal_id = 1, Ingredient_id = 2, order_no = 2 }
         };
-        var packed2 = new List<PackedDTO>
+        var packed2 = new List<Packed>
         {
-            new PackedDTO {Meal_id = 2, Ingredient_id = 1, order_no = 1 }
+            new Packed {Meal_id = 2, Ingredient_id = 1, order_no = 1 }
         };
-        var Cheese = new IngredientDTO { Id = 1, Name = "Cheese", User_id = 1};
-        var Tomato = new IngredientDTO { Id = 2, Name = "Tomato", User_id = 1};
+        var Cheese = new Ingredient { Id = 1, Name = "Cheese", User_id = 1};
+        var Tomato = new Ingredient { Id = 2, Name = "Tomato", User_id = 1};
         mockMealsRepository.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync(meals[0]);
         mockMealsRepository.Setup(repo => repo.GetByIdAsync(2)).ReturnsAsync(meals[1]);
         mockPackedRepository.Setup(repo => repo.GetAllByMealIdAsync(1)).ReturnsAsync(packed1);
@@ -412,17 +412,17 @@ public class MealsServiceTests
                 User_id = 2
             }
         };
-        var packed1 = new List<PackedDTO>
+        var packed1 = new List<Packed>
         {
-            new PackedDTO {Meal_id = 1, Ingredient_id = 1, order_no = 1 },
-            new PackedDTO {Meal_id = 1, Ingredient_id = 2, order_no = 2 }
+            new Packed {Meal_id = 1, Ingredient_id = 1, order_no = 1 },
+            new Packed {Meal_id = 1, Ingredient_id = 2, order_no = 2 }
         };
-        var packed2 = new List<PackedDTO>
+        var packed2 = new List<Packed>
         {
-            new PackedDTO {Meal_id = 2, Ingredient_id = 1, order_no = 1 }
+            new Packed {Meal_id = 2, Ingredient_id = 1, order_no = 1 }
         };
-        var Cheese = new IngredientDTO { Id = 1, Name = "Cheese", User_id = 1};
-        var Tomato = new IngredientDTO { Id = 2, Name = "Tomato", User_id = 1};
+        var Cheese = new Ingredient { Id = 1, Name = "Cheese", User_id = 1};
+        var Tomato = new Ingredient { Id = 2, Name = "Tomato", User_id = 1};
         mockMealsRepository.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync(meals[0]);
         mockMealsRepository.Setup(repo => repo.GetByIdAsync(2)).ReturnsAsync(meals[1]);
         mockPackedRepository.Setup(repo => repo.GetAllByMealIdAsync(1)).ReturnsAsync(packed1);
@@ -462,17 +462,17 @@ public class MealsServiceTests
                 User_id = 1
             }
         };
-        var packed1 = new List<PackedDTO>
+        var packed1 = new List<Packed>
         {
-            new PackedDTO {Meal_id = 1, Ingredient_id = 1, order_no = 1 },
-            new PackedDTO {Meal_id = 1, Ingredient_id = 2, order_no = 2 }
+            new Packed {Meal_id = 1, Ingredient_id = 1, order_no = 1 },
+            new Packed {Meal_id = 1, Ingredient_id = 2, order_no = 2 }
         };
-        var packed2 = new List<PackedDTO>
+        var packed2 = new List<Packed>
         {
-            new PackedDTO {Meal_id = 2, Ingredient_id = 1, order_no = 1 }
+            new Packed {Meal_id = 2, Ingredient_id = 1, order_no = 1 }
         };
-        var Cheese = new IngredientDTO { Id = 1, Name = "Cheese", User_id = 1};
-        var Tomato = new IngredientDTO { Id = 2, Name = "Tomato", User_id = 1};
+        var Cheese = new Ingredient { Id = 1, Name = "Cheese", User_id = 1};
+        var Tomato = new Ingredient { Id = 2, Name = "Tomato", User_id = 1};
         mockMealsRepository.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync(meals[0]);
         mockMealsRepository.Setup(repo => repo.GetByIdAsync(2)).ReturnsAsync(meals[1]);
         mockPackedRepository.Setup(repo => repo.GetAllByMealIdAsync(1)).ThrowsAsync(new Exception("Database error"));

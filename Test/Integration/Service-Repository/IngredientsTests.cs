@@ -19,41 +19,13 @@ public class IngredientsTests
 
     [Fact]
     [Trait("Category", "Integration")]
-    public async Task GetAllIngredientsAsync_ShouldReturnIngredients()
-    {
-        // Arrange
-        var ingredients = new[]
-        {
-            CreateIngredient(1, "First Ingredient", 12345),
-            CreateIngredient(2, "Second Ingredient", 12345)
-        };
-
-        mockExecutor.Setup(e => e.QueryAsync<IngredientDTO>(
-                "SELECT * FROM ingredients", It.IsAny<object?>()))
-            .ReturnsAsync(ingredients);
-
-        // Act
-        var result = (await service.GetAllIngredientsAsync()).ToList();
-
-        // Assert
-        Assert.Equal(2, result.Count);
-        Assert.Equal("First Ingredient", result[0].Name);
-        Assert.Equal("Second Ingredient", result[1].Name);
-        Assert.All(result, ingredient => Assert.Equal(12345, ingredient.User_id));
-
-        mockExecutor.Verify(e => e.QueryAsync<IngredientDTO>(
-            "SELECT * FROM ingredients", It.IsAny<object?>()), Times.Once);
-    }
-
-    [Fact]
-    [Trait("Category", "Integration")]
     public async Task GetAllIngredientsByUserAsync_ShouldReturnOnlyMatchingIngredients()
     {
         // Arrange
         int userId = 12345;
         var expected = CreateIngredient(10, "User Ingredient", userId);
 
-        mockExecutor.Setup(e => e.QueryAsync<IngredientDTO>(
+        mockExecutor.Setup(e => e.QueryAsync<Ingredient>(
                 "SELECT * FROM ingredients WHERE user_id = @Id",
                 It.Is<object?>(p => HasParameter(p, "Id", userId))))
             .ReturnsAsync(new[] { expected });
@@ -66,7 +38,7 @@ public class IngredientsTests
         Assert.Equal(expected.Id, ingredient.Id);
         Assert.Equal(userId, ingredient.User_id);
 
-        mockExecutor.Verify(e => e.QueryAsync<IngredientDTO>(
+        mockExecutor.Verify(e => e.QueryAsync<Ingredient>(
             "SELECT * FROM ingredients WHERE user_id = @Id",
             It.Is<object?>(p => HasParameter(p, "Id", userId))), Times.Once);
     }
@@ -78,10 +50,10 @@ public class IngredientsTests
         // Arrange
         int unknownUserId = -1;
 
-        mockExecutor.Setup(e => e.QueryAsync<IngredientDTO>(
+        mockExecutor.Setup(e => e.QueryAsync<Ingredient>(
                 "SELECT * FROM ingredients WHERE user_id = @Id",
                 It.Is<object?>(p => HasParameter(p, "Id", unknownUserId))))
-            .ReturnsAsync(Array.Empty<IngredientDTO>());
+            .ReturnsAsync(Array.Empty<Ingredient>());
 
         // Act
         var result = await service.GetAllIngredientsByUserAsync(unknownUserId);
@@ -89,7 +61,7 @@ public class IngredientsTests
         // Assert
         Assert.Empty(result);
 
-        mockExecutor.Verify(e => e.QueryAsync<IngredientDTO>(
+        mockExecutor.Verify(e => e.QueryAsync<Ingredient>(
             "SELECT * FROM ingredients WHERE user_id = @Id",
             It.Is<object?>(p => HasParameter(p, "Id", unknownUserId))), Times.Once);
     }
@@ -102,7 +74,7 @@ public class IngredientsTests
         int id = 42;
         var expected = CreateIngredient(id, "Test Ingredient", 12345);
 
-        mockExecutor.Setup(e => e.QuerySingleOrDefaultAsync<IngredientDTO>(
+        mockExecutor.Setup(e => e.QuerySingleOrDefaultAsync<Ingredient>(
                 "SELECT * FROM ingredients WHERE id = @Id",
                 It.Is<object?>(p => HasParameter(p, "Id", id))))
             .ReturnsAsync(expected);
@@ -117,7 +89,7 @@ public class IngredientsTests
         Assert.Equal(12345, result.User_id);
         Assert.Null(result.Image_id);
 
-        mockExecutor.Verify(e => e.QuerySingleOrDefaultAsync<IngredientDTO>(
+        mockExecutor.Verify(e => e.QuerySingleOrDefaultAsync<Ingredient>(
             "SELECT * FROM ingredients WHERE id = @Id",
             It.Is<object?>(p => HasParameter(p, "Id", id))), Times.Once);
     }
@@ -129,10 +101,10 @@ public class IngredientsTests
         // Arrange
         int missingId = -1;
 
-        mockExecutor.Setup(e => e.QuerySingleOrDefaultAsync<IngredientDTO>(
+        mockExecutor.Setup(e => e.QuerySingleOrDefaultAsync<Ingredient>(
                 "SELECT * FROM ingredients WHERE id = @Id",
                 It.Is<object?>(p => HasParameter(p, "Id", missingId))))
-            .ReturnsAsync((IngredientDTO?)null);
+            .ReturnsAsync((Ingredient?)null);
 
         // Act
         var result = await service.GetIngredientByIdAsync(missingId);
@@ -140,7 +112,7 @@ public class IngredientsTests
         // Assert
         Assert.Null(result);
 
-        mockExecutor.Verify(e => e.QuerySingleOrDefaultAsync<IngredientDTO>(
+        mockExecutor.Verify(e => e.QuerySingleOrDefaultAsync<Ingredient>(
             "SELECT * FROM ingredients WHERE id = @Id",
             It.Is<object?>(p => HasParameter(p, "Id", missingId))), Times.Once);
     }
@@ -220,29 +192,9 @@ public class IngredientsTests
             It.Is<object?>(p => HasParameter(p, "Id", ingredientId))), Times.Once);
     }
 
-    [Fact]
-    [Trait("Category", "Integration")]
-    public async Task GetAllIngredientsAsync_ShouldWrapRepositoryException()
+    private static Ingredient CreateIngredient(int id, string name, int userId)
     {
-        // Arrange
-        var originalException = new InvalidOperationException("Database operation failed");
-
-        mockExecutor.Setup(e => e.QueryAsync<IngredientDTO>(
-                "SELECT * FROM ingredients", It.IsAny<object?>()))
-            .ThrowsAsync(originalException);
-
-        // Act
-        var exception = await Assert.ThrowsAsync<Exception>(
-            () => service.GetAllIngredientsAsync());
-
-        // Assert
-        Assert.Contains("Error retrieving all ingredients", exception.Message);
-        Assert.Same(originalException, exception.InnerException);
-    }
-
-    private static IngredientDTO CreateIngredient(int id, string name, int userId)
-    {
-        return new IngredientDTO
+        return new Ingredient
         {
             Id = id,
             Name = name,

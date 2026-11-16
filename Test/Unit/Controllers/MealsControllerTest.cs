@@ -80,7 +80,7 @@ public class MealsControllerTests
     {
         // Arrange
         int mealId = 1;
-        var meal = new MealWithIngredientsDTO { Id = mealId, Name = "Pizza", Date = "18/11/2022", Template = false, Image_id = null, User_id = 1, Ingredients = [new IngredientDTO { Id = 10, Name = "Cheese", User_id = 1 }] };
+        var meal = new MealWithIngredientsDTO { Id = mealId, Name = "Pizza", Date = "18/11/2022", Template = false, Image_id = null, User_id = 1, Ingredients = [new Ingredient { Id = 10, Name = "Cheese", User_id = 1 }] };
         mockMealsService.Setup(service => service.GetMealByIdAsync(mealId)).ReturnsAsync(meal);
 
         // Act

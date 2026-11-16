@@ -22,10 +22,10 @@ public class SubIngredientServiceTests
     public async Task GetAllSubIngredientsAsync_Success()
     {
         // Arrange
-        var subIngredients = new List<SubIngredientDTO>
+        var subIngredients = new List<SubIngredient>
         {
-            new SubIngredientDTO { Parent_id = 1, Child_id = 1, order_no = 1 },
-            new SubIngredientDTO { Parent_id = 2, Child_id = 2, order_no = 2 }
+            new SubIngredient { Parent_id = 1, Child_id = 1, order_no = 1 },
+            new SubIngredient { Parent_id = 2, Child_id = 2, order_no = 2 }
         };
         mockSubIngredientRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(subIngredients);
 
@@ -56,10 +56,10 @@ public class SubIngredientServiceTests
     {
         // Arrange
         int parentId = 1;
-        var subIngredients = new List<SubIngredientDTO>
+        var subIngredients = new List<SubIngredient>
         {
-            new SubIngredientDTO { Parent_id = 1, Child_id = 1, order_no = 1 },
-            new SubIngredientDTO { Parent_id = 1, Child_id = 2, order_no = 2 }
+            new SubIngredient { Parent_id = 1, Child_id = 1, order_no = 1 },
+            new SubIngredient { Parent_id = 1, Child_id = 2, order_no = 2 }
         };
         mockSubIngredientRepository.Setup(repo => repo.GetAllByParentIdAsync(parentId)).ReturnsAsync(subIngredients);
 
@@ -90,7 +90,7 @@ public class SubIngredientServiceTests
     public async Task CreateSubIngredientAsync_Success()
     {
         // Arrange
-        var subIngredient = new SubIngredientDTO { Parent_id = 1, Child_id = 1, order_no = 1 };
+        var subIngredient = new SubIngredient { Parent_id = 1, Child_id = 1, order_no = 1 };
         mockSubIngredientRepository.Setup(repo => repo.InsertAsync(subIngredient)).ReturnsAsync(1);
 
         // Act
@@ -105,7 +105,7 @@ public class SubIngredientServiceTests
     public async Task CreateSubIngredientAsync_RepositoryError()
     {
         // Arrange
-        var subIngredient = new SubIngredientDTO { Parent_id = 1, Child_id = 1, order_no = 1 };
+        var subIngredient = new SubIngredient { Parent_id = 1, Child_id = 1, order_no = 1 };
         mockSubIngredientRepository.Setup(repo => repo.InsertAsync(subIngredient)).ThrowsAsync(new Exception("Database error"));
 
         // Act & Assert
@@ -117,8 +117,8 @@ public class SubIngredientServiceTests
     public async Task UpdateSubIngredientAsync_Success()
     {
         // Arrange
-        var oldSubIngredient = new SubIngredientDTO { Parent_id = 1, Child_id = 1, order_no = 1 };
-        var newSubIngredient = new SubIngredientDTO { Parent_id = 1, Child_id = 1, order_no = 2 };
+        var oldSubIngredient = new SubIngredient { Parent_id = 1, Child_id = 1, order_no = 1 };
+        var newSubIngredient = new SubIngredient { Parent_id = 1, Child_id = 1, order_no = 2 };
         mockSubIngredientRepository.Setup(repo => repo.UpdateAsync(oldSubIngredient, newSubIngredient)).ReturnsAsync(1);
 
         // Act
@@ -133,8 +133,8 @@ public class SubIngredientServiceTests
     public async Task UpdateIngredientAsync_RepositoryError()
     {
         // Arrange
-        var oldSubIngredient = new SubIngredientDTO { Parent_id = 1, Child_id = 1, order_no = 1 };
-        var newSubIngredient = new SubIngredientDTO { Parent_id = 1, Child_id = 1, order_no = 2 };
+        var oldSubIngredient = new SubIngredient { Parent_id = 1, Child_id = 1, order_no = 1 };
+        var newSubIngredient = new SubIngredient { Parent_id = 1, Child_id = 1, order_no = 2 };
         mockSubIngredientRepository.Setup(repo => repo.UpdateAsync(oldSubIngredient, newSubIngredient)).ThrowsAsync(new Exception("Database error"));
 
         // Act & Assert
@@ -146,7 +146,7 @@ public class SubIngredientServiceTests
     public async Task DeleteSubIngredientAsync_Success()
     {
         // Arrange
-        var subIngredient = new SubIngredientDTO { Parent_id = 1, Child_id = 1, order_no = 1 };
+        var subIngredient = new SubIngredient { Parent_id = 1, Child_id = 1, order_no = 1 };
         mockSubIngredientRepository.Setup(repo => repo.DeleteAsync(subIngredient)).ReturnsAsync(1);
 
         // Act
@@ -161,7 +161,7 @@ public class SubIngredientServiceTests
     public async Task DeleteSubIngredientAsync_RepositoryError()
     {
         // Arrange
-        var subIngredient = new SubIngredientDTO { Parent_id = 1, Child_id = 1, order_no = 1 };
+        var subIngredient = new SubIngredient { Parent_id = 1, Child_id = 1, order_no = 1 };
         mockSubIngredientRepository.Setup(repo => repo.DeleteAsync(subIngredient)).ThrowsAsync(new Exception("Database error"));
 
         // Act & Assert

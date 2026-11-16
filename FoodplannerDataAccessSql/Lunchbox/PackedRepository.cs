@@ -6,23 +6,23 @@ namespace FoodplannerDataAccessSql.Lunchbox;
 public class PackedRepository(IDapperExecutor executor) : IPackedRepository
 {
     // Get all packed ingredients from the database. Used in testing.
-    public async Task<IEnumerable<PackedDTO>> GetAllAsync()
+    public async Task<IEnumerable<Packed>> GetAllAsync()
     {
         var sql = "SELECT * FROM packed";
 
-        return await executor.QueryAsync<PackedDTO>(sql);
+        return await executor.QueryAsync<Packed>(sql);
     }
 
     // Get all packed ingredients associated with meal id.
-    public async Task<IEnumerable<PackedDTO>> GetAllByMealIdAsync(int id)
+    public async Task<IEnumerable<Packed>> GetAllByMealIdAsync(int id)
     {
         var sql = "SELECT * FROM packed WHERE meal_id = @Id ORDER BY order_no";
 
-        return await executor.QueryAsync<PackedDTO>(sql, new { Id = id });
+        return await executor.QueryAsync<Packed>(sql, new { Id = id });
     }
 
     // Inserts a new packed ingredient into the database.
-    public async Task<int> InsertAsync(PackedDTO entity)
+    public async Task<int> InsertAsync(Packed entity)
     {
         var sql = "INSERT INTO packed (meal_id, ingredient_id, order_no) VALUES (@MealId, @IngredientId, @OrderNumber)";
 
@@ -35,7 +35,7 @@ public class PackedRepository(IDapperExecutor executor) : IPackedRepository
     }
 
     // Updates an existing packed ingredient.
-    public async Task<int> UpdateAsync(PackedDTO Old, PackedDTO New)
+    public async Task<int> UpdateAsync(Packed Old, Packed New)
     {
         var sql = "UPDATE packed SET meal_id = @NewMealId, ingredient_id = @NewIngredientId, order_no = @NewOrderNumber WHERE meal_id = @OldMealId AND ingredient_id = @OldIngredientId";
 
@@ -50,7 +50,7 @@ public class PackedRepository(IDapperExecutor executor) : IPackedRepository
     }
 
     // Deletes a packed ingredient from the database.
-    public async Task<int> DeleteAsync(PackedDTO entity)
+    public async Task<int> DeleteAsync(Packed entity)
     {
         var sql = "DELETE FROM packed WHERE meal_id = @MealId AND ingredient_id = @IngredientId";
 

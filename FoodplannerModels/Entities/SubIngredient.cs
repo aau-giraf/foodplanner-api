@@ -2,7 +2,7 @@
 namespace FoodplannerModels.Lunchbox;
 
 // Represents a subingredient that can be part of an ingredient
-public class SubIngredientDTO
+public class SubIngredient
 {
     public required int Parent_id { get; set; }
     public required int Child_id { get; set; }

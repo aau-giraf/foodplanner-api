@@ -41,7 +41,7 @@ public class SubIngredientsRepositoryTests
         int child_id2 = rnd.Next();
 
         // Create subingredient objects
-        var subingredients = new List<SubIngredientDTO>
+        var subingredients = new List<SubIngredient>
         {
             new() { Parent_id = parent_id1, Child_id = child_id1, order_no = 1 },
             new() { Parent_id = parent_id2, Child_id = child_id2, order_no = 2 }
@@ -50,7 +50,7 @@ public class SubIngredientsRepositoryTests
         const string sql = "SELECT * FROM subingredient";
 
         // When called with SQL string, return subingredient objects
-        mockExecutor.Setup(e => e.QueryAsync<SubIngredientDTO>(
+        mockExecutor.Setup(e => e.QueryAsync<SubIngredient>(
             sql, It.IsAny<object?>())).ReturnsAsync(subingredients);
 
         // Act
@@ -70,7 +70,7 @@ public class SubIngredientsRepositoryTests
         Assert.Equal(2, resultList[1].order_no);
 
         // Verify the SQL string is called once with null parameters
-        mockExecutor.Verify(e => e.QueryAsync<SubIngredientDTO>(
+        mockExecutor.Verify(e => e.QueryAsync<SubIngredient>(
             sql, null), Times.Once);
     }
 
@@ -85,7 +85,7 @@ public class SubIngredientsRepositoryTests
         int child_id2 = rnd.Next();
 
         // Create subingredient objects
-        var subingredients = new List<SubIngredientDTO>
+        var subingredients = new List<SubIngredient>
         {
             new() { Parent_id = parent_id, Child_id = child_id1, order_no = 1 },
             new() { Parent_id = parent_id, Child_id = child_id2, order_no = 2 }
@@ -94,7 +94,7 @@ public class SubIngredientsRepositoryTests
         const string sql = "SELECT * FROM subingredient WHERE parent_id = @Id ORDER BY order_no";
 
         // When called with SQL string, return subingredient objects
-        mockExecutor.Setup(e => e.QueryAsync<SubIngredientDTO>(
+        mockExecutor.Setup(e => e.QueryAsync<SubIngredient>(
             sql, It.IsAny<object?>())).ReturnsAsync(subingredients);
 
         // Act
@@ -114,7 +114,7 @@ public class SubIngredientsRepositoryTests
         Assert.Equal(2, resultList[1].order_no);
 
         // Verify that SQL was called with the correct parent ID
-        mockExecutor.Verify(e => e.QueryAsync<SubIngredientDTO>(
+        mockExecutor.Verify(e => e.QueryAsync<SubIngredient>(
             sql,
             It.Is<object?>(p =>
                 HasParameter(p, "Id", parent_id))),
@@ -130,7 +130,7 @@ public class SubIngredientsRepositoryTests
         int parent_id = rnd.Next();
         int child_id = rnd.Next();
 
-        var subingredient = new SubIngredientDTO
+        var subingredient = new SubIngredient
         {
             Parent_id = parent_id,
             Child_id = child_id,
@@ -171,14 +171,14 @@ public class SubIngredientsRepositoryTests
         int parent_id_old = rnd.Next();
         int child_id_old = rnd.Next();
 
-        var subingredient_new = new SubIngredientDTO
+        var subingredient_new = new SubIngredient
         {
             Parent_id = parent_id_new,
             Child_id = child_id_new,
             order_no = 1
         };
 
-        var subingredient_old = new SubIngredientDTO
+        var subingredient_old = new SubIngredient
         {
             Parent_id = parent_id_old,
             Child_id = child_id_old,
@@ -219,7 +219,7 @@ public class SubIngredientsRepositoryTests
         int parent_id = rnd.Next();
         int child_id = rnd.Next();
 
-        var subingredient = new SubIngredientDTO{Parent_id = parent_id, Child_id = child_id, order_no = 1};
+        var subingredient = new SubIngredient{Parent_id = parent_id, Child_id = child_id, order_no = 1};
 
         const string sql = "DELETE FROM subingredient WHERE parent_id = @ParentId AND child_id = @ChildId";
 

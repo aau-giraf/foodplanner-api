@@ -132,7 +132,7 @@ public class MealsService(IMealsRepository mealsRepository, IPackedRepository pa
     }
 
     // Fetch all unique ingredients from a list of meal IDs for a specific user
-    public async Task<IEnumerable<IngredientDTO>> GetUniqueIngredientsFromMealsAsync(List<int> mealIds, int userId)
+    public async Task<IEnumerable<Ingredient>> GetUniqueIngredientsFromMealsAsync(List<int> mealIds, int userId)
     {
         try
         {
@@ -147,7 +147,7 @@ public class MealsService(IMealsRepository mealsRepository, IPackedRepository pa
             }
 
             // Fetch all unique ingredients from the specified meals
-            var Ingredients = new List<IngredientDTO>();
+            var Ingredients = new List<Ingredient>();
             foreach (var mealId in mealIds)
             {
                 var packedIngredients = await packedRepository.GetAllByMealIdAsync(mealId);

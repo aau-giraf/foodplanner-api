@@ -5,28 +5,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using FoodplannerModels.Auth;
 
-// Adds the IngredientsController to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
 
 public class IngredientsController(IIngredientsService ingredientService, IAuthService authService) : BaseController
 {
-
-    // URL: api/Ingredients/GetAllIngredients
-    // Retrieves all ingredients. Returns 200 OK with the list of ingredients.
-    [HttpGet]
-    [Authorize(Policy = "AdminPolicy")]
-    [ProducesResponseType(typeof(IEnumerable<IngredientDTO>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllIngredients()
-    {
-        var ingredients = await ingredientService.GetAllIngredientsAsync();
-        return Ok(ingredients);
-    }
-
     // URL: api/Ingredients/GetAllByUser
     // Retrieves all ingredients associated with a user ID extracted from the JWT token in the Authorization header.
     [HttpGet]
     [Authorize(Roles = "Child, Parent")]
-    [ProducesResponseType(typeof(IEnumerable<IngredientDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<Ingredient>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAllByUser([FromHeader(Name = "Authorization")] string token)
     {
@@ -54,7 +41,7 @@ public class IngredientsController(IIngredientsService ingredientService, IAuthS
     // Retrieves an ingredient by its ID.
     [HttpGet("{id}")]
     [Authorize(Roles = "Child, Parent")]
-    [ProducesResponseType(typeof(IngredientDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Ingredient), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(int id)
     {
@@ -70,9 +57,9 @@ public class IngredientsController(IIngredientsService ingredientService, IAuthS
     // Creates a new ingredient associated with the user ID extracted from the JWT token in the Authorization header.
     [HttpPost]
     [Authorize(Roles = "Child, Parent")]
-    [ProducesResponseType(typeof(IngredientDTO), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(Ingredient), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] IngredientDTO ingredient)
+    public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] Ingredient ingredient)
     {
         // Retrieves user id from JWT token in the Authorization header.
         var idString = authService.RetrieveIdFromJwtToken(token);
@@ -95,9 +82,9 @@ public class IngredientsController(IIngredientsService ingredientService, IAuthS
     // Updates an existing ingredient by its ID using provided IngredientDTO.
     [HttpPut]
     [Authorize(Roles = "Child, Parent")]
-    [ProducesResponseType(typeof(IngredientDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Ingredient), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Update([FromBody] IngredientDTO ingredientDTO)
+    public async Task<IActionResult> Update([FromBody] Ingredient ingredientDTO)
     {
         var result = await ingredientService.UpdateIngredientAsync(ingredientDTO);
         if (result > 0)
@@ -112,7 +99,7 @@ public class IngredientsController(IIngredientsService ingredientService, IAuthS
     // Deletes an ingredient by its ID, returns deleted ingredient if successful.
     [HttpDelete("{id}")]
     [Authorize(Roles = "Child, Parent")]
-    [ProducesResponseType(typeof(IngredientDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Ingredient), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
     {

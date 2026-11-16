@@ -90,7 +90,7 @@ public class MealsServiceTests
 
         // Assert
         Assert.Null(result);
-        mockExecutor.Verify(e => e.QueryAsync<PackedDTO>(
+        mockExecutor.Verify(e => e.QueryAsync<Packed>(
             It.IsAny<string>(), It.IsAny<object?>()), Times.Never);
     }
 
@@ -300,7 +300,7 @@ public class MealsServiceTests
         Assert.Contains(result, i => i.Id == sharedIngredient.Id);
         Assert.Contains(result, i => i.Id == otherIngredient.Id);
         Assert.Equal(2, result.Select(i => i.Id).Distinct().Count());
-        mockExecutor.Verify(e => e.QueryAsync<PackedDTO>(
+        mockExecutor.Verify(e => e.QueryAsync<Packed>(
             It.IsAny<string>(), It.IsAny<object?>()), Times.Exactly(2));
     }
 
@@ -323,7 +323,7 @@ public class MealsServiceTests
         // Assert
         Assert.IsType<InvalidOperationException>(error.InnerException);
         Assert.Contains("You do not have permission", error.Message);
-        mockExecutor.Verify(e => e.QueryAsync<PackedDTO>(
+        mockExecutor.Verify(e => e.QueryAsync<Packed>(
             It.IsAny<string>(), It.IsAny<object?>()), Times.Never);
     }
 
@@ -342,7 +342,7 @@ public class MealsServiceTests
         // Assert
         Assert.IsType<InvalidOperationException>(error.InnerException);
         Assert.Contains("You do not have permission", error.Message);
-        mockExecutor.Verify(e => e.QueryAsync<PackedDTO>(
+        mockExecutor.Verify(e => e.QueryAsync<Packed>(
             It.IsAny<string>(), It.IsAny<object?>()), Times.Never);
     }
 
@@ -363,17 +363,17 @@ public class MealsServiceTests
             .ReturnsAsync((Meal?)null);
     }
 
-    private void SetupIngredientById(IngredientDTO ingredient)
+    private void SetupIngredientById(Ingredient ingredient)
     {
-        mockExecutor.Setup(e => e.QuerySingleOrDefaultAsync<IngredientDTO>(
+        mockExecutor.Setup(e => e.QuerySingleOrDefaultAsync<Ingredient>(
                 "SELECT * FROM ingredients WHERE id = @Id",
                 It.Is<object?>(p => HasParameter(p, "Id", ingredient.Id))))
             .ReturnsAsync(ingredient);
     }
 
-    private void SetupPackedForMeal(int mealId, params PackedDTO[] packed)
+    private void SetupPackedForMeal(int mealId, params Packed[] packed)
     {
-        mockExecutor.Setup(e => e.QueryAsync<PackedDTO>(
+        mockExecutor.Setup(e => e.QueryAsync<Packed>(
                 It.Is<string>(sql => sql.Contains("FROM packed") && sql.Contains("WHERE meal_id")),
                 It.Is<object?>(p => HasParameter(p, "Id", mealId) || HasParameter(p, "MealId", mealId))))
             .ReturnsAsync(packed);
@@ -393,9 +393,9 @@ public class MealsServiceTests
         };
     }
 
-    private static IngredientDTO CreateIngredient(int id, string name, int userId)
+    private static Ingredient CreateIngredient(int id, string name, int userId)
     {
-        return new IngredientDTO
+        return new Ingredient
         {
             Id = id,
             Name = name,
@@ -404,9 +404,9 @@ public class MealsServiceTests
         };
     }
 
-    private static PackedDTO CreatePacked(int mealId, int ingredientId, int orderNo)
+    private static Packed CreatePacked(int mealId, int ingredientId, int orderNo)
     {
-        return new PackedDTO
+        return new Packed
         {
             Meal_id = mealId,
             Ingredient_id = ingredientId,

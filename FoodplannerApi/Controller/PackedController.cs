@@ -13,7 +13,7 @@ public class PackedIngredientController(IPackedService packedIngredientService) 
     // Retrieves all packed ingredients
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
-    [ProducesResponseType(typeof(IEnumerable<PackedDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<Packed>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
         var packedIngredients = await packedIngredientService.GetAllPackedAsync();
@@ -24,7 +24,7 @@ public class PackedIngredientController(IPackedService packedIngredientService) 
     // Retrieves all packed ingredients associated with a specific meal ID
     [HttpGet("{id}")]
     [Authorize(Policy = "AdminPolicy")]
-    [ProducesResponseType(typeof(IEnumerable<PackedDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<Packed>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(int id)
     {
@@ -42,7 +42,7 @@ public class PackedIngredientController(IPackedService packedIngredientService) 
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] PackedDTO packIngredient)
+    public async Task<IActionResult> Create([FromBody] Packed packIngredient)
     {
         var result = await packedIngredientService.CreatePackedAsync(packIngredient);
         if (result > 0)
@@ -56,11 +56,11 @@ public class PackedIngredientController(IPackedService packedIngredientService) 
     // Updates the order no. of ingredients in a packed
     [HttpPut("{meal_id}/{ingredient_id}")]
     [Authorize(Policy = "AdminPolicy")]
-    [ProducesResponseType(typeof(PackedDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Packed), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Update([FromBody] PackedDTO newPackedDTO, int ingredient_id, int meal_id)
+    public async Task<IActionResult> Update([FromBody] Packed newPackedDTO, int ingredient_id, int meal_id)
     {
-        var oldPackedDTO = new PackedDTO{Ingredient_id = ingredient_id, Meal_id = meal_id, order_no = 0};
+        var oldPackedDTO = new Packed{Ingredient_id = ingredient_id, Meal_id = meal_id, order_no = 0};
         var result = await packedIngredientService.UpdatePackedAsync(oldPackedDTO, newPackedDTO);
         if (result > 0)
         {
@@ -75,7 +75,7 @@ public class PackedIngredientController(IPackedService packedIngredientService) 
     [Authorize(Roles = "Parent")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Delete([FromBody] PackedDTO packedDTO)
+    public async Task<IActionResult> Delete([FromBody] Packed packedDTO)
     {
         var result = await packedIngredientService.DeletePackedAsync(packedDTO);
         if (result > 0)

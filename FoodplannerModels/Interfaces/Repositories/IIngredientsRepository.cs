@@ -4,15 +4,9 @@ namespace FoodplannerDataAccessSql.Lunchbox;
 
 public interface IIngredientsRepository
 {
-    Task<IEnumerable<IngredientDTO>> GetAllAsync();
-
-    Task<IEnumerable<IngredientDTO>> GetAllByUserAsync(int id);
-
-    Task<IngredientDTO?> GetByIdAsync(int id);
-
-    Task<int> InsertAsync(IngredientDTO entity);
-
-    Task<int> UpdateAsync(IngredientDTO entity);
-
+    Task<IEnumerable<Ingredient>> GetAllByUserAsync(int id);
+    Task<Ingredient?> GetByIdAsync(int id);
+    Task<int> InsertAsync(Ingredient entity);
+    Task<int> UpdateAsync(Ingredient entity);
     Task<int> DeleteAsync(int id);
 }

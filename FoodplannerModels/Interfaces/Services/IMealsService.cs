@@ -11,5 +11,5 @@ public interface IMealsService
     Task<int> DeleteMealAsync(int id);
     Task<IEnumerable<MealWithIngredientsDTO>> GetAllTemplatesByUserAsync(int userId);
     Task<int> UpdateTemplateStatusAsync(int id, bool template, int userId);
-    Task<IEnumerable<IngredientDTO>> GetUniqueIngredientsFromMealsAsync(List<int> mealIds, int userId);
+    Task<IEnumerable<Ingredient>> GetUniqueIngredientsFromMealsAsync(List<int> mealIds, int userId);
 }

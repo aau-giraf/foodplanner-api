@@ -4,13 +4,13 @@ namespace FoodplannerDataAccessSql.Lunchbox;
 
 public interface IPackedRepository
 {
-    Task<IEnumerable<PackedDTO>> GetAllAsync();
+    Task<IEnumerable<Packed>> GetAllAsync();
 
-    Task<IEnumerable<PackedDTO>> GetAllByMealIdAsync(int id);
+    Task<IEnumerable<Packed>> GetAllByMealIdAsync(int id);
 
-    Task<int> InsertAsync(PackedDTO entity);
+    Task<int> InsertAsync(Packed entity);
 
-    Task<int> UpdateAsync(PackedDTO Old, PackedDTO New);
+    Task<int> UpdateAsync(Packed Old, Packed New);
 
-    Task<int> DeleteAsync(PackedDTO entity);
+    Task<int> DeleteAsync(Packed entity);
 }
