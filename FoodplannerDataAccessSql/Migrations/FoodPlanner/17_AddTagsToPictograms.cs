@@ -43,6 +43,6 @@ public class AddTagsToPictograms : Migration
     {
         Delete.Table("tags");
         Delete.Table("categories");
-        Delete.Column("is_stock_img");
+        Delete.Column("is_stock_img").FromTable("ingredients");
     }
 }
