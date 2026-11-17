@@ -1,4 +1,5 @@
 ﻿using FoodplannerModels.Lunchbox;
+using FoodplannerModels.Tags;
 
 namespace FoodplannerDataAccessSql.Lunchbox;
 
@@ -31,16 +32,35 @@ public class IngredientsRepository(IDapperExecutor executor) : IIngredientsRepos
     }
 
     // Asynchronously inserts a new ingredient into the database and returns its ID.
-    public async Task<int> InsertAsync(IngredientDTO entity)
+    public async Task<int> InsertAsync(IngredientDTO entity, IEnumerable<int> categoriesId)
     {
+        // Insert ingredient to the database and generate an ingredient ID
         var sql = "INSERT INTO ingredients (name, user_id, image_id) VALUES (@Name, @UserId, @ImageId) RETURNING id";
 
-        return await executor.QuerySingleAsync<int>(sql, new
+        var ingredientId = await executor.QuerySingleAsync<int>(sql, new
         {
             Name = entity.Name,
             UserId = entity.User_id,
             ImageId = entity.Image_id ?? (object)DBNull.Value
         });
+
+        // Creates a tag for each selected category
+        foreach(var categoryId in categoriesId)
+        {
+            // Tag created based on ingredient id and category id
+            var tag = new Tag
+            {
+                Ingredient_id = ingredientId,
+                Category_id = categoryId
+            };
+
+            var tagsql = @"INSERT INTO tags(ingredient_id, category_id) VALUES (@Ingredient_id, @Category_id)";
+
+            await executor.ExecuteAsync(tagsql ,tag);
+        }
+
+
+        return ingredientId;
     }
 
     // Asynchronously updates an existing ingredient in the database.

@@ -72,7 +72,7 @@ public class IngredientsController(IIngredientsService ingredientService, IAuthS
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(IngredientDTO), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] IngredientDTO ingredient)
+    public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] IngredientDTO ingredient, [FromBody] IEnumerable<int> categoriesId)
     {
         // Retrieves user id from JWT token in the Authorization header.
         var idString = authService.RetrieveIdFromJwtToken(token);
@@ -82,7 +82,7 @@ public class IngredientsController(IIngredientsService ingredientService, IAuthS
         }
 
         // Calls the service to create a new ingredient associated with the user ID
-        var result = await ingredientService.CreateIngredientAsync(ingredient);
+        var result = await ingredientService.CreateIngredientAsync(ingredient, categoriesId);
         if (result > 0)
         {
             var createdIngredient = await ingredientService.GetIngredientByIdAsync(result);

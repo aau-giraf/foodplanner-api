@@ -26,7 +26,7 @@ public class PixabayService(IPixabayApi pixabayApi, IFoodImageService foodImageS
         return images;
     }
 
-    public async Task<int> SavePixabayUrl (int userid, string keyword, string url, Tag tags)
+    public async Task<int> SavePixabayUrl (int userid, string keyword, string url)
     {
         // Convert the pixabay url to a stream
         byte[] imageStream = webClientWrapper.DownloadData(url);
@@ -43,7 +43,7 @@ public class PixabayService(IPixabayApi pixabayApi, IFoodImageService foodImageS
         }
 
         // Return the id of the created image
-        return await foodImageService.CreateFoodImage(userid, image, keyword, "image/jpeg", image.Length, tags);      
+        return await foodImageService.CreateFoodImage(userid, image, keyword, "image/jpeg", image.Length);      
     }
 
 }

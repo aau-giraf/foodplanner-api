@@ -5,7 +5,7 @@ namespace FoodplannerModels.Tags;
 
 public class Tag
 {
-    [ForeignKey ("Ingridients")]
+    [ForeignKey ("Ingredients")]
     [Required(ErrorMessage = "Ingredient påkrævet")]
     public int Ingredient_id { get; set; }
 

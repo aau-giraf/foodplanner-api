@@ -11,7 +11,7 @@ public interface IIngredientsRepository
 
     Task<IngredientDTO?> GetByIdAsync(int id);
 
-    Task<int> InsertAsync(IngredientDTO entity, Tag tag);
+    Task<int> InsertAsync(IngredientDTO entity, IEnumerable<int> categoriesId);
 
     Task<int> UpdateAsync(IngredientDTO entity);
 
