@@ -34,7 +34,7 @@ public class IngredientsRepository(IDapperExecutor executor) : IIngredientsRepos
     // Asynchronously inserts a new ingredient into the database and returns its ID.
     public async Task<int> InsertAsync(IngredientDTO entity, IEnumerable<int> categoriesId)
     {
-        var sql = "INSERT INTO ingredients (name, user_id, image_id) VALUES (@Name, @UserId, @ImageId) RETURNING id";
+        var sql = "INSERT INTO ingredients (name, user_id, image_id, is_stock_img) VALUES (@Name, @UserId, @ImageId, @IsStockImg) RETURNING id";
 
         var ingredientId = await executor.QuerySingleAsync<int>(sql, new
         {
