@@ -4,6 +4,7 @@ namespace FoodplannerModels.Tags;
 public class Categories
 {
     [Key]
+    [Required]
     public int Id { get; set; }
     [Required]
     public string Name { get; set;}

@@ -52,7 +52,7 @@ public class IngredientsService(IIngredientsRepository ingredientRepository) : I
     }
 
     // Creates a new ingredient in the repository.
-    // Uses ingredient ID and a list of category IDs to assign tags to the ingridient
+    // Uses ingredient ID and a list of category IDs to assign tags to the ingredient
     public async Task<int> CreateIngredientAsync(IngredientDTO ingredientDTO, IEnumerable<int> categoriesId)
     {
         try
