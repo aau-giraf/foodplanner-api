@@ -6,37 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 // Adds the PackedIngredientController to the FoodPlannerApi.Controller namespace
 namespace FoodplannerApi.Controller;
 
-public class PackedIngredientController(IPackedService packedIngredientService) : BaseController
+public class PackedController(IPackedService packedIngredientService) : BaseController
 {
-    
-    // URL: api/PackedIngredient/GetAll
-    // Retrieves all packed ingredients
-    [HttpGet]
-    [Authorize(Policy = "AdminPolicy")]
-    [ProducesResponseType(typeof(IEnumerable<Packed>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
-    {
-        var packedIngredients = await packedIngredientService.GetAllPackedAsync();
-        return Ok(packedIngredients);
-    }
-
-    // URL: api/PackedIngredient/Get/{id}
-    // Retrieves all packed ingredients associated with a specific meal ID
-    [HttpGet("{id}")]
-    [Authorize(Policy = "AdminPolicy")]
-    [ProducesResponseType(typeof(IEnumerable<Packed>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get(int id)
-    {
-        var packedIngredient = await packedIngredientService.GetAllPackedByMealIdAsync(id);
-        if (packedIngredient == null)
-        {
-            return NotFound();
-        }
-        return Ok(packedIngredient);
-    }
-
-    // URL: api/PackedIngredient/Create
+    // URL: api/Packed/Create
     // Creates new packed ingredient from PackedDTO
     [HttpPost]
     [Authorize(Roles = "Child, Parent")]
@@ -47,12 +19,12 @@ public class PackedIngredientController(IPackedService packedIngredientService) 
         var result = await packedIngredientService.CreatePackedAsync(packIngredient);
         if (result > 0)
         {
-            return CreatedAtAction(nameof(Get), new { id = result }, packIngredient);
+            return StatusCode(StatusCodes.Status201Created, packIngredient);
         }
         return BadRequest();
     }
 
-    // URL: api/PackedIngredient/Update/{meal_id}/{ingredient_id}
+    // URL: api/Packed/Update/{meal_id}/{ingredient_id}
     // Updates the order no. of ingredients in a packed
     [HttpPut("{meal_id}/{ingredient_id}")]
     [Authorize(Policy = "AdminPolicy")]
@@ -69,7 +41,7 @@ public class PackedIngredientController(IPackedService packedIngredientService) 
         return BadRequest();
     }
 
-    // URL: api/PackedIngredient/Delete
+    // URL: api/Packed/Delete
     // Deletes a packed ingredient by its ID
     [HttpDelete]
     [Authorize(Roles = "Parent")]

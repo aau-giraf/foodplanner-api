@@ -32,42 +32,6 @@ public class PackedRepositoryTests
 
     [Fact]
     [Trait("Category", "Unit")]
-    public async Task GetAllAsync_Success()
-    {
-        // Arrange
-        var packedIngredients = new List<Packed>
-        {
-            new() { Meal_id = 1, Ingredient_id = 2, order_no = 1 },
-            new() { Meal_id = 1, Ingredient_id = 3, order_no = 2 }
-        };
-
-        const string sql = "SELECT * FROM packed";
-
-        mockExecutor
-            .Setup(e => e.QueryAsync<Packed>(sql, It.IsAny<object?>()))
-            .ReturnsAsync(packedIngredients);
-
-        // Act
-        var result = (await repository.GetAllAsync()).ToList();
-
-        // Assert
-        Assert.Equal(2, result.Count);
-
-        Assert.Equal(1, result[0].Meal_id);
-        Assert.Equal(2, result[0].Ingredient_id);
-        Assert.Equal(1, result[0].order_no);
-
-        Assert.Equal(1, result[1].Meal_id);
-        Assert.Equal(3, result[1].Ingredient_id);
-        Assert.Equal(2, result[1].order_no);
-
-        mockExecutor.Verify(
-            e => e.QueryAsync<Packed>(sql, null),
-            Times.Once);
-    }
-
-    [Fact]
-    [Trait("Category", "Unit")]
     public async Task GetAllByMealIdAsync_Success()
     {
         // Arrange

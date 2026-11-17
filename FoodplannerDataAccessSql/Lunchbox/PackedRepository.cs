@@ -5,14 +5,6 @@ namespace FoodplannerDataAccessSql.Lunchbox;
 // Repository for the PackedIngredient class.
 public class PackedRepository(IDapperExecutor executor) : IPackedRepository
 {
-    // Get all packed ingredients from the database. Used in testing.
-    public async Task<IEnumerable<Packed>> GetAllAsync()
-    {
-        var sql = "SELECT * FROM packed";
-
-        return await executor.QueryAsync<Packed>(sql);
-    }
-
     // Get all packed ingredients associated with meal id.
     public async Task<IEnumerable<Packed>> GetAllByMealIdAsync(int id)
     {
