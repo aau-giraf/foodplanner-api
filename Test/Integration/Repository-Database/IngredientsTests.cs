@@ -123,7 +123,8 @@ public class IngredientsTests
                 Id = 0,
                 Name = "Inserted Ingredient",
                 User_id = 12345,
-                Image_id = null
+                Image_id = null,
+                Is_stock_img = false
             };
 
             // Act
@@ -159,7 +160,8 @@ public class IngredientsTests
                 Id = id,
                 Name = "Updated Ingredient",
                 User_id = 67890,
-                Image_id = null
+                Image_id = null,
+                Is_stock_img = false
             };
 
             // Act

@@ -34,14 +34,14 @@ public class IngredientsRepository(IDapperExecutor executor) : IIngredientsRepos
     // Asynchronously inserts a new ingredient into the database and returns its ID.
     public async Task<int> InsertAsync(IngredientDTO entity, IEnumerable<int> categoriesId)
     {
-        // Insert ingredient to the database and generate an ingredient ID
         var sql = "INSERT INTO ingredients (name, user_id, image_id) VALUES (@Name, @UserId, @ImageId) RETURNING id";
 
         var ingredientId = await executor.QuerySingleAsync<int>(sql, new
         {
             Name = entity.Name,
             UserId = entity.User_id,
-            ImageId = entity.Image_id ?? (object)DBNull.Value
+            ImageId = entity.Image_id ?? (object)DBNull.Value,
+            IsStockImg = entity.Is_stock_img
         });
 
         // Creates a tag for each selected category
@@ -66,14 +66,15 @@ public class IngredientsRepository(IDapperExecutor executor) : IIngredientsRepos
     // Asynchronously updates an existing ingredient in the database.
     public async Task<int> UpdateAsync(IngredientDTO entity)
     {
-        var sql = "UPDATE ingredients SET name = @Name, user_id = @UserId, image_id = @ImageId WHERE id = @Id";
+        var sql = "UPDATE ingredients SET name = @Name, user_id = @UserId, image_id = @ImageId, is_stock_img = @IsStockImg WHERE id = @Id";
 
         return await executor.ExecuteAsync(sql, new
         {
             Id = entity.Id,
             Name = entity.Name,
             UserId = entity.User_id,
-            ImageId = entity.Image_id
+            ImageId = entity.Image_id,
+            IsStockImg = entity.Is_stock_img
         });
     }
 
