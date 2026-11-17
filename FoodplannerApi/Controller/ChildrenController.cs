@@ -3,24 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FoodplannerModels.Auth;
 
-// Adds the ChildrensController to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
 
 public class ChildrenController(IChildrenService childrenService, IAuthService authService) : BaseController
 {
-
-    // URL: api/Children/GetAllChildrenClassesAsync
-    // Retrieves all children classes. Returns 200 OK with the list of children classes.
-    [HttpGet]
-    [Authorize(Policy = "TeacherPolicy")]
-    [ProducesResponseType(typeof(IEnumerable<ChildrenGetAllDTO>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllChildrenClasses()
-    {
-        var children = await childrenService.GetAllChildrenClassesAsync();
-        return Ok(children);
-    }
-
-    // URL: api/Children/GetAllChilden
+    // URL: api/Children/GetAllChildren
     // Retrieves all children. Returns 200 OK with the list of children.
     [HttpGet]
     [Authorize(Policy = "AdminPolicy")]
@@ -102,9 +89,9 @@ public class ChildrenController(IChildrenService childrenService, IAuthService a
         return NotFound(new ErrorResponse { Message = new[] { "Forældre ikke fundet" } });
     }
 
-    // URL: api/Children/AddTeacherToChild/{childId}/teachers/{userId}
+    // URL: api/Children/AddTeacherToChild/{childId}/{userId}
     // Adds a teacher to a child by their IDs. Returns 200 OK if successful, or 400 Bad Request if the operation fails.
-    [HttpPost("{childId}/teachers/{userId}")]
+    [HttpPost("{childId}/{userId}")]
     [Authorize(Policy = "TeacherPolicy")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

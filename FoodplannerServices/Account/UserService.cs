@@ -45,8 +45,7 @@ public class UserService(IUserRepository userRepository, IAuthService authServic
     }
 
     // Creates a user account for the child and associates it with a parents user account
-    public async Task<int> CreateChildrenUserAsync(
-        UserCreateChildDTO userCreateChildDto, int parentId)
+    public async Task<int> CreateChildrenUserAsync(UserCreateChildDTO userCreateChildDto, int parentId)
     {
         var parentUser = await userRepository.GetByIdAsync(parentId);
 
@@ -90,8 +89,6 @@ public class UserService(IUserRepository userRepository, IAuthService authServic
 
         return id;
     }
-
-
 
     // Updates user
     public async Task<int> UpdateUserAsync(UserUpdateDTO userUpdateDto, int id)

@@ -1,28 +1,24 @@
 using FoodplannerModels.Account;
-using FoodplannerModels.Auth;
 using FoodplannerServices.Account;
-using Moq;
 using Test.Builder;
+using Moq;
 
 namespace Test.Unit.Service;
 
 public class ChildrenServiceTests 
 {
     private readonly Mock<IChildrenRepository> _mockChildrenRepository;
-    private readonly Mock<IAuthService> _mockAuthService;
     private readonly Mock<IUserRepository> _mockUserRepository;
     private readonly ChildrenService _childrenService;
 
     public ChildrenServiceTests()
     {
         _mockChildrenRepository = new Mock<IChildrenRepository>();
-        _mockAuthService = new Mock<IAuthService>();
         _mockUserRepository = new Mock<IUserRepository>();
 
         _childrenService = new ChildrenService(
             _mockChildrenRepository.Object,
-            _mockUserRepository.Object,
-            _mockAuthService.Object
+            _mockUserRepository.Object
         );
     }
 
@@ -66,23 +62,6 @@ public class ChildrenServiceTests
         
         // Act
         var result = await _childrenService.UpdateChildrenAsync(updateChildDto);
-
-        // Assert
-        Assert.Equal(expectedId, result);
-    }
-
-    [Fact]
-    [Trait("Category", "Unit")]
-    public async Task DeleteChildrenAsync_UpdatesValueInRepository()
-    {
-        // Arrange
-        var expectedId = 1;
-        _mockChildrenRepository
-            .Setup(repo => repo.DeleteAsync(expectedId))
-            .ReturnsAsync(expectedId);
-        
-        // Act
-        var result = await _childrenService.DeleteChildrenAsync(expectedId);
 
         // Assert
         Assert.Equal(expectedId, result);

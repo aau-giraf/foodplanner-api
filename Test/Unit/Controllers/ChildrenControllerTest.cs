@@ -25,26 +25,6 @@ public class ChildrenControllerTest
 
     [Fact]
     [Trait("Category", "Unit")]
-    public async Task GetAllChildrenClassesAsync_ReturnsOkObjectResult()
-    {
-        // Arrange
-        var children = new List<ChildrenGetAllDTO> {
-            new ChildrenGetAllDTO { ChildId = 1, FirstName = "niels", LastName = "nielsen", ClassName = "1.A" },
-            new ChildrenGetAllDTO { ChildId = 2, FirstName = "ole", LastName = "olsen", ClassName = "1.A" },
-        };
-        _mockChildrenService
-            .Setup(repo => repo.GetAllChildrenClassesAsync())
-            .ReturnsAsync(children);
-
-        // Act
-        var result = await _childrenController.GetAllChildrenClasses();
-
-        // Assert
-        Assert.IsType<OkObjectResult>(result);
-    }
-
-    [Fact]
-    [Trait("Category", "Unit")]
     public async Task GetAll_ReturnsOkObjectResult()
     {
         // Arrange
