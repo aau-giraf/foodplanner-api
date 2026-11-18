@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
-/*
+
 // Adds the TagController to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
 
@@ -51,4 +51,3 @@ public class TagController(ITagService tagService, IFoodImageService foodImageSe
     }
 
 }
-*/

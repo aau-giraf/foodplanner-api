@@ -1,16 +1,13 @@
-using System.Reflection.Metadata;
 using Dapper;
-using FoodplannerModels.Image;
 using FoodplannerModels.Tags;
-using Microsoft.AspNetCore.Identity;
 
 namespace FoodplannerDataAccessSql.Tags;
 
-public class TagsRepository
+public class TagRepository : ITagRepository
 {
       private readonly CorePostgreSQLConnectionFactory _connectionFactory;
 
-        public TagsRepository(CorePostgreSQLConnectionFactory connectionFactory)
+        public TagRepository(CorePostgreSQLConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }

@@ -248,6 +248,7 @@ builder.Services.AddScoped<IMealsRepository, MealsRepository>();
 builder.Services.AddScoped<IPackedRepository, PackedRepository>();
 builder.Services.AddScoped<ISubIngredientRepository, SubIngredientRepository>();
 builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
 
 // Add Services
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
@@ -269,6 +270,7 @@ builder.Services.AddHttpClient<IPixabayApi, PixabayApi>();
 builder.Services.AddTransient<IWebClientWrapper, WebClientWrapper>();
 builder.Services.AddScoped<CategoriesService>();
 builder.Services.AddScoped<TagService>();
+
 
 
 
