@@ -4,6 +4,7 @@ using FoodplannerDataAccessSql.Lunchbox;
 using FoodplannerDataAccessSql.Migrations;
 using FoodplannerDataAccessSql.Image;
 using FoodplannerDataAccessSql.Codes;
+using FoodplannerDataAccessSql.Tags;
 using FoodplannerModels;
 using FoodplannerModels.Account;
 using FoodplannerModels.FeedbackChat;
@@ -32,6 +33,7 @@ using FluentMigrator.Runner;
 using FluentMigrator.Runner.Initialization;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
+using FoodplannerDataAccessSql.Tag;
 
 // Create a builder for the web application
 var builder = WebApplication.CreateBuilder(args);
@@ -246,6 +248,7 @@ builder.Services.AddScoped<IIngredientsRepository, IngredientsRepository>();
 builder.Services.AddScoped<IMealsRepository, MealsRepository>();
 builder.Services.AddScoped<IPackedRepository, PackedRepository>();
 builder.Services.AddScoped<ISubIngredientRepository, SubIngredientRepository>();
+builder.Services.AddScoped(typeof(ICategoriesRepository<>), typeof(CategoriesRepository));
 
 // Add Services
 builder.Services.AddScoped<IChildrenService, ChildrenService>();

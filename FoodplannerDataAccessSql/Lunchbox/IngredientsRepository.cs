@@ -54,7 +54,7 @@ public class IngredientsRepository(IDapperExecutor executor) : IIngredientsRepos
                 Category_id = categoryId
             };
 
-            var tagsql = @"INSERT INTO tags(ingredient_id, category_id) VALUES (@Ingredient_id, @Category_id)";
+            var tagsql = "INSERT INTO tags(ingredient_id, category_id) VALUES (@Ingredient_id, @Category_id)";
 
             await executor.ExecuteAsync(tagsql ,tag);
         }

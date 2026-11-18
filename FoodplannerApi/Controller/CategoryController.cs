@@ -1,14 +1,17 @@
 using FoodplannerModels.Account;
-using FoodplannerModels.Auth;
-using FoodplannerModels.FeedbackChat;
-using Microsoft.AspNetCore.Authorization;
+using FoodplannerModels.Tags;
+using FoodplannerServices.Tags;
 using Microsoft.AspNetCore.Mvc;
 
-// Adds the CategoryController to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
 
-// public class CategoryController(ICategoryService categoryService) : BaseController
-// {
-    
+public class CategoryController(CategoriesService categoriesService) : BaseController
+{
+    [HttpPost]
+    [ProducesResponseType(typeof(Categories), StatusCodes.Status201Created)]
+    public async Task<IActionResult> Create([FromBody] Categories categories)
+    {
 
-// }
+        return BadRequest(new ErrorResponse {Message = [""]});
+    }
+}
