@@ -2,11 +2,11 @@ using FoodplannerModels.Tags;
 
 namespace FoodplannerDataAccessSql.Tags;
 
-public interface IChildrenRepository
+public interface ICategoryRepository
 {
-Task<IEnumerable<Categories>> GetAllAsync();
+Task<IEnumerable<CategoryDTO>> GetAllAsync();
 
-Task<Categories> InsertAsync(Categories categories);
+Task<CategoryDTO> InsertAsync(CategoryDTO category);
 
 
 }

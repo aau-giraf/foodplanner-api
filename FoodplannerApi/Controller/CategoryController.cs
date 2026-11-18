@@ -8,8 +8,8 @@ namespace FoodplannerApi.Controller;
 public class CategoryController(CategoriesService categoriesService) : BaseController
 {
     [HttpPost]
-    [ProducesResponseType(typeof(Categories), StatusCodes.Status201Created)]
-    public async Task<IActionResult> Create([FromBody] Categories categories)
+    [ProducesResponseType(typeof(CategoryDTO), StatusCodes.Status201Created)]
+    public async Task<IActionResult> Create([FromBody] CategoryDTO category)
     {
 
         return BadRequest(new ErrorResponse {Message = [""]});

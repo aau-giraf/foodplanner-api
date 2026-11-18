@@ -15,30 +15,21 @@ namespace FoodplannerApi.Controller;
 public class TagController(ITagService tagService, IFoodImageService foodImageService) : BaseController
 {
     // URL : "api/Tag/GetImagesFromTags"
+    // Get all images that has all the tags (e.g. "fruit" AND "sliced"), 
     [HttpGet]
     [Authorize(Roles = "Child, Parent, Teacher")]
     [ProducesResponseType(typeof(TagDTO), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetImagesFromTags([FromBody] string tags)
     {
     {
-        try
+        if (string.IsNullOrEmpty(tags))
         {
-            
-            if (string.IsNullOrEmpty(tags))
-            {
-                var images =  foodImageService.GetAllStockImages();
-                return Ok(images);
-            } else
-            {
-                var images = await tagService.GetImagesFromTags(tags);
-                return Ok(images);
-            }
-                
-        }
-        catch (Exception)
+            var images = await foodImageService.GetAllStockImages();
+            return Ok(images);
+        } else
         {
-            return BadRequest(new { Message = "Billeder kunne ikke blive fundet" });
+            var images = await tagService.GetImagesFromTags(tags);
+            return Ok(images);
         }
     }
     }

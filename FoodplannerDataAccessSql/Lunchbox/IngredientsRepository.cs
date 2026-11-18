@@ -48,7 +48,7 @@ public class IngredientsRepository(IDapperExecutor executor) : IIngredientsRepos
         foreach(var categoryId in categoriesId)
         {
             // Tag created based on ingredient id and category id
-            var tag = new Tag
+            var tag = new TagDTO
             {
                 Ingredient_id = ingredientId,
                 Category_id = categoryId
