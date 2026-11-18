@@ -3,11 +3,11 @@ using FoodplannerModels.Tags;
 
 namespace FoodplannerDataAccessSql.Tags;
 
-public class CategoriesRepository : ICategoriesRepository
+public class CategoryRepository : ICategoryRepository
 {
       private readonly CorePostgreSQLConnectionFactory _connectionFactory;
 
-        public CategoriesRepository(CorePostgreSQLConnectionFactory connectionFactory)
+        public CategoryRepository(CorePostgreSQLConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
