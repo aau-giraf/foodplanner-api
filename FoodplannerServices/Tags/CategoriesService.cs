@@ -5,10 +5,10 @@ using FoodplannerModels.Tags;
 
 namespace FoodplannerServices.Tags;
 
-public class CategoriesService()
+public class CategoriesService(ICategoriesRepository categoriesRepository)
 {
 // Create a category in the repository
-public async Task<int> CreateCategory(CategoryDTO categories)
+public async Task<CategoryDTO> CreateCategory(CategoryDTO categories)
     {
        try
         {

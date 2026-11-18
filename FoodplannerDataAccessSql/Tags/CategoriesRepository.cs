@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace FoodplannerDataAccessSql.Tags;
 
-public class CategoriesRepository 
+public class CategoriesRepository : ICategoriesRepository
 {
       private readonly CorePostgreSQLConnectionFactory _connectionFactory;
 
