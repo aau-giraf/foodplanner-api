@@ -8,7 +8,7 @@ namespace FoodplannerServices.Tags;
 public class CategoriesService()
 {
 // Create a category in the repository
-public async Task<int> CreateCategory(Categories categories)
+public async Task<int> CreateCategory(CategoryDTO categories)
     {
        try
         {

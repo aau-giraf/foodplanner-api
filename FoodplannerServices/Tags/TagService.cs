@@ -5,9 +5,9 @@ namespace FoodplannerServices.Tags;
 
 public class TagService()
 {
-    public async Task<Tag> CreateTagId (Categories categories, IngredientDTO ingredient)
+    public async Task<TagDTO> CreateTagId (CategoryDTO categories, IngredientDTO ingredient)
     {
-          return new Tag
+          return new TagDTO
           {
               Category_id = categories.Id,
               Ingredient_id = ingredient.Id

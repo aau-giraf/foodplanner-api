@@ -248,7 +248,7 @@ builder.Services.AddScoped<IIngredientsRepository, IngredientsRepository>();
 builder.Services.AddScoped<IMealsRepository, MealsRepository>();
 builder.Services.AddScoped<IPackedRepository, PackedRepository>();
 builder.Services.AddScoped<ISubIngredientRepository, SubIngredientRepository>();
-builder.Services.AddScoped(typeof(ICategoriesRepository<>), typeof(CategoriesRepository));
+builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
 
 // Add Services
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
