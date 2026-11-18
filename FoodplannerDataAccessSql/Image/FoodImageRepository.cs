@@ -117,9 +117,21 @@ public class FoodImageRepository : IFoodImageRepository
         return await InsertAsync(entity);
     }
 
-    // Asynchronously remove food image entry form database using DeleteAsync method from this class
+    // Asynchronously remove food image entry from database using DeleteAsync method from this class
     public async Task DeleteImageAsync(int imageId)
     {
         await DeleteAsync(imageId);
+    }
+
+    // Asynchronously get all food images, where is_stock_image is true 
+    public async Task<IEnumerable<FoodImage>> GetAllStockImages()
+    {
+        const string sql = "SELECT * FROM food_image WHERE is_stock_image = true";
+        await using (var connection = _connectionFactory.Create())
+        {
+            connection.Open();
+            var result = await connection.QueryAsync<FoodImage>(sql);
+            return result; 
+        }
     }
 }
