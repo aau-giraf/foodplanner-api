@@ -5,5 +5,5 @@ namespace FoodplannerDataAccessSql.Image;
 
 public interface IFoodImageRepository : IGenericRepository<FoodImage>
 {
-    public  Task<IEnumerable<FoodImageDTO>> GetAllStockImages();
+    public  Task<IEnumerable<FoodImage>> GetAllStockImages();
 }
