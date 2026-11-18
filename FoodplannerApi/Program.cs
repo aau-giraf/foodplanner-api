@@ -33,7 +33,7 @@ using FluentMigrator.Runner;
 using FluentMigrator.Runner.Initialization;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
-using FoodplannerDataAccessSql.Tag;
+using FoodplannerDataAccessSql.Tags;
 
 // Create a builder for the web application
 var builder = WebApplication.CreateBuilder(args);
@@ -248,7 +248,7 @@ builder.Services.AddScoped<IIngredientsRepository, IngredientsRepository>();
 builder.Services.AddScoped<IMealsRepository, MealsRepository>();
 builder.Services.AddScoped<IPackedRepository, PackedRepository>();
 builder.Services.AddScoped<ISubIngredientRepository, SubIngredientRepository>();
-builder.Services.AddScoped(typeof(ICategoriesRepository<>), typeof(CategoriesRepository));
+builder.Services.AddScoped<ICategoriesRepository, CategoriesRepository>();
 
 // Add Services
 builder.Services.AddScoped<IChildrenService, ChildrenService>();

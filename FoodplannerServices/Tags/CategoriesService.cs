@@ -1,19 +1,23 @@
 using System.ComponentModel;
+using System.Linq.Expressions;
 using FoodplannerDataAccessSql.Tags;
 using FoodplannerModels.Tags;
 
 namespace FoodplannerServices.Tags;
 
-public class CategoriesService(ICategoryRepository categoriesRepository)
+public class CategoriesService(ICategoriesRepository categoriesRepository)
 {
-// create category
-public async Task<CategoryDTO> CreateCategory(CategoryDTO category)
+// Create a category in the repository
+public async Task<CategoryDTO> CreateCategory(CategoryDTO categories)
     {
-        if (category.Name == null)
+       try
         {
-            throw new Exception("Category must have a name");
+            return await categoriesRepository.InsertAsync(categories);
         }
+        catch (Exception exception)
+        {
+            throw new Exception($"Error creating category: {exception.Message}", exception);
 
-      return await categoriesRepository.InsertAsync(category);
+        }
     }
 }
