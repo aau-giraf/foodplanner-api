@@ -29,23 +29,23 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int userId))
             {
-                return BadRequest(new ErrorResponse {Message = ["Invalid user ID"]});
+                return BadRequest(new ErrorResponseDTO {Message = ["Invalid user ID"]});
             }
 
             // Check that files were provided
             if (imageFiles.Count == 0)
             {
-                return BadRequest(new ErrorResponse {Message = ["No files were provided"]});
+                return BadRequest(new ErrorResponseDTO {Message = ["No files were provided"]});
             }
 
             // Validate the image files
             if (imageFiles.Any(file => file.Length == 0))
             {
-                return BadRequest(new ErrorResponse {Message = ["A file is empty"]});
+                return BadRequest(new ErrorResponseDTO {Message = ["A file is empty"]});
             }
             if (imageFiles.Any(file => file.Length >= _maxFileSize))
             {
-                return BadRequest(new ErrorResponse {Message = ["A file is too big"]});
+                return BadRequest(new ErrorResponseDTO {Message = ["A file is too big"]});
             }
 
             // Create all food images
@@ -63,7 +63,7 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new ErrorResponse {Message = [e.Message]});
+            return BadRequest(new ErrorResponseDTO {Message = [e.Message]});
         }
     }
 

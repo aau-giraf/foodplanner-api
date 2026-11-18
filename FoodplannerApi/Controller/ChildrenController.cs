@@ -22,14 +22,14 @@ public class ChildrenController(IChildrenService childrenService, IAuthService a
     // Retrieves all children associated with a parent ID extracted from the JWT token in the Authorization header. Returns 200 OK with the list of children, or 400 Bad Request if the ID cannot be parsed.
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<Children>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetChildrenByParentToken([FromHeader(Name = "Authorization")] string token)
     {
 
         var idString = authService.RetrieveIdFromJwtToken(token);
         if (!int.TryParse(idString, out int id))
         {
-            return BadRequest(new ErrorResponse { Message = ["Error"] });
+            return BadRequest(new ErrorResponseDTO { Message = ["Error"] });
         }
         var children = await childrenService.GetChildrenByParentIdAsync(id);
         return Ok(children);
@@ -71,7 +71,7 @@ public class ChildrenController(IChildrenService childrenService, IAuthService a
         {
             return Ok(new { Message = "Forældre tilføjet til barn" });
         }
-        return BadRequest(new ErrorResponse { Message = new[] { "Kunne ikke tilføje forældre" } });
+        return BadRequest(new ErrorResponseDTO { Message = new[] { "Kunne ikke tilføje forældre" } });
     }
 
     // URL: api/Children/RemoveParentFromChild/{childId}/parents/{userId}
@@ -86,7 +86,7 @@ public class ChildrenController(IChildrenService childrenService, IAuthService a
         {
             return NoContent();
         }
-        return NotFound(new ErrorResponse { Message = new[] { "Forældre ikke fundet" } });
+        return NotFound(new ErrorResponseDTO { Message = new[] { "Forældre ikke fundet" } });
     }
 
     // URL: api/Children/AddTeacherToChild/{childId}/{userId}
@@ -102,7 +102,7 @@ public class ChildrenController(IChildrenService childrenService, IAuthService a
         {
             return Ok(new { Message = "Lærer tilføjet til barn" });
         }
-        return BadRequest(new ErrorResponse { Message = new[] { "Kunne ikke tilføje lærer" } });
+        return BadRequest(new ErrorResponseDTO { Message = new[] { "Kunne ikke tilføje lærer" } });
     }
 
     // URL: api/Children/RemoveTeacherFromChild/{childId}/teachers/{userId}
@@ -118,7 +118,7 @@ public class ChildrenController(IChildrenService childrenService, IAuthService a
         {
             return NoContent();
         }
-        return NotFound(new ErrorResponse { Message = new[] { "Lærer ikke fundet" } });
+        return NotFound(new ErrorResponseDTO { Message = new[] { "Lærer ikke fundet" } });
     }
 
     // URL: api/Children/GetTeachersByChildId/{childId}

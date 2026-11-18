@@ -13,7 +13,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
     [HttpGet("{date}")]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(IEnumerable<Meal>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAllByUser([FromHeader(Name = "Authorization")] string token, string date)
     {
         try
@@ -22,7 +22,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id))
             {
-                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
+                return BadRequest(new ErrorResponseDTO { Message = ["Invalid user ID"] });
             }
 
             // Retrieve all meals for the user on the specified date.
@@ -31,7 +31,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new ErrorResponse { Message = [e.Message] });
+            return BadRequest(new ErrorResponseDTO { Message = [e.Message] });
         }
     }
 
@@ -67,7 +67,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
     [HttpPost]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(Meal), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] MealCreateDTO mealCreateDTO)
     {
         try
@@ -76,7 +76,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id))
             {
-                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
+                return BadRequest(new ErrorResponseDTO { Message = ["Invalid user ID"] });
             }
 
             // Create the meal and return the created meal with a 201 Created status.
@@ -90,7 +90,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new ErrorResponse { Message = [e.Message] });
+            return BadRequest(new ErrorResponseDTO { Message = [e.Message] });
         }
     }
 
@@ -99,7 +99,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
     [HttpPut]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(Meal), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update([FromHeader(Name = "Authorization")] string token, [FromBody] Meal mealDTO)
     {
         try
@@ -108,7 +108,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int user_id))
             {
-                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
+                return BadRequest(new ErrorResponseDTO { Message = ["Invalid user ID"] });
             }
 
             // Update the meal and return the updated meal with a 200 OK status.
@@ -122,7 +122,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new ErrorResponse { Message = [e.Message] });
+            return BadRequest(new ErrorResponseDTO { Message = [e.Message] });
         }
     }
 
@@ -131,7 +131,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
     [HttpDelete("{id}")]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(Meal), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
     {
         var meal = await mealService.GetMealByIdAsync(id);
@@ -148,7 +148,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
     [HttpGet]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(IEnumerable<Meal>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAllTemplates([FromHeader(Name = "Authorization")] string token)
     {
         try
@@ -157,7 +157,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id))
             {
-                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
+                return BadRequest(new ErrorResponseDTO { Message = ["Invalid user ID"] });
             }
 
             // Retrieve all meal templates for the user and return them with a 200 OK status.
@@ -166,7 +166,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new ErrorResponse { Message = [e.Message] });
+            return BadRequest(new ErrorResponseDTO { Message = [e.Message] });
         }
     }
 
@@ -175,7 +175,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
     [HttpPut("{id}/{templateStatus}")]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateTemplateStatus([FromHeader(Name = "Authorization")] string token, int id, bool templateStatus)
     {
         try
@@ -184,7 +184,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int userId))
             {
-                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
+                return BadRequest(new ErrorResponseDTO { Message = ["Invalid user ID"] });
             }
 
             // Update the template status of the meal and return a success message with a 200 OK status.
@@ -193,11 +193,11 @@ public class MealsController(IMealsService mealService, IAuthService authService
             {
                 return Ok(new { Message = "Template status updated successfully" });
             }
-            return BadRequest(new ErrorResponse { Message = ["Could not update template status"] });
+            return BadRequest(new ErrorResponseDTO { Message = ["Could not update template status"] });
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new ErrorResponse { Message = [e.Message] });
+            return BadRequest(new ErrorResponseDTO { Message = [e.Message] });
         }
     }
 
@@ -206,7 +206,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
     [HttpPost]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(IEnumerable<Ingredient>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetUniqueIngredientsFromMeals([FromHeader(Name = "Authorization")] string token, [FromBody] List<int> mealIds)
     {
         try
@@ -215,13 +215,13 @@ public class MealsController(IMealsService mealService, IAuthService authService
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int userId))
             {
-                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
+                return BadRequest(new ErrorResponseDTO { Message = ["Invalid user ID"] });
             }
 
             // Validate that meal IDs are provided.
             if (mealIds == null || !mealIds.Any())
             {
-                return BadRequest(new ErrorResponse { Message = ["Meal IDs are required"] });
+                return BadRequest(new ErrorResponseDTO { Message = ["Meal IDs are required"] });
             }
 
             // Retrieve unique ingredients from the specified meals for the user and return them with a 200 OK status.
@@ -230,7 +230,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new ErrorResponse { Message = [e.Message] });
+            return BadRequest(new ErrorResponseDTO { Message = [e.Message] });
         }
     }
 }

@@ -101,7 +101,7 @@ public class UsersControllerTests
 
         // Assert
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-        var errorResponse = Assert.IsType<ErrorResponse>(badRequestResult.Value); 
+        var errorResponse = Assert.IsType<ErrorResponseDTO>(badRequestResult.Value); 
         Assert.NotNull(errorResponse);
         Assert.NotNull(errorResponse.Email);
         Assert.Equal("An error occurred while creating the user", errorResponse.Email[0]);
@@ -166,7 +166,7 @@ public class UsersControllerTests
 
         // Assert
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-        var errorResponse = Assert.IsType<ErrorResponse>(badRequestResult.Value);
+        var errorResponse = Assert.IsType<ErrorResponseDTO>(badRequestResult.Value);
         Assert.NotNull(errorResponse);
         Assert.NotNull(errorResponse.Message);
         Assert.Equal("Email or password is wrong", errorResponse.Message[0]);
@@ -196,7 +196,7 @@ public class UsersControllerTests
         var result = await controller.Login(loginDto);
 
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-        var errorResponse = Assert.IsType<ErrorResponse>(badRequestResult.Value);
+        var errorResponse = Assert.IsType<ErrorResponseDTO>(badRequestResult.Value);
         Assert.NotNull(errorResponse);
         Assert.NotNull(errorResponse.Message);
         Assert.Equal("Email or password is wrong", errorResponse.Message[0]);

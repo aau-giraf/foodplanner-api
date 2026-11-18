@@ -14,7 +14,7 @@ public class IngredientsController(IIngredientsService ingredientService, IAuthS
     [HttpGet]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(IEnumerable<Ingredient>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAllByUser([FromHeader(Name = "Authorization")] string token)
     {
         try
@@ -23,7 +23,7 @@ public class IngredientsController(IIngredientsService ingredientService, IAuthS
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id))
             {
-                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
+                return BadRequest(new ErrorResponseDTO { Message = ["Invalid user ID"] });
             }
 
             // Calls the service to fetch all ingredients
@@ -32,7 +32,7 @@ public class IngredientsController(IIngredientsService ingredientService, IAuthS
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new ErrorResponse { Message = [e.Message] });
+            return BadRequest(new ErrorResponseDTO { Message = [e.Message] });
         }
     }
 
@@ -41,7 +41,7 @@ public class IngredientsController(IIngredientsService ingredientService, IAuthS
     [HttpGet("{id}")]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(Ingredient), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(int id)
     {
         var ingredient = await ingredientService.GetIngredientByIdAsync(id);
@@ -57,14 +57,14 @@ public class IngredientsController(IIngredientsService ingredientService, IAuthS
     [HttpPost]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(Ingredient), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] Ingredient ingredient)
     {
         // Retrieves user id from JWT token in the Authorization header.
         var idString = authService.RetrieveIdFromJwtToken(token);
         if (!int.TryParse(idString, out int id))
         {
-            return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
+            return BadRequest(new ErrorResponseDTO { Message = ["Invalid user ID"] });
         }
 
         // Calls the service to create a new ingredient associated with the user ID
@@ -82,7 +82,7 @@ public class IngredientsController(IIngredientsService ingredientService, IAuthS
     [HttpPut]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(Ingredient), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Update([FromBody] Ingredient ingredientDTO)
     {
         var result = await ingredientService.UpdateIngredientAsync(ingredientDTO);
@@ -99,7 +99,7 @@ public class IngredientsController(IIngredientsService ingredientService, IAuthS
     [HttpDelete("{id}")]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(Ingredient), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
     {
         var ingredient = await ingredientService.GetIngredientByIdAsync(id);

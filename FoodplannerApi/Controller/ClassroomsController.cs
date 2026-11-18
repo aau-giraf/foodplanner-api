@@ -52,7 +52,7 @@ public class ClassroomsController(IClassroomService classroomService) : BaseCont
     public async Task<ActionResult> Delete(int id){
         var isChildrenInClassroom = await classroomService.CheckChildrenInClassroom(id);
         if (isChildrenInClassroom){
-            return BadRequest(new ErrorResponse{Message = ["Der er børn i klassen"]});
+            return BadRequest(new ErrorResponseDTO{Message = ["Der er børn i klassen"]});
         }
         var result = await classroomService.DeleteClassroomAsync(id);
         if (result > 0){

@@ -73,7 +73,7 @@ public class ChatController(IChatService chatService, IAuthService authService) 
             // Retrieve UserId from the JWT token            
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id)) {
-                return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
+                return BadRequest(new ErrorResponseDTO {Message = ["Id er ikke et tal"]});
             }
 
             // Call the service layer to get the chatThreadId by childId
@@ -97,7 +97,7 @@ public class ChatController(IChatService chatService, IAuthService authService) 
             // Retrieve UserId from the JWT token
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id)) {
-                return BadRequest(new ErrorResponse {Message = ["Id er ikke et tal"]});
+                return BadRequest(new ErrorResponseDTO {Message = ["Id er ikke et tal"]});
             }
 
             // Call the service layer to get the chatThreadIds by userId

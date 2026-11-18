@@ -39,7 +39,7 @@ public class SubIngredientsController(SubIngredientService subIngredientService,
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int userId))
             {
-                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
+                return BadRequest(new ErrorResponseDTO { Message = ["Invalid user ID"] });
             }
 
             // Calls the service to create a new subingredient under the user ID
@@ -52,7 +52,7 @@ public class SubIngredientsController(SubIngredientService subIngredientService,
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new ErrorResponse { Message = [e.Message] });
+            return BadRequest(new ErrorResponseDTO { Message = [e.Message] });
         }
     }
 
