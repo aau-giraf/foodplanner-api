@@ -19,7 +19,6 @@ public class IngredientsController(IIngredientsService ingredientService, IAuthS
     {
         try
         {
-
             // Retrieves user id from JWT token in the Authorization header.
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id))

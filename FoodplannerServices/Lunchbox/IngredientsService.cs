@@ -1,10 +1,8 @@
 using FoodplannerModels.Lunchbox;
 using FoodplannerDataAccessSql.Lunchbox;
 
-// Adds the IngredientsService class to the FoodplannerServices.Lunchbox namespace
 namespace FoodplannerServices.Lunchbox;
 
-// The service for the Ingredient class.
 public class IngredientsService(IIngredientsRepository ingredientRepository) : IIngredientsService
 {
     // Retrieves all ingredients by user.
