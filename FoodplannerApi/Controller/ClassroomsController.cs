@@ -2,30 +2,27 @@ using FoodplannerModels.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-// adds the ClassroomsController to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
-
 
 public class ClassroomsController(IClassroomService classroomService) : BaseController
 {
-
     // URL: api/Classrooms/GetAll
     // Retrieves all classrooms. Returns 200 OK with the list of classrooms.
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<ClassroomDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<Classroom>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll(){
         var classroom = await classroomService.GetAllClassroomAsync();
         return Ok(classroom);
     }
 
-    // URL: api/Classrooms/Create
+    // URL: api/Classrooms/Create/{ClassroomName}
     // Creates a new classroom from CreateClassroomDTO. Returns 201 with created classroom ID if successful, or 400 Bad Request if unsuccessful.
     [Authorize(Policy = "AdminPolicy")]
-    [HttpPost]
+    [HttpPost("{ClassroomName}")]
     [ProducesResponseType(typeof(int), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> Create([FromBody] CreateClassroomDTO createClassroomDTO){
-        var result = await classroomService.InsertClassroomAsync(createClassroomDTO);
+    public async Task<ActionResult> Create(string ClassroomName){
+        var result = await classroomService.InsertClassroomAsync(ClassroomName);
         if (result > 0){
              return Created(string.Empty, result);
         }
@@ -35,11 +32,11 @@ public class ClassroomsController(IClassroomService classroomService) : BaseCont
     // URL: api/Classrooms/Update/{id}
     // Updates classroom with given ID using CreateClassroomDTO. Returns 200 OK with updated classroom ID if successful, or 400 Bad Request if unsuccessful.
     [Authorize(Policy = "AdminPolicy")]
-    [HttpPut("{id}")]
+    [HttpPut("{id}/{ClassroomName}")]
     [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> Update([FromBody] CreateClassroomDTO createClassroomDTO, int id){
-        var result = await classroomService.UpdateClassroomAsync(createClassroomDTO, id);
+    public async Task<ActionResult> Update(string ClassroomName, int id){
+        var result = await classroomService.UpdateClassroomAsync(ClassroomName, id);
         if (result > 0){
             return Ok(result);
         }

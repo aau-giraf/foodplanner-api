@@ -1,60 +1,42 @@
 using FoodplannerModels.Account;
-using Microsoft.AspNetCore.Http.HttpResults;
 
-// Adds the ClassroomService to the FoodplannerService.Account namespace 
 namespace FoodplannerServices.Account;
 
-
-public class ClassroomService : IClassroomService {
-
-    // Declares read only fields
-    private readonly IClassroomRepository _classroomRepository;
-
-    // Constructor
-    public ClassroomService(IClassroomRepository classroomRepository){
-       _classroomRepository = classroomRepository;
-    }
-
+public class ClassroomService(IClassroomRepository classroomRepository) : IClassroomService
+{
     // Retrieves all classrooms from database
-    public async Task<IEnumerable<ClassroomDTO>> GetAllClassroomAsync()
+    public async Task<IEnumerable<Classroom>> GetAllClassroomAsync()
     {
-        var classrooms = await _classroomRepository.GetAllAsync();
-
-        return classrooms.Select(classroom => new ClassroomDTO{ClassId = classroom.ClassId,ClassName = classroom.ClassName}).ToList();
+        return await classroomRepository.GetAllAsync();
     }
 
     // Creates a new classroom
-    public async Task<int> InsertClassroomAsync(CreateClassroomDTO createClassroomDto)
+    public async Task<int> InsertClassroomAsync(string classroomName)
     {
-
-        var classroom = new Classroom{ClassName = createClassroomDto.ClassName};
-
-        return await _classroomRepository.InsertAsync(classroom);
+        var classroom = new Classroom{ClassName = classroomName};
+        return await classroomRepository.InsertAsync(classroom);
     }
 
     // Updates classroom
-    public async Task<int> UpdateClassroomAsync(CreateClassroomDTO createClassroomDto, int id)
+    public async Task<int> UpdateClassroomAsync(string classroomName, int id)
     {
-        var classroom = new Classroom{ClassId = id, ClassName = createClassroomDto.ClassName}; 
+        var classroom = new Classroom{ClassId = id, ClassName = classroomName}; 
 
-        return await _classroomRepository.UpdateAsync(classroom);
+        return await classroomRepository.UpdateAsync(classroom);
     }
 
     // Checks if there is children in the classroom 
     // Necessary for when trying to delete a classroom 
     public async Task<bool> CheckChildrenInClassroom(int id)
     {
-        var result = await _classroomRepository.CheckChildrenInClassroom(id);
+        var result = await classroomRepository.CheckChildrenInClassroom(id);
         return result;
     }
 
     // Deletes classroom
     public async Task<int> DeleteClassroomAsync(int id)
     {
-        var result = await _classroomRepository.DeleteAsync(id);
+        var result = await classroomRepository.DeleteAsync(id);
         return result;
     }
 }
-
-
-

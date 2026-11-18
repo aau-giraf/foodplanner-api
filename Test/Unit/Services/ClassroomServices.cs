@@ -53,7 +53,7 @@ public class ClassroomServiceTests
             .Setup(repo => repo.UpdateAsync(It.IsAny<Classroom>()))
             .ReturnsAsync(id);
         
-        var createClassroomDto = new CreateClassroomDTO() { ClassName = "1.A" };
+        var createClassroomDto = "1.A";
         
         // Act
         var result = await _classService.UpdateClassroomAsync(createClassroomDto, id);

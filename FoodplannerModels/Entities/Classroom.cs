@@ -1,8 +1,6 @@
 namespace FoodplannerModels.Account;
 using System.ComponentModel.DataAnnotations;
 
-
-// Classroom entity 
 public class Classroom {
     [Key]
     public int ClassId { get; set; }

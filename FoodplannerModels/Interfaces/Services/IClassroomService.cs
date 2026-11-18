@@ -1,16 +1,10 @@
-namespace FoodplannerModels.Account
+namespace FoodplannerModels.Account;
+
+public interface IClassroomService
 {
-    // Interface for classroom service 
-    public interface IClassroomService
-    {
-        Task<IEnumerable<ClassroomDTO>> GetAllClassroomAsync();
-        Task<int> InsertClassroomAsync(CreateClassroomDTO classroom);
-
-        Task<int> UpdateClassroomAsync(CreateClassroomDTO classroom, int id);
-
-        Task<bool> CheckChildrenInClassroom(int id);
-
-        Task<int> DeleteClassroomAsync(int id);
-
-    }
+    Task<IEnumerable<Classroom>> GetAllClassroomAsync();
+    Task<int> InsertClassroomAsync(string classroomName);
+    Task<int> UpdateClassroomAsync(string classroomName, int id);
+    Task<bool> CheckChildrenInClassroom(int id);
+    Task<int> DeleteClassroomAsync(int id);
 }
