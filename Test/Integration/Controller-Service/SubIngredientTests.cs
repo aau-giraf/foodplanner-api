@@ -164,6 +164,36 @@ public class SubIngredientsTests
 
         Assert.Equal(1, affectedRows);
 
+        mockRepository.Verify(r => r.UpdateAsync(
+            It.Is<SubIngredientDTO>(s =>
+                s.Parent_id == userId &&
+                s.Child_id == childId &&
+                s.order_no == 0),
+            updated), Times.Once);
+    }
+
+
+    [Fact]
+    [Trait("Category", "Integration")]
+    public async Task Delete_ShouldDeleteSubIngredient()
+    {
+        // Arrange
+        int userId = 42;
+        int childId = 4;
+        var deleted = CreateSubIngredient(userId, childId, 1);
+
+        mockRepository.Setup(r => r.DeleteAsync(deleted)).ReturnsAsync(1);
+
+        // Act
+        var result = await controller.Delete(deleted);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var affectedRows = Assert.IsType<int>(okResult.Value);
+
+        Assert.Equal(1, affectedRows);
+
+        mockRepository.Verify(r => r.DeleteAsync(deleted), Times.Once);
     }
 
     private static SubIngredientDTO CreateSubIngredient(int parentId, int childId, int orderNo)
