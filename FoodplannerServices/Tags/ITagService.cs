@@ -1,6 +1,7 @@
 using FoodplannerServices.Tags;
 using FoodplannerServices.Lunchbox;
 using FoodplannerModels.Lunchbox;
+using FoodplannerModels.Tags;
 
 namespace FoodplannerServices.Tags;
 

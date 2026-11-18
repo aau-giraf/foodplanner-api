@@ -11,7 +11,7 @@ using FoodplannerModels.Lunchbox;
 namespace FoodplannerServices.Image;
 
 // Service implementation for Pixabay business logic
-public class PixabayService(IPixabayApi pixabayApi, IFoodImageService foodImageService, IWebClientWrapper webClientWrapper, ITagService tagService) : IPixabayService
+public class PixabayService(IPixabayApi pixabayApi, IFoodImageService foodImageService, IWebClientWrapper webClientWrapper) : IPixabayService
 {
     // Max image size is 100 MB
     private readonly long _maxFileSize = 100000000; 

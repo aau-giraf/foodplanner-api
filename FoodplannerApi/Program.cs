@@ -33,7 +33,6 @@ using FluentMigrator.Runner;
 using FluentMigrator.Runner.Initialization;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
-using FoodplannerDataAccessSql.Tags;
 
 // Create a builder for the web application
 var builder = WebApplication.CreateBuilder(args);

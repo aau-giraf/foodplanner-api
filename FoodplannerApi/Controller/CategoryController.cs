@@ -8,21 +8,19 @@ namespace FoodplannerApi.Controller;
 
 public class CategoryController(CategoriesService categoriesService) : BaseController
 {
+    // URL : "api/Tag/CreateCategory" 
     // Creates a new category from category DTO
     // When success returns 201, when failed returns 400
     [HttpPost]
     [ProducesResponseType(typeof(CategoryDTO), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] CategoryDTO categories)
+    public async Task<IActionResult> CreateCategory([FromBody] CategoryDTO categories)
     {
-    
-        var id = await categoriesService.CreateCategory(categories);
-        if (id > 0)
+        var category = await categoriesService.CreateCategory(categories);
+        if (category.Id > 0)
         {
-            return Created(string.Empty, id);
+            return Created(string.Empty, category.Id);
         }
         return BadRequest();
-
-
     }
 }

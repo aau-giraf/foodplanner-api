@@ -85,7 +85,7 @@ public class FoodImageService(IFoodImageRepository foodImageRepository) : IFoodI
             UserId = foodImage.UserId,
             ImageName = foodImage.ImageName,
             ImageFileType = foodImage.ImageFileType,
-            ImageSize = foodImage.ImageSize
+            ImageSize = foodImage.Size
         }).ToList();
     }
 }

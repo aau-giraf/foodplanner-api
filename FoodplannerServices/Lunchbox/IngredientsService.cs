@@ -58,7 +58,7 @@ public class IngredientsService(IIngredientsRepository ingredientRepository) : I
         try
         {
             // Creates a tag based on the created ingredient and the selected categories 
-            var tags = categoriesId.Select(categoriesId => new Tag {
+            var tags = categoriesId.Select(categoriesId => new TagDTO {
                 
                 Category_id = categoriesId
             });
