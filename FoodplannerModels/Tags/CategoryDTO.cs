@@ -6,7 +6,6 @@ public class CategoryDTO
     [Key]
     [Required]
     public int Id { get; set; }
-    [Required]
     public string Name { get; set;}
 
     // Indicate if category is a main category (vegetables, meat, dairy, etc.) 

@@ -7,7 +7,7 @@ namespace FoodplannerServices.Tags;
 
 public interface ITagService
 {
-    Task<TagDTO> createTagId(CategoryDTO categories, IngredientDTO ingredient);
+    Task<TagDTO> createTagId(CategoryDTO category, IngredientDTO ingredient);
 
-    Task<TagDTO> GetImagesFromTags(string tags);
+    Task<IEnumerable<FoodImageDTO>> GetImagesFromTags(string tags);
 }

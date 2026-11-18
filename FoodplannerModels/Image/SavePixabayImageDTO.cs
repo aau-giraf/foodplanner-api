@@ -8,4 +8,7 @@ public class SavePixabayImageDTO
     public required string Url { get; set; }
     public required string SearchWord { get; set; } 
 
+    public required IngredientDTO ingredientId { get; set; }
+    public required CategoryDTO categoriesId { get; set; }
+
 }
