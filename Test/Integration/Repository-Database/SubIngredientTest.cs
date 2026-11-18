@@ -23,43 +23,6 @@ public class SubIngredientTests
 
     [Fact]
     [Trait("Category", "Integration")]
-    public async Task GetAllAsync_ShouldReturnInsertedSubIngredients()
-    {
-        try
-        {
-            // Arrange
-            int parentId = await InsertTestIngredientAsync();
-            int childId1 = await InsertTestIngredientAsync();
-            int childId2 = await InsertTestIngredientAsync();
-
-            await InsertTestSubIngredientAsync(parentId, childId1, 1);
-            await InsertTestSubIngredientAsync(parentId, childId2, 2);
-
-            // Act
-            var result = (await repository.GetAllAsync()).ToList();
-
-            // Assert
-            var first = Assert.Single(result.Where(s =>
-                s.Parent_id == parentId &&
-                s.Child_id == childId1));
-
-            Assert.Equal(1, first.order_no);
-
-            var second = Assert.Single(result.Where(s =>
-                s.Parent_id == parentId &&
-                s.Child_id == childId2));
-
-            Assert.Equal(2, second.order_no);
-        }
-        finally
-        {
-            // Cleanup
-            await CleanupAsync();
-        }
-    }
-
-    [Fact]
-    [Trait("Category", "Integration")]
     public async Task GetAllByParentIdAsync_ShouldReturnOnlyMatchingSubIngredients()
     {
         try

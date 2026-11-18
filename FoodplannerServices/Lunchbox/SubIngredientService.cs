@@ -1,25 +1,10 @@
 using FoodplannerModels.Lunchbox;
 using FoodplannerDataAccessSql.Lunchbox;
 
-// Adds the SubIngredientService class to the FoodplannerServices.Lunchbox namespace
 namespace FoodplannerServices.Lunchbox;
 
-// Service implementation for SubIngredient business logic
 public class SubIngredientService(ISubIngredientRepository subIngredientRepository)
-{
-    // Retrieves all sub-ingredients
-    public async Task<IEnumerable<SubIngredient>> GetAllSubIngredientsAsync()
-    {
-        try
-        {
-            return await subIngredientRepository.GetAllAsync();
-        }
-        catch (Exception exception)
-        {
-            throw new Exception($"Error retrieving all sub-ingredients: {exception.Message}", exception);
-        }
-    }
-    
+{   
     // Get all sub-ingredients based on a parent ingredient Id
     public async Task<IEnumerable<SubIngredient>> GetAllSubIngredientsByParentIdAsync(int id)
     {

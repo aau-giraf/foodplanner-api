@@ -19,39 +19,6 @@ public class SubIngredientServiceTests
 
     [Fact]
     [Trait("Category", "Unit")]
-    public async Task GetAllSubIngredientsAsync_Success()
-    {
-        // Arrange
-        var subIngredients = new List<SubIngredient>
-        {
-            new SubIngredient { Parent_id = 1, Child_id = 1, order_no = 1 },
-            new SubIngredient { Parent_id = 2, Child_id = 2, order_no = 2 }
-        };
-        mockSubIngredientRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(subIngredients);
-
-        // Act
-        var result = await subIngredientService.GetAllSubIngredientsAsync();
-
-        // Assert
-        var resultList = result.ToList();
-        Assert.Equal(2, resultList.Count());
-        Assert.Equal(1, resultList[0].Parent_id);
-        Assert.Equal(2, resultList[1].Parent_id);
-    }
-
-    [Fact]
-    [Trait("Category", "Unit")]
-    public async Task GetAllSubIngredientsAsync_RepositoryError()
-    {
-        // Arrange
-        mockSubIngredientRepository.Setup(repo => repo.GetAllAsync()).ThrowsAsync(new Exception("Database error"));
-
-        // Act & Assert
-        await Assert.ThrowsAsync<Exception>(() => subIngredientService.GetAllSubIngredientsAsync());
-    }
-
-    [Fact]
-    [Trait("Category", "Unit")]
     public async Task GetAllSubIngredientsByParentIdAsync_Success()
     {
         // Arrange

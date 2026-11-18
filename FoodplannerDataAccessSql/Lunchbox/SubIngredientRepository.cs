@@ -1,20 +1,9 @@
-using Dapper;
 using FoodplannerModels.Lunchbox;
 
-// Adds the SubIngredientRepository to the FoodplannerDataAccessSql.Lunchbox namespace
 namespace FoodplannerDataAccessSql.Lunchbox;
 
-// Repository for the SubIngredient class.
 public class SubIngredientRepository(IDapperExecutor executor) : ISubIngredientRepository
 {
-    // Get all packed ingredients from the database. Used in testing.
-    public async Task<IEnumerable<SubIngredient>> GetAllAsync()
-    {
-        var sql = "SELECT * FROM subingredient";
-        return await executor.QueryAsync<SubIngredient>(sql);
-        
-    }
-
     // Get all subingredients associated with parent id
     public async Task<IEnumerable<SubIngredient>> GetAllByParentIdAsync(int id)
     {

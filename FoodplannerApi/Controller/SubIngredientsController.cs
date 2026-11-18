@@ -5,57 +5,17 @@ using FoodplannerServices.Lunchbox;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-// Adds the SubIngredientsController to the FoodPlannerApi.Controller namespace
 namespace FoodplannerApi.Controller;
 
 public class SubIngredientsController(SubIngredientService subIngredientService, IAuthService authService) : BaseController
 {
-
-    // URL: api/SubIngredients/GetAllSubIngredients
-    // Retrieves all subingredients
-    [HttpGet]
-    [Authorize(Policy = "AdminPolicy")]
-    [ProducesResponseType(typeof(IEnumerable<SubIngredient>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
-    {
-        var subingredients = await subIngredientService.GetAllSubIngredientsAsync();
-        return Ok(subingredients);
-    }
-
-    // URL: api/SubIngredients/GetAllByUser
-    // Retrieves all subingredients associated with authorization token
-    [HttpGet]
-    [Authorize(Roles = "Child, Parent")]
-    [ProducesResponseType(typeof(IEnumerable<SubIngredient>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetAllByUser([FromHeader(Name = "Authorization")] string token)
-    {
-        try
-        {
-            // Retrieve the user ID from the JWT token
-            var idString = authService.RetrieveIdFromJwtToken(token);
-            if (!int.TryParse(idString, out int userId))
-            {
-                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
-            }
-
-            // Retrieve all subingredients associated with the user ID
-            var subingredients = await subIngredientService.GetAllSubIngredientsByParentIdAsync(userId);
-            return Ok(subingredients);
-        }
-        catch (InvalidOperationException e)
-        {
-            return BadRequest(new ErrorResponse { Message = [e.Message] });
-        }
-    }
-
-    // URL: api/SubIngredients/Get/{id}
+    // URL: api/SubIngredients/GetByParentId/{id}
     // Retrieves all subingredients associated with a specific parent ingredient ID
     [HttpGet("{id}")]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(SubIngredient), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> GetByParentId(int id)
     {
         var subingredient = await subIngredientService.GetAllSubIngredientsByParentIdAsync(id);
         if (subingredient == null)

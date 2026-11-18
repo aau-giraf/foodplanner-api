@@ -19,47 +19,6 @@ public class SubIngredientTests
 
     [Fact]
     [Trait("Category", "Integration")]
-    public async Task GetAllSubIngredientsAsync()
-    {
-        // Arrange
-        var expected = new List<SubIngredient>
-        {
-            new() { Parent_id = 1, Child_id = 1, order_no = 1 },
-            new() { Parent_id = 1, Child_id = 2, order_no = 2 },
-            new() { Parent_id = 2, Child_id = 3, order_no = 1 }
-        };
-        mockDapperExecutor.Setup(x => x.QueryAsync<SubIngredient>("SELECT * FROM subingredient")).ReturnsAsync(expected);
-
-        // Act
-        var result = await service.GetAllSubIngredientsAsync();
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(expected.Count, result.Count());
-
-        Assert.Collection(result,
-            item =>
-            {
-                Assert.Equal(1, item.Parent_id);
-                Assert.Equal(1, item.Child_id);
-                Assert.Equal(1, item.order_no);
-            },
-            item =>
-            {
-                Assert.Equal(1, item.Parent_id);
-                Assert.Equal(2, item.Child_id);
-                Assert.Equal(2, item.order_no);
-            },
-            item =>
-            {
-                Assert.Equal(2, item.Parent_id);
-                Assert.Equal(3, item.Child_id);
-                Assert.Equal(1, item.order_no);
-            });
-    }
-
-    [Fact]
-    [Trait("Category", "Integration")]
     public async Task GetAllSubIngredientsByParentIdAsync()
     {
         // Arrange

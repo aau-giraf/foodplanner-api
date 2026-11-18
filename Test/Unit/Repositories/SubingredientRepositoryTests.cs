@@ -31,51 +31,6 @@ public class SubIngredientsRepositoryTests
 
     [Fact]
     [Trait("Category", "Unit")]
-    public async Task GetAllAsync_Success()
-    {
-        // Arrange
-        var rnd = new Random();
-        int parent_id1 = rnd.Next();
-        int parent_id2 = rnd.Next();
-        int child_id1 = rnd.Next();
-        int child_id2 = rnd.Next();
-
-        // Create subingredient objects
-        var subingredients = new List<SubIngredient>
-        {
-            new() { Parent_id = parent_id1, Child_id = child_id1, order_no = 1 },
-            new() { Parent_id = parent_id2, Child_id = child_id2, order_no = 2 }
-        };
-
-        const string sql = "SELECT * FROM subingredient";
-
-        // When called with SQL string, return subingredient objects
-        mockExecutor.Setup(e => e.QueryAsync<SubIngredient>(
-            sql, It.IsAny<object?>())).ReturnsAsync(subingredients);
-
-        // Act
-        var result = await repository.GetAllAsync();
-
-        // Assert
-        var resultList = result.ToList();
-
-        Assert.Equal(2, resultList.Count);
-
-        Assert.Equal(parent_id1, resultList[0].Parent_id);
-        Assert.Equal(child_id1, resultList[0].Child_id);
-        Assert.Equal(1, resultList[0].order_no);
-
-        Assert.Equal(parent_id2, resultList[1].Parent_id);
-        Assert.Equal(child_id2, resultList[1].Child_id);
-        Assert.Equal(2, resultList[1].order_no);
-
-        // Verify the SQL string is called once with null parameters
-        mockExecutor.Verify(e => e.QueryAsync<SubIngredient>(
-            sql, null), Times.Once);
-    }
-
-    [Fact]
-    [Trait("Category", "Unit")]
     public async Task GetAllByParentIdAsync_Success()
     {
         // Arrange
