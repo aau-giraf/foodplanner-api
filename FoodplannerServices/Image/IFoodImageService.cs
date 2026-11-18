@@ -10,4 +10,6 @@ public interface IFoodImageService
     public Task<FoodImageDTO> GetFoodImage(int foodImageId);
     public Task<string> GetFoodImageLink(int foodImageId);
     public void DeleteImage(int foodImageId);
+
+    public Task<IEnumerable<FoodImageDTO>> GetAllStockImages();
 }

@@ -72,4 +72,20 @@ public class FoodImageService(IFoodImageRepository foodImageRepository) : IFoodI
     {
         await foodImageRepository.DeleteAsync(foodImageId);
     }
+
+    // Get all food stock images
+    public async Task<IEnumerable<FoodImageDTO>> GetAllStockImages()
+    {
+        var images = await foodImageRepository.GetAllStockImages();
+        
+        return images.Select(foodImage => new FoodImageDTO
+        {
+        Id = foodImage.Id,
+            ImageData = foodImage.ImageData,
+            UserId = foodImage.UserId,
+            ImageName = foodImage.ImageName,
+            ImageFileType = foodImage.ImageFileType,
+            ImageSize = foodImage.ImageSize
+        }).ToList();
+    }
 }

@@ -222,4 +222,18 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
             }
         }
     }
+
+    // URL: api/Images/GetAllStockImages
+    // Retrieves food image from id. Returns 200 OK with the food image data if found, or 400 Bad Request if the foodImageId is invalid, or 404 Not Found if the food image does not exist.
+    [HttpGet]
+    [AuthorizeImageOwnerFilter]
+    [Authorize(Roles = "Child, Parent")]
+    [ProducesResponseType(typeof(FoodImageDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAllStockImages()
+    {
+        var images = await foodImageService.GetAllStockImages();
+        return Ok(images);
+    }
 }

@@ -14,6 +14,10 @@ public class TagService()
           };
     }
 
- 
+    // Get all stock images that match tags
+    public async Task<TagDTO> GetImagesFromTags(string tags)
+    {
+        
+    }
     
 }
