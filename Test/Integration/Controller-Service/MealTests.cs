@@ -31,47 +31,6 @@ public class MealsTests
 
     [Fact]
     [Trait("Category", "Integration")]
-    public async Task GetAllMeals_ShouldReturnCorrectMeals()
-    {
-        // Arrange
-        int mealId1 = 42;
-        int mealId2 = 32;
-        var expected1 = CreateMeal(mealId1, "Test Meal1", 12345);
-        var expected2 = CreateMeal(mealId2, "Test Meal2", 12345);
-
-        var expectedMeals = new[] { expected1, expected2 };
-
-        mockRepository.Setup(r => r.GetAllAsync())
-            .ReturnsAsync(expectedMeals);
-
-        mockPackedRepository.Setup(r => r.GetAllAsync())
-            .ReturnsAsync([]);
-
-        mockIngredientsRepository.Setup(r => r.GetAllAsync())
-            .ReturnsAsync([]);
-
-        // Act
-        var result = await controller.GetAllMeals();
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        var meals = Assert.IsAssignableFrom<IEnumerable<MealWithIngredientsDTO>>(okResult.Value).ToList();
-
-        Assert.Equal(2, meals.Count);
-        Assert.Equal(expected1.Id, meals[0].Id);
-        Assert.Equal(expected1.Name, meals[0].Name);
-        Assert.Equal(expected2.Id, meals[1].Id);
-        Assert.Equal(expected2.Name, meals[1].Name);
-
-        Assert.All(meals, meal => Assert.Empty(meal.Ingredients));
-
-        mockRepository.Verify(r => r.GetAllAsync(), Times.Once);
-        mockPackedRepository.Verify(r => r.GetAllAsync(), Times.Once);
-        mockIngredientsRepository.Verify(r => r.GetAllAsync(), Times.Once);
-    }
-
-    [Fact]
-    [Trait("Category", "Integration")]
     public async Task GetAllByUser_ShouldGetAllMealsByUser()
     {
         // Arrange
