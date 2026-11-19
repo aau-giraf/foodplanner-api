@@ -3,46 +3,22 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using FoodplannerModels.Auth;
 
-// Adds the ChildrensController to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
 
 public class ChildrenController(IChildrenService childrenService, IAuthService authService) : BaseController
-{
-
-    // URL: api/Children/GetAllChildrenClassesAsync
-    // Retrieves all children classes. Returns 200 OK with the list of children classes.
-    [HttpGet]
-    [Authorize(Policy = "TeacherPolicy")]
-    [ProducesResponseType(typeof(IEnumerable<ChildrenGetAllDTO>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllChildrenClasses()
-    {
-        var children = await childrenService.GetAllChildrenClassesAsync();
-        return Ok(children);
-    }
-
-    // URL: api/Children/GetAllChilden
-    // Retrieves all children. Returns 200 OK with the list of children.
-    [HttpGet]
-    [Authorize(Policy = "AdminPolicy")]
-    [ProducesResponseType(typeof(IEnumerable<Children>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllChildren()
-    {
-        var children = await childrenService.GetAllChildrenAsync();
-        return Ok(children);
-    }
-    
+{    
     // URL: api/Children/GetChildrenByParentToken
     // Retrieves all children associated with a parent ID extracted from the JWT token in the Authorization header. Returns 200 OK with the list of children, or 400 Bad Request if the ID cannot be parsed.
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<Children>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetChildrenByParentToken([FromHeader(Name = "Authorization")] string token)
     {
 
         var idString = authService.RetrieveIdFromJwtToken(token);
         if (!int.TryParse(idString, out int id))
         {
-            return BadRequest(new ErrorResponse { Message = ["Error"] });
+            return BadRequest(new ErrorResponseDTO { Message = ["Error"] });
         }
         var children = await childrenService.GetChildrenByParentIdAsync(id);
         return Ok(children);
@@ -84,7 +60,7 @@ public class ChildrenController(IChildrenService childrenService, IAuthService a
         {
             return Ok(new { Message = "Forældre tilføjet til barn" });
         }
-        return BadRequest(new ErrorResponse { Message = new[] { "Kunne ikke tilføje forældre" } });
+        return BadRequest(new ErrorResponseDTO { Message = new[] { "Kunne ikke tilføje forældre" } });
     }
 
     // URL: api/Children/RemoveParentFromChild/{childId}/parents/{userId}
@@ -99,12 +75,12 @@ public class ChildrenController(IChildrenService childrenService, IAuthService a
         {
             return NoContent();
         }
-        return NotFound(new ErrorResponse { Message = new[] { "Forældre ikke fundet" } });
+        return NotFound(new ErrorResponseDTO { Message = new[] { "Forældre ikke fundet" } });
     }
 
-    // URL: api/Children/AddTeacherToChild/{childId}/teachers/{userId}
+    // URL: api/Children/AddTeacherToChild/{childId}/{userId}
     // Adds a teacher to a child by their IDs. Returns 200 OK if successful, or 400 Bad Request if the operation fails.
-    [HttpPost("{childId}/teachers/{userId}")]
+    [HttpPost("{childId}/{userId}")]
     [Authorize(Policy = "TeacherPolicy")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -115,7 +91,7 @@ public class ChildrenController(IChildrenService childrenService, IAuthService a
         {
             return Ok(new { Message = "Lærer tilføjet til barn" });
         }
-        return BadRequest(new ErrorResponse { Message = new[] { "Kunne ikke tilføje lærer" } });
+        return BadRequest(new ErrorResponseDTO { Message = new[] { "Kunne ikke tilføje lærer" } });
     }
 
     // URL: api/Children/RemoveTeacherFromChild/{childId}/teachers/{userId}
@@ -131,7 +107,7 @@ public class ChildrenController(IChildrenService childrenService, IAuthService a
         {
             return NoContent();
         }
-        return NotFound(new ErrorResponse { Message = new[] { "Lærer ikke fundet" } });
+        return NotFound(new ErrorResponseDTO { Message = new[] { "Lærer ikke fundet" } });
     }
 
     // URL: api/Children/GetTeachersByChildId/{childId}

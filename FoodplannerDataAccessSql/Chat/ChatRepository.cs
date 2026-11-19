@@ -1,6 +1,6 @@
 using FoodplannerDataAccessSql;
-using Dapper;
 using FoodplannerModels.FeedbackChat;
+using Dapper;
 
 // Handles database operations related to chat threads and messages
 public class ChatRepository(CorePostgreSQLConnectionFactory connectionFactory) : IChatRepository
@@ -44,26 +44,6 @@ public class ChatRepository(CorePostgreSQLConnectionFactory connectionFactory) :
         }
     }
 
-    // Retrieves a message by its id, Throws an exception if no matching message is found
-    public async Task<Message?> GetMessageByIdAsync(int MessageId)
-    {
-      const string sql = "SELECT * FROM message WHERE message_id = @MessageId";
-        using (var connection = connectionFactory.Create())
-        {
-            connection.Open();
-            var result = await connection.QuerySingleOrDefaultAsync<Message>(sql, new { MessageId });
-            connection.Close();
-            if(result != null)
-            {
-                return result;
-            }
-            else
-            {
-                throw new Exception($"Message with ID {MessageId} not found.");
-            }
-        }
-    }
-
     // Retrieves all messages from a chat thread   
     public async Task<IEnumerable<Message>> GetMessagesByThreadIdAsync(int chatThreadId)
     {
@@ -77,13 +57,13 @@ public class ChatRepository(CorePostgreSQLConnectionFactory connectionFactory) :
     }
 
     // Insert a new message to the database
-    public async Task<int> AddMessageAsync(AddMessageTemp message)
+    public async Task<int> AddMessageAsync(AddMessageDTO message, DateTime date, int userId)
     {
         const string sql = "INSERT INTO message (content, date, chat_thread_id, user_id) VALUES (@Content, @Date, @ChatThreadId, @UserId) RETURNING message_id";
         await using (var connection = connectionFactory.Create())
         {
             connection.Open();
-            var messageId = await connection.ExecuteScalarAsync<int>(sql, message);
+            var messageId = await connection.ExecuteScalarAsync<int>(sql, new { Content = message.Content, ChatThreadId = message.ChatThreadId, Date = date, UserId = userId });
             return messageId;
         }
     }
@@ -108,30 +88,6 @@ public class ChatRepository(CorePostgreSQLConnectionFactory connectionFactory) :
         {
             connection.Open();
             await connection.ExecuteAsync(sql, new {MessageId});
-        }
-    }
-
-    // Retrieves all messages from the database
-    public async Task<IEnumerable<Message>> GetAllMessagesAsync()
-    {
-        var sql = "SELECT * FROM message";
-        using (var connection = connectionFactory.Create())
-        {
-            var messages = await connection.QueryAsync<Message>(sql);
-            return messages;
-
-        }
-    }
-
-    // Permanently deletes a message by its ID
-    public async Task<int> DeleteMessageAsync(int id)
-    {
-        var sql = "DELETE FROM message WHERE message_id = @MessageId";
-        using (var connection = connectionFactory.Create())
-        {
-            connection.Open();
-            var result = await connection.ExecuteAsync(sql, new { MessageId = id });
-            return result;
         }
     }
 }

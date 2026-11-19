@@ -34,6 +34,17 @@ public class AdminController(IUserService userService, IChildrenService children
         return Ok(users);
     }
 
+	// URL: api/Admin/GetNotApproved
+	// Retrieves all users not approved. Returns 200 OK with map of userData.
+	[HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<UserDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+	public async Task<IActionResult> GetNotApproved()
+	{
+		var users = await userService.GetUsersNotApprovedAsync();
+		return Ok(users);
+	}
+
     // URL: api/Admin/Get/{id}
     // Retrieves a user by their ID. Returns 200 OK with the user data if found, or 404 Not Found if the user does not exist.
     [HttpGet("{id}")]
@@ -85,14 +96,14 @@ public class AdminController(IUserService userService, IChildrenService children
         }
     }
 
-    // URL: api/Admin/UpdateRole/{id}
+    // URL: api/Admin/UpdateRole/{id}/{role_approved}
     // Updates the role of a user by their ID. Returns 200 OK if successful, or 404 Not Found if the user does not exist.
-    [HttpPut("{id}")]
+    [HttpPut("{id}/{role_approved}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateRoleApproved(int id, [FromBody] UserRoleDTO userRoleDTO)
+    public async Task<IActionResult> UpdateRoleApproved(int id, bool role_approved)
     {
-        var result = await userService.UserUpdateRoleApprovedAsync(id, userRoleDTO.role_approved);
+        var result = await userService.UserUpdateRoleApprovedAsync(id, role_approved);
 
         if (result)
         {

@@ -23,43 +23,6 @@ public class SubIngredientTests
 
     [Fact]
     [Trait("Category", "Integration")]
-    public async Task GetAllAsync_ShouldReturnInsertedSubIngredients()
-    {
-        try
-        {
-            // Arrange
-            int parentId = await InsertTestIngredientAsync();
-            int childId1 = await InsertTestIngredientAsync();
-            int childId2 = await InsertTestIngredientAsync();
-
-            await InsertTestSubIngredientAsync(parentId, childId1, 1);
-            await InsertTestSubIngredientAsync(parentId, childId2, 2);
-
-            // Act
-            var result = (await repository.GetAllAsync()).ToList();
-
-            // Assert
-            var first = Assert.Single(result.Where(s =>
-                s.Parent_id == parentId &&
-                s.Child_id == childId1));
-
-            Assert.Equal(1, first.order_no);
-
-            var second = Assert.Single(result.Where(s =>
-                s.Parent_id == parentId &&
-                s.Child_id == childId2));
-
-            Assert.Equal(2, second.order_no);
-        }
-        finally
-        {
-            // Cleanup
-            await CleanupAsync();
-        }
-    }
-
-    [Fact]
-    [Trait("Category", "Integration")]
     public async Task GetAllByParentIdAsync_ShouldReturnOnlyMatchingSubIngredients()
     {
         try
@@ -116,7 +79,7 @@ public class SubIngredientTests
             int parentId = await InsertTestIngredientAsync();
             int childId = await InsertTestIngredientAsync();
 
-            var subIngredient = new SubIngredientDTO
+            var subIngredient = new SubIngredient
             {
                 Parent_id = parentId,
                 Child_id = childId,
@@ -165,14 +128,14 @@ public class SubIngredientTests
             await InsertTestSubIngredientAsync(
                 oldParentId, newChildId, 2);
 
-            var oldSubIngredient = new SubIngredientDTO
+            var oldSubIngredient = new SubIngredient
             {
                 Parent_id = oldParentId,
                 Child_id = oldChildId,
                 order_no = 1
             };
 
-            var updatedSubIngredient = new SubIngredientDTO
+            var updatedSubIngredient = new SubIngredient
             {
                 Parent_id = newParentId,
                 Child_id = newChildId,
@@ -266,7 +229,7 @@ public class SubIngredientTests
             await InsertTestSubIngredientAsync(parentId, childId1, 1);
             await InsertTestSubIngredientAsync(parentId, childId2, 2);
 
-            var toDelete = new SubIngredientDTO
+            var toDelete = new SubIngredient
             {
                 Parent_id = parentId,
                 Child_id = childId1,

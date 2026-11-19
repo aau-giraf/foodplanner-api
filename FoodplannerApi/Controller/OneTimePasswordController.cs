@@ -16,8 +16,8 @@ public class OneTimePasswordController(IOneTimePasswordService passwordService, 
     [HttpPost]
     [Authorize(Roles = "Parent")]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, int? childUser)
     {
         try
@@ -26,7 +26,7 @@ public class OneTimePasswordController(IOneTimePasswordService passwordService, 
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id))
             {
-                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
+                return BadRequest(new ErrorResponseDTO { Message = ["Invalid user ID"] });
             }
 
             // If a childUser is specified, check if the parent has a relation to this child
@@ -35,7 +35,7 @@ public class OneTimePasswordController(IOneTimePasswordService passwordService, 
                 var children = await childrenService.GetChildrenByParentIdAsync(id);
                 if (!children.Any(c => c.ChildId == childUser.Value))
                 {
-                    return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
+                    return BadRequest(new ErrorResponseDTO { Message = ["Invalid user ID"] });
                 }
             }
 
@@ -57,7 +57,7 @@ public class OneTimePasswordController(IOneTimePasswordService passwordService, 
     // Redeems a one-time password for the authenticated user
     [HttpPost("{code}")]
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Redeem([FromHeader(Name = "Authorization")] string token, string code)
     {
         try
@@ -66,7 +66,7 @@ public class OneTimePasswordController(IOneTimePasswordService passwordService, 
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id))
             {
-                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
+                return BadRequest(new ErrorResponseDTO { Message = ["Invalid user ID"] });
             }
 
             // Redeem the one-time password for the user
