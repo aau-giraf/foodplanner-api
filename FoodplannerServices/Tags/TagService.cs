@@ -3,11 +3,15 @@ using FoodplannerModels.Tags;
 using FoodplannerServices.Image;
 using FoodplannerDataAccessSql.Tags;
 
+// Adds TagService to the class to the FoodplannerServices.Tags namespace
 namespace FoodplannerServices.Tags;
 
+// Service implementation for Tag business logic
 public class TagService(ITagRepository tagRepository, IFoodImageService foodImageService) : ITagService
 {
-    public async Task<TagDTO> CreateTagId (CategoryDTO category, IngredientDTO ingredient)
+    // Method for creating a Tag
+    // Returns a new Tag with ID
+    public async Task<TagDTO> CreateTag (CategoryDTO category, IngredientDTO ingredient)
     {
           return new TagDTO
           {

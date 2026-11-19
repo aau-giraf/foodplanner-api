@@ -1,16 +1,21 @@
 using Dapper;
 using FoodplannerModels.Tags;
 
+// Adds Category Repository to the FoodplannerDataAccessSql.Tags namespace
 namespace FoodplannerDataAccessSql.Tags;
 
+// The repository for the Category class
+// Implements interface CategoryRepository
 public class CategoryRepository : ICategoryRepository
 {
       private readonly CorePostgreSQLConnectionFactory _connectionFactory;
 
+        // Constructor for the connection factory class
         public CategoryRepository(CorePostgreSQLConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
+
     // Get all categories from the database
     public Task<IEnumerable<CategoryDTO>> GetAllAsync()
     {
@@ -25,6 +30,8 @@ public class CategoryRepository : ICategoryRepository
 
     }
 
+    // Method that checks if category already exists
+    // Returns true if category already exists, returns false if category does not exists
     public async Task<bool> CategoryExistsAsync(string name)
     {
         var sql = "SELECT COUNT(1) FROM categories WHERE name = @Name";
@@ -36,6 +43,8 @@ public class CategoryRepository : ICategoryRepository
         }
     }
 
+    // Method to insert a new category into categories table 
+    // Returns category ID
     public Task<int> InsertAsync(CategoryDTO entity)
     {
         var sql = "INSERT INTO categories (name, main) VALUES (@Name, @Main) RETURNING id";
@@ -59,6 +68,7 @@ public class CategoryRepository : ICategoryRepository
         return null;
     }
 
+    // Method to update category from categories table based on ID
     public Task<int> UpdateAsync(CategoryDTO entity)
     {
         var sql = "UPDATE categories SET name = @Name, main = @Main WHERE id = @Id";
@@ -75,6 +85,8 @@ public class CategoryRepository : ICategoryRepository
         }
     }
 
+    // Method for deleting a category from categories table based on ID
+    // Uses a transaction to roll back the deletion if an error occurs
     public Task<int> DeleteAsync(int id)
     {
         var deleteCategorySql = "DELETION FROM categories WHERE id = @id";

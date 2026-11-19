@@ -1,14 +1,14 @@
-using System.ComponentModel;
-using System.Linq.Expressions;
 using FoodplannerDataAccessSql.Tags;
 using FoodplannerModels.Tags;
 
+// Adds CategoryService to the class to the FoodplannerServices.Tags namespace
 namespace FoodplannerServices.Tags;
 
+// Service implementation for Category business logic
 public class CategoryService(ICategoryRepository categoryRepository) : ICategoryService
 {
  
-    // Create a category in the repository
+    // Method for creating a category in the repository
     public async Task<int> CreateCategory(CreateCategoryDTO createCategory)
         {
         var category = new CategoryDTO
