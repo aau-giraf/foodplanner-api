@@ -6,18 +6,7 @@ using FoodplannerModels.Auth;
 namespace FoodplannerApi.Controller;
 
 public class ChildrenController(IChildrenService childrenService, IAuthService authService) : BaseController
-{
-    // URL: api/Children/GetAllChildren
-    // Retrieves all children. Returns 200 OK with the list of children.
-    [HttpGet]
-    [Authorize(Policy = "AdminPolicy")]
-    [ProducesResponseType(typeof(IEnumerable<Children>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllChildren()
-    {
-        var children = await childrenService.GetAllChildrenAsync();
-        return Ok(children);
-    }
-    
+{    
     // URL: api/Children/GetChildrenByParentToken
     // Retrieves all children associated with a parent ID extracted from the JWT token in the Authorization header. Returns 200 OK with the list of children, or 400 Bad Request if the ID cannot be parsed.
     [HttpGet]
