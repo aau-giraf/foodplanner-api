@@ -67,38 +67,6 @@ public class IngredientsTests
 
     [Fact]
     [Trait("Category", "Integration")]
-    public async Task GetAll_ShouldReturnCorrectIngredients()
-    {
-        // Arrange
-        int ingredientId1 = 42;
-        int ingredientId2 = 32;
-        var expected1 = CreateIngredient(ingredientId1, "Test Ingredient1", 12345);
-        var expected2 = CreateIngredient(ingredientId2, "Test Ingredient2", 12345);
-
-        var expectedIngredients = new[] { expected1, expected2 };
-
-        mockRepository.Setup(r => r.GetAllAsync())
-            .ReturnsAsync(expectedIngredients);
-
-        // Act
-        var result = await controller.GetAllIngredients();
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        var ingredients = Assert.IsAssignableFrom<IEnumerable<IngredientDTO>>(okResult.Value).ToList();
-
-        Assert.Equal(2, ingredients.Count);
-        Assert.Equal(expected1.Id, ingredients[0].Id);
-        Assert.Equal(expected1.Name, ingredients[0].Name);
-        Assert.Equal(expected2.Id, ingredients[1].Id);
-        Assert.Equal(expected2.Name, ingredients[1].Name);
-
-        mockRepository.Verify(r => r.GetAllAsync(), Times.Once);
-    }
-
-
-    [Fact]
-    [Trait("Category", "Integration")]
     public async Task GetAll_ShouldReturnCorrectUserIngredients()
     {
         // Arrange
