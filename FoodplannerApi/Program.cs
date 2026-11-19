@@ -14,6 +14,7 @@ using FoodplannerModels.Codes;
 using FoodplannerServices.Account;
 using FoodplannerServices.Lunchbox;
 using FoodplannerServices.Image;
+using FoodplannerServices.ExternalApi;
 using FoodplannerServices.Auth;
 using FoodplannerServices.FeedbackChat;
 using FoodplannerServices.Secret;
@@ -36,6 +37,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+
+
 
 
 // Configure Dapper to match column names with underscores to property names with PascalCase
@@ -246,6 +249,7 @@ builder.Services.AddScoped<IChildrenService, ChildrenService>();
 builder.Services.AddScoped<IClassroomService, ClassroomService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IFoodImageService, FoodImageService>();
+builder.Services.AddScoped<IPixabayService, PixabayService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IPasswordHandler, PasswordHandler>();
 builder.Services.AddScoped<IOneTimePasswordService, OneTimePasswordService>();
@@ -256,7 +260,8 @@ builder.Services.AddScoped<IIngredientsService,IngredientsService>();
 builder.Services.AddScoped<IMealsService, MealsService>();
 builder.Services.AddScoped<IPackedService,PackedService>();
 builder.Services.AddScoped<SubIngredientService>();
-
+builder.Services.AddHttpClient<IPixabayApi, PixabayApi>();
+builder.Services.AddTransient<IWebClientWrapper, WebClientWrapper>();
 
 
 
@@ -416,3 +421,6 @@ app.Urls.Add($"http://0.0.0.0:{backendPort}");
 
 // Runs the finalized application
 app.Run();
+
+
+
