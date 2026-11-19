@@ -58,14 +58,21 @@ public class CategoryRepository : ICategoryRepository
                 main = entity.Main
             });
             return result;
-        }
-
-        
+        } 
     }
 
+    // Method for retrieving category by ID
+    // Returns category with specific ID
     public async Task<CategoryDTO> GetByIdAsync(int id)
     {
-        return null;
+        var sql = "SELECT id, name, main FROM categories WHERE id = @Id";
+        using (var connection = _connectionFactory.Create())
+        {
+            connection.Open();
+            var result = await connection.QueryFirstOrDefaultAsync<CategoryDTO>(sql, new {Id = id});
+            return result;
+        }
+       
     }
 
     // Method to update category from categories table based on ID

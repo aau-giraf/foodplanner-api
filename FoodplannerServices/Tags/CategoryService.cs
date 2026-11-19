@@ -17,11 +17,13 @@ public class CategoryService(ICategoryRepository categoryRepository) : ICategory
             Main = createCategory.Main
         };
 
+        // Checks if category already exists
         if (await categoryRepository.CategoryExistsAsync(category.Name))
         {
             throw new InvalidOperationException("Kategori eksisterer allerede");
         }
 
+        // Inserts category into database
         return await categoryRepository.InsertAsync(category);
     }
 }

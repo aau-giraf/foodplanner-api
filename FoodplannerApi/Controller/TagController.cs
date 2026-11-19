@@ -1,7 +1,4 @@
 using FoodplannerModels.Account;
-using FoodplannerModels.Auth;
-using FoodplannerModels.Image;
-using FoodplannerModels.Lunchbox;
 using FoodplannerModels.Tags;
 using FoodplannerServices.Image;
 using FoodplannerServices.Tags;
@@ -16,20 +13,26 @@ namespace FoodplannerApi.Controller;
 public class TagController(ITagService tagService, IFoodImageService foodImageService) : BaseController
 {
     // URL : "api/Tag/CreateTag"
-     // Creates a new tag from category DTO and ingredient DTO
+     // Creates a new tag from category ID and ingredient ID
     // When success returns 201, when failed returns 400
     [HttpPost]
     [Authorize(Roles = "Parent, Teacher")]
-    [ProducesResponseType(typeof(TagDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> CreateTag([FromBody] CategoryDTO categories, [FromBody] IngredientDTO ingredient)
+    public async Task<IActionResult> CreateTag([FromBody] TagDTO tagDTO)
     {
-         var result = await tagService.createTagId(categories, ingredient);
-        if (result.Category_id > 0)
+        // Validate the model state to ensure the incoming data is valid
+        if (!ModelState.IsValid)
         {
-            return Ok(new {Message = "Tag ID oprettet"});
+            return BadRequest(ModelState);
         }
-        return BadRequest(new ErrorResponse { Message = new[] { "Tag ID kunne ikke oprettes" } });
+        
+        var id = await tagService.CreateTag(tagDTO.Category_id, tagDTO.Ingredient_id);
+        if (id > 0)
+        {
+            return Created(string.Empty, id);
+        }
+        return BadRequest();
     }
 
     // URL : "api/Tag/GetImagesFromTags"

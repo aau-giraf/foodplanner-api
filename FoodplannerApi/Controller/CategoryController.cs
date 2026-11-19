@@ -1,5 +1,3 @@
-using FoodplannerDataAccessSql.Tags;
-using FoodplannerModels.Account;
 using FoodplannerModels.Tags;
 using FoodplannerServices.Tags;
 using Microsoft.AspNetCore.Authorization;
