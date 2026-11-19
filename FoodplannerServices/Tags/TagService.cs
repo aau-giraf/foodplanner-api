@@ -5,7 +5,7 @@ using FoodplannerDataAccessSql.Tags;
 
 namespace FoodplannerServices.Tags;
 
-public class TagService(ITagRepository tagRepository, IFoodImageService foodImageService)
+public class TagService(ITagRepository tagRepository, IFoodImageService foodImageService) : ITagService
 {
     public async Task<TagDTO> CreateTagId (CategoryDTO category, IngredientDTO ingredient)
     {

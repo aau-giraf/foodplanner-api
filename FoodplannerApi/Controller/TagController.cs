@@ -23,7 +23,7 @@ public class TagController(ITagService tagService, IFoodImageService foodImageSe
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CreateTag([FromBody] CategoryDTO categories, [FromBody] IngredientDTO ingredient)
     {
-         var result = await tagService.createTagId(categories, ingredient);
+         var result = await tagService.CreateTagId(categories, ingredient);
         if (result.Category_id > 0)
         {
             return Ok(new {Message = "Tag ID oprettet"});
@@ -36,7 +36,7 @@ public class TagController(ITagService tagService, IFoodImageService foodImageSe
     [HttpGet]
     [Authorize(Roles = "Child, Parent, Teacher")]
     [ProducesResponseType(typeof(TagDTO), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetImagesFromTags([FromBody] string tags)
+    public async Task<IActionResult> GetImagesFromTags([FromQuery] string? tags = null)
     {
         if (string.IsNullOrEmpty(tags))
         {
