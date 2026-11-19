@@ -34,6 +34,17 @@ public class AdminController(IUserService userService, IChildrenService children
         return Ok(users);
     }
 
+	// URL: api/Admin/GetNotApproved
+	// Retrieves all users not approved. Returns 200 OK with map of userData.
+	[HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<UserDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+	public async Task<IActionResult> GetNotApproved()
+	{
+		var users = await userService.GetUsersNotApprovedAsync();
+		return Ok(users);
+	}
+
     // URL: api/Admin/Get/{id}
     // Retrieves a user by their ID. Returns 200 OK with the user data if found, or 404 Not Found if the user does not exist.
     [HttpGet("{id}")]
