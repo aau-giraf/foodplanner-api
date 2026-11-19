@@ -16,7 +16,7 @@ public class PixabayController(IPixabayService pixabayService, IAuthService auth
     [HttpPost]
     [Authorize(Roles = "Parent, Teacher, Admin")]
     [ProducesResponseType(typeof(IEnumerable<Pixabay>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Get([FromBody] GetPixabayImageDTO imageSearch)
     {
         var image = await pixabayService.GetPixabayImage(imageSearch); 
@@ -30,7 +30,7 @@ public class PixabayController(IPixabayService pixabayService, IAuthService auth
     [HttpPost]
     [Authorize(Roles = "Parent, Teacher, Admin")]
     [ProducesResponseType(typeof(IEnumerable<Pixabay>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SavePixabayUrl([FromHeader(Name = "Authorization")] string token, [FromBody] SavePixabayImageDTO pixabayDTO)
     {
         try{
@@ -38,7 +38,7 @@ public class PixabayController(IPixabayService pixabayService, IAuthService auth
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int userId))
             {
-                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
+                return BadRequest(new ErrorResponseDTO { Message = ["Invalid user ID"] });
             }
 
             // Call the service to save the image URL
@@ -47,7 +47,7 @@ public class PixabayController(IPixabayService pixabayService, IAuthService auth
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new ErrorResponse {Message = [e.Message]});
+            return BadRequest(new ErrorResponseDTO {Message = [e.Message]});
         }
     }
     

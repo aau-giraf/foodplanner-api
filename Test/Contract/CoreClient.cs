@@ -12,9 +12,9 @@ public class CoreClient(HttpClient httpClient)
 
     // add a new method here when writing a new Pact test for an endpoint
     // replace the request type with the desired one. 
-    public async Task<IEnumerable<ClassroomDTO>> GetAllClassroomsAsync()
+    public async Task<IEnumerable<Classroom>> GetAllClassroomsAsync()
     {
-        var classrooms = await httpClient.GetFromJsonAsync<List<ClassroomDTO>>(GetAllClassroomsPath);
+        var classrooms = await httpClient.GetFromJsonAsync<List<Classroom>>(GetAllClassroomsPath);
         return classrooms ?? [];
     }
 }
