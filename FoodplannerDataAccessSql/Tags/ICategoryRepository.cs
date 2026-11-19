@@ -1,12 +1,14 @@
+using FoodplannerModels;
 using FoodplannerModels.Tags;
 
 namespace FoodplannerDataAccessSql.Tags;
 
-public interface ICategoryRepository
+public interface ICategoryRepository : IGenericRepository<CategoryDTO>
 {
-Task<IEnumerable<CategoryDTO>> GetAllAsync();
+    //Task<IEnumerable<CategoryDTO>> GetAllAsync();
 
-Task<CategoryDTO> InsertAsync(CategoryDTO categories);
+    // Method for checking if category already exists
+    Task<bool> CategoryExistsAsync(string name);
 
 
 }

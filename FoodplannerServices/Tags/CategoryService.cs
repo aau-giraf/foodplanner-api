@@ -5,19 +5,23 @@ using FoodplannerModels.Tags;
 
 namespace FoodplannerServices.Tags;
 
-public class CategoryService(ICategoryRepository categoryRepository)
+public class CategoryService(ICategoryRepository categoryRepository) : ICategoryService
 {
-// Create a category in the repository
-public async Task<CategoryDTO> CreateCategory(CategoryDTO categories)
-    {
-       try
+ 
+    // Create a category in the repository
+    public async Task<int> CreateCategory(CreateCategoryDTO createCategory)
         {
-            return await categoryRepository.InsertAsync(categories);
-        }
-        catch (Exception exception)
+        var category = new CategoryDTO
         {
-            throw new Exception($"Error creating category: {exception.Message}", exception);
+            Name = createCategory.Name,
+            Main = createCategory.Main
+        };
 
+        if (await categoryRepository.CategoryExistsAsync(category.Name))
+        {
+            throw new InvalidOperationException("Kategori eksisterer allerede");
         }
+
+        return await categoryRepository.InsertAsync(category);
     }
 }
