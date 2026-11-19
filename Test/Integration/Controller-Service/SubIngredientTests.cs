@@ -33,11 +33,11 @@ public class SubIngredientsTests
         mockRepository.Setup(r => r.GetAllByParentIdAsync(parentId)).ReturnsAsync(new[] { expected });
 
         // Act
-        var result = await controller.Get(parentId);
+        var result = await controller.GetByParentId(parentId);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var subIngredients = Assert.IsAssignableFrom<IEnumerable<SubIngredientDTO>>(okResult.Value).ToList();
+        var subIngredients = Assert.IsAssignableFrom<IEnumerable<SubIngredient>>(okResult.Value).ToList();
         var subIngredient = Assert.Single(subIngredients);
 
         Assert.Equal(expected.Parent_id, subIngredient.Parent_id);
@@ -83,7 +83,7 @@ public class SubIngredientsTests
         int childId = 4;
         var updated = CreateSubIngredient(userId, childId, 1);
 
-        mockRepository.Setup(r => r.UpdateAsync(It.Is<SubIngredientDTO>(s =>s.Parent_id == userId && s.Child_id == childId && s.order_no == 0),updated)).ReturnsAsync(1);
+        mockRepository.Setup(r => r.UpdateAsync(It.Is<SubIngredient>(s =>s.Parent_id == userId && s.Child_id == childId && s.order_no == 0),updated)).ReturnsAsync(1);
 
         // Act
         var result = await controller.Update(updated, userId, childId);
@@ -95,7 +95,7 @@ public class SubIngredientsTests
         Assert.Equal(1, affectedRows);
 
         mockRepository.Verify(r => r.UpdateAsync(
-            It.Is<SubIngredientDTO>(s =>
+            It.Is<SubIngredient>(s =>
                 s.Parent_id == userId &&
                 s.Child_id == childId &&
                 s.order_no == 0),
@@ -126,9 +126,9 @@ public class SubIngredientsTests
         mockRepository.Verify(r => r.DeleteAsync(deleted), Times.Once);
     }
 
-    private static SubIngredientDTO CreateSubIngredient(int parentId, int childId, int orderNo)
+    private static SubIngredient CreateSubIngredient(int parentId, int childId, int orderNo)
     {
-        return new SubIngredientDTO
+        return new SubIngredient
         {
             Parent_id = parentId,
             Child_id = childId,

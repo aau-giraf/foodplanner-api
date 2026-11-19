@@ -21,35 +21,6 @@ public class MealsControllerTests
 
     [Fact]
     [Trait("Category", "Unit")]
-    public async Task GetAll_ReturnsOkObjectResult()
-    {
-        // Arrange
-        var meals = new List<MealWithIngredientsDTO>
-        {
-            new() { Id = 1, Name = "Pizza", Date = "18/11/2022", Template = false, Image_id = null, User_id = 1, Ingredients = [new IngredientDTO { Id = 10, Name = "Cheese", User_id = 1 }] },
-            new() { Id = 2, Name = "Burger", Date = "19/01/2013", Template = true, Image_id = null, User_id = 2, Ingredients = [] }
-        };
-        mockMealsService.Setup(service => service.GetAllMealsAsync()).ReturnsAsync(meals);
-
-        // Act
-        var result = await mealsController.GetAllMeals();
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        var returnedMeals = Assert.IsAssignableFrom<IEnumerable<MealWithIngredientsDTO>>(okResult.Value).ToList();
-        Assert.Equal(2, returnedMeals.Count);
-        Assert.Equal(1, returnedMeals[0].Id);
-        Assert.Equal("Pizza", returnedMeals[0].Name);
-        Assert.False(returnedMeals[0].Template);
-        Assert.Single(returnedMeals[0].Ingredients);
-        Assert.Equal("Cheese", returnedMeals[0].Ingredients[0].Name);
-        Assert.Equal(2, returnedMeals[1].Id);
-        Assert.Equal("Burger", returnedMeals[1].Name);
-        Assert.True(returnedMeals[1].Template);
-    }
-
-    [Fact]
-    [Trait("Category", "Unit")]
     public async Task GetAllByUser_ReturnsOkObjectResult()
     {
         // Arrange
@@ -109,11 +80,11 @@ public class MealsControllerTests
     {
         // Arrange
         int mealId = 1;
-        var meal = new MealWithIngredientsDTO { Id = mealId, Name = "Pizza", Date = "18/11/2022", Template = false, Image_id = null, User_id = 1, Ingredients = [new IngredientDTO { Id = 10, Name = "Cheese", User_id = 1 }] };
+        var meal = new MealWithIngredientsDTO { Id = mealId, Name = "Pizza", Date = "18/11/2022", Template = false, Image_id = null, User_id = 1, Ingredients = [new Ingredient { Id = 10, Name = "Cheese", User_id = 1 }] };
         mockMealsService.Setup(service => service.GetMealByIdAsync(mealId)).ReturnsAsync(meal);
 
         // Act
-        var result = await mealsController.GetMeal(mealId);
+        var result = await mealsController.Get(mealId);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -136,7 +107,7 @@ public class MealsControllerTests
             .ReturnsAsync((MealWithIngredientsDTO?)null);
 
         // Act
-        var result = await mealsController.GetMeal(mealId);
+        var result = await mealsController.Get(mealId);
 
         // Assert
         Assert.IsType<NotFoundResult>(result);
@@ -162,7 +133,7 @@ public class MealsControllerTests
 
         // Assert
         var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-        Assert.Equal(nameof(MealsController.GetMeal), createdResult.ActionName);
+        Assert.Equal(nameof(MealsController.Get), createdResult.ActionName);
         Assert.Equal(mealId, createdResult.RouteValues!["id"]);
         var returnedMeal = Assert.IsType<MealWithIngredientsDTO>(createdResult.Value);
         Assert.Equal(mealId, returnedMeal.Id);
@@ -199,7 +170,7 @@ public class MealsControllerTests
         const string token = "Bearer TestToken";
         int mealId = 1;
         int userId = 1;
-        var meal = new MealDTO { Id = mealId, Name = "Updated Pizza", Date = "18/11/2022", Template = false, Image_id = null, User_id = userId };
+        var meal = new Meal { Id = mealId, Name = "Updated Pizza", Date = "18/11/2022", Template = false, Image_id = null, User_id = userId };
         var updatedMeal = new MealWithIngredientsDTO { Id = mealId, Name = "Updated Pizza", Date = "18/11/2022", Template = false, Image_id = null, User_id = userId, Ingredients = [] };
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
         mockMealsService.Setup(service => service.UpdateMealAsync(meal)).ReturnsAsync(1);
@@ -225,7 +196,7 @@ public class MealsControllerTests
         // Arrange
         const string token = "Bearer TestToken";
         int mealId = 1;
-        var meal = new MealDTO { Id = mealId, Name = "Pizza", Date = "18/11/2022", Template = false, Image_id = null, User_id = 1 };
+        var meal = new Meal { Id = mealId, Name = "Pizza", Date = "18/11/2022", Template = false, Image_id = null, User_id = 1 };
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns("1");
         mockMealsService.Setup(service => service.UpdateMealAsync(meal)).ReturnsAsync(0);
 

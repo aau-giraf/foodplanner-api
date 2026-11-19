@@ -148,7 +148,7 @@ public class MealsTests
             .ReturnsAsync([]);
 
         //Act
-        var result = await controller.GetMeal(mealId);
+        var result = await controller.Get(mealId);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -206,7 +206,7 @@ public class MealsTests
         Assert.Equal(mealToCreate.Image_id, meal.Image_id);
         Assert.Empty(meal.Ingredients);
 
-        Assert.Equal(nameof(MealsController.GetMeal), createdResult.ActionName);
+        Assert.Equal(nameof(MealsController.Get), createdResult.ActionName);
         Assert.Equal(generatedId, createdResult.RouteValues!["id"]);
     }
 
@@ -379,7 +379,7 @@ public class MealsTests
 
         var mealIds = new List<int> { mealId1, mealId2 };
 
-        var ingredient1 = new IngredientDTO
+        var ingredient1 = new Ingredient
         {
             Id = 1,
             Name = "Bread",
@@ -387,7 +387,7 @@ public class MealsTests
             Image_id = null
         };
 
-        var ingredient2 = new IngredientDTO
+        var ingredient2 = new Ingredient
         {
             Id = 2,
             Name = "Cheese",
@@ -395,7 +395,7 @@ public class MealsTests
             Image_id = null
         };
 
-        var ingredient3 = new IngredientDTO
+        var ingredient3 = new Ingredient
         {
             Id = 3,
             Name = "Ham",
@@ -405,14 +405,14 @@ public class MealsTests
 
         var packedMeal1 = new[]
         {
-            new PackedDTO { Meal_id = mealId1, Ingredient_id = 1, order_no = 1 },
-            new PackedDTO { Meal_id = mealId1, Ingredient_id = 2, order_no = 2 }
+            new Packed { Meal_id = mealId1, Ingredient_id = 1, order_no = 1 },
+            new Packed { Meal_id = mealId1, Ingredient_id = 2, order_no = 2 }
         };
 
         var packedMeal2 = new[]
         {
-            new PackedDTO { Meal_id = mealId2, Ingredient_id = 2, order_no = 1 },
-            new PackedDTO { Meal_id = mealId2, Ingredient_id = 3, order_no = 2 }
+            new Packed { Meal_id = mealId2, Ingredient_id = 2, order_no = 1 },
+            new Packed { Meal_id = mealId2, Ingredient_id = 3, order_no = 2 }
         };
 
         mockAuthService.Setup(a => a.RetrieveIdFromJwtToken(token))
@@ -444,7 +444,7 @@ public class MealsTests
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var ingredients = Assert.IsAssignableFrom<IEnumerable<IngredientDTO>>(okResult.Value).ToList();
+        var ingredients = Assert.IsAssignableFrom<IEnumerable<Ingredient>>(okResult.Value).ToList();
 
         Assert.Equal(3, ingredients.Count);
 
@@ -468,9 +468,9 @@ public class MealsTests
         mockIngredientsRepository.Verify(r => r.GetByIdAsync(3), Times.Once);
     }
 
-    private static MealDTO CreateMeal(int id, string name, int userId, bool template = false)
+    private static Meal CreateMeal(int id, string name, int userId, bool template = false)
     {
-        return new MealDTO
+        return new Meal
         {
             Id = id,
             Name = name,

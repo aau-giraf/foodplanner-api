@@ -18,78 +18,25 @@ public class PackedTests
 
     [Fact]
     [Trait("Category", "Integration")]
-    public async Task GetAllAsync()
-    {
-        // Arrange
-        List<MealDTO> meals = new List<MealDTO>
-        {
-            new MealDTO { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
-            new MealDTO { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
-        };
-        List<IngredientDTO> ingredients = new List<IngredientDTO>
-        {
-            new IngredientDTO { Id = 1, Name = "Ingredient 1", User_id = 1, Image_id = null },
-            new IngredientDTO { Id = 2, Name = "Ingredient 2", User_id = 2, Image_id = null },
-            new IngredientDTO { Id = 3, Name = "Ingredient 3", User_id = 2, Image_id = null }
-        };
-        List<PackedDTO> packed = new List<PackedDTO>
-        {
-            new PackedDTO { Meal_id = 0, Ingredient_id = 0, order_no = 2},
-            new PackedDTO { Meal_id = 0, Ingredient_id = 1, order_no = 1},
-            new PackedDTO { Meal_id = 1, Ingredient_id = 2, order_no = 1}
-        };
-
-        try
-        {
-            var createdIds = await SetupTestEnvironmentAsync(meals, ingredients, packed);
-
-            // Act
-            var result = await repository.GetAllAsync();
-
-            // Assert
-            Assert.NotNull(result);
-            var resultList = result.ToList();
-            Assert.Equal(3, resultList.Count);
-            Assert.Contains(resultList, item =>
-                item.Meal_id == createdIds[0][0] &&
-                item.Ingredient_id == createdIds[1][1] &&
-                item.order_no == 1);
-            Assert.Contains(resultList, item =>
-                item.Meal_id == createdIds[0][0] &&
-                item.Ingredient_id == createdIds[1][0] &&
-                item.order_no == 2);
-            Assert.Contains(resultList, item =>
-                item.Meal_id == createdIds[0][1] &&
-                item.Ingredient_id == createdIds[1][2] &&
-                item.order_no == 1);
-        }
-        finally
-        {
-            await CleanupTestEnvironmentAsync();
-        }
-    }
-
-    [Fact]
-    [Trait("Category", "Integration")]
     public async Task GetAllByMealIdAsync()
     {
         // Arrange
-        List<MealDTO> meals = new List<MealDTO>
+        List<Meal> meals = new List<Meal>
         {
-            new MealDTO { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
-            new MealDTO { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
+            new Meal { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
+            new Meal { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
         };
-        List<IngredientDTO> ingredients = new List<IngredientDTO>
+        List<Ingredient> ingredients = new List<Ingredient>
         {
-            new IngredientDTO { Id = 1, Name = "Ingredient 1", User_id = 1, Image_id = null },
-            new IngredientDTO { Id = 2, Name = "Ingredient 2", User_id = 2, Image_id = null },
-            new IngredientDTO { Id = 3, Name = "Ingredient 3", User_id = 2, Image_id = null }
+            new Ingredient { Id = 1, Name = "Ingredient 1", User_id = 1, Image_id = null },
+            new Ingredient { Id = 2, Name = "Ingredient 2", User_id = 2, Image_id = null },
+            new Ingredient { Id = 3, Name = "Ingredient 3", User_id = 2, Image_id = null }
         };
-        List<PackedDTO> packed = new List<PackedDTO>
+        List<Packed> packed = new List<Packed>
         {
-            new PackedDTO { Meal_id = 0, Ingredient_id = 0, order_no = 2},
-            new PackedDTO { Meal_id = 0, Ingredient_id = 1, order_no = 1},
-            new PackedDTO { Meal_id = 1, Ingredient_id = 2, order_no = 1}
+            new Packed { Meal_id = 0, Ingredient_id = 0, order_no = 2},
+            new Packed { Meal_id = 0, Ingredient_id = 1, order_no = 1},
+            new Packed { Meal_id = 1, Ingredient_id = 2, order_no = 1}
         };
 
         try
@@ -119,74 +66,94 @@ public class PackedTests
     }
 
     [Fact]
-    [Trait("Category", "Integration")]
-    public async Task InsertAsync()
+[Trait("Category", "Integration")]
+public async Task InsertAsync()
+{
+    // Arrange
+    List<Meal> meals = new()
     {
-        // Arrange
-        List<MealDTO> meals = new List<MealDTO>
+        new Meal { Id = 1, Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
+        new Meal { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
+    };
+
+    List<Ingredient> ingredients = new()
+    {
+        new Ingredient { Id = 1, Name = "Ingredient 1", User_id = 1, Image_id = null },
+        new Ingredient { Id = 2, Name = "Ingredient 2", User_id = 2, Image_id = null },
+        new Ingredient { Id = 3, Name = "Ingredient 3", User_id = 2, Image_id = null }
+    };
+
+    try
+    {
+        var createdIds = await SetupTestEnvironmentAsync(meals, ingredients);
+
+        Packed packed = new()
         {
-            new MealDTO { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
-            new MealDTO { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
+            Meal_id = createdIds[0][0],
+            Ingredient_id = createdIds[1][0],
+            order_no = 1
         };
-        List<IngredientDTO> ingredients = new List<IngredientDTO>
-        {
-            new IngredientDTO { Id = 1, Name = "Ingredient 1", User_id = 1, Image_id = null },
-            new IngredientDTO { Id = 2, Name = "Ingredient 2", User_id = 2, Image_id = null },
-            new IngredientDTO { Id = 3, Name = "Ingredient 3", User_id = 2, Image_id = null }
-        };
 
-        try
-        {
-            var createdIds = await SetupTestEnvironmentAsync(meals, ingredients);
-            PackedDTO packed = new PackedDTO { Meal_id = createdIds[0][0], Ingredient_id = createdIds[1][0], order_no = 1 };
+        // Act
+        var result = await repository.InsertAsync(packed);
 
-            // Act
-            var result = await repository.InsertAsync(packed);
+        // Assert
+        Assert.Equal(1, result);
 
-            // Assert
-            Assert.Equal(1, result);
-            var allPacked = await repository.GetAllAsync();
-            Assert.Contains(allPacked, item =>
-                item.Meal_id == packed.Meal_id &&
-                item.Ingredient_id == packed.Ingredient_id &&
-                item.order_no == packed.order_no);
-            var resultList = allPacked.ToList();
-            Assert.Single(resultList);
-        }
-        finally
-        {
-            await CleanupTestEnvironmentAsync();
-        }    
+        await using var connection = connectionFactory.Create();
+        await connection.OpenAsync();
+
+        await using var command = new NpgsqlCommand(
+            "SELECT meal_id, ingredient_id, order_no FROM packed " +
+            "WHERE meal_id = @mealId AND ingredient_id = @ingredientId",
+            connection);
+
+        command.Parameters.AddWithValue("mealId", packed.Meal_id);
+        command.Parameters.AddWithValue("ingredientId", packed.Ingredient_id);
+
+        await using var reader = await command.ExecuteReaderAsync();
+
+        Assert.True(await reader.ReadAsync());
+        Assert.Equal(packed.Meal_id, reader.GetInt32(0));
+        Assert.Equal(packed.Ingredient_id, reader.GetInt32(1));
+        Assert.Equal(packed.order_no, reader.GetInt32(2));
+
+        Assert.False(await reader.ReadAsync());
     }
+    finally
+    {
+        await CleanupTestEnvironmentAsync();
+    }
+}
 
     [Fact]
     [Trait("Category", "Integration")]
     public async Task UpdateAsync()
     {
         // Arrange
-        List<MealDTO> meals = new List<MealDTO>
+        List<Meal> meals = new List<Meal>
         {
-            new MealDTO { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
-            new MealDTO { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
+            new Meal { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
+            new Meal { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
         };
-        List<IngredientDTO> ingredients = new List<IngredientDTO>
+        List<Ingredient> ingredients = new List<Ingredient>
         {
-            new IngredientDTO { Id = 1, Name = "Ingredient 1", User_id = 1, Image_id = null },
-            new IngredientDTO { Id = 2, Name = "Ingredient 2", User_id = 2, Image_id = null },
-            new IngredientDTO { Id = 3, Name = "Ingredient 3", User_id = 2, Image_id = null }
+            new Ingredient { Id = 1, Name = "Ingredient 1", User_id = 1, Image_id = null },
+            new Ingredient { Id = 2, Name = "Ingredient 2", User_id = 2, Image_id = null },
+            new Ingredient { Id = 3, Name = "Ingredient 3", User_id = 2, Image_id = null }
         };
-        List<PackedDTO> packed = new List<PackedDTO>
+        List<Packed> packed = new List<Packed>
         {
-            new PackedDTO { Meal_id = 0, Ingredient_id = 0, order_no = 2},
-            new PackedDTO { Meal_id = 0, Ingredient_id = 1, order_no = 1},
-            new PackedDTO { Meal_id = 1, Ingredient_id = 2, order_no = 1}
+            new Packed { Meal_id = 0, Ingredient_id = 0, order_no = 2},
+            new Packed { Meal_id = 0, Ingredient_id = 1, order_no = 1},
+            new Packed { Meal_id = 1, Ingredient_id = 2, order_no = 1}
         };
 
         try
         {
             var createdIds = await SetupTestEnvironmentAsync(meals, ingredients, packed);
-            PackedDTO oldPacked = new PackedDTO { Meal_id = createdIds[0][1], Ingredient_id = createdIds[1][2], order_no = 1 };
-            PackedDTO newPacked = new PackedDTO { Meal_id = createdIds[0][0], Ingredient_id = createdIds[1][2], order_no = 0 };
+            Packed oldPacked = new Packed { Meal_id = createdIds[0][1], Ingredient_id = createdIds[1][2], order_no = 1 };
+            Packed newPacked = new Packed { Meal_id = createdIds[0][0], Ingredient_id = createdIds[1][2], order_no = 0 };
 
             // Act
             var result = await repository.UpdateAsync(oldPacked, newPacked);
@@ -212,28 +179,28 @@ public class PackedTests
     public async Task DeleteAsync()
     {
         // Arrange
-        List<MealDTO> meals = new List<MealDTO>
+        List<Meal> meals = new List<Meal>
         {
-            new MealDTO { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
-            new MealDTO { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
+            new Meal { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
+            new Meal { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
         };
-        List<IngredientDTO> ingredients = new List<IngredientDTO>
+        List<Ingredient> ingredients = new List<Ingredient>
         {
-            new IngredientDTO { Id = 1, Name = "Ingredient 1", User_id = 1, Image_id = null },
-            new IngredientDTO { Id = 2, Name = "Ingredient 2", User_id = 2, Image_id = null },
-            new IngredientDTO { Id = 3, Name = "Ingredient 3", User_id = 2, Image_id = null }
+            new Ingredient { Id = 1, Name = "Ingredient 1", User_id = 1, Image_id = null },
+            new Ingredient { Id = 2, Name = "Ingredient 2", User_id = 2, Image_id = null },
+            new Ingredient { Id = 3, Name = "Ingredient 3", User_id = 2, Image_id = null }
         };
-        List<PackedDTO> packed = new List<PackedDTO>
+        List<Packed> packed = new List<Packed>
         {
-            new PackedDTO { Meal_id = 0, Ingredient_id = 0, order_no = 2},
-            new PackedDTO { Meal_id = 0, Ingredient_id = 1, order_no = 1},
-            new PackedDTO { Meal_id = 1, Ingredient_id = 2, order_no = 1}
+            new Packed { Meal_id = 0, Ingredient_id = 0, order_no = 2},
+            new Packed { Meal_id = 0, Ingredient_id = 1, order_no = 1},
+            new Packed { Meal_id = 1, Ingredient_id = 2, order_no = 1}
         };
 
         try
         {
             var createdIds = await SetupTestEnvironmentAsync(meals, ingredients, packed);
-            PackedDTO toDelete = new PackedDTO { Meal_id = createdIds[0][0], Ingredient_id = createdIds[1][1], order_no = 1 };
+            Packed toDelete = new Packed { Meal_id = createdIds[0][0], Ingredient_id = createdIds[1][1], order_no = 1 };
 
             // Act
             var result = await repository.DeleteAsync(toDelete);
@@ -255,7 +222,7 @@ public class PackedTests
     }
 
     // Helper function to set up environment for tests
-    private async Task<List<List<int>>> SetupTestEnvironmentAsync(List<MealDTO> meals, List<IngredientDTO> ingredients, List<PackedDTO>? packed = null)
+    private async Task<List<List<int>>> SetupTestEnvironmentAsync(List<Meal> meals, List<Ingredient> ingredients, List<Packed>? packed = null)
     {
         // Open a connection to the database
         await using var connection = connectionFactory.Create();

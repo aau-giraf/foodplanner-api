@@ -37,7 +37,7 @@ public class IngredientsTests
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var ingredient = Assert.IsType<IngredientDTO>(okResult.Value);
+        var ingredient = Assert.IsType<Ingredient>(okResult.Value);
 
         Assert.Equal(expected.Id, ingredient.Id);
         Assert.Equal(expected.Name, ingredient.Name);
@@ -53,7 +53,7 @@ public class IngredientsTests
         // Arrange
         int ingredientId = 42;
         mockRepository.Setup(r => r.GetByIdAsync(ingredientId))
-        .ReturnsAsync((IngredientDTO?)null);
+        .ReturnsAsync((Ingredient?)null);
 
         // Act
         var result = await controller.Get(ingredientId);
@@ -91,7 +91,7 @@ public class IngredientsTests
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var ingredients = Assert.IsAssignableFrom<IEnumerable<IngredientDTO>>(okResult.Value).ToList();
+        var ingredients = Assert.IsAssignableFrom<IEnumerable<Ingredient>>(okResult.Value).ToList();
 
         Assert.Equal(2, ingredients.Count);
         Assert.Equal(expected1.Id, ingredients[0].Id);
@@ -130,7 +130,7 @@ public class IngredientsTests
 
         // Assert
         var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-        var createdIngredient = Assert.IsType<IngredientDTO>(createdResult.Value);
+        var createdIngredient = Assert.IsType<Ingredient>(createdResult.Value);
 
         Assert.Equal(201, createdResult.StatusCode);
         Assert.Equal(generatedId, createdIngredient.Id);
@@ -162,7 +162,7 @@ public class IngredientsTests
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var ingredient = Assert.IsType<IngredientDTO>(okResult.Value);
+        var ingredient = Assert.IsType<Ingredient>(okResult.Value);
 
         Assert.Equal(updated.Id, ingredient.Id);
         Assert.Equal(updated.Name, ingredient.Name);
@@ -192,7 +192,7 @@ public class IngredientsTests
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var ingredient = Assert.IsType<IngredientDTO>(okResult.Value);
+        var ingredient = Assert.IsType<Ingredient>(okResult.Value);
 
         Assert.Equal(deleted.Id, ingredient.Id);
         Assert.Equal(deleted.Name, ingredient.Name);
@@ -202,9 +202,9 @@ public class IngredientsTests
         mockRepository.Verify(r => r.GetByIdAsync(ingredientId), Times.Once);
     }
 
-    private static IngredientDTO CreateIngredient(int id, string name, int userId)
+    private static Ingredient CreateIngredient(int id, string name, int userId)
     {
-        return new IngredientDTO
+        return new Ingredient
         {
             Id = id,
             Name = name,

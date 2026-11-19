@@ -11,15 +11,6 @@ public class ChatService(IChatRepository chatRepository, IChildrenRepository chi
     // Adds a message to the database via AddMessageDTO and userId
     public async Task<bool> AddMessageAsync(AddMessageDTO addMessageDTO, int userId)
     {
-        // Create temporary entity with necessary data for message creation
-        var message = new AddMessageTemp
-        {
-            ChatThreadId = addMessageDTO.ChatThreadId,
-            Content = addMessageDTO.Content,
-            Date = System.DateTime.Now,
-            UserId = userId
-        };
-
         // Validate the user
         var user = await userRepository.GetByIdAsync(userId);
         if (user == null)
@@ -28,28 +19,29 @@ public class ChatService(IChatRepository chatRepository, IChildrenRepository chi
         } 
 
         // Insert the message into the database
-        int messageId = await chatRepository.AddMessageAsync(message);
+        DateTime date = DateTime.Now;
+        int messageId = await chatRepository.AddMessageAsync(addMessageDTO, date, userId);
         try
         {
             // Create MessageDTO
             var messageDTO = new MessageDTO
             {
                 MessageId = messageId,
-                Content = message.Content,
-                Date = message.Date,
-                UserId = message.UserId,
-                ChatThreadId = message.ChatThreadId,
+                Content = addMessageDTO.Content,
+                Date = date,
+                UserId = userId,
+                ChatThreadId = addMessageDTO.ChatThreadId,
                 Archived = false,
                 IsEdited = false,
                 FirstName = user.FirstName
             };
 
             // Broadcast the message to the SignalR group for the chat thread
-            await hubContext.Clients.Group($"thread-{message.ChatThreadId}").SendAsync("ReceiveMessage", messageDTO);
+            await hubContext.Clients.Group($"thread-{addMessageDTO.ChatThreadId}").SendAsync("ReceiveMessage", messageDTO);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, $"Failed to broadcast new FeedbackChat message to group thread-{message.ChatThreadId}");
+            logger.LogError(ex, $"Failed to broadcast new FeedbackChat message to group thread-{addMessageDTO.ChatThreadId}");
         }
         return true;
     }

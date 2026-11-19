@@ -10,12 +10,12 @@ namespace Test.Integration.Controllers;
 public class PackedTests
 {
     private readonly Mock<IPackedRepository> mockRepository = new();
-    private readonly PackedIngredientController controller;
+    private readonly PackedController controller;
 
     public PackedTests()
     {
         var service = new PackedService(mockRepository.Object);
-        controller = new PackedIngredientController(service);
+        controller = new PackedController(service);
     }
 
     [Fact]
@@ -33,11 +33,10 @@ public class PackedTests
         var result = await controller.Create(packed);
 
         // Assert
-        var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-        var createdPacked = Assert.IsType<PackedDTO>(createdResult.Value);
+        var createdResult = Assert.IsType<ObjectResult>(result);
+        var createdPacked = Assert.IsType<Packed>(createdResult.Value);
 
         Assert.Equal(201, createdResult.StatusCode);
-        Assert.Equal(generatedId, createdResult.RouteValues!["id"]);
         Assert.Equal(packed.Meal_id, createdPacked.Meal_id);
         Assert.Equal(packed.Ingredient_id, createdPacked.Ingredient_id);
         Assert.Equal(packed.order_no, createdPacked.order_no);
@@ -73,7 +72,7 @@ public class PackedTests
         var updated = CreatePacked(mealId, ingredientId, 3);
 
         mockRepository.Setup(r => r.UpdateAsync(
-                It.Is<PackedDTO>(p => p.Meal_id == mealId &&
+                It.Is<Packed>(p => p.Meal_id == mealId &&
                                       p.Ingredient_id == ingredientId &&
                                       p.order_no == 0),
                 updated))
@@ -87,7 +86,7 @@ public class PackedTests
         Assert.Equal(1, Assert.IsType<int>(okResult.Value));
 
         mockRepository.Verify(r => r.UpdateAsync(
-            It.Is<PackedDTO>(p => p.Meal_id == mealId &&
+            It.Is<Packed>(p => p.Meal_id == mealId &&
                                   p.Ingredient_id == ingredientId &&
                                   p.order_no == 0),
             updated), Times.Once);
@@ -103,7 +102,7 @@ public class PackedTests
         var updated = CreatePacked(mealId, ingredientId, 3);
 
         mockRepository.Setup(r => r.UpdateAsync(
-                It.Is<PackedDTO>(p => p.Meal_id == mealId &&
+                It.Is<Packed>(p => p.Meal_id == mealId &&
                                       p.Ingredient_id == ingredientId &&
                                       p.order_no == 0),
                 updated))
@@ -116,7 +115,7 @@ public class PackedTests
         Assert.IsType<BadRequestResult>(result);
 
         mockRepository.Verify(r => r.UpdateAsync(
-            It.Is<PackedDTO>(p => p.Meal_id == mealId &&
+            It.Is<Packed>(p => p.Meal_id == mealId &&
                                   p.Ingredient_id == ingredientId &&
                                   p.order_no == 0),
             updated), Times.Once);
@@ -158,9 +157,9 @@ public class PackedTests
         mockRepository.Verify(r => r.DeleteAsync(packed), Times.Once);
     }
 
-    private static PackedDTO CreatePacked(int mealId, int ingredientId, int orderNo)
+    private static Packed CreatePacked(int mealId, int ingredientId, int orderNo)
     {
-        return new PackedDTO
+        return new Packed
         {
             Meal_id = mealId,
             Ingredient_id = ingredientId,
