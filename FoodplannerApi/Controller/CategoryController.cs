@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FoodplannerApi.Controller;
 
-public class CategoryController(CategoryService categoryService) : BaseController
+public class CategoryController(ICategoryService categoryService) : BaseController
 {
     // URL : "api/Tag/CreateCategory" 
     // Creates a new category from CreateCategoryDTO

@@ -8,23 +8,23 @@ namespace FoodplannerDataAccessSql.Tags;
 // Implements interface CategoryRepository
 public class CategoryRepository : ICategoryRepository
 {
-      private readonly CorePostgreSQLConnectionFactory _connectionFactory;
+      private readonly PostgreSQLConnectionFactory _connectionFactory;
 
         // Constructor for the connection factory class
-        public CategoryRepository(CorePostgreSQLConnectionFactory connectionFactory)
+        public CategoryRepository(PostgreSQLConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
 
     // Get all categories from the database
-    public Task<IEnumerable<CategoryDTO>> GetAllAsync()
+    public async Task<IEnumerable<CategoryDTO>> GetAllAsync()
     {
         var sql = "SELECT * FROM categories";
 
         using (var connection = _connectionFactory.Create())
         {
             connection.Open();
-            var result = connection.QueryAsync<CategoryDTO>(sql);
+            var result = await connection.QueryAsync<CategoryDTO>(sql);
             return result;
         }
 
@@ -45,14 +45,14 @@ public class CategoryRepository : ICategoryRepository
 
     // Method to insert a new category into categories table 
     // Returns category ID
-    public Task<int> InsertAsync(CategoryDTO entity)
+    public async Task<int> InsertAsync(CategoryDTO entity)
     {
         var sql = "INSERT INTO categories (name, main) VALUES (@Name, @Main) RETURNING id";
 
         using (var connection = _connectionFactory.Create())
         {
             connection.Open();
-            var result = connection.QuerySingleAsync<int>(sql, new
+            var result = await connection.QuerySingleAsync<int>(sql, new
             {
                 name = entity.Name,
                 main = entity.Main
@@ -76,44 +76,50 @@ public class CategoryRepository : ICategoryRepository
     }
 
     // Method to update category from categories table based on ID
-    public Task<int> UpdateAsync(CategoryDTO entity)
+    public async Task<int> UpdateAsync(CategoryDTO entity)
     {
         var sql = "UPDATE categories SET name = @Name, main = @Main WHERE id = @Id";
         using (var connection = _connectionFactory.Create()) 
         {
             connection.Open();
-            var result = connection.Execute(sql, new
+            var result = await connection.ExecuteAsync(sql, new
             {
                 entity.Id,
                 entity.Name,
                 entity.Main
             });
-            return Task.FromResult(result);
+            return result;
         }
     }
 
     // Method for deleting a category from categories table based on ID
     // Uses a transaction to roll back the deletion if an error occurs
-    public Task<int> DeleteAsync(int id)
+    public async Task<int> DeleteAsync(int id)
     {
-        var deleteCategorySql = "DELETION FROM categories WHERE id = @id";
+        var deleteCategorySql = "DELETE FROM categories WHERE id = @Id";
 
-            using (var connection = _connectionFactory.Create())
+        using (var connection = _connectionFactory.Create())
         {
-            using var transaction = connection.BeginTransaction();
-                try
-                {
-                    var result = connection.ExecuteAsync(deleteCategorySql, new { Id = id }, transaction);
+            connection.Open();
 
-                    transaction.Commit();
-                    return result;
-                }
-                catch
-                {
-                    transaction.Rollback();
-                    throw;
-                }           
+            using var transaction = connection.BeginTransaction();
+            try
+            {
+                var result = await connection.ExecuteAsync(
+                    deleteCategorySql,
+                    new { Id = id },
+                    transaction
+                );
+
+                transaction.Commit();
+                return result;
             }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
+        }
     }
 }
 
