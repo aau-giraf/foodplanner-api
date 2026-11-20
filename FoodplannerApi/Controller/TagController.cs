@@ -19,6 +19,7 @@ public class TagController(ITagService tagService, IFoodImageService foodImageSe
      // Creates a new tag from category DTO and ingredient DTO
     // When success returns 201, when failed returns 400
     [HttpPost]
+    [Authorize(Roles = "Parent, Teacher")]
     [ProducesResponseType(typeof(TagDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CreateTag([FromBody] CategoryDTO categories, [FromBody] IngredientDTO ingredient)

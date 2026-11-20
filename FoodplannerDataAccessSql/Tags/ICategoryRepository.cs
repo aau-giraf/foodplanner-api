@@ -2,7 +2,7 @@ using FoodplannerModels.Tags;
 
 namespace FoodplannerDataAccessSql.Tags;
 
-public interface ICategoriesRepository
+public interface ICategoryRepository
 {
 Task<IEnumerable<CategoryDTO>> GetAllAsync();
 
