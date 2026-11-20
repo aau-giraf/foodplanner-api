@@ -19,9 +19,9 @@ public class CoreClient(HttpClient httpClient)
         return classrooms ?? [];
     }
 
-    public async Task<User?> GetLoggedInAsync()
+    public async Task<UserDTO?> GetLoggedInAsync()
     {
-        var user = await httpClient.GetFromJsonAsync<User>(getLoggedInPath);
+        var user = await httpClient.GetFromJsonAsync<UserDTO>(getLoggedInPath);
         return user;
     }
 }

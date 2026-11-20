@@ -64,6 +64,95 @@
         "status": 200
       },
       "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a request for the current user",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "a user is logged in"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/legacy/foodplanner/api/users/getLoggedIn"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "Email": "hans.hansen@email.com",
+            "FirstName": "Hans",
+            "Id": 1,
+            "LastName": "Hansen",
+            "Role": 1,
+            "RoleApproved": true
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.Email": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[a-zA-Z\\.\\-_]+@[a-zA-Z]+\\.[a-z]+"
+                }
+              ]
+            },
+            "$.FirstName": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[a-zA-Z]+"
+                }
+              ]
+            },
+            "$.Id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.LastName": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[a-zA-Z]+"
+                }
+              ]
+            },
+            "$.Role": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.RoleApproved": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
     }
   ],
   "metadata": {

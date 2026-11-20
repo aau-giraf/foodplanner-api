@@ -34,13 +34,15 @@ public class CoreUserPactTests
             .WillRespond()
             .WithStatus(HttpStatusCode.OK)
             .WithHeader("Content-Type", "application/json; charset=utf-8")
-            .WithJsonBody(Match.MinType(new
+            .WithJsonBody(new
             {
                 Id = Match.Integer(1), 
                 FirstName = Match.Regex("Hans", @"[a-zA-Z]+"),
                 LastName = Match.Regex("Hansen", @"[a-zA-Z]+"),
                 Email = Match.Regex("hans.hansen@email.com", @"[a-zA-Z\.\-_]+@[a-zA-Z]+\.[a-z]+"),
-            }, 1));
+                Role = Match.Integer(1),
+                RoleApproved = Match.Type(true),
+            });
 
 
         await _pact.VerifyAsync(async context =>
@@ -49,7 +51,7 @@ public class CoreUserPactTests
             using HttpClient http = new HttpClient { BaseAddress = context.MockServerUri };
             CoreClient client = new CoreClient(http);
 
-            User? user = await client.GetLoggedInAsync();
+            UserDTO user = await client.GetLoggedInAsync();
 
             Assert.NotNull(user);
             Assert.Equal(1, user!.Id);
