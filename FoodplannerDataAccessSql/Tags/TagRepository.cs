@@ -5,10 +5,10 @@ namespace FoodplannerDataAccessSql.Tags;
 
 public class TagRepository : ITagRepository
 {
-      private readonly CorePostgreSQLConnectionFactory _connectionFactory;
+      private readonly PostgreSQLConnectionFactory _connectionFactory;
 
         // Constructor for the connection factory class
-        public TagRepository(CorePostgreSQLConnectionFactory connectionFactory)
+        public TagRepository(PostgreSQLConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
@@ -20,12 +20,12 @@ public class TagRepository : ITagRepository
         SELECT DISTINCT i.image_id
         FROM ingredients i
         INNER JOIN tags t
-            ON i.ingredient_id = t.ingredient_id
+            ON i.id = t.ingredient_id
         INNER JOIN categories c
             ON t.category_id = c.id
         WHERE c.name = ANY(@Tags)
             AND i.image_id IS NOT NULL
-        GROUP BY i.ingredient_id, i.image_id
+        GROUP BY i.id, i.image_id
         HAVING COUNT(DISTINCT c.name) = CARDINALITY(@Tags);
         """;
         using (var connection = _connectionFactory.Create())
