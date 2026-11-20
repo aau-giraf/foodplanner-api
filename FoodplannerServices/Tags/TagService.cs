@@ -3,17 +3,30 @@ using FoodplannerModels.Tags;
 using FoodplannerServices.Image;
 using FoodplannerDataAccessSql.Tags;
 
+// Adds TagService to the class to the FoodplannerServices.Tags namespace
 namespace FoodplannerServices.Tags;
 
+// Service implementation for Tag business logic
 public class TagService(ITagRepository tagRepository, IFoodImageService foodImageService) : ITagService
 {
-    public async Task<TagDTO> CreateTagId (CategoryDTO category, IngredientDTO ingredient)
+    // Method for creating a Tag
+    // Returns a new Tag with ID
+    public async Task<int> CreateTag (int category_id, int ingredient_id)
     {
-          return new TagDTO
+          var tag = new TagDTO
           {
-              Category_id = category.Id,
-              Ingredient_id = ingredient.Id
+              Category_id = category_id,
+              Ingredient_id = ingredient_id
           };
+
+            // Checks if tag already exists
+          if (await tagRepository.TagExistsAsync(tag.Category_id, tag.Ingredient_id))
+        {
+            throw new InvalidOperationException("Tag eksisterer allerede");
+        }
+
+        // Inserts tag into the database
+        return await tagRepository.InsertAsync(tag);
     }
 
     // Get all stock images that match tags (e.g "fruit" AND "sliced")

@@ -1,23 +1,29 @@
-using System.ComponentModel;
-using System.Linq.Expressions;
 using FoodplannerDataAccessSql.Tags;
 using FoodplannerModels.Tags;
 
+// Adds CategoryService to the class to the FoodplannerServices.Tags namespace
 namespace FoodplannerServices.Tags;
 
-public class CategoryService(ICategoryRepository categoryRepository)
+// Service implementation for Category business logic
+public class CategoryService(ICategoryRepository categoryRepository) : ICategoryService
 {
-// Create a category in the repository
-public async Task<CategoryDTO> CreateCategory(CategoryDTO categories)
-    {
-       try
+ 
+    // Method for creating a category in the repository
+    public async Task<int> CreateCategory(CreateCategoryDTO createCategory)
         {
-            return await categoryRepository.InsertAsync(categories);
-        }
-        catch (Exception exception)
+        var category = new CategoryDTO
         {
-            throw new Exception($"Error creating category: {exception.Message}", exception);
+            Name = createCategory.Name,
+            Main = createCategory.Main
+        };
 
+        // Checks if category already exists
+        if (await categoryRepository.CategoryExistsAsync(category.Name))
+        {
+            throw new InvalidOperationException("Kategori eksisterer allerede");
         }
+
+        // Inserts category into database
+        return await categoryRepository.InsertAsync(category);
     }
 }

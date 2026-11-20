@@ -268,8 +268,8 @@ builder.Services.AddScoped<IPackedService,PackedService>();
 builder.Services.AddScoped<SubIngredientService>();
 builder.Services.AddHttpClient<IPixabayApi, PixabayApi>();
 builder.Services.AddTransient<IWebClientWrapper, WebClientWrapper>();
-builder.Services.AddScoped<CategoryService>();
-builder.Services.AddScoped<TagService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ITagService, TagService>();
 
 
 

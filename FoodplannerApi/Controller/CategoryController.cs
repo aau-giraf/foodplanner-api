@@ -1,5 +1,3 @@
-using FoodplannerDataAccessSql.Tags;
-using FoodplannerModels.Account;
 using FoodplannerModels.Tags;
 using FoodplannerServices.Tags;
 using Microsoft.AspNetCore.Authorization;
@@ -10,18 +8,24 @@ namespace FoodplannerApi.Controller;
 public class CategoryController(CategoryService categoryService) : BaseController
 {
     // URL : "api/Tag/CreateCategory" 
-    // Creates a new category from category DTO
+    // Creates a new category from CreateCategoryDTO
     // When success returns 201, when failed returns 400
     [HttpPost]
     [Authorize(Roles = "Parent, Teacher")]
-    [ProducesResponseType(typeof(CategoryDTO), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(CreateCategoryDTO), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateCategory([FromBody] CategoryDTO categories)
+    public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryDTO createCategory)
     {
-        var category = await categoryService.CreateCategory(categories);
-        if (category.Id > 0)
+        // Validate the model state to ensure the incoming data is valid
+        if (!ModelState.IsValid)
         {
-            return Created(string.Empty, category.Id);
+            return BadRequest(ModelState);
+        }
+
+        var id = await categoryService.CreateCategory(createCategory);
+        if (id > 0)
+        {
+            return Created(string.Empty, id);
         }
         return BadRequest();
     }
