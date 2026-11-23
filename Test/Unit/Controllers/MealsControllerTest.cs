@@ -21,21 +21,22 @@ public class MealsControllerTests
 
     [Fact]
     [Trait("Category", "Unit")]
-    public async Task GetAllByUser_ReturnsOkObjectResult()
+    public async Task GetAllByUser_OneDay_ReturnsOkObjectResult()
     {
         // Arrange
         const string token = "Bearer TestToken";
-        const string date = "18/11/2022";
+        const string startDate = "18/11/2022";
+		const string endDate = "18/11/2022";
         int userId = 1;
         var meals = new List<MealWithIngredientsDTO>
         {
-            new() { Id = 1, Name = "Pizza", Date = date, Template = false, Image_id = null, User_id = userId, Ingredients = [] }
+            new() { Id = 1, Name = "Pizza", Date = startDate, Template = false, Image_id = null, User_id = userId, Ingredients = [] }
         };
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
-        mockMealsService.Setup(service => service.GetAllMealsByUserAndDateAsync(userId, date)).ReturnsAsync(meals);
+        mockMealsService.Setup(service => service.GetAllMealsByUserAndDateAsync(userId, startDate, endDate)).ReturnsAsync(meals);
 
         // Act
-        var result = await mealsController.GetAllByUser(token, date);
+        var result = await mealsController.GetAllByUser(token, startDate, endDate);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -43,9 +44,44 @@ public class MealsControllerTests
         Assert.Single(returnedMeals);
         Assert.Equal(1, returnedMeals[0].Id);
         Assert.Equal("Pizza", returnedMeals[0].Name);
-        Assert.Equal(date, returnedMeals[0].Date);
+        Assert.Equal(startDate, returnedMeals[0].Date);
         Assert.Equal(userId, returnedMeals[0].User_id);
-        mockMealsService.Verify(service => service.GetAllMealsByUserAndDateAsync(userId, date), Times.Once);
+        mockMealsService.Verify(service => service.GetAllMealsByUserAndDateAsync(userId, startDate, endDate), Times.Once);
+    }
+
+	[Fact]
+    [Trait("Category", "Unit")]
+    public async Task GetAllByUser_OneWeek_ReturnsOkObjectResult()
+    {
+        // Arrange
+        const string token = "Bearer TestToken";
+        const string startDate = "18/11/2022";
+        const string endDate = "25/11/2022";
+        int userId = 1;
+        var meals = new List<MealWithIngredientsDTO>
+        {
+            new() { Id = 1, Name = "Pizza", Date = startDate, Template = false, Image_id = null, User_id = userId, Ingredients = [] },
+			new() { Id = 2, Name = "Pasta", Date = "19/11/2022", Template = false, Image_id = null, User_id = userId, Ingredients = [] }
+        };
+        mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
+        mockMealsService.Setup(service => service.GetAllMealsByUserAndDateAsync(userId, startDate, endDate)).ReturnsAsync(meals);
+
+        // Act
+        var result = await mealsController.GetAllByUser(token, startDate, endDate);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var returnedMeals = Assert.IsAssignableFrom<IEnumerable<MealWithIngredientsDTO>>(okResult.Value).ToList();
+        Assert.Equal(2, returnedMeals.Count);
+        Assert.Equal(1, returnedMeals[0].Id);
+        Assert.Equal("Pizza", returnedMeals[0].Name);
+        Assert.Equal(startDate, returnedMeals[0].Date);
+        Assert.Equal(userId, returnedMeals[0].User_id);
+		Assert.Equal(2, returnedMeals[1].Id);
+		Assert.Equal("Pasta", returnedMeals[1].Name);
+		Assert.Equal("19/11/2022", returnedMeals[1].Date);
+		Assert.Equal(userId, returnedMeals[1].User_id);
+        mockMealsService.Verify(service => service.GetAllMealsByUserAndDateAsync(userId, startDate, endDate), Times.Once);
     }
 
     [Fact]
@@ -54,15 +90,16 @@ public class MealsControllerTests
     {
         // Arrange
         int userId = 1;
-        const string date = "18/11/2022";
+        const string startDate = "18/11/2022";
+		const string endDate = "18/11/2022";
         var meals = new List<MealWithIngredientsDTO>
         {
-            new() { Id = 3, Name = "Salad", Date = date, Template = false, Image_id = null, User_id = userId, Ingredients = [] }
+            new() { Id = 3, Name = "Salad", Date = startDate, Template = false, Image_id = null, User_id = userId, Ingredients = [] }
         };
-        mockMealsService.Setup(service => service.GetAllMealsByUserAndDateAsync(userId, date)).ReturnsAsync(meals);
+        mockMealsService.Setup(service => service.GetAllMealsByUserAndDateAsync(userId, startDate, endDate)).ReturnsAsync(meals);
 
         // Act
-        var result = await mealsController.TeacherGetUserMeals(date, userId);
+        var result = await mealsController.TeacherGetUserMeals(startDate, endDate, userId);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -71,7 +108,7 @@ public class MealsControllerTests
         Assert.Equal(3, returnedMeals[0].Id);
         Assert.Equal("Salad", returnedMeals[0].Name);
         Assert.Equal(userId, returnedMeals[0].User_id);
-        mockMealsService.Verify(service => service.GetAllMealsByUserAndDateAsync(userId, date), Times.Once);
+        mockMealsService.Verify(service => service.GetAllMealsByUserAndDateAsync(userId, startDate, endDate), Times.Once);
     }
 
     [Fact]

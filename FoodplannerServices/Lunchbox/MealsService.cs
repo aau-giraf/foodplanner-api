@@ -11,29 +11,17 @@ public class MealsService(IMealsRepository mealsRepository, IPackedRepository pa
     // Retrieves all meals and their ingredients from a user id.
     public async Task<IEnumerable<MealWithIngredientsDTO>> GetAllMealsByUserAndDateAsync(int userId, string startDate, string endDate)
     {
-		DateOnly convStartDate, convEndDate;
 		try
 		{
-			convStartDate = DateOnly.Parse(startDate);
-			convEndDate = DateOnly.Parse(endDate);
-		}
-		catch (FormatException e)
-		{
-			throw new Exception($"Invalid date format or nonexistent date: {e.Message}");
-		}
-		catch (ArgumentNullException)
-		{
-			throw new Exception("Input date was null.");
-		}
+			var convStartDate = DateOnly.Parse(startDate);
+			var convEndDate = DateOnly.Parse(endDate);
+			
+			if (convEndDate.CompareTo(convStartDate) < 0)
+			{
+				throw new Exception($"The end date is before the start date");
+			}
 
-		if (convEndDate.CompareTo(convStartDate) < 0)
-		{
-			throw new Exception($"The end date is before the start date");
-		}
-
-        try
-        {
-            // Fetch all meals for the given user and date.
+			// Fetch all meals for the given user and date.
             var meals = await mealsRepository.GetAllByUserAndDateAsync(userId, convStartDate, convEndDate);
             var mealsWithIngredients = new List<MealWithIngredientsDTO>();
 
@@ -43,11 +31,38 @@ public class MealsService(IMealsRepository mealsRepository, IPackedRepository pa
                 mealsWithIngredients.Add(await AddIngredientsToMealAsync(meal));
             }
             return mealsWithIngredients;
-        }
-        catch (Exception exception)
+		}
+		catch (FormatException e)
+		{
+			throw new Exception($"Invalid date format or nonexistent date: {e.Message}");
+		}
+		catch (ArgumentNullException)
+		{
+			throw new Exception("Input date was null.");
+		}
+		catch (Exception exception)
         {
             throw new Exception($"Error retrieving meals for user ID {userId} on date {startDate}: {exception.Message}", exception);
         }
+
+
+        // try
+        // {
+        //     // Fetch all meals for the given user and date.
+        //     var meals = await mealsRepository.GetAllByUserAndDateAsync(userId, convStartDate, convEndDate);
+        //     var mealsWithIngredients = new List<MealWithIngredientsDTO>();
+
+        //     // For each meal, fetch its packed ingredients and the corresponding ingredient details.
+        //     foreach (var meal in meals)
+        //     {
+        //         mealsWithIngredients.Add(await AddIngredientsToMealAsync(meal));
+        //     }
+        //     return mealsWithIngredients;
+        // }
+        // catch (Exception exception)
+        // {
+        //     throw new Exception($"Error retrieving meals for user ID {userId} on date {startDate}: {exception.Message}", exception);
+        // }
     }
 
     // Retrieves a specific meal by its ID.
