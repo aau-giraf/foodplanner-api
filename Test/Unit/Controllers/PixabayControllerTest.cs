@@ -109,7 +109,7 @@ public class PixabayControllerTests
             {
                 Id = 1, Name = "apple", User_id = userId
             },
-            categoriesId = new CategoryDTO 
+            categoryIds = new CategoryDTO 
             { 
                 Id = 1, 
                 Name = "frugt", 
@@ -165,7 +165,7 @@ public class PixabayControllerTests
             {
                 Id = 1, Name = "apple", User_id = 1
             },
-            categoriesId = new CategoryDTO 
+            categoryIds = new CategoryDTO 
             { 
                 Id = 1, 
                 Name = "frugt", 
@@ -210,7 +210,7 @@ public class PixabayControllerTests
             {
                 Id = 1, Name = "apple", User_id = userId
             },
-            categoriesId = new CategoryDTO 
+            categoryIds = new CategoryDTO 
             { 
                 Id = 1, 
                 Name = "frugt", 

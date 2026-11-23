@@ -1,7 +1,6 @@
 using FoodplannerDataAccessSql;
 using FoodplannerDataAccessSql.Lunchbox;
 using FoodplannerModels.Lunchbox;
-using FoodplannerModels.Tags;
 using Npgsql;
 
 namespace Test.Integration.Repositories;
@@ -127,7 +126,7 @@ public class IngredientsTests
                 Image_id = null,
                 Is_stock_img = false
             };
-            
+
             IEnumerable<int> categoryIds = new List<int>() {1, 2};
 
             // Act
