@@ -127,8 +127,10 @@ public class IngredientsTests
                 Is_stock_img = false
             };
 
+            IEnumerable<int> categoryIds = new List<int>() {1, 2};
+
             // Act
-            int id = await repository.InsertAsync(ingredient);
+            int id = await repository.InsertAsync(ingredient, categoryIds);
             createdIngredientIds.Add(id);
 
             // Assert

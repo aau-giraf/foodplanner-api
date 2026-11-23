@@ -69,25 +69,9 @@ public class TagRepository(IDapperExecutor executor) : ITagRepository
     // Uses a transaction to roll back the deletion if an error occurs
     public async Task<int> DeleteAsync(int id)
     {
-        return 0;
-    //     var deleteCategorySql = "DELETION FROM tags WHERE id = @id";
+        var sql = "DELETION FROM tags WHERE id = @id";
 
-    //         using (var connection = _connectionFactory.Create())
-    //     {
-    //         using var transaction = connection.BeginTransaction();
-    //             try
-    //             {
-    //                 var result = connection.ExecuteAsync(deleteCategorySql, new { Id = id }, transaction);
-
-    //                 transaction.Commit();
-    //                 return result;
-    //             }
-    //             catch
-    //             {
-    //                 transaction.Rollback();
-    //                 throw;
-    //             }           
-    //         }
+        return await executor.ExecuteAsync(sql, new {Id = id});
     }
 
 }

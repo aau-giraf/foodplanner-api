@@ -1,12 +1,11 @@
-
 using Moq;
-using Xunit;
 using FoodplannerApi.Controller;
 using FoodplannerServices.Image;
-using FoodplannerServices.Auth;
 using FoodplannerModels.Image;
 using FoodplannerModels.Auth;
 using Microsoft.AspNetCore.Mvc;
+using FoodplannerModels.Lunchbox;
+using FoodplannerModels.Tags;
 
 namespace Test.AccountTests.Controller;
 
@@ -100,11 +99,22 @@ public class PixabayControllerTests
         const string idString = "1";
         const int userId = 1;
         const int expectedImageId = 10;
+    
 
         var pixabayDTO = new SavePixabayImageDTO
         {
             SearchWord = "apple",
-            Url = "https://example.com/apple.jpg"
+            Url = "https://example.com/apple.jpg",
+            ingredientId = new IngredientDTO
+            {
+                Id = 1, Name = "apple", User_id = userId
+            },
+            categoryIds = new CategoryDTO 
+            { 
+                Id = 1, 
+                Name = "frugt", 
+                Main = true
+            }
         };
 
         _authServiceMock
@@ -150,7 +160,17 @@ public class PixabayControllerTests
         var pixabayDTO = new SavePixabayImageDTO
         {
             SearchWord = "apple",
-            Url = "https://example.com/apple.jpg"
+            Url = "https://example.com/apple.jpg", 
+                       ingredientId = new IngredientDTO
+            {
+                Id = 1, Name = "apple", User_id = 1
+            },
+            categoryIds = new CategoryDTO 
+            { 
+                Id = 1, 
+                Name = "frugt", 
+                Main = true
+            }
         };
 
         _authServiceMock
@@ -185,7 +205,17 @@ public class PixabayControllerTests
         var pixabayDTO = new SavePixabayImageDTO
         {
             SearchWord = "apple",
-            Url = "https://example.com/apple.jpg"
+            Url = "https://example.com/apple.jpg",
+                        ingredientId = new IngredientDTO
+            {
+                Id = 1, Name = "apple", User_id = userId
+            },
+            categoryIds = new CategoryDTO 
+            { 
+                Id = 1, 
+                Name = "frugt", 
+                Main = true
+            }
         };
 
         _authServiceMock

@@ -159,8 +159,10 @@ public class IngredientsRepositoryTests
         mockExecutor.Setup(e => e.QuerySingleAsync<int>(sql, 
         It.IsAny<object?>())).ReturnsAsync(createId);
 
+        IEnumerable<int> categoryIds = new List<int>() {1, 2};
+
         // Act
-        var result = await repository.InsertAsync(ingredient);
+        var result = await repository.InsertAsync(ingredient, categoryIds);
 
         // Assert
         // Id should be same as result 
