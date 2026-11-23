@@ -10,11 +10,11 @@ namespace FoodplannerApi.Controller;
 public class MealsController(IMealsService mealService, IAuthService authService) : BaseController
 {
     // URL: api/Meals/GetAllByUser/{date}
-    [HttpGet("{date}")]
+    [HttpGet("{startDate}/{endDate}")]
     [Authorize(Roles = "Child, Parent")]
-    [ProducesResponseType(typeof(IEnumerable<Meal>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<List<MealWithIngredientsDTO>>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetAllByUser([FromHeader(Name = "Authorization")] string token, string date)
+    public async Task<IActionResult> GetAllByUser([FromHeader(Name = "Authorization")] string token, string startDate, string endDate)
     {
         try
         {
@@ -26,7 +26,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
             }
 
             // Retrieve all meals for the user on the specified date.
-            var meals = await mealService.GetAllMealsByUserAndDateAsync(id, date);
+            var meals = await mealService.GetAllMealsByUserAndDateAsync(id, startDate, endDate);
             return Ok(meals);
         }
         catch (InvalidOperationException e)
@@ -37,12 +37,12 @@ public class MealsController(IMealsService mealService, IAuthService authService
 
     // URL: api/Meals/TeacherGetUserMeals/{date}/{id}
     // Get all meals associated for a user
-    [HttpGet("{date}/{id}")]
+    [HttpGet("{startDate}/{endDate}/{id}")]
     [Authorize(Roles = "Teacher, Admin")]
-    [ProducesResponseType(typeof(IEnumerable<Meal>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> TeacherGetUserMeals(string date, int id)
+    [ProducesResponseType(typeof(IEnumerable<List<MealWithIngredientsDTO>>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> TeacherGetUserMeals(string startDate, string endDate, int id)
     {
-        var meals = await mealService.GetAllMealsByUserAndDateAsync(id, date);
+        var meals = await mealService.GetAllMealsByUserAndDateAsync(id, startDate, endDate);
         return Ok(meals);
     }
 

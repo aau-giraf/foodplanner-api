@@ -4,7 +4,7 @@ namespace FoodplannerServices.Lunchbox;
 
 public interface IMealsService
 {
-    Task<IEnumerable<MealWithIngredientsDTO>> GetAllMealsByUserAndDateAsync(int userId, string date);
+    Task<IEnumerable<MealWithIngredientsDTO>> GetAllMealsByUserAndDateAsync(int userId, string startDate, string endDate);
     Task<MealWithIngredientsDTO?> GetMealByIdAsync(int id);
     Task<int> CreateMealAsync(MealCreateDTO mealCreateDTO, int userId);
     Task<int> UpdateMealAsync(Meal mealDTO);
