@@ -75,17 +75,18 @@
       ],
       "request": {
         "method": "GET",
-        "path": "/legacy/foodplanner/api/users/getLoggedIn"
+        "path": "/legacy/foodplanner/api/Users/GetLoggedIn"
       },
       "response": {
         "body": {
           "content": {
-            "Email": "hans.hansen@email.com",
-            "FirstName": "Hans",
-            "Id": 1,
-            "LastName": "Hansen",
-            "Role": 1,
-            "RoleApproved": true
+            "archived": true,
+            "email": "hans.hansen@mail.com",
+            "firstName": "Hans",
+            "id": 1,
+            "lastName": "Hansen",
+            "role": 1,
+            "roleApproved": true
           },
           "contentType": "application/json",
           "encoded": false
@@ -97,7 +98,15 @@
         },
         "matchingRules": {
           "body": {
-            "$.Email": {
+            "$.archived": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.email": {
               "combine": "AND",
               "matchers": [
                 {
@@ -106,7 +115,7 @@
                 }
               ]
             },
-            "$.FirstName": {
+            "$.firstName": {
               "combine": "AND",
               "matchers": [
                 {
@@ -115,7 +124,7 @@
                 }
               ]
             },
-            "$.Id": {
+            "$.id": {
               "combine": "AND",
               "matchers": [
                 {
@@ -123,7 +132,7 @@
                 }
               ]
             },
-            "$.LastName": {
+            "$.lastName": {
               "combine": "AND",
               "matchers": [
                 {
@@ -132,7 +141,7 @@
                 }
               ]
             },
-            "$.Role": {
+            "$.role": {
               "combine": "AND",
               "matchers": [
                 {
@@ -140,7 +149,7 @@
                 }
               ]
             },
-            "$.RoleApproved": {
+            "$.roleApproved": {
               "combine": "AND",
               "matchers": [
                 {

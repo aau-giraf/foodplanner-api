@@ -40,7 +40,7 @@ public class CoreUserPactTests
                 firstName = Match.Regex("Hans", @"[a-zA-Z]+"),
                 lastName = Match.Regex("Hansen", @"[a-zA-Z]+"),
                 email = Match.Regex("hans.hansen@mail.com", @"[a-zA-Z\.\-_]+@[a-zA-Z]+\.[a-z]+"),
-                role = Match.Regex("Admin", "^(Admin|Parent|Teacher|Child)$"), // FIX: this may be an issue on the Core side, as it serializes the enum as a string, but foodplanner has it as an int
+                role = Match.Integer(1),
                 roleApproved = Match.Type(true),
                 archived = Match.Type(true)
             });
