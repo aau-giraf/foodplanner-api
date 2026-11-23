@@ -63,7 +63,7 @@ public class CategoryRepository : ICategoryRepository
 
     // Method for retrieving category by ID
     // Returns category with specific ID
-    public async Task<CategoryDTO> GetByIdAsync(int id)
+    public async Task<CategoryDTO?> GetByIdAsync(int id)
     {
         var sql = "SELECT id, name, main FROM categories WHERE id = @Id";
         using (var connection = _connectionFactory.Create())
