@@ -16,6 +16,8 @@ public static class FoodplannerSeeder
         await IngredientSeeder.SeedAsync(connection, transaction);
         await SubingredientSeeder.SeedAsync(connection, transaction);
         await PackedSeeder.SeedAsync(connection, transaction);
+        await CategorySeeder.SeedAsync(connection, transaction);
+        await TagSeeder.SeedAsync(connection, transaction);
         await Task.CompletedTask;
     }
 }
