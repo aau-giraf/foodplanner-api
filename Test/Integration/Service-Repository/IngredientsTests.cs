@@ -152,6 +152,7 @@ public class IngredientsTests
         // Arrange
         var ingredient = CreateIngredient(0, "Created Ingredient", 12345);
         int generatedId = 77;
+        IEnumerable<int> categoryIds = new List<int>() {1};
 
         mockExecutor.Setup(e => e.QuerySingleAsync<int>(
                 "INSERT INTO ingredients (name, user_id, image_id, is_stock_img) VALUES (@Name, @UserId, @ImageId, @IsStockImg) RETURNING id",
@@ -162,7 +163,7 @@ public class IngredientsTests
             .ReturnsAsync(generatedId);
 
         // Act
-        int result = await service.CreateIngredientAsync(ingredient);
+        int result = await service.CreateIngredientAsync(ingredient, categoryIds);
 
         // Assert
         Assert.Equal(generatedId, result);

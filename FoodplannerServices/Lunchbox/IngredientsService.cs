@@ -53,11 +53,11 @@ public class IngredientsService(IIngredientsRepository ingredientRepository) : I
 
     // Creates a new ingredient in the repository.
     // Uses ingredient ID and a list of category IDs to assign tags to the ingredient
-    public async Task<int> CreateIngredientAsync(IngredientDTO ingredientDTO, IEnumerable<int>? categoriesId)
+    public async Task<int> CreateIngredientAsync(IngredientDTO ingredientDTO, IEnumerable<int>? categoryIds)
     {
         try
         {
-            return await ingredientRepository.InsertAsync(ingredientDTO, categoriesId);
+            return await ingredientRepository.InsertAsync(ingredientDTO, categoryIds);
         }
         catch (Exception exception)
         {

@@ -32,7 +32,7 @@ public class IngredientsRepository(IDapperExecutor executor) : IIngredientsRepos
     }
 
     // Asynchronously inserts a new ingredient into the database and returns its ID.
-    public async Task<int> InsertAsync(IngredientDTO entity, IEnumerable<int>? categoriesId)
+    public async Task<int> InsertAsync(IngredientDTO entity, IEnumerable<int>? categoryIds)
     {
         var sql = "INSERT INTO ingredients (name, user_id, image_id, is_stock_img) VALUES (@Name, @UserId, @ImageId, @IsStockImg) RETURNING id";
 
@@ -45,7 +45,7 @@ public class IngredientsRepository(IDapperExecutor executor) : IIngredientsRepos
         });
 
         // Creates a tag for each selected category
-        foreach(var categoryId in categoriesId ?? Enumerable.Empty<int>())
+        foreach(var categoryId in categoryIds ?? Enumerable.Empty<int>())
         {
             // Tag created based on ingredient id and category id
             var tag = new TagDTO

@@ -1,10 +1,10 @@
 using FoodplannerApi.Controller;
 using FoodplannerModels.Auth;
 using FoodplannerModels.Lunchbox;
+using FoodplannerModels.Tags;
 using FoodplannerServices.Lunchbox;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Xunit;
 
 namespace Test.Unit.Controller;
 
@@ -119,13 +119,14 @@ public class IngredientsControllerTests
         int userId = 1;
         int ingredientId = 42;
         var ingredientDto = new IngredientDTO { Id = 0, Name = "Cheese", User_id = userId, Image_id = null };
+        IEnumerable<int> categoryDto = new List<int>() {1};
         var createdIngredient = new IngredientDTO { Id = ingredientId, Name = "Cheese", User_id = userId, Image_id = null };
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
-        mockIngredientsService.Setup(service => service.CreateIngredientAsync(ingredientDto)).ReturnsAsync(ingredientId);
+        mockIngredientsService.Setup(service => service.CreateIngredientAsync(ingredientDto, categoryDto)).ReturnsAsync(ingredientId);
         mockIngredientsService.Setup(service => service.GetIngredientByIdAsync(ingredientId)).ReturnsAsync(createdIngredient);
 
         // Act
-        var result = await ingredientsController.Create(token, ingredientDto);
+        var result = await ingredientsController.Create(token, ingredientDto, categoryDto);
 
         // Assert
         var createdResult = Assert.IsType<CreatedAtActionResult>(result);
@@ -135,7 +136,7 @@ public class IngredientsControllerTests
         Assert.Equal(ingredientId, returnedIngredient.Id);
         Assert.Equal("Cheese", returnedIngredient.Name);
         Assert.Equal(userId, returnedIngredient.User_id);
-        mockIngredientsService.Verify(service => service.CreateIngredientAsync(ingredientDto), Times.Once);
+        mockIngredientsService.Verify(service => service.CreateIngredientAsync(ingredientDto, categoryDto), Times.Once);
         mockIngredientsService.Verify(service => service.GetIngredientByIdAsync(ingredientId), Times.Once);
     }
 
@@ -147,15 +148,16 @@ public class IngredientsControllerTests
         const string token = "Bearer TestToken";
         int userId = 1;
         var ingredientDto = new IngredientDTO { Id = 0, Name = "Cheese", User_id = userId, Image_id = null };
+        IEnumerable<int> categoryDto = new List<int>() {1};
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
-        mockIngredientsService.Setup(service => service.CreateIngredientAsync(ingredientDto)).ReturnsAsync(0);
+        mockIngredientsService.Setup(service => service.CreateIngredientAsync(ingredientDto, categoryDto)).ReturnsAsync(0);
 
         // Act
-        var result = await ingredientsController.Create(token, ingredientDto);
+        var result = await ingredientsController.Create(token, ingredientDto, categoryDto);
 
         // Assert
         Assert.IsType<BadRequestResult>(result);
-        mockIngredientsService.Verify(service => service.CreateIngredientAsync(ingredientDto), Times.Once);
+        mockIngredientsService.Verify(service => service.CreateIngredientAsync(ingredientDto, categoryDto), Times.Once);
         mockIngredientsService.Verify(service => service.GetIngredientByIdAsync(It.IsAny<int>()), Times.Never);
     }
 
