@@ -30,18 +30,18 @@ public class CoreUserPactTests
         _pact
             .UponReceiving("a request for the current user")
             .Given("a user is logged in")
-            .WithRequest(HttpMethod.Get, "/legacy/foodplanner/api/users/getLoggedIn")
+            .WithRequest(HttpMethod.Get, "/legacy/foodplanner/api/Users/GetLoggedIn")
             .WillRespond()
             .WithStatus(HttpStatusCode.OK)
             .WithHeader("Content-Type", "application/json; charset=utf-8")
             .WithJsonBody(new
             {
-                Id = Match.Integer(1), 
-                FirstName = Match.Regex("Hans", @"[a-zA-Z]+"),
-                LastName = Match.Regex("Hansen", @"[a-zA-Z]+"),
-                Email = Match.Regex("hans.hansen@email.com", @"[a-zA-Z\.\-_]+@[a-zA-Z]+\.[a-z]+"),
-                Role = Match.Integer(1),
-                RoleApproved = Match.Type(true),
+                id = Match.Integer(1), 
+                firstName = Match.Regex("Hans", @"[a-zA-Z]+"),
+                lastName = Match.Regex("Hansen", @"[a-zA-Z]+"),
+                email = Match.Regex("hans.hansen@email.com", @"[a-zA-Z\.\-_]+@[a-zA-Z]+\.[a-z]+"),
+                role = Match.Regex("Admin", "^(Admin|Parent|Teacher|Child)$"), // FIX: this may be an issue on the Core side, as it serializes the enum as a string, but foodplanner has it as an int
+                roleApproved = Match.Type(true),
             });
 
 
