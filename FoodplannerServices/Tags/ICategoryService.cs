@@ -4,5 +4,5 @@ namespace FoodplannerModels.Tags;
 // Interface for Category Service 
 public interface ICategoryService
 {
-    Task<int> CreateCategory(CreateCategoryDTO createCategory);
+    Task<int> CreateCategoryAsync(CreateCategoryDTO createCategory);
 }

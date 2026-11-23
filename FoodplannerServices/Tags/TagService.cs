@@ -11,7 +11,7 @@ public class TagService(ITagRepository tagRepository, IFoodImageService foodImag
 {
     // Method for creating a Tag
     // Returns a new Tag with ID
-    public async Task<int> CreateTag (int category_id, int ingredient_id)
+    public async Task<int> CreateTagAsync (int category_id, int ingredient_id)
     {
           var tag = new TagDTO
           {
@@ -30,7 +30,7 @@ public class TagService(ITagRepository tagRepository, IFoodImageService foodImag
     }
 
     // Get all stock images that match tags (e.g "fruit" AND "sliced")
-    public async Task<IEnumerable<FoodImageDTO>> GetImagesFromTags(string tags)
+    public async Task<IEnumerable<FoodImageDTO>> GetImagesFromTagsAsync(string tags)
     {
         // split tags string into a list  
         var tagsList = tags
@@ -41,7 +41,7 @@ public class TagService(ITagRepository tagRepository, IFoodImageService foodImag
             .ToList();
         
         // Retrieves list of strings of image ids, where ingredient matches all tags in tagslist 
-        var imageIds = await tagRepository.GetImageIdsFromTags(tagsList);
+        var imageIds = await tagRepository.GetImageIdsFromTagsAsync(tagsList);
 
         // Retrieves FoodImageDTO for each of the image ids 
         List<FoodImageDTO> images = new List<FoodImageDTO>(); 

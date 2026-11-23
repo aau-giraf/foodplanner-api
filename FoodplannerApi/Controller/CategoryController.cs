@@ -22,7 +22,7 @@ public class CategoryController(ICategoryService categoryService) : BaseControll
             return BadRequest(ModelState);
         }
 
-        var id = await categoryService.CreateCategory(createCategory);
+        var id = await categoryService.CreateCategoryAsync(createCategory);
         if (id > 0)
         {
             return Created(string.Empty, id);

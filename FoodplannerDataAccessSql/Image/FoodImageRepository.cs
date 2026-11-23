@@ -124,7 +124,7 @@ public class FoodImageRepository : IFoodImageRepository
     }
 
     // Asynchronously get all food images, where is_stock_image is true 
-    public async Task<IEnumerable<FoodImage>> GetAllStockImages()
+    public async Task<IEnumerable<FoodImage>> GetAllStockImagesAsync()
     {
         const string sql = "SELECT * FROM food_image WHERE is_stock_image = true";
         await using (var connection = _connectionFactory.Create())

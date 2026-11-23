@@ -230,7 +230,7 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
     [ProducesResponseType(typeof(FoodImageDTO), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllStockImages()
     {
-        var images = await foodImageService.GetAllStockImages();
+        var images = await foodImageService.GetAllStockImagesAsync();
         return Ok(images);
     }
 }

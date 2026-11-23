@@ -27,7 +27,7 @@ public class TagController(ITagService tagService, IFoodImageService foodImageSe
             return BadRequest(ModelState);
         }
         
-        var id = await tagService.CreateTag(tagDTO.Category_id, tagDTO.Ingredient_id);
+        var id = await tagService.CreateTagAsync(tagDTO.Category_id, tagDTO.Ingredient_id);
         if (id > 0)
         {
             return Created(string.Empty, id);
@@ -44,11 +44,11 @@ public class TagController(ITagService tagService, IFoodImageService foodImageSe
     {
         if (string.IsNullOrEmpty(tags))
         {
-            var images = await foodImageService.GetAllStockImages();
+            var images = await foodImageService.GetAllStockImagesAsync();
             return Ok(images);
         } else
         {
-            var images = await tagService.GetImagesFromTags(tags);
+            var images = await tagService.GetImagesFromTagsAsync(tags);
             return Ok(images);
         }
     
