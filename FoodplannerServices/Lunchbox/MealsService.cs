@@ -9,24 +9,10 @@ namespace FoodplannerServices.Lunchbox;
 public class MealsService(IMealsRepository mealsRepository, IPackedRepository packedRepository, IIngredientsRepository ingredientRepository) : IMealsService
 {   
     // Retrieves all meals and their ingredients from a user id.
-    public async Task<IEnumerable<MealWithIngredientsDTO>> GetAllMealsByUserAndDateAsync(int userId, string startDate, string endDate)
+    public async Task<IEnumerable<MealWithIngredientsDTO>> GetAllMealsByUserAndDateAsync(int userId, DateOnly startDate, DateOnly endDate)
     {
-		DateOnly convStartDate, convEndDate;
-		try
-		{
-			convStartDate = DateOnly.Parse(startDate);
-			convEndDate = DateOnly.Parse(endDate);
-		}
-		catch (FormatException e)
-		{
-			throw new Exception($"Invalid date format or nonexistent date: {e.Message}");
-		}
-		catch (ArgumentNullException)
-		{
-			throw new Exception("Input date was null.");
-		}
 
-		if (convEndDate.CompareTo(convStartDate) < 0)
+		if (endDate.CompareTo(startDate) < 0)
 		{
 			throw new Exception($"The end date is before the start date");
 		}
@@ -34,7 +20,7 @@ public class MealsService(IMealsRepository mealsRepository, IPackedRepository pa
         try
         {
             // Fetch all meals for the given user and date.
-            var meals = await mealsRepository.GetAllByUserAndDateAsync(userId, convStartDate, convEndDate);
+            var meals = await mealsRepository.GetAllByUserAndDateAsync(userId, startDate, endDate);
             var mealsWithIngredients = new List<MealWithIngredientsDTO>();
 
             // For each meal, fetch its packed ingredients and the corresponding ingredient details.

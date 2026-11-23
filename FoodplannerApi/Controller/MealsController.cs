@@ -14,7 +14,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(IEnumerable<List<MealWithIngredientsDTO>>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetAllByUser([FromHeader(Name = "Authorization")] string token, string startDate, string endDate)
+    public async Task<IActionResult> GetAllByUser([FromHeader(Name = "Authorization")] string token, DateOnly startDate, DateOnly endDate)
     {
         try
         {
@@ -40,7 +40,7 @@ public class MealsController(IMealsService mealService, IAuthService authService
     [HttpGet("{startDate}/{endDate}/{id}")]
     [Authorize(Roles = "Teacher, Admin")]
     [ProducesResponseType(typeof(IEnumerable<List<MealWithIngredientsDTO>>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> TeacherGetUserMeals(string startDate, string endDate, int id)
+    public async Task<IActionResult> TeacherGetUserMeals(DateOnly startDate, DateOnly endDate, int id)
     {
         var meals = await mealService.GetAllMealsByUserAndDateAsync(id, startDate, endDate);
         return Ok(meals);
