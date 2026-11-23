@@ -27,11 +27,25 @@ public class MealsServiceTests
     {
         // Arrange
         int userId = 1;
-        string date = "18/11/2022";
-        mockMealsRepository.Setup(repo => repo.GetAllByUserAndDateAsync(userId, date)).ThrowsAsync(new Exception("Database error"));
+        string startDate = "18/11/2022";
+        string endDate = "25/11/2022";
+        mockMealsRepository.Setup(repo => repo.GetAllByUserAndDateAsync(userId, DateOnly.Parse(startDate), DateOnly.Parse(endDate))).ThrowsAsync(new Exception("Database error"));
 
         // Act & Assert
-        await Assert.ThrowsAsync<Exception>(() => mealsService.GetAllMealsByUserAndDateAsync(userId, date));
+        await Assert.ThrowsAsync<Exception>(() => mealsService.GetAllMealsByUserAndDateAsync(userId, startDate, endDate));
+    }
+
+	[Fact]
+    [Trait("Category", "Unit")]
+    public async Task GetAllMealsByUserAndDateAsync_InvalidDateError()
+    {
+        // Arrange
+        int userId = 1;
+        string startDate = "18/11/2022";
+        string endDate = "25/11/2022";
+
+        // Act & Assert
+        await Assert.ThrowsAsync<FormatException>(() => mealsService.GetAllMealsByUserAndDateAsync(userId, startDate, endDate));
     }
 
     [Fact]

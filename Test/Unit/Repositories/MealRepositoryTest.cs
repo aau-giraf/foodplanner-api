@@ -35,12 +35,13 @@ public class MealsRepositoryTests
     {
         // Arrange
         int userId = 1;
-        string date = "18/11/2022";
+        string startDate = "18/11/2022";
+		string endDate = "25/11/2022";
 
         var meals = new List<Meal>
         {
-            new() { Id = 1, Name = "Pizza", User_id = userId, Date = date, Template = false },
-            new() { Id = 2, Name = "Pasta", User_id = userId, Date = date, Template = false }
+            new() { Id = 1, Name = "Pizza", User_id = userId, Date = startDate, Template = false },
+            new() { Id = 2, Name = "Pasta", User_id = userId, Date = endDate, Template = false }
         };
 
         const string sql = "SELECT * FROM meals WHERE user_id = @UserId AND date = @Date";
@@ -50,11 +51,11 @@ public class MealsRepositoryTests
                 sql,
                 It.Is<object?>(p =>
                     HasParameter(p, "UserId", userId) &&
-                    HasParameter(p, "Date", date))))
+                    HasParameter(p, "Date", startDate))))
             .ReturnsAsync(meals);
 
         // Act
-        var result = (await repository.GetAllByUserAndDateAsync(userId, date)).ToList();
+        var result = (await repository.GetAllByUserAndDateAsync(userId, DateOnly.Parse(startDate), DateOnly.Parse(endDate))).ToList();
 
         // Assert
         Assert.Equal(2, result.Count);
@@ -62,18 +63,18 @@ public class MealsRepositoryTests
         Assert.Equal(1, result[0].Id);
         Assert.Equal("Pizza", result[0].Name);
         Assert.Equal(userId, result[0].User_id);
-        Assert.Equal(date, result[0].Date);
+        Assert.Equal(startDate, result[0].Date);
 
         Assert.Equal(2, result[1].Id);
         Assert.Equal("Pasta", result[1].Name);
         Assert.Equal(userId, result[1].User_id);
-        Assert.Equal(date, result[1].Date);
+        Assert.Equal(endDate, result[1].Date);
 
         mockExecutor.Verify(e => e.QueryAsync<Meal>(
             sql,
             It.Is<object?>(p =>
                 HasParameter(p, "UserId", userId) &&
-                HasParameter(p, "Date", date))),
+                HasParameter(p, "Date", startDate))),
             Times.Once);
     }
 
