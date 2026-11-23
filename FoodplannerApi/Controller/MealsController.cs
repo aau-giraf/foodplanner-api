@@ -72,6 +72,10 @@ public class MealsController(IMealsService mealService, IAuthService authService
     {
         try
         {
+            // Validate model
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             // Retrieve the user ID from the JWT token.
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int id))
@@ -104,6 +108,10 @@ public class MealsController(IMealsService mealService, IAuthService authService
     {
         try
         {
+            // Validate model
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             // Retrieve the user ID from the JWT token.
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int user_id))
