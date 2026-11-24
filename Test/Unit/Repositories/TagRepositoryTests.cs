@@ -35,7 +35,7 @@ public class TagRepositoryTests
 
     [Fact]
     [Trait("Category", "Unit")]
-    public async Task GetImageIdsFromTags_Successs()
+    public async Task GetImageIdsFromTags_Success()
     {
         // Arrange 
         // Create food image ids 
