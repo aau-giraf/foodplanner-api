@@ -20,31 +20,6 @@ public class IngredientsTests
 
     [Fact]
     [Trait("Category", "Integration")]
-    public async Task GetAllAsync_ShouldReturnInsertedIngredients()
-    {
-        try
-        {
-            // Arrange
-            int firstId = await InsertTestIngredientAsync("First Ingredient", 12345);
-            int secondId = await InsertTestIngredientAsync("Second Ingredient", 12345);
-
-            // Act
-            var result = (await repository.GetAllAsync()).ToList();
-
-            // Assert
-            var first = Assert.Single(result.Where(i => i.Id == firstId));
-            var second = Assert.Single(result.Where(i => i.Id == secondId));
-            Assert.Equal("First Ingredient", first.Name);
-            Assert.Equal("Second Ingredient", second.Name);
-        }
-        finally
-        {
-            await CleanupAsync();
-        }
-    }
-
-    [Fact]
-    [Trait("Category", "Integration")]
     public async Task GetAllByUserAsync_ShouldReturnOnlyMatchingIngredients()
     {
         try
@@ -118,7 +93,7 @@ public class IngredientsTests
         try
         {
             // Arrange
-            var ingredient = new IngredientDTO
+            var ingredient = new Ingredient
             {
                 Id = 0,
                 Name = "Inserted Ingredient",
@@ -155,7 +130,7 @@ public class IngredientsTests
             // Arrange
             int id = await InsertTestIngredientAsync("Original Ingredient", 12345);
             int otherId = await InsertTestIngredientAsync("Unchanged Ingredient", 12345);
-            var updated = new IngredientDTO
+            var updated = new Ingredient
             {
                 Id = id,
                 Name = "Updated Ingredient",

@@ -11,7 +11,7 @@ public class CategoryService(ICategoryRepository categoryRepository) : ICategory
     // Method for creating a category in the repository
     public async Task<int> CreateCategoryAsync(CreateCategoryDTO createCategory)
         {
-        var category = new CategoryDTO
+        var category = new Category
         {
             Name = createCategory.Name,
             Main = createCategory.Main

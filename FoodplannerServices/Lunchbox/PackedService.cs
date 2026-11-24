@@ -6,35 +6,9 @@ namespace FoodplannerServices.Lunchbox;
 
 // Service for the Packed class.
 public class PackedService(IPackedRepository packedRepository) : IPackedService
-{
-    // Retrieves all packed ingredients
-    public async Task<IEnumerable<PackedDTO>> GetAllPackedAsync()
-    {
-        try
-        {
-            return await packedRepository.GetAllAsync();
-        }
-        catch (Exception exception)
-        {
-            throw new Exception($"Error retrieving all packed ingredients: {exception.Message}", exception);
-        }
-    }
-    
-    // Get all packed ingredients based on a meal ID
-    public async Task<IEnumerable<PackedDTO>> GetAllPackedByMealIdAsync(int id)
-    {
-        try
-        {
-            return await packedRepository.GetAllByMealIdAsync(id);
-        }
-        catch (Exception exception)
-        {
-            throw new Exception($"Error retrieving packed ingredients for meal ID {id}: {exception.Message}", exception);
-        }
-    }
-
+{   
     // Creates a new packed ingredient
-    public async Task<int> CreatePackedAsync(PackedDTO packed)
+    public async Task<int> CreatePackedAsync(Packed packed)
     {
         try
         {
@@ -47,7 +21,7 @@ public class PackedService(IPackedRepository packedRepository) : IPackedService
     }
 
     // Updates an existing packed ingredient
-    public async Task<int> UpdatePackedAsync(PackedDTO oldPacked, PackedDTO newPacked)
+    public async Task<int> UpdatePackedAsync(Packed oldPacked, Packed newPacked)
     {
         try
         {
@@ -60,7 +34,7 @@ public class PackedService(IPackedRepository packedRepository) : IPackedService
     }
 
     // Deletes a packed ingredient based on the ID
-    public async Task<int> DeletePackedAsync(PackedDTO packed)
+    public async Task<int> DeletePackedAsync(Packed packed)
     {
         try
         {

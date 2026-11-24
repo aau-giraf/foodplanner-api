@@ -105,11 +105,11 @@ public class PixabayControllerTests
         {
             SearchWord = "apple",
             Url = "https://example.com/apple.jpg",
-            ingredientId = new IngredientDTO
+            ingredientId = new Ingredient
             {
                 Id = 1, Name = "apple", User_id = userId
             },
-            categoryIds = new CategoryDTO 
+            categoryIds = new Category 
             { 
                 Id = 1, 
                 Name = "frugt", 
@@ -161,11 +161,11 @@ public class PixabayControllerTests
         {
             SearchWord = "apple",
             Url = "https://example.com/apple.jpg", 
-                       ingredientId = new IngredientDTO
+                       ingredientId = new Ingredient
             {
                 Id = 1, Name = "apple", User_id = 1
             },
-            categoryIds = new CategoryDTO 
+            categoryIds = new Category 
             { 
                 Id = 1, 
                 Name = "frugt", 
@@ -206,11 +206,11 @@ public class PixabayControllerTests
         {
             SearchWord = "apple",
             Url = "https://example.com/apple.jpg",
-                        ingredientId = new IngredientDTO
+                        ingredientId = new Ingredient
             {
                 Id = 1, Name = "apple", User_id = userId
             },
-            categoryIds = new CategoryDTO 
+            categoryIds = new Category 
             { 
                 Id = 1, 
                 Name = "frugt", 

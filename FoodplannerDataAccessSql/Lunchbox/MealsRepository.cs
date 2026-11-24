@@ -5,20 +5,12 @@ namespace FoodplannerDataAccessSql.Lunchbox;
 // The repository for the Meal class.
 public class MealsRepository(IDapperExecutor executor) : IMealsRepository
 {
-    // Asynchronously retrieves all meals from the database. Used in testing.
-    public async Task<IEnumerable<MealDTO>> GetAllAsync()
-    {
-        var sql = "SELECT * FROM meals";
-
-        return await executor.QueryAsync<MealDTO>(sql);
-    }
-
     // Asynchronously retrieves all meals based on user id and date.
-    public async Task<IEnumerable<MealDTO>> GetAllByUserAndDateAsync(int id, string date)
+    public async Task<IEnumerable<Meal>> GetAllByUserAndDateAsync(int id, string date)
     {
         var sql = "SELECT * FROM meals WHERE user_id = @UserId AND date = @Date";
 
-        return await executor.QueryAsync<MealDTO>(sql, new
+        return await executor.QueryAsync<Meal>(sql, new
         {
             UserId = id,
             Date = date
@@ -26,11 +18,11 @@ public class MealsRepository(IDapperExecutor executor) : IMealsRepository
     }
 
     // Asynchronously retrieves a meal by its unique ID.
-    public async Task<MealDTO?> GetByIdAsync(int id)
+    public async Task<Meal?> GetByIdAsync(int id)
     {
         var sql = "SELECT * FROM meals WHERE id = @Id";
 
-        return await executor.QuerySingleOrDefaultAsync<MealDTO>(sql, new { Id = id });
+        return await executor.QuerySingleOrDefaultAsync<Meal>(sql, new { Id = id });
     }
 
     // Asynchronously inserts a new meal into the database and returns its Id.
@@ -49,7 +41,7 @@ public class MealsRepository(IDapperExecutor executor) : IMealsRepository
     }
 
     // Asynchronously updates an existing meal in the database.
-    public async Task<int> UpdateAsync(MealDTO entity)
+    public async Task<int> UpdateAsync(Meal entity)
     {
         var sql = "UPDATE meals SET name = @Name, user_id = @UserId, image_id = @ImageId, date = @Date, template = @Template WHERE id = @Id";
 
@@ -73,11 +65,11 @@ public class MealsRepository(IDapperExecutor executor) : IMealsRepository
     }
 
     // Gets all meals where template is set to true.
-    public async Task<IEnumerable<MealDTO>> GetAllTemplatesByUserAsync(int userId)
+    public async Task<IEnumerable<Meal>> GetAllTemplatesByUserAsync(int userId)
     {
         var sql = "SELECT * FROM meals WHERE template = true AND user_id = @UserId";
 
-        return await executor.QueryAsync<MealDTO>(sql, new { UserId = userId });
+        return await executor.QueryAsync<Meal>(sql, new { UserId = userId });
     }
 
     // Updates a meal's template status via its ID.

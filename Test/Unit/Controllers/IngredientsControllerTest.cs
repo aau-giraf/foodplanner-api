@@ -5,6 +5,7 @@ using FoodplannerModels.Tags;
 using FoodplannerServices.Lunchbox;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using FoodplannerModels.DTOs.Food;
 
 namespace Test.Unit.Controller;
 
@@ -21,38 +22,12 @@ public class IngredientsControllerTests
 
     [Fact]
     [Trait("Category", "Unit")]
-    public async Task GetAll_ReturnsOkObjectResult()
-    {
-        // Arrange
-        var ingredients = new List<IngredientDTO>
-        {
-            new() { Id = 1, Name = "Cheese", User_id = 1, Image_id = null },
-            new() { Id = 2, Name = "Bread", User_id = 1, Image_id = null }
-        };
-        mockIngredientsService.Setup(service => service.GetAllIngredientsAsync()).ReturnsAsync(ingredients);
-
-        // Act
-        var result = await ingredientsController.GetAllIngredients();
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        var returnedIngredients = Assert.IsAssignableFrom<IEnumerable<IngredientDTO>>(okResult.Value).ToList();
-        Assert.Equal(2, returnedIngredients.Count);
-        Assert.Equal(1, returnedIngredients[0].Id);
-        Assert.Equal("Cheese", returnedIngredients[0].Name);
-        Assert.Equal(2, returnedIngredients[1].Id);
-        Assert.Equal("Bread", returnedIngredients[1].Name);
-        mockIngredientsService.Verify(service => service.GetAllIngredientsAsync(), Times.Once);
-    }
-
-    [Fact]
-    [Trait("Category", "Unit")]
     public async Task GetAllByUser_ReturnsOkObjectResult()
     {
         // Arrange
         const string token = "Bearer TestToken";
         int userId = 1;
-        var ingredients = new List<IngredientDTO>
+        var ingredients = new List<Ingredient>
         {
             new() { Id = 1, Name = "Cheese", User_id = userId, Image_id = null },
             new() { Id = 2, Name = "Bread", User_id = userId, Image_id = null }
@@ -65,7 +40,7 @@ public class IngredientsControllerTests
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var returnedIngredients = Assert.IsAssignableFrom<IEnumerable<IngredientDTO>>(okResult.Value).ToList();
+        var returnedIngredients = Assert.IsAssignableFrom<IEnumerable<Ingredient>>(okResult.Value).ToList();
         Assert.Equal(2, returnedIngredients.Count);
         Assert.All(returnedIngredients, ingredient => Assert.Equal(userId, ingredient.User_id));
         Assert.Equal("Cheese", returnedIngredients[0].Name);
@@ -79,7 +54,7 @@ public class IngredientsControllerTests
     {
         // Arrange
         int ingredientId = 1;
-        var ingredient = new IngredientDTO { Id = ingredientId, Name = "Cheese", User_id = 1, Image_id = null };
+        var ingredient = new Ingredient { Id = ingredientId, Name = "Cheese", User_id = 1, Image_id = null };
         mockIngredientsService.Setup(service => service.GetIngredientByIdAsync(ingredientId)).ReturnsAsync(ingredient);
 
         // Act
@@ -87,7 +62,7 @@ public class IngredientsControllerTests
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var returnedIngredient = Assert.IsType<IngredientDTO>(okResult.Value);
+        var returnedIngredient = Assert.IsType<Ingredient>(okResult.Value);
         Assert.Equal(ingredientId, returnedIngredient.Id);
         Assert.Equal("Cheese", returnedIngredient.Name);
         Assert.Equal(1, returnedIngredient.User_id);
@@ -100,7 +75,7 @@ public class IngredientsControllerTests
     {
         // Arrange
         int ingredientId = 999;
-        mockIngredientsService.Setup(service => service.GetIngredientByIdAsync(ingredientId)).ReturnsAsync((IngredientDTO?)null);
+        mockIngredientsService.Setup(service => service.GetIngredientByIdAsync(ingredientId)).ReturnsAsync((Ingredient?)null);
 
         // Act
         var result = await ingredientsController.Get(ingredientId);
@@ -118,25 +93,31 @@ public class IngredientsControllerTests
         const string token = "Bearer TestToken";
         int userId = 1;
         int ingredientId = 42;
-        var ingredientDto = new IngredientDTO { Id = 0, Name = "Cheese", User_id = userId, Image_id = null };
+        var Ingredient = new Ingredient { Id = 0, Name = "Cheese", User_id = userId, Image_id = null };
         IEnumerable<int> categoryDto = new List<int>() {1};
-        var createdIngredient = new IngredientDTO { Id = ingredientId, Name = "Cheese", User_id = userId, Image_id = null };
+        var createdIngredient = new Ingredient { Id = ingredientId, Name = "Cheese", User_id = userId, Image_id = null };
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
-        mockIngredientsService.Setup(service => service.CreateIngredientAsync(ingredientDto, categoryDto)).ReturnsAsync(ingredientId);
+        mockIngredientsService.Setup(service => service.CreateIngredientAsync(Ingredient, categoryDto)).ReturnsAsync(ingredientId);
         mockIngredientsService.Setup(service => service.GetIngredientByIdAsync(ingredientId)).ReturnsAsync(createdIngredient);
+        var request = new CreateIngredientRequestDTO
+        {
+            Ingredient = Ingredient,
+            CategoryIds = categoryDto.ToArray()
+        };
+
 
         // Act
-        var result = await ingredientsController.Create(token, ingredientDto, categoryDto);
+        var result = await ingredientsController.Create(token, request);
 
         // Assert
         var createdResult = Assert.IsType<CreatedAtActionResult>(result);
         Assert.Equal(nameof(IngredientsController.Get), createdResult.ActionName);
         Assert.Equal(ingredientId, createdResult.RouteValues!["id"]);
-        var returnedIngredient = Assert.IsType<IngredientDTO>(createdResult.Value);
+        var returnedIngredient = Assert.IsType<Ingredient>(createdResult.Value);
         Assert.Equal(ingredientId, returnedIngredient.Id);
         Assert.Equal("Cheese", returnedIngredient.Name);
         Assert.Equal(userId, returnedIngredient.User_id);
-        mockIngredientsService.Verify(service => service.CreateIngredientAsync(ingredientDto, categoryDto), Times.Once);
+        mockIngredientsService.Verify(service => service.CreateIngredientAsync(Ingredient, categoryDto), Times.Once);
         mockIngredientsService.Verify(service => service.GetIngredientByIdAsync(ingredientId), Times.Once);
     }
 
@@ -147,17 +128,22 @@ public class IngredientsControllerTests
         // Arrange
         const string token = "Bearer TestToken";
         int userId = 1;
-        var ingredientDto = new IngredientDTO { Id = 0, Name = "Cheese", User_id = userId, Image_id = null };
+        var Ingredient = new Ingredient { Id = 0, Name = "Cheese", User_id = userId, Image_id = null };
         IEnumerable<int> categoryDto = new List<int>() {1};
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
-        mockIngredientsService.Setup(service => service.CreateIngredientAsync(ingredientDto, categoryDto)).ReturnsAsync(0);
+        mockIngredientsService.Setup(service => service.CreateIngredientAsync(Ingredient, categoryDto)).ReturnsAsync(0);
 
+        var request = new CreateIngredientRequestDTO
+        {
+            Ingredient = Ingredient,
+            CategoryIds = categoryDto.ToArray()
+        };
         // Act
-        var result = await ingredientsController.Create(token, ingredientDto, categoryDto);
+        var result = await ingredientsController.Create(token, request);
 
         // Assert
         Assert.IsType<BadRequestResult>(result);
-        mockIngredientsService.Verify(service => service.CreateIngredientAsync(ingredientDto, categoryDto), Times.Once);
+        mockIngredientsService.Verify(service => service.CreateIngredientAsync(Ingredient, categoryDto), Times.Once);
         mockIngredientsService.Verify(service => service.GetIngredientByIdAsync(It.IsAny<int>()), Times.Never);
     }
 
@@ -167,20 +153,20 @@ public class IngredientsControllerTests
     {
         // Arrange
         int ingredientId = 1;
-        var ingredientDto = new IngredientDTO { Id = ingredientId, Name = "Updated Cheese", User_id = 1, Image_id = null };
-        mockIngredientsService.Setup(service => service.UpdateIngredientAsync(ingredientDto)).ReturnsAsync(1);
-        mockIngredientsService.Setup(service => service.GetIngredientByIdAsync(ingredientId)).ReturnsAsync(ingredientDto);
+        var Ingredient = new Ingredient { Id = ingredientId, Name = "Updated Cheese", User_id = 1, Image_id = null };
+        mockIngredientsService.Setup(service => service.UpdateIngredientAsync(Ingredient)).ReturnsAsync(1);
+        mockIngredientsService.Setup(service => service.GetIngredientByIdAsync(ingredientId)).ReturnsAsync(Ingredient);
 
         // Act
-        var result = await ingredientsController.Update(ingredientDto);
+        var result = await ingredientsController.Update(Ingredient);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var returnedIngredient = Assert.IsType<IngredientDTO>(okResult.Value);
+        var returnedIngredient = Assert.IsType<Ingredient>(okResult.Value);
         Assert.Equal(ingredientId, returnedIngredient.Id);
         Assert.Equal("Updated Cheese", returnedIngredient.Name);
         Assert.Equal(1, returnedIngredient.User_id);
-        mockIngredientsService.Verify(service => service.UpdateIngredientAsync(ingredientDto), Times.Once);
+        mockIngredientsService.Verify(service => service.UpdateIngredientAsync(Ingredient), Times.Once);
         mockIngredientsService.Verify(service => service.GetIngredientByIdAsync(ingredientId), Times.Once);
     }
 
@@ -190,15 +176,15 @@ public class IngredientsControllerTests
     {
         // Arrange
         int ingredientId = 1;
-        var ingredientDto = new IngredientDTO { Id = ingredientId, Name = "Cheese", User_id = 1, Image_id = null };
-        mockIngredientsService.Setup(service => service.UpdateIngredientAsync(ingredientDto)).ReturnsAsync(0);
+        var Ingredient = new Ingredient { Id = ingredientId, Name = "Cheese", User_id = 1, Image_id = null };
+        mockIngredientsService.Setup(service => service.UpdateIngredientAsync(Ingredient)).ReturnsAsync(0);
 
         // Act
-        var result = await ingredientsController.Update(ingredientDto);
+        var result = await ingredientsController.Update(Ingredient);
 
         // Assert
         Assert.IsType<BadRequestResult>(result);
-        mockIngredientsService.Verify(service => service.UpdateIngredientAsync(ingredientDto), Times.Once);
+        mockIngredientsService.Verify(service => service.UpdateIngredientAsync(Ingredient), Times.Once);
         mockIngredientsService.Verify(service => service.GetIngredientByIdAsync(It.IsAny<int>()), Times.Never);
     }
 
@@ -208,7 +194,7 @@ public class IngredientsControllerTests
     {
         // Arrange
         int ingredientId = 1;
-        var ingredient = new IngredientDTO { Id = ingredientId, Name = "Cheese", User_id = 1, Image_id = null };
+        var ingredient = new Ingredient { Id = ingredientId, Name = "Cheese", User_id = 1, Image_id = null };
         mockIngredientsService.Setup(service => service.GetIngredientByIdAsync(ingredientId)).ReturnsAsync(ingredient);
         mockIngredientsService.Setup(service => service.DeleteIngredientAsync(ingredientId)).ReturnsAsync(1);
 
@@ -217,7 +203,7 @@ public class IngredientsControllerTests
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-        var returnedIngredient = Assert.IsType<IngredientDTO>(okResult.Value);
+        var returnedIngredient = Assert.IsType<Ingredient>(okResult.Value);
         Assert.Equal(ingredientId, returnedIngredient.Id);
         Assert.Equal("Cheese", returnedIngredient.Name);
         mockIngredientsService.Verify(service => service.GetIngredientByIdAsync(ingredientId), Times.Once);
@@ -230,7 +216,7 @@ public class IngredientsControllerTests
     {
         // Arrange
         int ingredientId = 999;
-        mockIngredientsService.Setup(service => service.GetIngredientByIdAsync(ingredientId)).ReturnsAsync((IngredientDTO?)null);
+        mockIngredientsService.Setup(service => service.GetIngredientByIdAsync(ingredientId)).ReturnsAsync((Ingredient?)null);
         mockIngredientsService.Setup(service => service.DeleteIngredientAsync(ingredientId)).ReturnsAsync(0);
 
         // Act

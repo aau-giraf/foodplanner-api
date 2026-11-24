@@ -11,111 +11,6 @@ public class UsersControllerTests
 {
     [Fact]
     [Trait("Category", "Unit")]
-    public async Task EmailExists_ReturnsOkObjectResult_WhenEmailIsValid()
-    {
-        // Arrange
-        var email = "test@example.com";
-
-        var mockUserService = new Mock<IUserService>();
-        var authService = new Mock<IAuthService>();
-        var otpService = new Mock<IOneTimePasswordService>();
-        mockUserService
-            .Setup(s => s.UserEmailExistsAsync(email))
-            .ReturnsAsync(true);
-
-
-        var usersController = new UsersController(mockUserService.Object, authService.Object);
-
-        // Act
-        var result = await usersController.EmailExists(email);
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        dynamic value = okResult.Value!;
-        bool exists = (bool)value.GetType().GetProperty("EmailExists").GetValue(value);
-        Assert.True(exists);
-    }
-
-
-    [Fact]
-    [Trait("Category", "Unit")]
-    public async Task EmailExists_ReturnsBadRequest_WhenEmailIsNullOrEmpty()
-    {
-        // Arrange
-        string email = ""; // could also test null
-
-        var mockUserService = new Mock<IUserService>();
-        var authService = new Mock<IAuthService>();
-        var otpService = new Mock<IOneTimePasswordService>();
-
-        var usersController = new UsersController(mockUserService.Object, authService.Object);
-
-        // Act
-        var result = await usersController.EmailExists(email);
-
-        // Assert
-        var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-        dynamic value = badRequest.Value!;
-        Assert.IsType<string[]>(value.Message);
-        var messages = (string[])value.Message;
-
-        Assert.Contains("Email is required", messages);
-
-    }
-
-    [Fact]
-    [Trait("Category", "Unit")]
-    public async Task EmailExists_ReturnsOkObjectResult_WhenEmailDoesNotExist()
-    {
-        // Arrange
-        var email = "nonexistent@example.com";
-
-        var mockUserService = new Mock<IUserService>();
-        var authService = new Mock<IAuthService>();
-        var otpService = new Mock<IOneTimePasswordService>();
-        mockUserService
-            .Setup(s => s.UserEmailExistsAsync(email))
-            .ReturnsAsync(false);
-
-
-        var usersController = new UsersController(mockUserService.Object, authService.Object);
-
-        // Act
-        var result = await usersController.EmailExists(email);
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        dynamic value = okResult.Value!;
-        bool exists = (bool)value.GetType().GetProperty("EmailExists").GetValue(value);
-        Assert.False(exists);
-    }
-    
-    [Fact]
-    [Trait("Category", "Unit")]
-    public async Task GetBearerTest_ReturnsOkObjectResult()
-    {
-        //arrange
-        var mockUserService = new Mock<IUserService>();
-        var authService = new Mock<IAuthService>();
-        var otpService = new Mock<IOneTimePasswordService>();
-
-        var JWTToken = "Bearer TestToken";
-        authService
-            .Setup(a => a.GenerateJWTToken(It.IsAny<User>()))
-            .Returns(JWTToken);
-
-        var controller = new UsersController(mockUserService.Object, authService.Object);
-
-        //act
-        var result = await controller.GetBearerTest();
-
-        //assert
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.NotNull(okResult.Value);
-    }
-
-    [Fact]
-    [Trait("Category", "Unit")]
     public async Task Create_ReturnsCreatedResult_WhenUserIsValid()
     {
         //arrange
@@ -206,7 +101,7 @@ public class UsersControllerTests
 
         // Assert
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-        var errorResponse = Assert.IsType<ErrorResponse>(badRequestResult.Value); 
+        var errorResponse = Assert.IsType<ErrorResponseDTO>(badRequestResult.Value); 
         Assert.NotNull(errorResponse);
         Assert.NotNull(errorResponse.Email);
         Assert.Equal("An error occurred while creating the user", errorResponse.Email[0]);
@@ -271,7 +166,7 @@ public class UsersControllerTests
 
         // Assert
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-        var errorResponse = Assert.IsType<ErrorResponse>(badRequestResult.Value);
+        var errorResponse = Assert.IsType<ErrorResponseDTO>(badRequestResult.Value);
         Assert.NotNull(errorResponse);
         Assert.NotNull(errorResponse.Message);
         Assert.Equal("Email or password is wrong", errorResponse.Message[0]);
@@ -301,7 +196,7 @@ public class UsersControllerTests
         var result = await controller.Login(loginDto);
 
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
-        var errorResponse = Assert.IsType<ErrorResponse>(badRequestResult.Value);
+        var errorResponse = Assert.IsType<ErrorResponseDTO>(badRequestResult.Value);
         Assert.NotNull(errorResponse);
         Assert.NotNull(errorResponse.Message);
         Assert.Equal("Email or password is wrong", errorResponse.Message[0]);
@@ -314,7 +209,7 @@ public class UsersControllerTests
         // Arrange
         var validToken = "valid-token";
         var userId = 1;
-        var pincode = new Pincode { PinCode = "1234" };
+        var pincode = "1234";
 
         var mockUserService = new Mock<IUserService>();
         var mockAuthService = new Mock<IAuthService>();
@@ -327,7 +222,7 @@ public class UsersControllerTests
             .Returns(userId.ToString());
 
         mockUserService
-            .Setup(service => service.UpdateUserPinCodeAsync(pincode.PinCode, userId))
+            .Setup(service => service.UpdateUserPinCodeAsync(pincode, userId))
             .ReturnsAsync("PinCodeUpdatedSuccessfully");
 
         // Act
@@ -396,7 +291,7 @@ public class UsersControllerTests
     {
         //arrange
         var token = "valid-jwt-token";
-        var pinCode = new Pincode { PinCode = "1234" };
+        var pinCode = "1234";
         var userId = 27;
 
         var mockUserService = new Mock<IUserService>();
@@ -412,7 +307,7 @@ public class UsersControllerTests
             RoleApproved = true
         };
 
-        mockUserService.Setup(service => service.GetUserByIdAndPinCodeAsync(userId, pinCode.PinCode)).ReturnsAsync(userCredsDTO);
+        mockUserService.Setup(service => service.GetUserByIdAndPinCodeAsync(userId, pinCode)).ReturnsAsync(userCredsDTO);
 
         authService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
 
@@ -432,7 +327,7 @@ public class UsersControllerTests
     {
         //arrange
         var token = "invalid-jwt-token";
-        var pinCode = new Pincode { PinCode = "1234" };
+        var pinCode = "1234";
 
         var mockUserService = new Mock<IUserService>();
         var authService = new Mock<IAuthService>();

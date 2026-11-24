@@ -5,57 +5,17 @@ using FoodplannerServices.Lunchbox;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-// Adds the SubIngredientsController to the FoodPlannerApi.Controller namespace
 namespace FoodplannerApi.Controller;
 
 public class SubIngredientsController(SubIngredientService subIngredientService, IAuthService authService) : BaseController
 {
-
-    // URL: api/SubIngredients/GetAllSubIngredients
-    // Retrieves all subingredients
-    [HttpGet]
-    [Authorize(Policy = "AdminPolicy")]
-    [ProducesResponseType(typeof(IEnumerable<SubIngredientDTO>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll()
-    {
-        var subingredients = await subIngredientService.GetAllSubIngredientsAsync();
-        return Ok(subingredients);
-    }
-
-    // URL: api/SubIngredients/GetAllByUser
-    // Retrieves all subingredients associated with authorization token
-    [HttpGet]
-    [Authorize(Roles = "Child, Parent")]
-    [ProducesResponseType(typeof(IEnumerable<SubIngredientDTO>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetAllByUser([FromHeader(Name = "Authorization")] string token)
-    {
-        try
-        {
-            // Retrieve the user ID from the JWT token
-            var idString = authService.RetrieveIdFromJwtToken(token);
-            if (!int.TryParse(idString, out int userId))
-            {
-                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
-            }
-
-            // Retrieve all subingredients associated with the user ID
-            var subingredients = await subIngredientService.GetAllSubIngredientsByParentIdAsync(userId);
-            return Ok(subingredients);
-        }
-        catch (InvalidOperationException e)
-        {
-            return BadRequest(new ErrorResponse { Message = [e.Message] });
-        }
-    }
-
-    // URL: api/SubIngredients/Get/{id}
+    // URL: api/SubIngredients/GetByParentId/{id}
     // Retrieves all subingredients associated with a specific parent ingredient ID
     [HttpGet("{id}")]
     [Authorize(Roles = "Child, Parent")]
-    [ProducesResponseType(typeof(SubIngredientDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SubIngredient), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> GetByParentId(int id)
     {
         var subingredient = await subIngredientService.GetAllSubIngredientsByParentIdAsync(id);
         if (subingredient == null)
@@ -66,12 +26,12 @@ public class SubIngredientsController(SubIngredientService subIngredientService,
     }
 
     // URL: api/SubIngredients/Create
-    // Creates a new subingredient from SubIngredientDTO under user associated with authorization token
+    // Creates a new subingredient from SubIngredient under user associated with authorization token
     [HttpPost]
     [Authorize(Roles = "Child, Parent")]
-    [ProducesResponseType(typeof(SubIngredientDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SubIngredient), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] SubIngredientDTO subingredient)
+    public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token, [FromBody] SubIngredient subingredient)
     {
         try
         {
@@ -79,7 +39,7 @@ public class SubIngredientsController(SubIngredientService subIngredientService,
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int userId))
             {
-                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
+                return BadRequest(new ErrorResponseDTO { Message = ["Invalid user ID"] });
             }
 
             // Calls the service to create a new subingredient under the user ID
@@ -92,7 +52,7 @@ public class SubIngredientsController(SubIngredientService subIngredientService,
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new ErrorResponse { Message = [e.Message] });
+            return BadRequest(new ErrorResponseDTO { Message = [e.Message] });
         }
     }
 
@@ -100,11 +60,11 @@ public class SubIngredientsController(SubIngredientService subIngredientService,
     // Updates an existing subingredient by its parent and child id
     [HttpPut("{parent_id}/{child_id}")]
     [Authorize(Roles = "Child, Parent")]
-    [ProducesResponseType(typeof(SubIngredientDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SubIngredient), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Update([FromBody] SubIngredientDTO newSubIngredient, int parent_id, int child_id)
+    public async Task<IActionResult> Update([FromBody] SubIngredient newSubIngredient, int parent_id, int child_id)
     {
-        var oldSubIngredient = new SubIngredientDTO { Parent_id = parent_id, Child_id = child_id, order_no = 0};
+        var oldSubIngredient = new SubIngredient { Parent_id = parent_id, Child_id = child_id, order_no = 0};
         var result = await subIngredientService.UpdateSubIngredientAsync(oldSubIngredient, newSubIngredient);
         if (result > 0)
         {
@@ -117,11 +77,11 @@ public class SubIngredientsController(SubIngredientService subIngredientService,
     // Delete a subingredient
     [HttpDelete]
     [Authorize(Roles = "Child, Parent")]
-    [ProducesResponseType(typeof(SubIngredientDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SubIngredient), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Delete([FromBody] SubIngredientDTO subingredientDTO)
+    public async Task<IActionResult> Delete([FromBody] SubIngredient subIngredient)
     {
-        var result = await subIngredientService.DeleteSubIngredientAsync(subingredientDTO);
+        var result = await subIngredientService.DeleteSubIngredientAsync(subIngredient);
         if (result > 0)
         {
             return Ok(result);

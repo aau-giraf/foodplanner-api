@@ -19,57 +19,16 @@ public class SubIngredientTests
 
     [Fact]
     [Trait("Category", "Integration")]
-    public async Task GetAllSubIngredientsAsync()
-    {
-        // Arrange
-        var expected = new List<SubIngredientDTO>
-        {
-            new() { Parent_id = 1, Child_id = 1, order_no = 1 },
-            new() { Parent_id = 1, Child_id = 2, order_no = 2 },
-            new() { Parent_id = 2, Child_id = 3, order_no = 1 }
-        };
-        mockDapperExecutor.Setup(x => x.QueryAsync<SubIngredientDTO>("SELECT * FROM subingredient")).ReturnsAsync(expected);
-
-        // Act
-        var result = await service.GetAllSubIngredientsAsync();
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(expected.Count, result.Count());
-
-        Assert.Collection(result,
-            item =>
-            {
-                Assert.Equal(1, item.Parent_id);
-                Assert.Equal(1, item.Child_id);
-                Assert.Equal(1, item.order_no);
-            },
-            item =>
-            {
-                Assert.Equal(1, item.Parent_id);
-                Assert.Equal(2, item.Child_id);
-                Assert.Equal(2, item.order_no);
-            },
-            item =>
-            {
-                Assert.Equal(2, item.Parent_id);
-                Assert.Equal(3, item.Child_id);
-                Assert.Equal(1, item.order_no);
-            });
-    }
-
-    [Fact]
-    [Trait("Category", "Integration")]
     public async Task GetAllSubIngredientsByParentIdAsync()
     {
         // Arrange
         int parentId = 1;
-        var expected = new List<SubIngredientDTO>
+        var expected = new List<SubIngredient>
         {
             new() { Parent_id = parentId, Child_id = 1, order_no = 1 },
             new() { Parent_id = parentId, Child_id = 2, order_no = 2 }
         };
-        mockDapperExecutor.Setup(x => x.QueryAsync<SubIngredientDTO>(
+        mockDapperExecutor.Setup(x => x.QueryAsync<SubIngredient>(
             "SELECT * FROM subingredient WHERE parent_id = @Id ORDER BY order_no",
             It.Is<object>(param => (int)param.GetType().GetProperty("Id")!.GetValue(param)! == parentId)))
             .ReturnsAsync(expected);
@@ -100,7 +59,7 @@ public class SubIngredientTests
     public async Task CreateSubIngredientAsync()
     {
         // Arrange
-        var newSubIngredient = new SubIngredientDTO { Parent_id = 1, Child_id = 3, order_no = 3 };
+        var newSubIngredient = new SubIngredient { Parent_id = 1, Child_id = 3, order_no = 3 };
         mockDapperExecutor.Setup(x => x.ExecuteAsync(
             "INSERT INTO subingredient (parent_id, child_id, order_no) VALUES (@ParentId, @ChildId, @OrderNumber)",
             It.Is<object>(param =>
@@ -121,8 +80,8 @@ public class SubIngredientTests
     public async Task UpdateSubIngredientAsync()
     {
         // Arrange
-        var oldSubIngredient = new SubIngredientDTO { Parent_id = 1, Child_id = 3, order_no = 3 };
-        var newSubIngredient = new SubIngredientDTO { Parent_id = 1, Child_id = 3, order_no = 4 };
+        var oldSubIngredient = new SubIngredient { Parent_id = 1, Child_id = 3, order_no = 3 };
+        var newSubIngredient = new SubIngredient { Parent_id = 1, Child_id = 3, order_no = 4 };
         mockDapperExecutor.Setup(x => x.ExecuteAsync(
             "UPDATE subingredient SET parent_id = @NewParentId, child_id = @NewChildId, order_no = @NewOrderNumber WHERE parent_id = @OldParentId AND child_id = @OldChildId",
             It.Is<object>(param =>
@@ -145,7 +104,7 @@ public class SubIngredientTests
     public async Task DeleteSubIngredientAsync()
     {
         // Arrange
-        var subIngredientToDelete = new SubIngredientDTO { Parent_id = 1, Child_id = 3, order_no = 4 };
+        var subIngredientToDelete = new SubIngredient { Parent_id = 1, Child_id = 3, order_no = 4 };
         mockDapperExecutor.Setup(x => x.ExecuteAsync(
             "DELETE FROM subingredient WHERE parent_id = @ParentId AND child_id = @ChildId",
             It.Is<object>(param =>

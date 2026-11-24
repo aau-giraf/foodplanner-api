@@ -18,8 +18,8 @@ public class TagController(ITagService tagService, IFoodImageService foodImageSe
     [HttpPost]
     [Authorize(Roles = "Parent, Teacher")]
     [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> CreateTag([FromBody] TagDTO tagDTO)
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CreateTag([FromBody] Tag tagDTO)
     {
         // Validate the model state to ensure the incoming data is valid
         if (!ModelState.IsValid)
@@ -39,7 +39,7 @@ public class TagController(ITagService tagService, IFoodImageService foodImageSe
     // Get all images that has all the tags (e.g. "fruit" AND "sliced"), 
     [HttpGet]
     [Authorize(Roles = "Child, Parent, Teacher")]
-    [ProducesResponseType(typeof(TagDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Tag), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetImagesFromTags([FromQuery] string? tags = null)
     {
         if (string.IsNullOrEmpty(tags))

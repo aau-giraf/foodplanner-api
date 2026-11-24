@@ -1,38 +1,41 @@
 using FoodplannerDataAccessSql;
 using FoodplannerDataAccessSql.Tags;
-using FoodplannerModels.Lunchbox;
 using FoodplannerModels.Tags;
 using Moq;
-using Xunit;
 
+// Adds Tag Repository to the Test.Unit.RepositoryTests namespace
 namespace Test.Unit.RepositoryTests;
 
+// Tests for Tag Repository class
 public class TagRepositoryTests
 {
-    private readonly Mock<IDapperExecutor> mockExecutor = new();
-    private readonly TagRepository repository;
+    // Mocks the dapper executor 
+    private readonly Mock<IDapperExecutor> MockExecutor = new();
+    private readonly TagRepository Repository;
 
+    // Constructor for the repository with mock executor
     public TagRepositoryTests()
     {
-        repository = new TagRepository(mockExecutor.Object);
+        Repository = new TagRepository(MockExecutor.Object);
     }
 
-    private static bool HasParameter(object? parameters, string name, object? expectedValue)
+     // Helper method 
+    private static bool HasParameter(object? Parameters, string Name, object? ExpectedValue)
     {
-        if (parameters == null)
+        if (Parameters == null)
             return false;
 
-        var property = parameters.GetType().GetProperty(name);
+        var Property = Parameters.GetType().GetProperty(Name);
 
-        if (property == null)
+        if (Property == null)
             return false;
 
-        return Equals(property.GetValue(parameters), expectedValue);
+        return Equals(Property.GetValue(Parameters), ExpectedValue);
     }
 
     [Fact]
     [Trait("Category", "Unit")]
-    public async Task GetImageIdsFromTags_Successs()
+    public async Task GetImageIdsFromTags_Success()
     {
         // Arrange 
         // Create food image ids 
@@ -55,12 +58,12 @@ public class TagRepositoryTests
         """;
 
         // When call with sql string, return food image ids
-        mockExecutor.Setup(e => e.QueryAsync<int>(sql, It.IsAny<object?>()))
+        MockExecutor.Setup(e => e.QueryAsync<int>(sql, It.IsAny<object?>()))
             .ReturnsAsync(foodImageIds);
 
         // Act
-        // call repository method
-        var result = await repository.GetImageIdsFromTagsAsync(categories);
+        // Call repository method
+        var result = await Repository.GetImageIdsFromTagsAsync(categories);
 
         // Assert 
         // Convert to list 
@@ -71,6 +74,44 @@ public class TagRepositoryTests
         Assert.Equal(4, list[1]);
 
         // Verifies the sql string is called once and with parameter null
-        mockExecutor.Verify(e =>e.QueryAsync<int>(sql, It.IsAny<object>()),Times.Once);       
+        MockExecutor.Verify(e =>e.QueryAsync<int>(sql, It.IsAny<object>()),Times.Once);       
+    }
+
+
+    [Fact]
+    [Trait("Tags", "Unit")]
+    public async Task CreateTag_Success()
+    {
+       // Arrange 
+       // Creates a random tagID, IngredientID and CategoryID
+       var Rnd = new Random();
+       int TagId = Rnd.Next();
+       int Ingredient_id = Rnd.Next();
+       int Category_id = Rnd.Next();
+
+       // Creates a Tag based on the ingredientID and CategoryID
+       var Tag = new Tag
+       {
+           Ingredient_id = Ingredient_id, 
+           Category_id = Category_id
+       };
+
+        // SQL query that inserts a new tag
+        const string sql = "INSERT INTO tags (ingredient_id, category_id) VALUES (@Ingredient_id, @Category_id) RETURNING id";
+
+        // Returns TagID when SQL query is called
+        MockExecutor.Setup(e => e.QuerySingleAsync<int>(sql, It.IsAny<object?>())).ReturnsAsync(TagId);
+
+        // Act
+        // Calls repository method
+        var Result = await Repository.InsertAsync(Tag);
+
+        // Assert
+        // Checks that the returned ID matches with the generated ID
+        Assert.Equal(TagId, Result);
+
+        // Verify that the correct SQL and parameters were passed 
+        MockExecutor.Verify(e => e.QuerySingleAsync<int>(sql, It.Is<object?>(p => HasParameter(p, "Ingredient_id", Tag.Ingredient_id) && HasParameter(p, "Category_id", Tag.Category_id))), Times.Once);
+        
     }
 }

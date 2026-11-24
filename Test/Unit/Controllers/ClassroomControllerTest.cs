@@ -28,10 +28,10 @@ public class ClassroomControllerTest
             new ClassroomBuilder().WithClassId(2).WithClassName("1.B").Build(),
         };
 
-        var classroomDtos = new List<ClassroomDTO>
+        var classroomDtos = new List<Classroom>
         {
-            new ClassroomDTO { ClassId = 1, ClassName = "1.A" },
-            new ClassroomDTO { ClassId = 2, ClassName = "1.B" },
+            new Classroom { ClassId = 1, ClassName = "1.A" },
+            new Classroom { ClassId = 2, ClassName = "1.B" },
         };
 
         _mockClassroomService
@@ -50,7 +50,7 @@ public class ClassroomControllerTest
     public async Task Create_ReturnsCreatedResult()
     {
         // Arrange
-        var createClassroom = new CreateClassroomDTO { ClassName = "1.A" };
+        var createClassroom = "1.A";
         _mockClassroomService
             .Setup(repo => repo.InsertClassroomAsync(createClassroom))
             .ReturnsAsync(1);
@@ -67,7 +67,7 @@ public class ClassroomControllerTest
     public async Task Create_ReturnsBadRequestResult()
     {
         // Arrange
-        var createClassroom = new CreateClassroomDTO { ClassName = "1.A" };
+        var createClassroom = "1.A";
         _mockClassroomService
             .Setup(repo => repo.InsertClassroomAsync(createClassroom))
             .ReturnsAsync(0);
@@ -85,7 +85,7 @@ public class ClassroomControllerTest
     {
         // Arrange
         var id =  1;
-        var createClassroom = new CreateClassroomDTO { ClassName = "1.A" };
+        var createClassroom = "1.A";
         _mockClassroomService
             .Setup(repo => repo.UpdateClassroomAsync(createClassroom, id))
             .ReturnsAsync(1);
@@ -103,7 +103,7 @@ public class ClassroomControllerTest
     {
         // Arrange
         var id =  1;
-        var createClassroom = new CreateClassroomDTO { ClassName = "1.A" };
+        var createClassroom = "1.A";
         _mockClassroomService
             .Setup(repo => repo.UpdateClassroomAsync(createClassroom, id))
             .ReturnsAsync(0);

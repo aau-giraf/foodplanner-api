@@ -76,7 +76,7 @@ public class MealTests
             mealId = await InsertTestMealAsync(
                 "Original Meal", originalUserId, "2026-11-02", false);
 
-            var updatedMeal = new MealDTO
+            var updatedMeal = new Meal
             {
                 Id = mealId,
                 Name = "Updated Meal",
@@ -101,44 +101,6 @@ public class MealTests
             Assert.Equal(updatedMeal.Date, stored.Value.Date);
             Assert.Equal(updatedMeal.Template, stored.Value.Template);
             Assert.True(stored.Value.ImageIdIsNull);
-        }
-        finally
-        {
-            // Cleanup
-            if (mealId > 0)
-                await DeleteTestMealAsync(mealId);
-        }
-    }
-
-    [Fact]
-    [Trait("Category", "Integration")]
-    public async Task GetAllAsync_ShouldReturnInsertedMeal()
-    {
-        // Arrange
-        int userId = 12345;
-
-        int mealId = 0;
-
-        try
-        {
-            mealId = await InsertTestMealAsync(
-                "Test Meal", userId, "2026-11-02", false);
-
-            // Act
-            var result = await repository.GetAllAsync();
-
-            // Assert
-            Assert.NotNull(result);
-
-            var meal = Assert.Single(
-                result.Where(m => m.Id == mealId));
-
-            Assert.Equal(mealId, meal.Id);
-            Assert.Equal(userId, meal.User_id);
-            Assert.Equal("Test Meal", meal.Name);
-            Assert.Equal("2026-11-02", meal.Date);
-            Assert.False(meal.Template);
-            Assert.Null(meal.Image_id);
         }
         finally
         {
