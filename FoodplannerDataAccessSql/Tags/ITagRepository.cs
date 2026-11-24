@@ -6,5 +6,5 @@ namespace FoodplannerDataAccessSql.Tags;
 public interface ITagRepository : IGenericRepository<TagDTO>
 {
     Task<bool> TagExistsAsync(int category_id, int ingredient_id);
-    Task<IEnumerable<int>> GetImageIdsFromTags(List<string> tags);
+    Task<IEnumerable<int>> GetImageIdsFromTagsAsync(List<string> tags);
 }

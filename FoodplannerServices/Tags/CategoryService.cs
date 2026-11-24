@@ -9,7 +9,7 @@ public class CategoryService(ICategoryRepository categoryRepository) : ICategory
 {
  
     // Method for creating a category in the repository
-    public async Task<int> CreateCategory(CreateCategoryDTO createCategory)
+    public async Task<int> CreateCategoryAsync(CreateCategoryDTO createCategory)
         {
         var category = new CategoryDTO
         {

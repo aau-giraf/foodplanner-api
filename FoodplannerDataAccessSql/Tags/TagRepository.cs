@@ -6,7 +6,7 @@ namespace FoodplannerDataAccessSql.Tags;
 public class TagRepository(IDapperExecutor executor) : ITagRepository
 {
     // retrieve image ids that match all the tags in given list (e.g "fruit" AND "sliced")
-    public async Task<IEnumerable<int>> GetImageIdsFromTags(List<string> tags)
+    public async Task<IEnumerable<int>> GetImageIdsFromTagsAsync(List<string> tags)
     {
         var sql = """
         SELECT DISTINCT i.image_id

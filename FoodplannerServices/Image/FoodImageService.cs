@@ -74,9 +74,9 @@ public class FoodImageService(IFoodImageRepository foodImageRepository) : IFoodI
     }
 
     // Get all food stock images
-    public async Task<IEnumerable<FoodImageDTO>> GetAllStockImages()
+    public async Task<IEnumerable<FoodImageDTO>> GetAllStockImagesAsync()
     {
-        var images = await foodImageRepository.GetAllStockImages();
+        var images = await foodImageRepository.GetAllStockImagesAsync();
         
         return images.Select(foodImage => new FoodImageDTO
         {

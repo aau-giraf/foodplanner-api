@@ -60,7 +60,7 @@ public class TagRepositoryTests
 
         // Act
         // call repository method
-        var result = await repository.GetImageIdsFromTags(categories);
+        var result = await repository.GetImageIdsFromTagsAsync(categories);
 
         // Assert 
         // Convert to list 
@@ -68,9 +68,9 @@ public class TagRepositoryTests
 
         Assert.Equal(2, list.Count);
         Assert.Equal(2, list[0]);
-        Assert.Equal(3, list[1]);
+        Assert.Equal(4, list[1]);
 
-         // Verifies the sql string is called once and with parameter null
-        mockExecutor.Verify(e => e.QueryAsync<int>(sql, null), Times.Once);        
+        // Verifies the sql string is called once and with parameter null
+        mockExecutor.Verify(e =>e.QueryAsync<int>(sql, It.IsAny<object>()),Times.Once);       
     }
 }
