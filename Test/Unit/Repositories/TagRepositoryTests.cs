@@ -9,25 +9,25 @@ namespace Test.Unit.RepositoryTests;
 
 public class TagRepositoryTests
 {
-    private readonly Mock<IDapperExecutor> mockExecutor = new();
-    private readonly TagRepository repository;
+    private readonly Mock<IDapperExecutor> MockExecutor = new();
+    private readonly TagRepository Repository;
 
     public TagRepositoryTests()
     {
-        repository = new TagRepository(mockExecutor.Object);
+        Repository = new TagRepository(MockExecutor.Object);
     }
 
-    private static bool HasParameter(object? parameters, string name, object? expectedValue)
+    private static bool HasParameter(object? Parameters, string Name, object? ExpectedValue)
     {
-        if (parameters == null)
+        if (Parameters == null)
             return false;
 
-        var property = parameters.GetType().GetProperty(name);
+        var Property = Parameters.GetType().GetProperty(Name);
 
-        if (property == null)
+        if (Property == null)
             return false;
 
-        return Equals(property.GetValue(parameters), expectedValue);
+        return Equals(Property.GetValue(Parameters), ExpectedValue);
     }
 
     [Fact]
@@ -55,12 +55,12 @@ public class TagRepositoryTests
         """;
 
         // When call with sql string, return food image ids
-        mockExecutor.Setup(e => e.QueryAsync<int>(sql, It.IsAny<object?>()))
+        MockExecutor.Setup(e => e.QueryAsync<int>(sql, It.IsAny<object?>()))
             .ReturnsAsync(foodImageIds);
 
         // Act
         // call repository method
-        var result = await repository.GetImageIdsFromTagsAsync(categories);
+        var result = await Repository.GetImageIdsFromTagsAsync(categories);
 
         // Assert 
         // Convert to list 
@@ -71,6 +71,44 @@ public class TagRepositoryTests
         Assert.Equal(4, list[1]);
 
          // Verifies the sql string is called once and with parameter null
-        mockExecutor.Verify(e => e.QueryAsync<int>(sql, null), Times.Once);        
+        MockExecutor.Verify(e => e.QueryAsync<int>(sql, null), Times.Once);        
+    }
+
+
+    [Fact]
+    [Trait("Category", "Unit")]
+    public async Task CreateTag_Success()
+    {
+       // Arrange 
+       // Creates a random tagID, IngredientID and CategoryID
+       var Rnd = new Random();
+       int TagId = Rnd.Next();
+       int Ingredient_id = Rnd.Next();
+       int Category_Id = Rnd.Next();
+
+       // Creates a Tag
+       var Tag = new TagDTO
+       {
+           Ingredient_id = Ingredient_id, 
+           Category_id = Category_Id
+       };
+
+
+        // SQL query that inserts a new tag
+        const string sql = "INSERT INTO tags (ingredient_id, category_id) VALUES (@Category_id, @Ingredient_id) RETURNING id";
+
+        MockExecutor.Setup(e => e.QuerySingleAsync<int>(sql, It.IsAny<object?>())).ReturnsAsync(TagId);
+
+
+        // Act
+        var Result = await Repository.InsertAsync(Tag);
+
+        // Assert
+        // Checks that the returned ID matches with the generated ID
+        Assert.Equal(TagId, Result);
+
+        // Verify that the correct SQL and parameters were passed 
+        MockExecutor.Verify(e => e.QuerySingleAsync<int>(sql, It.Is<object?>(p => HasParameter(p, "Ingredient_id", Tag.Ingredient_id) && HasParameter(p, "Category_id", Tag.Category_id))), Times.Once);
+        
     }
 }

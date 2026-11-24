@@ -20,10 +20,10 @@ public class CategoryRepository(IDapperExecutor executor) : ICategoryRepository
 
     // Method that checks if category already exists
     // Returns true if category already exists, returns false if category does not exists
-    public async Task<bool> CategoryExistsAsync(string name)
+    public async Task<bool> CategoryExistsAsync(string Name)
     {
         var sql = "SELECT COUNT(1) FROM categories WHERE name = @Name";
-        var count =  await executor.QuerySingleAsync<int>(sql, new {Name = name});
+        var count =  await executor.QuerySingleAsync<int>(sql, new {Name = Name});
         return count > 0;
     }
 
@@ -33,15 +33,15 @@ public class CategoryRepository(IDapperExecutor executor) : ICategoryRepository
     {
         var sql = "INSERT INTO categories (name, main) VALUES (@Name, @Main) RETURNING id";
 
-        return await executor.QuerySingleAsync<int>(sql, new {name = entity.Name, main = entity.Main});
+        return await executor.QuerySingleAsync<int>(sql, new {Name = entity.Name, Main = entity.Main});
     }
 
     // Method for retrieving category by ID
     // Returns category with specific ID
-    public async Task<CategoryDTO?> GetByIdAsync(int id)
+    public async Task<CategoryDTO?> GetByIdAsync(int Id)
     {
         var sql = "SELECT id, name, main FROM categories WHERE id = @Id";
-        return await executor.QuerySingleOrDefaultAsync<CategoryDTO>(sql, new {Id = id});       
+        return await executor.QuerySingleOrDefaultAsync<CategoryDTO>(sql, new {Id = Id});       
     }
 
     // Method to update category from categories table based on ID
@@ -58,10 +58,10 @@ public class CategoryRepository(IDapperExecutor executor) : ICategoryRepository
 
     // Method for deleting a category from categories table based on ID
     // Uses a transaction to roll back the deletion if an error occurs
-    public async Task<int> DeleteAsync(int id)
+    public async Task<int> DeleteAsync(int Id)
     {
         var sql = "DELETE FROM categories WHERE id = @Id";
-        return await executor.ExecuteAsync(sql, new {Id = id});
+        return await executor.ExecuteAsync(sql, new {Id = Id});
     }
 }
 
