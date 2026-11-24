@@ -2,6 +2,7 @@ using FoodplannerDataAccessSql.Lunchbox;
 using FoodplannerServices.Lunchbox;
 using FoodplannerModels.Lunchbox;
 using Moq;
+using FoodplannerModels.Tags;
 
 namespace Test.Unit.Service;
 
@@ -114,10 +115,12 @@ public class IngredientsServiceTests
             Name = "Onion",
             User_id = 0
         };
-        mockIngredientsRepository.Setup(repo => repo.InsertAsync(It.IsAny<Ingredient>())).ReturnsAsync(expectedIngredientId);
+        IEnumerable<int> categoryIds = new List<int>() {1};
+
+        mockIngredientsRepository.Setup(repo => repo.InsertAsync(It.IsAny<Ingredient>(), It.IsAny<IEnumerable<int>>())).ReturnsAsync(expectedIngredientId);
 
         // Act
-        var result = await ingredientsService.CreateIngredientAsync(ingredient);
+        var result = await ingredientsService.CreateIngredientAsync(ingredient, categoryIds);
 
         // Assert
         Assert.Equal(expectedIngredientId, result);
@@ -134,10 +137,13 @@ public class IngredientsServiceTests
             Name = "Onion",
             User_id = 0
         };
-        mockIngredientsRepository.Setup(repo => repo.InsertAsync(ingredient)).ThrowsAsync(new Exception("Database error"));
+
+        IEnumerable<int> categoryIds = new List<int>() {1};
+
+        mockIngredientsRepository.Setup(repo => repo.InsertAsync(ingredient, categoryIds)).ThrowsAsync(new Exception("Database error"));
 
         // Act & Assert
-        await Assert.ThrowsAsync<Exception>(() => ingredientsService.CreateIngredientAsync(ingredient));
+        await Assert.ThrowsAsync<Exception>(() => ingredientsService.CreateIngredientAsync(ingredient, categoryIds));
     }
 
     [Fact]

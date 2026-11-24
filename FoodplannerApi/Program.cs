@@ -4,6 +4,7 @@ using FoodplannerDataAccessSql.Lunchbox;
 using FoodplannerDataAccessSql.Migrations;
 using FoodplannerDataAccessSql.Image;
 using FoodplannerDataAccessSql.Codes;
+using FoodplannerDataAccessSql.Tags;
 using FoodplannerModels;
 using FoodplannerModels.Account;
 using FoodplannerModels.FeedbackChat;
@@ -11,6 +12,7 @@ using FoodplannerModels.Lunchbox;
 using FoodplannerModels.Auth;
 using FoodplannerModels.Image;
 using FoodplannerModels.Codes;
+using FoodplannerModels.Tags;
 using FoodplannerServices.Account;
 using FoodplannerServices.Lunchbox;
 using FoodplannerServices.Image;
@@ -20,6 +22,7 @@ using FoodplannerServices.FeedbackChat;
 using FoodplannerServices.Secret;
 using FoodplannerServices.Codes;
 using FoodplannerServices.Hubs;
+using FoodplannerServices.Tags;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -243,6 +246,8 @@ builder.Services.AddScoped<IIngredientsRepository, IngredientsRepository>();
 builder.Services.AddScoped<IMealsRepository, MealsRepository>();
 builder.Services.AddScoped<IPackedRepository, PackedRepository>();
 builder.Services.AddScoped<ISubIngredientRepository, SubIngredientRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
 
 // Add Services
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
@@ -262,6 +267,9 @@ builder.Services.AddScoped<IPackedService,PackedService>();
 builder.Services.AddScoped<SubIngredientService>();
 builder.Services.AddHttpClient<IPixabayApi, PixabayApi>();
 builder.Services.AddTransient<IWebClientWrapper, WebClientWrapper>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ITagService, TagService>();
+
 
 
 
