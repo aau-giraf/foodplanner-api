@@ -16,49 +16,7 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
     // Maximum file size for image uploads, set to 2GB
     private readonly long _maxFileSize = 2000000000;
 
-    // URL: api/Images/UploadImage
-    // Uploads image file with IFormFile, returns 200 OK with the foodImages if successful, or 400 Bad Request if unsuccessful.
-    [HttpPost]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> UploadImage([FromHeader(Name = "Authorization")] string token, IFormFile imageFile)
-    {
-        try
-        {
-            // Retrieve UserId from the JWT token
-            var idString = authService.RetrieveIdFromJwtToken(token);
-            if (!int.TryParse(idString, out int userId))
-            {
-                return BadRequest(new ErrorResponseDTO { Message = ["Invalid user ID"] });
-            }
-            
-            // Check if file is empty or exceeds the maximum file size
-            if (imageFile.Length == 0)
-            {
-                return BadRequest(new ErrorResponseDTO { Message = ["File is empty"] });
-            }
-            if (imageFile.Length >= _maxFileSize)
-            {
-                return BadRequest(new ErrorResponseDTO { Message = ["File is too big"] });
-            }
-
-            // Validate the image file
-            var foodImageId = await foodImageService.CreateFoodImage(
-                userId,
-                imageFile.OpenReadStream(),
-                imageFile.FileName,
-                imageFile.ContentType,
-                imageFile.Length
-            );
-
-            return Ok(foodImageId);
-        }
-        catch (InvalidOperationException e)
-        {
-            return BadRequest(new ErrorResponseDTO { Message = [e.Message] });
-        }
-    }
-
-    // URL: api/Images/UploadImages
+    // URL: api/Images/Upload
     // Uploads multiple images with IFormFileCollection, returns 200 OK with the list of foodImageIds if successful, or 400 Bad Request if unsuccessful.
     [HttpPost]
     [ProducesResponseType(typeof(IEnumerable<long>), StatusCodes.Status200OK)]
