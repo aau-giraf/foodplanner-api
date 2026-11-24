@@ -8,24 +8,32 @@ namespace DummyData;
 
 public static class SeedRunner
 {
-    public static async Task RunAsync(string target,IConfiguration configuration)
+    public static async Task RunAsync(string target,IConfiguration configuration,
+        Func<string,string>? getSecret = null,
+        Func<string,Func<NpgsqlConnection,NpgsqlTransaction,Task>,Task>? seedDatabase = null)
     {
         // Initialize SecretsLoader
-        var secretsLoader = new SecretsLoader(configuration,"Development");
+        if (getSecret == null)
+        {
+            var secretsLoader = new SecretsLoader(configuration,"Development");
+            getSecret = key => secretsLoader.GetSecret(key);
+        }
+
+        seedDatabase ??= SeedDatabaseAsync;
 
         //check if command targets all or core, if so build connection to core db
         if (ShouldSeed(target, "core"))
         {
-            var connectionString = BuildConnectionString(key => secretsLoader.GetSecret(key),"CORE_DB");
+            var connectionString = BuildConnectionString(getSecret,"CORE_DB");
             //await core seeders
-            await SeedDatabaseAsync(connectionString,CoreMockSeeder.SeedAsync);
+            await seedDatabase(connectionString,CoreMockSeeder.SeedAsync);
         }
         //check if command targets all or foodplanner, if so build connection to foodplanner db
         if (ShouldSeed(target, "foodplanner"))
         {
-            var connectionString = BuildConnectionString(key => secretsLoader.GetSecret(key),"DB");
+            var connectionString = BuildConnectionString(getSecret,"DB");
             //await foodplanner seeders
-            await SeedDatabaseAsync(connectionString,FoodplannerSeeder.SeedAsync);
+            await seedDatabase(connectionString,FoodplannerSeeder.SeedAsync);
         }
 
         Console.WriteLine("Dummy data generation completed.");

@@ -2,6 +2,7 @@
 using DummyData;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using Npgsql;
 
 // Validate target command, defaulting to "all"
 if (!DummyData.Program.TryParseTarget(args, out var target))
@@ -33,13 +34,21 @@ if (!DummyData.Program.IsAllowedEnvironment(
 Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
 
 // Run selected seeders
-await SeedRunner.RunAsync(target, builder.Configuration);
+await DummyData.Program.RunSeedingAsync(target, builder.Configuration);
 
 
 namespace DummyData
 {
     public partial class Program
     {
+        // Run the selected seeders; tests can replace secret retrieval and database execution.
+        public static Task RunSeedingAsync(string target,IConfiguration configuration,
+            Func<string,string>? getSecret = null,
+            Func<string,Func<NpgsqlConnection,NpgsqlTransaction,Task>,Task>? seedDatabase = null)
+        {
+            return SeedRunner.RunAsync(target,configuration,getSecret,seedDatabase);
+        }
+
         // Get target command, defaulting to "all" if no arguments are provided
         // Returns true if the target is valid, otherwise false
         public static bool TryParseTarget(string[] args, out string target)
