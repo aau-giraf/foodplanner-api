@@ -6,7 +6,7 @@ public interface IIngredientsRepository
 {
     Task<IEnumerable<Ingredient>> GetAllByUserAsync(int id);
     Task<Ingredient?> GetByIdAsync(int id);
-    Task<int> InsertAsync(Ingredient entity);
+    Task<int> InsertAsync(Ingredient entity, IEnumerable<int> categoryIds);
     Task<int> UpdateAsync(Ingredient entity);
     Task<int> DeleteAsync(int id);
 }
