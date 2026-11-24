@@ -5,7 +5,7 @@ namespace FoodplannerDataAccessSql.Account;
 
 public class UserRepository : IUserRepository
 {
-    // Setup connection to postgreSQL database using CorePostgreSQLConnectionFactory
+    // Setup connection to postgreSQL database using CorePostgreSQLConnectionFactory        
     private readonly CorePostgreSQLConnectionFactory _connectionFactory;
     public UserRepository(CorePostgreSQLConnectionFactory connectionFactory)
     {

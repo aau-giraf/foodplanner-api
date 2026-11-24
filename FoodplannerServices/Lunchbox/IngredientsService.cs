@@ -1,5 +1,6 @@
 using FoodplannerModels.Lunchbox;
 using FoodplannerDataAccessSql.Lunchbox;
+using FoodplannerModels.Tags;
 
 namespace FoodplannerServices.Lunchbox;
 
@@ -37,11 +38,12 @@ public class IngredientsService(IIngredientsRepository ingredientRepository) : I
     }
 
     // Creates a new ingredient in the repository.
-    public async Task<int> CreateIngredientAsync(Ingredient ingredientDTO)
+    // Uses ingredient ID and a list of category IDs to assign tags to the ingredient
+    public async Task<int> CreateIngredientAsync(Ingredient Ingredient, IEnumerable<int>? categoryIds)
     {
         try
         {
-            return await ingredientRepository.InsertAsync(ingredientDTO);
+            return await ingredientRepository.InsertAsync(Ingredient,  categoryIds ?? Enumerable.Empty<int>());
         }
         catch (Exception exception)
         {
@@ -50,15 +52,15 @@ public class IngredientsService(IIngredientsRepository ingredientRepository) : I
     }
 
     // Updates an existing ingredient in the repository by ID.
-    public async Task<int> UpdateIngredientAsync(Ingredient ingredientDTO)
+    public async Task<int> UpdateIngredientAsync(Ingredient Ingredient)
     {
         try
         {
-            return await ingredientRepository.UpdateAsync(ingredientDTO);
+            return await ingredientRepository.UpdateAsync(Ingredient);
         }
         catch (Exception exception)
         {
-            throw new Exception($"Error updating ingredient with ID {ingredientDTO.Id}: {exception.Message}", exception);
+            throw new Exception($"Error updating ingredient with ID {Ingredient.Id}: {exception.Message}", exception);
         }
     }
 

@@ -6,6 +6,7 @@ using FoodplannerServices.Lunchbox;
 using FoodplannerModels.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using FoodplannerModels.DTOs.Food;
 
 namespace Test.Integration.Controllers;
 
@@ -116,17 +117,24 @@ public class IngredientsTests
         var ingredient = CreateIngredient(0, "Test Ingredient", userId);
         var expected = CreateIngredient(generatedId, "Test Ingredient", userId);
 
-        mockAuthService.Setup(a => a.RetrieveIdFromJwtToken(token))
-            .Returns(userId.ToString());
+        var request = new CreateIngredientRequestDTO
+        {
+            Ingredient = ingredient,
+            CategoryIds = []
+        };
 
-        mockRepository.Setup(r => r.InsertAsync(ingredient))
-            .ReturnsAsync(generatedId);
+        mockAuthService.Setup(a => a.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
+
+        mockRepository.Setup(r => r.InsertAsync(
+            ingredient,
+            It.IsAny<IEnumerable<int>?>()
+        )).ReturnsAsync(generatedId);
 
         mockRepository.Setup(r => r.GetByIdAsync(generatedId))
             .ReturnsAsync(expected);
 
         // Act
-        var result = await controller.Create(token, ingredient);
+        var result = await controller.Create(token, request);
 
         // Assert
         var createdResult = Assert.IsType<CreatedAtActionResult>(result);
@@ -137,10 +145,18 @@ public class IngredientsTests
         Assert.Equal(ingredient.Name, createdIngredient.Name);
         Assert.Equal(userId, createdIngredient.User_id);
 
-        mockAuthService.Verify(a => a.RetrieveIdFromJwtToken(token), Times.Once);
-        mockRepository.Verify(r => r.InsertAsync(ingredient), Times.Once);
-        mockRepository.Verify(r => r.GetByIdAsync(generatedId), Times.Once);
+        mockAuthService.Verify(
+            a => a.RetrieveIdFromJwtToken(token), Times.Once);
+
+        mockRepository.Verify(r => r.InsertAsync(
+            ingredient,
+            It.Is<IEnumerable<int>?>(ids => ids != null && !ids.Any())
+        ), Times.Once);
+
+        mockRepository.Verify(
+            r => r.GetByIdAsync(generatedId), Times.Once);
     }
+
 
 
     [Fact]
