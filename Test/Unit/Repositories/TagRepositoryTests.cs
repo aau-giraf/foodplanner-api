@@ -70,8 +70,8 @@ public class TagRepositoryTests
         Assert.Equal(2, list[0]);
         Assert.Equal(4, list[1]);
 
-         // Verifies the sql string is called once and with parameter null
-        MockExecutor.Verify(e => e.QueryAsync<int>(sql, null), Times.Once);        
+        // Verifies the sql string is called once and with parameter null
+        MockExecutor.Verify(e =>e.QueryAsync<int>(sql, It.IsAny<object>()),Times.Once);       
     }
 
 

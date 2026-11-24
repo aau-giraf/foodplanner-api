@@ -29,11 +29,26 @@ public class TagServiceTests
         string tagString = "frugt og grønt";
         var imageIds = new List<int>(){1,2};
 
-        mockTagRepository
-    .Setup(repo => repo.GetImageIdsFromTagsAsync(
-        It.Is<List<string>>(tags =>
-            tags.SequenceEqual(tagList))))
-    .ReturnsAsync(imageIds);
+        mockTagRepository.Setup(repo => repo.GetImageIdsFromTagsAsync(It.Is<List<string>>(tags => tags.SequenceEqual(tagList))))
+        .ReturnsAsync(imageIds);
+
+        mockFoodImageService
+        .Setup(service => service.GetFoodImage(1))
+        .ReturnsAsync(new FoodImageDTO { 
+            Id = 1,
+            ImageData = Array.Empty<byte>(),
+            ImageName = "test1.png",
+            ImageFileType = "image/png"
+         });
+
+        mockFoodImageService
+        .Setup(service => service.GetFoodImage(2))
+        .ReturnsAsync(new FoodImageDTO { 
+            Id = 2,
+            ImageData = Array.Empty<byte>(),
+            ImageName = "test2.png",
+            ImageFileType = "image/png"
+        });
 
         // // Act
         var result = await tagService.GetImagesFromTagsAsync(tagString);
