@@ -24,7 +24,7 @@ public class IngredientsRepository(IDapperExecutor executor) : IIngredientsRepos
     }
 
     // Asynchronously inserts a new ingredient into the database and returns its ID.
-    public async Task<int> InsertAsync(Ingredient entity, IEnumerable<int>? categoryIds)
+    public async Task<int> InsertAsync(Ingredient entity, IEnumerable<int>? categoryIds = null)
     {
         var sql = "INSERT INTO ingredients (name, user_id, image_id, is_stock_img) VALUES (@Name, @UserId, @ImageId, @IsStockImg) RETURNING id";
 

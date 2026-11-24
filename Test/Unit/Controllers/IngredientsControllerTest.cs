@@ -5,6 +5,7 @@ using FoodplannerModels.Tags;
 using FoodplannerServices.Lunchbox;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using FoodplannerModels.DTOs.Food;
 
 namespace Test.Unit.Controller;
 
@@ -98,9 +99,15 @@ public class IngredientsControllerTests
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
         mockIngredientsService.Setup(service => service.CreateIngredientAsync(Ingredient, categoryDto)).ReturnsAsync(ingredientId);
         mockIngredientsService.Setup(service => service.GetIngredientByIdAsync(ingredientId)).ReturnsAsync(createdIngredient);
+        var request = new CreateIngredientRequestDTO
+        {
+            Ingredient = Ingredient,
+            CategoryIds = categoryDto.ToArray()
+        };
+
 
         // Act
-        var result = await ingredientsController.Create(token, Ingredient, categoryDto);
+        var result = await ingredientsController.Create(token, request);
 
         // Assert
         var createdResult = Assert.IsType<CreatedAtActionResult>(result);
@@ -126,8 +133,13 @@ public class IngredientsControllerTests
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
         mockIngredientsService.Setup(service => service.CreateIngredientAsync(Ingredient, categoryDto)).ReturnsAsync(0);
 
+        var request = new CreateIngredientRequestDTO
+        {
+            Ingredient = Ingredient,
+            CategoryIds = categoryDto.ToArray()
+        };
         // Act
-        var result = await ingredientsController.Create(token, Ingredient, categoryDto);
+        var result = await ingredientsController.Create(token, request);
 
         // Assert
         Assert.IsType<BadRequestResult>(result);
