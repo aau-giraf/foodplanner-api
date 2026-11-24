@@ -56,7 +56,11 @@ public class FoodImageRepository : IFoodImageRepository
     // Asynchronously runs GetAllSync from this class 
     public async Task<IEnumerable<FoodImage>> GetAllImagesAsync()
     {
-        return await GetAllAsync();
+        using var connection = _connectionFactory.Create();
+        connection.Open();
+
+        const string sql = "SELECT * FROM food_image";
+        return await connection.QueryAsync<FoodImage>(sql);
     }
 
     // Asynchronously use the GetById method from this class 

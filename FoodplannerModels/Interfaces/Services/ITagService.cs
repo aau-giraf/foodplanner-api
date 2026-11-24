@@ -1,5 +1,6 @@
 using FoodplannerModels.Lunchbox;
 using FoodplannerModels.Tags;
+using FoodplannerModels.Image;
 
 // Adds Interface TagService to the class to the FoodplannerServices.Tags namespace
 namespace FoodplannerServices.Tags;
@@ -9,5 +10,5 @@ public interface ITagService
 {
     Task<int> CreateTagAsync(int category_id, int ingredient_id);
 
-    Task<IEnumerable<FoodImageDTO>> GetImagesFromTagsAsync(string tags);
+    Task<IEnumerable<FoodImage>> GetImagesFromTagsAsync(string tags);
 }

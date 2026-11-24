@@ -28,17 +28,17 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
             var idString = authService.RetrieveIdFromJwtToken(token);
             if (!int.TryParse(idString, out int userId))
             {
-                return BadRequest(new ErrorResponse { Message = ["Invalid user ID"] });
+                return BadRequest(new ErrorResponseDTO { Message = ["Invalid user ID"] });
             }
             
             // Check if file is empty or exceeds the maximum file size
             if (imageFile.Length == 0)
             {
-                return BadRequest(new ErrorResponse { Message = ["File is empty"] });
+                return BadRequest(new ErrorResponseDTO { Message = ["File is empty"] });
             }
             if (imageFile.Length >= _maxFileSize)
             {
-                return BadRequest(new ErrorResponse { Message = ["File is too big"] });
+                return BadRequest(new ErrorResponseDTO { Message = ["File is too big"] });
             }
 
             // Validate the image file
@@ -54,7 +54,7 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
         }
         catch (InvalidOperationException e)
         {
-            return BadRequest(new ErrorResponse { Message = [e.Message] });
+            return BadRequest(new ErrorResponseDTO { Message = [e.Message] });
         }
     }
 
@@ -218,7 +218,7 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
     [HttpGet]
     [AuthorizeImageOwnerFilter]
     [Authorize(Roles = "Child, Parent")]
-    [ProducesResponseType(typeof(FoodImageDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(FoodImage), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAllStockImages()
     {
         var images = await foodImageService.GetAllStockImagesAsync();

@@ -10,5 +10,5 @@ public interface IFoodImageService
     public Task<string> GetFoodImageLink(int foodImageId);
     public void DeleteImage(int foodImageId);
 
-    public Task<IEnumerable<FoodImageDTO>> GetAllStockImagesAsync();
+    public Task<IEnumerable<FoodImage>> GetAllStockImagesAsync();
 }

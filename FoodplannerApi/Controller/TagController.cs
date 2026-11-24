@@ -18,7 +18,7 @@ public class TagController(ITagService tagService, IFoodImageService foodImageSe
     [HttpPost]
     [Authorize(Roles = "Parent, Teacher")]
     [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> CreateTag([FromBody] TagDTO tagDTO)
     {
         // Validate the model state to ensure the incoming data is valid

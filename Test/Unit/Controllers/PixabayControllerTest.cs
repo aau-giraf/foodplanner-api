@@ -105,7 +105,7 @@ public class PixabayControllerTests
         {
             SearchWord = "apple",
             Url = "https://example.com/apple.jpg",
-            ingredientId = new IngredientDTO
+            ingredientId = new Ingredient
             {
                 Id = 1, Name = "apple", User_id = userId
             },
@@ -161,7 +161,7 @@ public class PixabayControllerTests
         {
             SearchWord = "apple",
             Url = "https://example.com/apple.jpg", 
-                       ingredientId = new IngredientDTO
+                       ingredientId = new Ingredient
             {
                 Id = 1, Name = "apple", User_id = 1
             },
@@ -206,7 +206,7 @@ public class PixabayControllerTests
         {
             SearchWord = "apple",
             Url = "https://example.com/apple.jpg",
-                        ingredientId = new IngredientDTO
+                        ingredientId = new Ingredient
             {
                 Id = 1, Name = "apple", User_id = userId
             },

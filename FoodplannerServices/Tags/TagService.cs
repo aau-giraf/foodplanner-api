@@ -2,6 +2,7 @@ using FoodplannerModels.Lunchbox;
 using FoodplannerModels.Tags;
 using FoodplannerServices.Image;
 using FoodplannerDataAccessSql.Tags;
+using FoodplannerModels.Image;
 
 // Adds TagService to the class to the FoodplannerServices.Tags namespace
 namespace FoodplannerServices.Tags;
@@ -30,7 +31,7 @@ public class TagService(ITagRepository tagRepository, IFoodImageService foodImag
     }
 
     // Get all stock images that match tags (e.g "fruit" AND "sliced")
-    public async Task<IEnumerable<FoodImageDTO>> GetImagesFromTagsAsync(string tags)
+    public async Task<IEnumerable<FoodImage>> GetImagesFromTagsAsync(string tags)
     {
         // split tags string into a list  
         var tagsList = tags
@@ -43,8 +44,8 @@ public class TagService(ITagRepository tagRepository, IFoodImageService foodImag
         // Retrieves list of strings of image ids, where ingredient matches all tags in tagslist 
         var imageIds = await tagRepository.GetImageIdsFromTagsAsync(tagsList);
 
-        // Retrieves FoodImageDTO for each of the image ids 
-        List<FoodImageDTO> images = new List<FoodImageDTO>(); 
+        // Retrieves FoodImage for each of the image ids 
+        List<FoodImage> images = new List<FoodImage>(); 
         foreach (var id in imageIds)
         {
             var image = await foodImageService.GetFoodImage(id);

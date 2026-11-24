@@ -1,6 +1,6 @@
 using FoodplannerDataAccessSql.Tags;
 using FoodplannerServices.Tags;
-using FoodplannerModels.Tags;
+using FoodplannerModels.Image;
 using Moq;
 using FoodplannerServices.Image;
 
@@ -34,7 +34,7 @@ public class TagServiceTests
 
         mockFoodImageService
         .Setup(service => service.GetFoodImage(1))
-        .ReturnsAsync(new FoodImageDTO { 
+        .ReturnsAsync(new FoodImage { 
             Id = 1,
             ImageData = Array.Empty<byte>(),
             ImageName = "test1.png",
@@ -43,7 +43,7 @@ public class TagServiceTests
 
         mockFoodImageService
         .Setup(service => service.GetFoodImage(2))
-        .ReturnsAsync(new FoodImageDTO { 
+        .ReturnsAsync(new FoodImage { 
             Id = 2,
             ImageData = Array.Empty<byte>(),
             ImageName = "test2.png",
