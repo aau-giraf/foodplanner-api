@@ -20,45 +20,13 @@ public class IngredientsServiceTests
 
     [Fact]
     [Trait("Category", "Unit")]
-    public async Task GetAllIngredientsAsync_Success()
-    {
-        // Arrange
-        var ingredients = new List<IngredientDTO> {
-            new IngredientDTO{ Id = 1, Name = "Apple", User_id = 1},
-            new IngredientDTO{ Id = 2, Name = "Tomato", User_id = 3}
-        };
-        mockIngredientsRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(ingredients);
-
-        // Act
-        var result = await ingredientsService.GetAllIngredientsAsync();
-
-        // Assert
-        var resultList = result.ToList();
-        Assert.Equal(2, resultList.Count());
-        Assert.Equal("Apple", resultList[0].Name);
-        Assert.Equal("Tomato", resultList[1].Name);
-    }
-
-    [Fact]
-    [Trait("Category", "Unit")]
-    public async Task GetAllIngredientsAsync_RepositoryError()
-    {
-        // Arrange
-        mockIngredientsRepository.Setup(repo => repo.GetAllAsync()).ThrowsAsync(new Exception("Database error"));
-
-        // Act & Assert
-        await Assert.ThrowsAsync<Exception>(() => ingredientsService.GetAllIngredientsAsync());
-    }
-
-    [Fact]
-    [Trait("Category", "Unit")]
     public async Task GetAllIngredientsByUserAsync_Success()
     {
         // Arrange
         int userId = 1;
-        var ingredients = new List<IngredientDTO> {
-            new IngredientDTO{ Id = 1, Name = "Apple", User_id = 1},
-            new IngredientDTO{ Id = 2, Name = "Tomato", User_id = 1}
+        var ingredients = new List<Ingredient> {
+            new Ingredient{ Id = 1, Name = "Apple", User_id = 1},
+            new Ingredient{ Id = 2, Name = "Tomato", User_id = 1}
         };
         mockIngredientsRepository.Setup(repo => repo.GetAllByUserAsync(userId)).ReturnsAsync(ingredients);
 
@@ -90,7 +58,7 @@ public class IngredientsServiceTests
     {
         // Arrange
         int ingredientId = 1;
-        var ingredient = new IngredientDTO
+        var ingredient = new Ingredient
         {
             Id = ingredientId,
             Name = "Tomato",
@@ -114,7 +82,7 @@ public class IngredientsServiceTests
     {
         // Arrange
         int nonExistingId = 999;
-        mockIngredientsRepository.Setup(repo => repo.GetByIdAsync(nonExistingId)).ReturnsAsync((IngredientDTO?)null);
+        mockIngredientsRepository.Setup(repo => repo.GetByIdAsync(nonExistingId)).ReturnsAsync((Ingredient?)null);
 
         // Act
         var result = await ingredientsService.GetIngredientByIdAsync(nonExistingId);
@@ -141,7 +109,7 @@ public class IngredientsServiceTests
     {
         // Arrange
         int expectedIngredientId = 42;
-        var ingredient = new IngredientDTO
+        var ingredient = new Ingredient
         {
             Id = 0,
             Name = "Onion",
@@ -149,7 +117,7 @@ public class IngredientsServiceTests
         };
         IEnumerable<int> categoryIds = new List<int>() {1};
 
-        mockIngredientsRepository.Setup(repo => repo.InsertAsync(It.IsAny<IngredientDTO>(), It.IsAny<IEnumerable<int>>())).ReturnsAsync(expectedIngredientId);
+        mockIngredientsRepository.Setup(repo => repo.InsertAsync(It.IsAny<Ingredient>(), It.IsAny<IEnumerable<int>>())).ReturnsAsync(expectedIngredientId);
 
         // Act
         var result = await ingredientsService.CreateIngredientAsync(ingredient, categoryIds);
@@ -163,7 +131,7 @@ public class IngredientsServiceTests
     public async Task CreateIngredientAsync_RepositoryError()
     {
         // Arrange
-        var ingredient = new IngredientDTO
+        var ingredient = new Ingredient
         {
             Id = 0,
             Name = "Onion",
@@ -184,8 +152,8 @@ public class IngredientsServiceTests
     {
         // Arrange
         int expectedResult = 1;
-        var ingredient = new IngredientDTO { Id = 1, Name = "Updated Tomato", User_id = 2 };
-        mockIngredientsRepository.Setup(repo => repo.UpdateAsync(It.IsAny<IngredientDTO>())).ReturnsAsync(expectedResult);
+        var ingredient = new Ingredient { Id = 1, Name = "Updated Tomato", User_id = 2 };
+        mockIngredientsRepository.Setup(repo => repo.UpdateAsync(It.IsAny<Ingredient>())).ReturnsAsync(expectedResult);
 
         // Act
         var result = await ingredientsService.UpdateIngredientAsync(ingredient);
@@ -199,7 +167,7 @@ public class IngredientsServiceTests
     public async Task UpdateIngredientAsync_RepositoryError()
     {
         // Arrange
-        var ingredient = new IngredientDTO
+        var ingredient = new Ingredient
         {
             Id = 0,
             Name = "Onion",

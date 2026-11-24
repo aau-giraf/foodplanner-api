@@ -6,33 +6,25 @@ namespace FoodplannerDataAccessSql.Lunchbox;
 // The repository for the Ingredient class.
 public class IngredientsRepository(IDapperExecutor executor) : IIngredientsRepository
 {
-    // Asynchronously retrieves all ingredients from the database.
-    public async Task<IEnumerable<IngredientDTO>> GetAllAsync()
-    {
-        var sql = "SELECT * FROM ingredients";
-
-        return await executor.QueryAsync<IngredientDTO>(sql);
-    }
-
     // Asynchronously retrieves all ingredients by user.
-    public async Task<IEnumerable<IngredientDTO>> GetAllByUserAsync(int id)
+    public async Task<IEnumerable<Ingredient>> GetAllByUserAsync(int id)
     {
         var sql = "SELECT * FROM ingredients WHERE user_id = @Id";
 
-        return await executor.QueryAsync<IngredientDTO>(sql, new { Id = id });
+        return await executor.QueryAsync<Ingredient>(sql, new { Id = id });
     }
 
     // Asynchronously retrieves an ingredient by its unique ID.
-    public async Task<IngredientDTO?> GetByIdAsync(int id)
+    public async Task<Ingredient?> GetByIdAsync(int id)
     {
         var sql = "SELECT * FROM ingredients WHERE id = @Id";
 
-        return await executor.QuerySingleOrDefaultAsync<IngredientDTO>(
+        return await executor.QuerySingleOrDefaultAsync<Ingredient>(
             sql, new { Id = id });
     }
 
     // Asynchronously inserts a new ingredient into the database and returns its ID.
-    public async Task<int> InsertAsync(IngredientDTO entity, IEnumerable<int>? categoryIds)
+    public async Task<int> InsertAsync(Ingredient entity, IEnumerable<int>? categoryIds)
     {
         var sql = "INSERT INTO ingredients (name, user_id, image_id, is_stock_img) VALUES (@Name, @UserId, @ImageId, @IsStockImg) RETURNING id";
 
@@ -63,7 +55,7 @@ public class IngredientsRepository(IDapperExecutor executor) : IIngredientsRepos
     }
 
     // Asynchronously updates an existing ingredient in the database.
-    public async Task<int> UpdateAsync(IngredientDTO entity)
+    public async Task<int> UpdateAsync(Ingredient entity)
     {
         var sql = "UPDATE ingredients SET name = @Name, user_id = @UserId, image_id = @ImageId, is_stock_img = @IsStockImg WHERE id = @Id";
 

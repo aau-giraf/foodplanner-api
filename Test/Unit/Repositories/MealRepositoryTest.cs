@@ -31,47 +31,13 @@ public class MealsRepositoryTests
 
     [Fact]
     [Trait("Category", "Unit")]
-    public async Task GetAllAsync_Success()
-    {
-        // Arrange
-        var meals = new List<MealDTO>
-        {
-            new() { Id = 1, Name = "Pizza", User_id = 1, Date = "18/11/2022", Template = false },
-            new() { Id = 2, Name = "Pasta", User_id = 2, Date = "19/11/2022", Template = false }
-        };
-
-        const string sql = "SELECT * FROM meals";
-
-        mockExecutor
-            .Setup(e => e.QueryAsync<MealDTO>(sql, It.IsAny<object?>()))
-            .ReturnsAsync(meals);
-
-        // Act
-        var result = (await repository.GetAllAsync()).ToList();
-
-        // Assert
-        Assert.Equal(2, result.Count);
-
-        Assert.Equal(1, result[0].Id);
-        Assert.Equal("Pizza", result[0].Name);
-        Assert.Equal(1, result[0].User_id);
-
-        Assert.Equal(2, result[1].Id);
-        Assert.Equal("Pasta", result[1].Name);
-        Assert.Equal(2, result[1].User_id);
-
-        mockExecutor.Verify(e => e.QueryAsync<MealDTO>(sql, null), Times.Once);
-    }
-
-    [Fact]
-    [Trait("Category", "Unit")]
     public async Task GetAllByUserAndDateAsync_Success()
     {
         // Arrange
         int userId = 1;
         string date = "18/11/2022";
 
-        var meals = new List<MealDTO>
+        var meals = new List<Meal>
         {
             new() { Id = 1, Name = "Pizza", User_id = userId, Date = date, Template = false },
             new() { Id = 2, Name = "Pasta", User_id = userId, Date = date, Template = false }
@@ -80,7 +46,7 @@ public class MealsRepositoryTests
         const string sql = "SELECT * FROM meals WHERE user_id = @UserId AND date = @Date";
 
         mockExecutor
-            .Setup(e => e.QueryAsync<MealDTO>(
+            .Setup(e => e.QueryAsync<Meal>(
                 sql,
                 It.Is<object?>(p =>
                     HasParameter(p, "UserId", userId) &&
@@ -103,7 +69,7 @@ public class MealsRepositoryTests
         Assert.Equal(userId, result[1].User_id);
         Assert.Equal(date, result[1].Date);
 
-        mockExecutor.Verify(e => e.QueryAsync<MealDTO>(
+        mockExecutor.Verify(e => e.QueryAsync<Meal>(
             sql,
             It.Is<object?>(p =>
                 HasParameter(p, "UserId", userId) &&
@@ -118,7 +84,7 @@ public class MealsRepositoryTests
         // Arrange
         int id = 1;
 
-        var meal = new MealDTO
+        var meal = new Meal
         {
             Id = id,
             Name = "Pizza",
@@ -130,7 +96,7 @@ public class MealsRepositoryTests
         const string sql = "SELECT * FROM meals WHERE id = @Id";
 
         mockExecutor
-            .Setup(e => e.QuerySingleOrDefaultAsync<MealDTO>(
+            .Setup(e => e.QuerySingleOrDefaultAsync<Meal>(
                 sql,
                 It.Is<object?>(p => HasParameter(p, "Id", id))))
             .ReturnsAsync(meal);
@@ -145,7 +111,7 @@ public class MealsRepositoryTests
         Assert.Equal(3, result.User_id);
         Assert.Equal("18/11/2022", result.Date);
 
-        mockExecutor.Verify(e => e.QuerySingleOrDefaultAsync<MealDTO>(
+        mockExecutor.Verify(e => e.QuerySingleOrDefaultAsync<Meal>(
             sql,
             It.Is<object?>(p => HasParameter(p, "Id", id))),
             Times.Once);
@@ -160,10 +126,10 @@ public class MealsRepositoryTests
         const string sql = "SELECT * FROM meals WHERE id = @Id";
 
         mockExecutor
-            .Setup(e => e.QuerySingleOrDefaultAsync<MealDTO>(
+            .Setup(e => e.QuerySingleOrDefaultAsync<Meal>(
                 sql,
                 It.Is<object?>(p => HasParameter(p, "Id", id))))
-            .ReturnsAsync((MealDTO?)null);
+            .ReturnsAsync((Meal?)null);
 
         // Act
         var result = await repository.GetByIdAsync(id);
@@ -171,7 +137,7 @@ public class MealsRepositoryTests
         // Assert
         Assert.Null(result);
 
-        mockExecutor.Verify(e => e.QuerySingleOrDefaultAsync<MealDTO>(
+        mockExecutor.Verify(e => e.QuerySingleOrDefaultAsync<Meal>(
             sql,
             It.Is<object?>(p => HasParameter(p, "Id", id))),
             Times.Once);
@@ -223,7 +189,7 @@ public class MealsRepositoryTests
     public async Task UpdateAsync_Success()
     {
         // Arrange
-        var meal = new MealDTO
+        var meal = new Meal
         {
             Id = 1,
             Name = "Updated Pizza",
@@ -289,7 +255,7 @@ public class MealsRepositoryTests
         // Arrange
         int userId = 1;
 
-        var meals = new List<MealDTO>
+        var meals = new List<Meal>
         {
             new() { Id = 1, Name = "Pizza", User_id = userId, Date = "18/11/2022", Template = true },
             new() { Id = 2, Name = "Pasta", User_id = userId, Date = "19/11/2022", Template = true }
@@ -298,7 +264,7 @@ public class MealsRepositoryTests
         const string sql = "SELECT * FROM meals WHERE template = true AND user_id = @UserId";
 
         mockExecutor
-            .Setup(e => e.QueryAsync<MealDTO>(
+            .Setup(e => e.QueryAsync<Meal>(
                 sql,
                 It.Is<object?>(p => HasParameter(p, "UserId", userId))))
             .ReturnsAsync(meals);
@@ -319,7 +285,7 @@ public class MealsRepositoryTests
         Assert.Equal(userId, result[1].User_id);
         Assert.True(result[1].Template);
 
-        mockExecutor.Verify(e => e.QueryAsync<MealDTO>(
+        mockExecutor.Verify(e => e.QueryAsync<Meal>(
             sql,
             It.Is<object?>(p => HasParameter(p, "UserId", userId))),
             Times.Once);

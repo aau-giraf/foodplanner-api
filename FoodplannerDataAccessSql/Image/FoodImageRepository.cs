@@ -1,31 +1,15 @@
-﻿using Dapper;
-using FoodplannerModels;
-using FoodplannerModels.Image;
-using Npgsql;
+﻿using FoodplannerModels.Image;
+using Dapper;
 
 namespace FoodplannerDataAccessSql.Image;
 
-// Class for FoodImage Repository 
 public class FoodImageRepository : IFoodImageRepository
 {
+    // Set up a connection factory to connect to the PostgreSQL database
     private readonly CorePostgreSQLConnectionFactory _connectionFactory;
-
     public FoodImageRepository(CorePostgreSQLConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory;
-    }
-
-    // Asynchronously retrieves all food_images from the database.
-    public async Task<IEnumerable<FoodImage>> GetAllAsync()
-    {
-        const string sql = "SELECT * FROM food_image";
-        await using (var connection = _connectionFactory.Create())
-        {
-            connection.Open();
-            var result = await connection.QueryAsync<FoodImage>(sql);
-            return result; 
-        }
-        
     }
 
     // Asynchronously retrieves all food_images with given image ID  
@@ -54,25 +38,6 @@ public class FoodImageRepository : IFoodImageRepository
             return id; 
         }
 
-    }
-
-    // Asynchronously update an existing food image entry in the database 
-    public async Task<int> UpdateAsync(FoodImage entity)
-    {
-        const string sql = @"
-            UPDATE food_image
-            SET image_id = @ImageData,
-                user_id = @UserId,
-                image_name = @ImageName,
-                image_file_type = @ImageFileType,
-                size = @Size
-            WHERE id = @Id";
-        await using (var connection = _connectionFactory.Create())
-        {
-            connection.Open();
-            var affected = await connection.ExecuteAsync(sql, entity);
-            return affected;
-        }
     }
 
     // Asynchronously deletes a food image from databse given its ID 

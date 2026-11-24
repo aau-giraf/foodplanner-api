@@ -2,26 +2,12 @@ using FoodplannerModels.Lunchbox;
 using FoodplannerDataAccessSql.Lunchbox;
 using FoodplannerModels.Tags;
 
-// Adds the IngredientsService class to the FoodplannerServices.Lunchbox namespace
 namespace FoodplannerServices.Lunchbox;
 
-// The service for the Ingredient class.
 public class IngredientsService(IIngredientsRepository ingredientRepository) : IIngredientsService
 {
-    public async Task<IEnumerable<IngredientDTO>> GetAllIngredientsAsync()
-    { 
-        try
-        {
-            return await ingredientRepository.GetAllAsync();
-        }
-        catch (Exception exception)
-        {
-            throw new Exception($"Error retrieving all ingredients: {exception.Message}", exception);
-        }
-    }
-
     // Retrieves all ingredients by user.
-    public async Task<IEnumerable<IngredientDTO>> GetAllIngredientsByUserAsync(int userId)
+    public async Task<IEnumerable<Ingredient>> GetAllIngredientsByUserAsync(int userId)
     {
         try
         {
@@ -34,7 +20,7 @@ public class IngredientsService(IIngredientsRepository ingredientRepository) : I
     }
 
     // Retrieves a specific ingredient by its ID.
-    public async Task<IngredientDTO?> GetIngredientByIdAsync(int id)
+    public async Task<Ingredient?> GetIngredientByIdAsync(int id)
     {
         try
         {
@@ -53,7 +39,7 @@ public class IngredientsService(IIngredientsRepository ingredientRepository) : I
 
     // Creates a new ingredient in the repository.
     // Uses ingredient ID and a list of category IDs to assign tags to the ingredient
-    public async Task<int> CreateIngredientAsync(IngredientDTO ingredientDTO, IEnumerable<int>? categoryIds)
+    public async Task<int> CreateIngredientAsync(Ingredient ingredientDTO, IEnumerable<int>? categoryIds)
     {
         try
         {
@@ -66,7 +52,7 @@ public class IngredientsService(IIngredientsRepository ingredientRepository) : I
     }
 
     // Updates an existing ingredient in the repository by ID.
-    public async Task<int> UpdateIngredientAsync(IngredientDTO ingredientDTO)
+    public async Task<int> UpdateIngredientAsync(Ingredient ingredientDTO)
     {
         try
         {

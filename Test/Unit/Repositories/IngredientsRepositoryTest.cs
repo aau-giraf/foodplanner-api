@@ -30,44 +30,6 @@ public class IngredientsRepositoryTests
 
     [Fact]
     [Trait("Category", "Unit")]
-    public async Task GetAllAsync_Success()
-    {
-        // Arrange
-        // Create ingredient objects
-        var ingredients = new List<IngredientDTO>
-        {
-            new() { Id = 1, Name = "Cheese", User_id = 1 },
-            new() { Id = 2, Name = "Tomato", User_id = 2 }
-        };
-
-        const string sql = "SELECT * FROM ingredients";
-
-        // When call with sql string, return ingredient objects
-        mockExecutor.Setup(e => e.QueryAsync<IngredientDTO>(
-            sql, It.IsAny<object?>())).ReturnsAsync(ingredients);
-
-        // Act
-        // Call the repository method
-        var result = await repository.GetAllAsync();
-
-        // Assert
-        // Convert result into a list 
-        var resultList = result.ToList();
-
-        Assert.Equal(2, resultList.Count);
-        Assert.Equal(1, resultList[0].Id);
-        Assert.Equal("Cheese", resultList[0].Name);
-        Assert.Equal(1, resultList[0].User_id);
-        Assert.Equal(2, resultList[1].Id);
-        Assert.Equal("Tomato", resultList[1].Name);
-        Assert.Equal(2, resultList[1].User_id);
-
-        // Verifies the sql string is called once and with parameter null
-        mockExecutor.Verify(e => e.QueryAsync<IngredientDTO>(sql, null), Times.Once);
-    }
-
-    [Fact]
-    [Trait("Category", "Unit")]
     public async Task GetAllByUserAsync_Success()
     {
         // Arrange
@@ -76,7 +38,7 @@ public class IngredientsRepositoryTests
         int id = rnd.Next();
 
         // ingredient objects
-        var ingredients = new List<IngredientDTO>
+        var ingredients = new List<Ingredient>
         {
             new() { Id = 1, Name = "Cheese", User_id = id },
             new() { Id = 2, Name = "Tomato", User_id = id }
@@ -85,7 +47,7 @@ public class IngredientsRepositoryTests
         const string sql = "SELECT * FROM ingredients WHERE user_id = @Id";
 
         // When call the sql string, return the ingredient objects
-        mockExecutor.Setup(e => e.QueryAsync<IngredientDTO>(
+        mockExecutor.Setup(e => e.QueryAsync<Ingredient>(
             sql, It.IsAny<object?>())).ReturnsAsync(ingredients);
 
         // Act
@@ -104,7 +66,7 @@ public class IngredientsRepositoryTests
 
         // Verifies that the sql is called once, 
         // and the parameter object is not null and has property "id" that has the same value as id
-        mockExecutor.Verify(e => e.QueryAsync<IngredientDTO>(sql, It.Is<object>(p => p != null && 
+        mockExecutor.Verify(e => e.QueryAsync<Ingredient>(sql, It.Is<object>(p => p != null && 
             Equals(p.GetType().GetProperty("Id")!.GetValue(p), id))), Times.Once);
     }
 
@@ -117,12 +79,12 @@ public class IngredientsRepositoryTests
         var rnd = new Random(); 
         int id = rnd.Next();
 
-        var ingredient = new IngredientDTO { Id = id, Name = "Cheese", User_id = 3 };
+        var ingredient = new Ingredient { Id = id, Name = "Cheese", User_id = 3 };
 
         const string sql = "SELECT * FROM ingredients WHERE id = @Id";
 
         mockExecutor
-            .Setup(e => e.QuerySingleOrDefaultAsync<IngredientDTO>(
+            .Setup(e => e.QuerySingleOrDefaultAsync<Ingredient>(
                 sql, It.IsAny<object?>()))
             .ReturnsAsync(ingredient);
 
@@ -138,7 +100,7 @@ public class IngredientsRepositoryTests
         // Verify that the query is called with an object that is not null 
         // and the object has a property "id" with a value equal to the id
         mockExecutor.Verify(
-        e => e.QuerySingleOrDefaultAsync<IngredientDTO>(
+        e => e.QuerySingleOrDefaultAsync<Ingredient>(
             sql,
             It.Is<object>(p => p != null &&
             Equals(p.GetType().GetProperty("Id")!.GetValue(p), id))),
@@ -152,7 +114,7 @@ public class IngredientsRepositoryTests
         // Arrange
         var rnd = new Random(); 
         int createId = rnd.Next();
-        var ingredient = new IngredientDTO { Id = 0, Name = "Cheese", User_id = 1, Image_id = null, Is_stock_img = false };
+        var ingredient = new Ingredient { Id = 0, Name = "Cheese", User_id = 1, Image_id = null, Is_stock_img = false };
 
         const string sql = "INSERT INTO ingredients (name, user_id, image_id, is_stock_img) VALUES (@Name, @UserId, @ImageId, @IsStockImg) RETURNING id";
 
@@ -188,7 +150,7 @@ public class IngredientsRepositoryTests
         var rnd = new Random();
         int id = rnd.Next();
 
-        var ingredient = new IngredientDTO { Id = id, Name = "Cheese", User_id = 5, Image_id = null, Is_stock_img = false };
+        var ingredient = new Ingredient { Id = id, Name = "Cheese", User_id = 5, Image_id = null, Is_stock_img = false };
 
         const string sql = "UPDATE ingredients SET name = @Name, user_id = @UserId, image_id = @ImageId, is_stock_img = @IsStockImg WHERE id = @Id";
 

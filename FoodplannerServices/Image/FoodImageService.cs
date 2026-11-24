@@ -1,12 +1,8 @@
-﻿using System.Diagnostics;
-using FoodplannerDataAccessSql.Image;
-using FoodplannerModels.Account;
+﻿using FoodplannerDataAccessSql.Image;
 using FoodplannerModels.Image;
-
 
 namespace FoodplannerServices.Image;
 
-// Service implementation for FoodImage business logic
 public class FoodImageService(IFoodImageRepository foodImageRepository) : IFoodImageService
 {
     // Creates a new food image.
@@ -33,7 +29,7 @@ public class FoodImageService(IFoodImageRepository foodImageRepository) : IFoodI
 
 
     // Return food image by ID.
-    public async Task<FoodImageDTO> GetFoodImage(int foodImageId)
+    public async Task<FoodImage> GetFoodImage(int foodImageId)
     {
         var foodImage = await foodImageRepository.GetByIdAsync(foodImageId);
 
@@ -42,15 +38,7 @@ public class FoodImageService(IFoodImageRepository foodImageRepository) : IFoodI
             throw new KeyNotFoundException($"FoodImage with id {foodImageId} not found");
         }
 
-        return new FoodImageDTO
-        {
-            Id = foodImage.Id,
-            ImageData = foodImage.ImageData,
-            UserId = foodImage.UserId,
-            ImageName = foodImage.ImageName,
-            ImageFileType = foodImage.ImageFileType,
-            ImageSize = foodImage.Size
-        };
+        return foodImage;
     }
 
     // Get a URL for the food image by ID.

@@ -45,8 +45,7 @@ public class UserService(IUserRepository userRepository, IAuthService authServic
     }
 
     // Creates a user account for the child and associates it with a parents user account
-    public async Task<int> CreateChildrenUserAsync(
-        UserCreateChildDTO userCreateChildDto, int parentId)
+    public async Task<int> CreateChildrenUserAsync(UserCreateChildDTO userCreateChildDto, int parentId)
     {
         var parentUser = await userRepository.GetByIdAsync(parentId);
 
@@ -90,8 +89,6 @@ public class UserService(IUserRepository userRepository, IAuthService authServic
 
         return id;
     }
-
-
 
     // Updates user
     public async Task<int> UpdateUserAsync(UserUpdateDTO userUpdateDto, int id)
@@ -138,24 +135,6 @@ public class UserService(IUserRepository userRepository, IAuthService authServic
             RoleApproved = user.RoleApproved
         };
 
-        return userCreds;
-    }
-
-    // Retrieve JWT by Email
-    public async Task<UserCredsDTO?> GetJWTByEmailAsync(string email)
-    {
-        var user = await userRepository.GetUserByEmailAsync(email);
-        if (user == null)
-        {
-            throw new InvalidOperationException("Forkert email");
-        }
-        var jwt = authService.GenerateJWTToken(user);
-        var userCreds = new UserCredsDTO
-        {
-            JWT = jwt,
-            Role = user.Role.ToString(),
-            RoleApproved = user.RoleApproved
-        };
         return userCreds;
     }
 
@@ -271,13 +250,6 @@ public class UserService(IUserRepository userRepository, IAuthService authServic
         password = passwordHandler.EncryptPassword(password);
         var _password = await userRepository.UpdatePasswordAsync(password, id);
         return _password;
-    }
-
-    // Checks if user's e-mail already exists
-    public async Task<bool> UserEmailExistsAsync(string email)
-    {
-        var _email = await userRepository.EmailExistsAsync(email);
-        return _email;
     }
 
     // Manually maps User to UserDTO

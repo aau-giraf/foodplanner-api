@@ -1,27 +1,12 @@
 using FoodplannerModels.Lunchbox;
 using FoodplannerDataAccessSql.Lunchbox;
 
-// Adds the SubIngredientService class to the FoodplannerServices.Lunchbox namespace
 namespace FoodplannerServices.Lunchbox;
 
-// Service implementation for SubIngredient business logic
 public class SubIngredientService(ISubIngredientRepository subIngredientRepository)
-{
-    // Retrieves all sub-ingredients
-    public async Task<IEnumerable<SubIngredientDTO>> GetAllSubIngredientsAsync()
-    {
-        try
-        {
-            return await subIngredientRepository.GetAllAsync();
-        }
-        catch (Exception exception)
-        {
-            throw new Exception($"Error retrieving all sub-ingredients: {exception.Message}", exception);
-        }
-    }
-    
+{   
     // Get all sub-ingredients based on a parent ingredient Id
-    public async Task<IEnumerable<SubIngredientDTO>> GetAllSubIngredientsByParentIdAsync(int id)
+    public async Task<IEnumerable<SubIngredient>> GetAllSubIngredientsByParentIdAsync(int id)
     {
         try 
         {
@@ -34,7 +19,7 @@ public class SubIngredientService(ISubIngredientRepository subIngredientReposito
     }
 
     // Creates a new sub-ingredient
-    public async Task<int> CreateSubIngredientAsync(SubIngredientDTO subIngredient)
+    public async Task<int> CreateSubIngredientAsync(SubIngredient subIngredient)
     {
         try
         {
@@ -47,7 +32,7 @@ public class SubIngredientService(ISubIngredientRepository subIngredientReposito
     }
 
     // Updates an existing sub-ingredient
-    public async Task<int> UpdateSubIngredientAsync(SubIngredientDTO oldSubIngredient, SubIngredientDTO newSubIngredient)
+    public async Task<int> UpdateSubIngredientAsync(SubIngredient oldSubIngredient, SubIngredient newSubIngredient)
     {
         try
         {
@@ -60,7 +45,7 @@ public class SubIngredientService(ISubIngredientRepository subIngredientReposito
     }
 
     // Deletes a sub-ingredient
-    public async Task<int> DeleteSubIngredientAsync(SubIngredientDTO subIngredient)
+    public async Task<int> DeleteSubIngredientAsync(SubIngredient subIngredient)
     {
         try
         {

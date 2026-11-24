@@ -235,7 +235,6 @@ builder.Services.AddFluentMigratorCore()
 
 //Dependency Injection Starts Here !
 // Add Repositories
-builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
 builder.Services.AddScoped(typeof(IFoodImageRepository), typeof(FoodImageRepository));
 builder.Services.AddScoped(typeof(IChildrenRepository), typeof(ChildrenRepository));
