@@ -154,6 +154,7 @@ public class MealTests
 
         try
         {
+            mealIds.Add(await InsertTestMealAsync("Wrong Date", userId, DateOnly.Parse("2026/11/01"), false));
             mealIds.Add(await InsertTestMealAsync("Matching Meal", userId, date, false));
             mealIds.Add(await InsertTestMealAsync("Wrong User", 67890, date, false));
             mealIds.Add(await InsertTestMealAsync("Wrong Date", userId, DateOnly.Parse("2026/11/03"), false));
@@ -162,10 +163,10 @@ public class MealTests
             var result = (await repository.GetAllByUserAndDateAsync(userId, date, date)).ToList();
 
             // Assert
-            Assert.Contains(result, m => m.Id == mealIds[0]);
-
-            Assert.DoesNotContain(result, m => m.Id == mealIds[1]);
+            Assert.Contains(result, m => m.Id == mealIds[1]);
+            Assert.DoesNotContain(result, m => m.Id == mealIds[0]);
             Assert.DoesNotContain(result, m => m.Id == mealIds[2]);
+            Assert.DoesNotContain(result, m => m.Id == mealIds[3]);
 
             Assert.All(result, m =>
             {
