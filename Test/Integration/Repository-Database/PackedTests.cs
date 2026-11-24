@@ -23,8 +23,8 @@ public class PackedTests
         // Arrange
         List<Meal> meals = new List<Meal>
         {
-            new Meal { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
-            new Meal { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
+            new Meal { Id = 1,Name = "Meal 1", Date = DateOnly.Parse("2023/01/01"), Template = false, Image_id = null, User_id = 1 },
+            new Meal { Id = 2, Name = "Meal 2", Date = DateOnly.Parse("2023/01/02"), Template = false, Image_id = null, User_id = 2 }
         };
         List<Ingredient> ingredients = new List<Ingredient>
         {
@@ -72,8 +72,8 @@ public async Task InsertAsync()
     // Arrange
     List<Meal> meals = new()
     {
-        new Meal { Id = 1, Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
-        new Meal { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
+        new Meal { Id = 1, Name = "Meal 1", Date = DateOnly.Parse("2023/01/01"), Template = false, Image_id = null, User_id = 1 },
+        new Meal { Id = 2, Name = "Meal 2", Date = DateOnly.Parse("2023/01/02"), Template = false, Image_id = null, User_id = 2 }
     };
 
     List<Ingredient> ingredients = new()
@@ -133,8 +133,8 @@ public async Task InsertAsync()
         // Arrange
         List<Meal> meals = new List<Meal>
         {
-            new Meal { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
-            new Meal { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
+            new Meal { Id = 1,Name = "Meal 1", Date = DateOnly.Parse("2023/01/01"), Template = false, Image_id = null, User_id = 1 },
+            new Meal { Id = 2, Name = "Meal 2", Date = DateOnly.Parse("2023/01/02"), Template = false, Image_id = null, User_id = 2 }
         };
         List<Ingredient> ingredients = new List<Ingredient>
         {
@@ -181,8 +181,8 @@ public async Task InsertAsync()
         // Arrange
         List<Meal> meals = new List<Meal>
         {
-            new Meal { Id = 1,Name = "Meal 1", Date = "2023-01-01", Template = false, Image_id = null, User_id = 1 },
-            new Meal { Id = 2, Name = "Meal 2", Date = "2023-01-02", Template = false, Image_id = null, User_id = 2 }
+            new Meal { Id = 1,Name = "Meal 1", Date = DateOnly.Parse("2023/01/01"), Template = false, Image_id = null, User_id = 1 },
+            new Meal { Id = 2, Name = "Meal 2", Date = DateOnly.Parse("2023/01/02"), Template = false, Image_id = null, User_id = 2 }
         };
         List<Ingredient> ingredients = new List<Ingredient>
         {

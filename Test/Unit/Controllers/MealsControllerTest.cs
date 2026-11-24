@@ -4,7 +4,6 @@ using FoodplannerModels.Lunchbox;
 using FoodplannerServices.Lunchbox;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Xunit;
 
 namespace Test.Unit.Controller;
 
@@ -25,8 +24,8 @@ public class MealsControllerTests
     {
         // Arrange
         const string token = "Bearer TestToken";
-        const string startDate = "18/11/2022";
-		const string endDate = "18/11/2022";
+        DateOnly startDate = DateOnly.Parse("2022/11/18");
+		DateOnly endDate = DateOnly.Parse("2022/11/18");
         int userId = 1;
         var meals = new List<MealWithIngredientsDTO>
         {
@@ -55,13 +54,13 @@ public class MealsControllerTests
     {
         // Arrange
         const string token = "Bearer TestToken";
-        const string startDate = "18/11/2022";
-        const string endDate = "25/11/2022";
+        DateOnly startDate = DateOnly.Parse("2022/11/18");
+		DateOnly endDate = DateOnly.Parse("2022/11/25");
         int userId = 1;
         var meals = new List<MealWithIngredientsDTO>
         {
             new() { Id = 1, Name = "Pizza", Date = startDate, Template = false, Image_id = null, User_id = userId, Ingredients = [] },
-			new() { Id = 2, Name = "Pasta", Date = "19/11/2022", Template = false, Image_id = null, User_id = userId, Ingredients = [] }
+			new() { Id = 2, Name = "Pasta", Date = DateOnly.Parse("2022/11/19"), Template = false, Image_id = null, User_id = userId, Ingredients = [] }
         };
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
         mockMealsService.Setup(service => service.GetAllMealsByUserAndDateAsync(userId, startDate, endDate)).ReturnsAsync(meals);
@@ -79,7 +78,7 @@ public class MealsControllerTests
         Assert.Equal(userId, returnedMeals[0].User_id);
 		Assert.Equal(2, returnedMeals[1].Id);
 		Assert.Equal("Pasta", returnedMeals[1].Name);
-		Assert.Equal("19/11/2022", returnedMeals[1].Date);
+		Assert.Equal(DateOnly.Parse("2022/11/19"), returnedMeals[1].Date);
 		Assert.Equal(userId, returnedMeals[1].User_id);
         mockMealsService.Verify(service => service.GetAllMealsByUserAndDateAsync(userId, startDate, endDate), Times.Once);
     }
@@ -90,8 +89,8 @@ public class MealsControllerTests
     {
         // Arrange
         int userId = 1;
-        const string startDate = "18/11/2022";
-		const string endDate = "18/11/2022";
+        DateOnly startDate = DateOnly.Parse("2022/11/18");
+		DateOnly endDate = DateOnly.Parse("2022/11/18");
         var meals = new List<MealWithIngredientsDTO>
         {
             new() { Id = 3, Name = "Salad", Date = startDate, Template = false, Image_id = null, User_id = userId, Ingredients = [] }
@@ -117,7 +116,7 @@ public class MealsControllerTests
     {
         // Arrange
         int mealId = 1;
-        var meal = new MealWithIngredientsDTO { Id = mealId, Name = "Pizza", Date = "18/11/2022", Template = false, Image_id = null, User_id = 1, Ingredients = [new Ingredient { Id = 10, Name = "Cheese", User_id = 1 }] };
+        var meal = new MealWithIngredientsDTO { Id = mealId, Name = "Pizza", Date = DateOnly.Parse("2022/11/18"), Template = false, Image_id = null, User_id = 1, Ingredients = [new Ingredient { Id = 10, Name = "Cheese", User_id = 1 }] };
         mockMealsService.Setup(service => service.GetMealByIdAsync(mealId)).ReturnsAsync(meal);
 
         // Act
@@ -128,7 +127,7 @@ public class MealsControllerTests
         var returnedMeal = Assert.IsType<MealWithIngredientsDTO>(okResult.Value);
         Assert.Equal(mealId, returnedMeal.Id);
         Assert.Equal("Pizza", returnedMeal.Name);
-        Assert.Equal("18/11/2022", returnedMeal.Date);
+        Assert.Equal(DateOnly.Parse("2022/11/18"), returnedMeal.Date);
         Assert.False(returnedMeal.Template);
         Assert.Single(returnedMeal.Ingredients);
         Assert.Equal("Cheese", returnedMeal.Ingredients[0].Name);
@@ -159,8 +158,8 @@ public class MealsControllerTests
         const string token = "Bearer TestToken";
         int userId = 1;
         int mealId = 42;
-        var mealCreateDTO = new MealCreateDTO { Name = "Pizza", Date = "18/11/2022", Template = false, Image_id = null };
-        var createdMeal = new MealWithIngredientsDTO { Id = mealId, Name = "Pizza", Date = "18/11/2022", Template = false, Image_id = null, User_id = userId, Ingredients = [] };
+        var mealCreateDTO = new MealCreateDTO { Name = "Pizza", Date = DateOnly.Parse("2022/11/18"), Template = false, Image_id = null };
+        var createdMeal = new MealWithIngredientsDTO { Id = mealId, Name = "Pizza", Date = DateOnly.Parse("2022/11/18"), Template = false, Image_id = null, User_id = userId, Ingredients = [] };
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
         mockMealsService.Setup(service => service.CreateMealAsync(mealCreateDTO, userId)).ReturnsAsync(mealId);
         mockMealsService.Setup(service => service.GetMealByIdAsync(mealId)).ReturnsAsync(createdMeal);
@@ -186,7 +185,7 @@ public class MealsControllerTests
         // Arrange
         const string token = "Bearer TestToken";
         int userId = 1;
-        var mealCreateDTO = new MealCreateDTO { Name = "Pizza", Date = "18/11/2022", Template = false, Image_id = null };
+        var mealCreateDTO = new MealCreateDTO { Name = "Pizza", Date = DateOnly.Parse("2022/11/18"), Template = false, Image_id = null };
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
         mockMealsService.Setup(service => service.CreateMealAsync(mealCreateDTO, userId)).ReturnsAsync(0);
 
@@ -207,8 +206,8 @@ public class MealsControllerTests
         const string token = "Bearer TestToken";
         int mealId = 1;
         int userId = 1;
-        var meal = new Meal { Id = mealId, Name = "Updated Pizza", Date = "18/11/2022", Template = false, Image_id = null, User_id = userId };
-        var updatedMeal = new MealWithIngredientsDTO { Id = mealId, Name = "Updated Pizza", Date = "18/11/2022", Template = false, Image_id = null, User_id = userId, Ingredients = [] };
+        var meal = new Meal { Id = mealId, Name = "Updated Pizza", Date = DateOnly.Parse("2022/11/18"), Template = false, Image_id = null, User_id = userId };
+        var updatedMeal = new MealWithIngredientsDTO { Id = mealId, Name = "Updated Pizza", Date = DateOnly.Parse("2022/11/18"), Template = false, Image_id = null, User_id = userId, Ingredients = [] };
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
         mockMealsService.Setup(service => service.UpdateMealAsync(meal)).ReturnsAsync(1);
         mockMealsService.Setup(service => service.GetMealByIdAsync(mealId)).ReturnsAsync(updatedMeal);
@@ -233,7 +232,7 @@ public class MealsControllerTests
         // Arrange
         const string token = "Bearer TestToken";
         int mealId = 1;
-        var meal = new Meal { Id = mealId, Name = "Pizza", Date = "18/11/2022", Template = false, Image_id = null, User_id = 1 };
+        var meal = new Meal { Id = mealId, Name = "Pizza", Date = DateOnly.Parse("2022/11/18"), Template = false, Image_id = null, User_id = 1 };
         mockAuthService.Setup(auth => auth.RetrieveIdFromJwtToken(token)).Returns("1");
         mockMealsService.Setup(service => service.UpdateMealAsync(meal)).ReturnsAsync(0);
 
@@ -252,7 +251,7 @@ public class MealsControllerTests
     {
         // Arrange
         int mealId = 1;
-        var meal = new MealWithIngredientsDTO { Id = mealId, Name = "Pizza", Date = "18/11/2022", Template = false, Image_id = null, User_id = 1, Ingredients = [] };
+        var meal = new MealWithIngredientsDTO { Id = mealId, Name = "Pizza", Date = DateOnly.Parse("2022/11/18"), Template = false, Image_id = null, User_id = 1, Ingredients = [] };
         mockMealsService.Setup(service => service.GetMealByIdAsync(mealId)).ReturnsAsync(meal);
         mockMealsService.Setup(service => service.DeleteMealAsync(mealId)).ReturnsAsync(1);
 
