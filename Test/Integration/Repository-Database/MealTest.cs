@@ -148,31 +148,28 @@ public class MealTests
     {
         // Arrange
         int userId = 12345;
-        DateOnly date = DateOnly.Parse("2026/11/02");
+        DateOnly startDate = DateOnly.Parse("2026/11/02");
+        DateOnly endDate = DateOnly.Parse("2026/11/04");
 
         var mealIds = new List<int>();
 
         try
         {
             mealIds.Add(await InsertTestMealAsync("Wrong Date", userId, DateOnly.Parse("2026/11/01"), false));
-            mealIds.Add(await InsertTestMealAsync("Matching Meal", userId, date, false));
-            mealIds.Add(await InsertTestMealAsync("Wrong User", 67890, date, false));
-            mealIds.Add(await InsertTestMealAsync("Wrong Date", userId, DateOnly.Parse("2026/11/03"), false));
+            mealIds.Add(await InsertTestMealAsync("Matching Meal 1", userId, DateOnly.Parse("2026/11/02"), false));
+            mealIds.Add(await InsertTestMealAsync("Matching Meal 2", userId, DateOnly.Parse("2026/11/03"), false));
+            mealIds.Add(await InsertTestMealAsync("Wrong User", 67890, DateOnly.Parse("2026/11/04"), false));
+            mealIds.Add(await InsertTestMealAsync("Wrong Date", userId, DateOnly.Parse("2026/11/05"), false));
 
             // Act
-            var result = (await repository.GetAllByUserAndDateAsync(userId, date, date)).ToList();
+            var result = (await repository.GetAllByUserAndDateAsync(userId, startDate, endDate)).ToList();
 
             // Assert
             Assert.Contains(result, m => m.Id == mealIds[1]);
+            Assert.Contains(result, m => m.Id == mealIds[2]);
             Assert.DoesNotContain(result, m => m.Id == mealIds[0]);
-            Assert.DoesNotContain(result, m => m.Id == mealIds[2]);
             Assert.DoesNotContain(result, m => m.Id == mealIds[3]);
-
-            Assert.All(result, m =>
-            {
-                Assert.Equal(userId, m.User_id);
-                Assert.Equal(date, m.Date);
-            });
+            Assert.DoesNotContain(result, m => m.Id == mealIds[4]);
         }
         finally
         {
