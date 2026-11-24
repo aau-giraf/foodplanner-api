@@ -27,11 +27,12 @@ public class MealsServiceTests
     {
         // Arrange
         int userId = 1;
-        string date = "18/11/2022";
-        mockMealsRepository.Setup(repo => repo.GetAllByUserAndDateAsync(userId, date)).ThrowsAsync(new Exception("Database error"));
+        DateOnly startDate = DateOnly.Parse("2022/11/18");
+        DateOnly endDate = DateOnly.Parse("2022/11/25");
+        mockMealsRepository.Setup(repo => repo.GetAllByUserAndDateAsync(userId, startDate, endDate)).ThrowsAsync(new Exception("Database error"));
 
         // Act & Assert
-        await Assert.ThrowsAsync<Exception>(() => mealsService.GetAllMealsByUserAndDateAsync(userId, date));
+        await Assert.ThrowsAsync<Exception>(() => mealsService.GetAllMealsByUserAndDateAsync(userId, startDate, endDate));
     }
 
     [Fact]
@@ -43,7 +44,7 @@ public class MealsServiceTests
         {
             Id = 1,
             Name = "Pasta",
-            Date = "20/03/2022",
+            Date = DateOnly.Parse("2022/03/20"),
             Template = false,
             Image_id = null,
             User_id = 3
@@ -70,7 +71,7 @@ public class MealsServiceTests
         Assert.NotNull(result);
         Assert.Equal(1, result.Id);
         Assert.Equal("Pasta", result.Name);
-        Assert.Equal("20/03/2022", result.Date);
+        Assert.Equal(DateOnly.Parse("2022/03/20"), result.Date);
         Assert.False(result.Template);
         Assert.Null(result.Image_id);
         Assert.Equal(3, result.User_id);
@@ -112,7 +113,7 @@ public class MealsServiceTests
         var mealCreateDTO = new MealCreateDTO
         {
             Name = "Salad",
-            Date = "21/03/2023",
+            Date = DateOnly.Parse("2023/03/21"),
             Template = false,
             Image_id = null
         };
@@ -134,7 +135,7 @@ public class MealsServiceTests
         var mealCreateDTO = new MealCreateDTO
         {
             Name = "Salad",
-            Date = "21/03/2023",
+            Date = DateOnly.Parse("2023/03/21"),
             Template = false,
             Image_id = null
         };
@@ -153,7 +154,7 @@ public class MealsServiceTests
         {
             Id = 1,
             Name = "Updated Meal",
-            Date = "22/03/2023",
+            Date = DateOnly.Parse("2023/03/22"),
             Template = true,
             Image_id = null,
             User_id = 1
@@ -176,7 +177,7 @@ public class MealsServiceTests
         {
             Id = 1,
             Name = "Updated Meal",
-            Date = "22/03/2023",
+            Date = DateOnly.Parse("2023/03/22"),
             Template = true,
             Image_id = null,
             User_id = 1
@@ -226,7 +227,7 @@ public class MealsServiceTests
             {
                 Id = 1,
                 Name = "Template Meal",
-                Date = "23/03/2023",
+                Date = DateOnly.Parse("2023/03/23"),
                 Template = true,
                 Image_id = null,
                 User_id = userId
@@ -244,7 +245,7 @@ public class MealsServiceTests
         var mealWithIngredients = resultList[0];
         Assert.Equal(1, mealWithIngredients.Id);
         Assert.Equal("Template Meal", mealWithIngredients.Name);
-        Assert.Equal("23/03/2023", mealWithIngredients.Date);
+        Assert.Equal(DateOnly.Parse("2023/03/23"), mealWithIngredients.Date);
         Assert.True(mealWithIngredients.Template);
         Assert.Null(mealWithIngredients.Image_id);
         Assert.Equal(userId, mealWithIngredients.User_id);
@@ -274,7 +275,7 @@ public class MealsServiceTests
             {
                 Id = 1,
                 Name = "Template Meal",
-                Date = "23/03/2023",
+                Date = DateOnly.Parse("2023/03/23"),
                 Template = false,
                 Image_id = null,
                 User_id = 1
@@ -301,7 +302,7 @@ public class MealsServiceTests
             {
                 Id = 1,
                 Name = "Template Meal",
-                Date = "23/03/2023",
+                Date = DateOnly.Parse("2023/03/23"),
                 Template = false,
                 Image_id = null,
                 User_id = 2
@@ -341,7 +342,7 @@ public class MealsServiceTests
             {
                 Id = 1,
                 Name = "Template Meal 1",
-                Date = "23/03/2023",
+                Date = DateOnly.Parse("2023/03/23"),
                 Template = false,
                 Image_id = null,
                 User_id = 1
@@ -350,7 +351,7 @@ public class MealsServiceTests
             {
                 Id = 2,
                 Name = "Template Meal 2",
-                Date = "23/03/2023",
+                Date = DateOnly.Parse("2023/03/23"),
                 Template = true,
                 Image_id = null,
                 User_id = 1
@@ -397,7 +398,7 @@ public class MealsServiceTests
             {
                 Id = 1,
                 Name = "Template Meal 1",
-                Date = "23/03/2023",
+                Date = DateOnly.Parse("2023/03/23"),
                 Template = false,
                 Image_id = null,
                 User_id = 1
@@ -406,7 +407,7 @@ public class MealsServiceTests
             {
                 Id = 2,
                 Name = "Template Meal 2",
-                Date = "23/03/2023",
+                Date = DateOnly.Parse("2023/03/23"),
                 Template = true,
                 Image_id = null,
                 User_id = 2
@@ -447,7 +448,7 @@ public class MealsServiceTests
             {
                 Id = 1,
                 Name = "Template Meal 1",
-                Date = "23/03/2023",
+                Date = DateOnly.Parse("2023/03/23"),
                 Template = false,
                 Image_id = null,
                 User_id = 1
@@ -456,7 +457,7 @@ public class MealsServiceTests
             {
                 Id = 2,
                 Name = "Template Meal 2",
-                Date = "23/03/2023",
+                Date = DateOnly.Parse("2023/03/23"),
                 Template = true,
                 Image_id = null,
                 User_id = 1

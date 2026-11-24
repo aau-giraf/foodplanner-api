@@ -4,9 +4,7 @@ namespace DummyData.Foodplanner;
 
 public static class MealSeeder
 {
-    public static async Task SeedAsync(
-        NpgsqlConnection connection,
-        NpgsqlTransaction transaction)
+    public static async Task SeedAsync(NpgsqlConnection connection, NpgsqlTransaction transaction)
     {
         Console.WriteLine("Seeding meals...");
 
@@ -16,28 +14,28 @@ public static class MealSeeder
             new
             {
                 name = "Test's Madpakke",
-                date = DateTime.Today.AddDays(7).ToString(),
+                date = DateOnly.FromDateTime(DateTime.Today).AddDays(1),
                 image_id = 1,
                 user_id = 1,
             },
             new
             {
                 name = "Frederik's Madpakke",
-                date = DateTime.Today.AddDays(7).ToString(),
+                date = DateOnly.FromDateTime(DateTime.Today).AddDays(2),
                 image_id = 2,
                 user_id = 2,
             },
             new
             {
                 name = "Sebastian's Madpakke",
-                date = DateTime.Today.AddDays(7).ToString(),
+                date = DateOnly.FromDateTime(DateTime.Today).AddDays(3),
                 image_id = 3,
                 user_id = 2,
             },
             new
             {
                 name = "Sara's Madpakke",
-                date = DateTime.Today.AddDays(7).ToString(),
+                date = DateOnly.FromDateTime(DateTime.Today).AddDays(4),
                 image_id = 4,
                 user_id = 2,
             },

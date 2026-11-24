@@ -1,5 +1,6 @@
 using FoodplannerModels.Lunchbox;
 using FoodplannerDataAccessSql.Lunchbox;
+using System;
 
 // Adds the MealService class to the FoodplannerServices.Lunchbox namespace
 namespace FoodplannerServices.Lunchbox;
@@ -8,12 +9,18 @@ namespace FoodplannerServices.Lunchbox;
 public class MealsService(IMealsRepository mealsRepository, IPackedRepository packedRepository, IIngredientsRepository ingredientRepository) : IMealsService
 {   
     // Retrieves all meals and their ingredients from a user id.
-    public async Task<IEnumerable<MealWithIngredientsDTO>> GetAllMealsByUserAndDateAsync(int userId, string date)
+    public async Task<IEnumerable<MealWithIngredientsDTO>> GetAllMealsByUserAndDateAsync(int userId, DateOnly startDate, DateOnly endDate)
     {
+
+		if (endDate.CompareTo(startDate) < 0)
+		{
+			throw new Exception($"The end date is before the start date");
+		}
+
         try
         {
             // Fetch all meals for the given user and date.
-            var meals = await mealsRepository.GetAllByUserAndDateAsync(userId, date);
+            var meals = await mealsRepository.GetAllByUserAndDateAsync(userId, startDate, endDate);
             var mealsWithIngredients = new List<MealWithIngredientsDTO>();
 
             // For each meal, fetch its packed ingredients and the corresponding ingredient details.
@@ -22,11 +29,20 @@ public class MealsService(IMealsRepository mealsRepository, IPackedRepository pa
                 mealsWithIngredients.Add(await AddIngredientsToMealAsync(meal));
             }
             return mealsWithIngredients;
-        }
-        catch (Exception exception)
+		}
+		catch (FormatException e)
+		{
+			throw new Exception($"Invalid date format or nonexistent date: {e.Message}");
+		}
+		catch (ArgumentNullException)
+		{
+			throw new Exception("Input date was null.");
+		}
+		catch (Exception exception)
         {
-            throw new Exception($"Error retrieving meals for user ID {userId} on date {date}: {exception.Message}", exception);
+            throw new Exception($"Error retrieving meals for user ID {userId} on date {startDate}: {exception.Message}", exception);
         }
+
     }
 
     // Retrieves a specific meal by its ID.
