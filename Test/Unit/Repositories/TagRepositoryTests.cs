@@ -90,7 +90,7 @@ public class TagRepositoryTests
        int Category_id = Rnd.Next();
 
        // Creates a Tag based on the ingredientID and CategoryID
-       var Tag = new TagDTO
+       var Tag = new Tag
        {
            Ingredient_id = Ingredient_id, 
            Category_id = Category_id

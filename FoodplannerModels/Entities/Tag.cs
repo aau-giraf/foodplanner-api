@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FoodplannerModels.Tags;
 
-public class TagDTO
+public class Tag
 {
     [ForeignKey ("Ingredients")]
     [Required(ErrorMessage = "Ingredient påkrævet")]

@@ -9,6 +9,6 @@ public class SavePixabayImageDTO
     public required string SearchWord { get; set; } 
 
     public required Ingredient ingredientId { get; set; }
-    public required CategoryDTO categoryIds { get; set; }
+    public required Category categoryIds { get; set; }
 
 }

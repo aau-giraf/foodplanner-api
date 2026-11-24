@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace FoodplannerModels.Tags;
-public class CategoryDTO
+public class Category
 {
     [Key]
     [Required]

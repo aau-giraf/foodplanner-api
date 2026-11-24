@@ -40,7 +40,7 @@ public class IngredientsRepository(IDapperExecutor executor) : IIngredientsRepos
         foreach(var categoryId in categoryIds ?? Enumerable.Empty<int>())
         {
             // Tag created based on ingredient id and category id
-            var tag = new TagDTO
+            var tag = new Tag
             {
                 Ingredient_id = ingredientId,
                 Category_id = categoryId

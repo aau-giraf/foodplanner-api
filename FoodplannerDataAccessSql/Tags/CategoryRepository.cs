@@ -9,11 +9,11 @@ public class CategoryRepository(IDapperExecutor executor) : ICategoryRepository
 {
 
     // Get all categories from the database
-    public async Task<IEnumerable<CategoryDTO>> GetAllAsync()
+    public async Task<IEnumerable<Category>> GetAllAsync()
     {
         var sql = "SELECT * FROM categories";
 
-        return await executor.QueryAsync<CategoryDTO>(sql);
+        return await executor.QueryAsync<Category>(sql);
 
     }
 
@@ -28,7 +28,7 @@ public class CategoryRepository(IDapperExecutor executor) : ICategoryRepository
 
     // Method to insert a new category into categories table 
     // Returns category ID
-    public async Task<int> InsertAsync(CategoryDTO entity)
+    public async Task<int> InsertAsync(Category entity)
     {
         var sql = "INSERT INTO categories (name, main) VALUES (@Name, @Main) RETURNING id";
 
@@ -37,14 +37,14 @@ public class CategoryRepository(IDapperExecutor executor) : ICategoryRepository
 
     // Method for retrieving category by ID
     // Returns category with specific ID
-    public async Task<CategoryDTO?> GetByIdAsync(int Id)
+    public async Task<Category?> GetByIdAsync(int Id)
     {
         var sql = "SELECT id, name, main FROM categories WHERE id = @Id";
-        return await executor.QuerySingleOrDefaultAsync<CategoryDTO>(sql, new {Id = Id});       
+        return await executor.QuerySingleOrDefaultAsync<Category>(sql, new {Id = Id});       
     }
 
     // Method to update category from categories table based on ID
-    public async Task<int> UpdateAsync(CategoryDTO entity)
+    public async Task<int> UpdateAsync(Category entity)
     {
         var sql = "UPDATE categories SET name = @Name, main = @Main WHERE id = @Id";
         return await executor.ExecuteAsync(sql, new

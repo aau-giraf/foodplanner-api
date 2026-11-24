@@ -14,7 +14,7 @@ public class TagService(ITagRepository tagRepository, IFoodImageService foodImag
     // Returns a new Tag with ID
     public async Task<int> CreateTagAsync (int category_id, int ingredient_id)
     {
-          var tag = new TagDTO
+          var tag = new Tag
           {
               Category_id = category_id,
               Ingredient_id = ingredient_id

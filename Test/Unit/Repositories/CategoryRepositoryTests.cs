@@ -44,7 +44,7 @@ public class CategoryRepositoryTests
        int CategoryId = Rnd.Next();
 
        // Creates a main category called "frugt"
-       var Category = new CategoryDTO
+       var Category = new Category
        {
            Name = "frugt",
            Main = true
