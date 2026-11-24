@@ -45,8 +45,8 @@ public class TagRepository(IDapperExecutor executor) : ITagRepository
     // Returns tag ID
     public async Task<int> InsertAsync(TagDTO entity)
     {
-        var sql = "INSERT INTO tags (category_id, ingredient_id) VALUES (@Category_id, @Ingredient_id) RETURNING id";
-        return await executor.QuerySingleAsync<int>(sql);
+        var sql = "INSERT INTO tags (ingredient_id, category_id) VALUES (@Ingredient_id, @Category_id) RETURNING id";
+        return await executor.QuerySingleAsync<int>(sql, new { entity.Ingredient_id, entity.Category_id});
     }
 
     // Method for retrieving tag by ID

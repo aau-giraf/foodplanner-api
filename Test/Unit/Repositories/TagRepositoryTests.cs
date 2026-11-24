@@ -1,22 +1,25 @@
 using FoodplannerDataAccessSql;
 using FoodplannerDataAccessSql.Tags;
-using FoodplannerModels.Lunchbox;
 using FoodplannerModels.Tags;
 using Moq;
-using Xunit;
 
+// Adds Tag Repository to the Test.Unit.RepositoryTests namespace
 namespace Test.Unit.RepositoryTests;
 
+// Tests for Tag Repository class
 public class TagRepositoryTests
 {
+    // Mocks the dapper executor 
     private readonly Mock<IDapperExecutor> MockExecutor = new();
     private readonly TagRepository Repository;
 
+    // Constructor for the repository with mock executor
     public TagRepositoryTests()
     {
         Repository = new TagRepository(MockExecutor.Object);
     }
 
+     // Helper method 
     private static bool HasParameter(object? Parameters, string Name, object? ExpectedValue)
     {
         if (Parameters == null)
@@ -59,7 +62,7 @@ public class TagRepositoryTests
             .ReturnsAsync(foodImageIds);
 
         // Act
-        // call repository method
+        // Call repository method
         var result = await Repository.GetImageIdsFromTagsAsync(categories);
 
         // Assert 
@@ -76,7 +79,7 @@ public class TagRepositoryTests
 
 
     [Fact]
-    [Trait("Category", "Unit")]
+    [Trait("Tags", "Unit")]
     public async Task CreateTag_Success()
     {
        // Arrange 
@@ -84,23 +87,23 @@ public class TagRepositoryTests
        var Rnd = new Random();
        int TagId = Rnd.Next();
        int Ingredient_id = Rnd.Next();
-       int Category_Id = Rnd.Next();
+       int Category_id = Rnd.Next();
 
-       // Creates a Tag
+       // Creates a Tag based on the ingredientID and CategoryID
        var Tag = new TagDTO
        {
            Ingredient_id = Ingredient_id, 
-           Category_id = Category_Id
+           Category_id = Category_id
        };
 
-
         // SQL query that inserts a new tag
-        const string sql = "INSERT INTO tags (ingredient_id, category_id) VALUES (@Category_id, @Ingredient_id) RETURNING id";
+        const string sql = "INSERT INTO tags (ingredient_id, category_id) VALUES (@Ingredient_id, @Category_id) RETURNING id";
 
+        // Returns TagID when SQL query is called
         MockExecutor.Setup(e => e.QuerySingleAsync<int>(sql, It.IsAny<object?>())).ReturnsAsync(TagId);
 
-
         // Act
+        // Calls repository method
         var Result = await Repository.InsertAsync(Tag);
 
         // Assert

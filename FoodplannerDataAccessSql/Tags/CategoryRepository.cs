@@ -1,4 +1,3 @@
-using Dapper;
 using FoodplannerModels.Tags;
 
 // Adds Category Repository to the FoodplannerDataAccessSql.Tags namespace

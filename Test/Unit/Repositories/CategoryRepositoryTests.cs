@@ -6,7 +6,7 @@ using Moq;
 // Adds CategoryrepositoryTests to the Test.Unit.RepositoryTests namespace
 namespace Test.Unit.RepositoryTests;
 
-// Tests on Category Repository class 
+// Tests for Category Repository class 
 public class CategoryRepositoryTests
 {
     // Mocks the dapper executor 
@@ -54,10 +54,12 @@ public class CategoryRepositoryTests
         // SQL query that inserts a new category 
         const string sql = "INSERT INTO categories (name, main) VALUES (@Name, @Main) RETURNING id";
 
+        // Returns CategoryID when SQL query is called
         MockExecutor.Setup(e => e.QuerySingleAsync<int>(sql, It.IsAny<object?>())).ReturnsAsync(CategoryId);
 
 
         // Act
+        // Calls repository method
         var Result = await Repository.InsertAsync(Category);
 
         // Assert
