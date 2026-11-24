@@ -43,24 +43,6 @@ public class MealsService(IMealsRepository mealsRepository, IPackedRepository pa
             throw new Exception($"Error retrieving meals for user ID {userId} on date {startDate}: {exception.Message}", exception);
         }
 
-
-        // try
-        // {
-        //     // Fetch all meals for the given user and date.
-        //     var meals = await mealsRepository.GetAllByUserAndDateAsync(userId, convStartDate, convEndDate);
-        //     var mealsWithIngredients = new List<MealWithIngredientsDTO>();
-
-        //     // For each meal, fetch its packed ingredients and the corresponding ingredient details.
-        //     foreach (var meal in meals)
-        //     {
-        //         mealsWithIngredients.Add(await AddIngredientsToMealAsync(meal));
-        //     }
-        //     return mealsWithIngredients;
-        // }
-        // catch (Exception exception)
-        // {
-        //     throw new Exception($"Error retrieving meals for user ID {userId} on date {startDate}: {exception.Message}", exception);
-        // }
     }
 
     // Retrieves a specific meal by its ID.
