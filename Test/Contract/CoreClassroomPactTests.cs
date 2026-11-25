@@ -59,4 +59,25 @@ public class CoreClassroomPactTests
             Assert.Equal("1.Y", classroom.ClassName);
         });
     }
+
+
+    [Fact]
+    [Trait("Category", "Integration")]
+    public async Task DeleteClassroomAsync_satisfies_the_contract_with_core()
+    {
+        _pact
+            .UponReceiving("a request to delete a classroom")
+            .Given("that classroom exists")
+            .WithRequest(HttpMethod.Delete, "/legacy/foodplanner/api/Classrooms/Delete/1")
+            .WillRespond()
+            .WithStatus(HttpStatusCode.OK);
+
+        await _pact.VerifyAsync(async context =>
+        {
+            using HttpClient http = new HttpClient { BaseAddress = context.MockServerUri };
+            CoreClient client = new CoreClient(http);
+
+            await client.DeleteClassroomAsyncTest(1);
+        });
+    }
 }

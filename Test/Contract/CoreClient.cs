@@ -9,6 +9,7 @@ public class CoreClient(HttpClient httpClient)
 {
     // add a new URI here when writing a new Pact test for an endpoint
     private const string GetAllClassroomsPath = "/legacy/foodplanner/api/Classrooms/GetAll";
+    private const string DeleteClassroomPath = "legacy/foodplanner/api/Classrooms/Delete/"; // + {id}
 
     // add a new method here when writing a new Pact test for an endpoint
     // replace the request type with the desired one. 
@@ -16,5 +17,10 @@ public class CoreClient(HttpClient httpClient)
     {
         var classrooms = await httpClient.GetFromJsonAsync<List<Classroom>>(GetAllClassroomsPath);
         return classrooms ?? [];
+    }
+
+    public async Task DeleteClassroomAsyncTest(int id)
+    {
+        await httpClient.DeleteAsync(DeleteClassroomPath + id);
     }
 }
