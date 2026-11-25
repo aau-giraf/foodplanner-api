@@ -6,14 +6,15 @@ namespace FoodplannerDataAccessSql.Lunchbox;
 public class MealsRepository(IDapperExecutor executor) : IMealsRepository
 {
     // Asynchronously retrieves all meals based on user id and date.
-    public async Task<IEnumerable<Meal>> GetAllByUserAndDateAsync(int id, string date)
+    public async Task<IEnumerable<Meal>> GetAllByUserAndDateAsync(int id, DateOnly startDate, DateOnly endDate)
     {
-        var sql = "SELECT * FROM meals WHERE user_id = @UserId AND date = @Date";
+        var sql = "SELECT * FROM meals WHERE user_id = @UserId AND date BETWEEN @start AND @end";
 
         return await executor.QueryAsync<Meal>(sql, new
         {
             UserId = id,
-            Date = date
+            start = startDate,
+            end = endDate
         });
     }
 

@@ -1,4 +1,6 @@
 using FoodplannerModels.Image;
+using FoodplannerModels.Lunchbox;
+using FoodplannerModels.Tags;
 
 namespace FoodplannerServices.Image;
 
@@ -6,5 +8,5 @@ namespace FoodplannerServices.Image;
 public interface IPixabayService
 {
     public Task<Pixabay> GetPixabayImage (GetPixabayImageDTO search);
-    public Task<int> SavePixabayUrl(int userId, string keyword, string url);
+    public Task<int> SavePixabayUrl(int userId, string keyword, string url );
 }

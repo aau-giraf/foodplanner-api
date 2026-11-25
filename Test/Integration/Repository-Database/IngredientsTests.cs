@@ -98,11 +98,12 @@ public class IngredientsTests
                 Id = 0,
                 Name = "Inserted Ingredient",
                 User_id = 12345,
-                Image_id = null
+                Image_id = null,
+                Is_stock_img = false
             };
 
             // Act
-            int id = await repository.InsertAsync(ingredient);
+            int id = await repository.InsertAsync(ingredient, null);
             createdIngredientIds.Add(id);
 
             // Assert
@@ -134,7 +135,8 @@ public class IngredientsTests
                 Id = id,
                 Name = "Updated Ingredient",
                 User_id = 67890,
-                Image_id = null
+                Image_id = null,
+                Is_stock_img = false
             };
 
             // Act

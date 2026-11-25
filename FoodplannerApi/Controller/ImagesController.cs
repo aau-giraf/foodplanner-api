@@ -170,4 +170,16 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
             }
         }
     }
+
+    // URL: api/Images/GetAllStockImages
+    // Retrieves food stock images. Returns 200 OK with the food image data if found
+    [HttpGet]
+    [AuthorizeImageOwnerFilter]
+    [Authorize(Roles = "Child, Parent")]
+    [ProducesResponseType(typeof(FoodImage), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllStockImages()
+    {
+        var images = await foodImageService.GetAllStockImagesAsync();
+        return Ok(images);
+    }
 }

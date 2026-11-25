@@ -6,4 +6,6 @@ public class Ingredient {
     public required string Name {get; set;}
     public required int User_id {get; set;}
     public int? Image_id {get; set;}
+
+    public bool? Is_stock_img{get; set;}
 }

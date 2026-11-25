@@ -6,8 +6,6 @@ using FoodplannerServices.Lunchbox;
 using FoodplannerModels.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using FoodplannerModels.Account;
-using Microsoft.AspNetCore.Authentication;
 
 namespace Test.Integration.Controllers;
 
@@ -36,27 +34,20 @@ public class MealsTests
         // Arrange
         int userId = 12345;
         string token = "Bearer test-token";
-        string date = "2026-11-16";
-        mockAuthService.Setup(a => a.RetrieveIdFromJwtToken(token))
-            .Returns(userId.ToString());
+        DateOnly date = DateOnly.Parse("2026/11/16");
         int mealId1 = 42;
         int mealId2 = 32;
         var expected1 = CreateMeal(mealId1, "Test Meal1", userId);
         var expected2 = CreateMeal(mealId2, "Test Meal2", userId);
-
         var expectedMeals = new[] { expected1, expected2 };
 
-        mockRepository.Setup(r => r.GetAllByUserAndDateAsync(userId, date))
-            .ReturnsAsync(expectedMeals);
-
-        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId1))
-            .ReturnsAsync([]);
-
-        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId2))
-            .ReturnsAsync([]);
+        mockAuthService.Setup(a => a.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
+        mockRepository.Setup(r => r.GetAllByUserAndDateAsync(userId, date, date)).ReturnsAsync(expectedMeals);
+        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId1)).ReturnsAsync([]);
+        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId2)).ReturnsAsync([]);
 
         //Act
-        var result = await controller.GetAllByUser(token, date);
+        var result = await controller.GetAllByUser(token, date, date);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -76,7 +67,7 @@ public class MealsTests
         });
 
         mockAuthService.Verify(a => a.RetrieveIdFromJwtToken(token), Times.Once);
-        mockRepository.Verify(r => r.GetAllByUserAndDateAsync(userId, date), Times.Once);
+        mockRepository.Verify(r => r.GetAllByUserAndDateAsync(userId, date, date), Times.Once);
         mockPackedRepository.Verify(r => r.GetAllByMealIdAsync(mealId1), Times.Once);
         mockPackedRepository.Verify(r => r.GetAllByMealIdAsync(mealId2), Times.Once);
         mockIngredientsRepository.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Never);
@@ -88,25 +79,19 @@ public class MealsTests
     {
         // Arrange
         int userId = 12345;
-        string date = "2026-11-16";
+        DateOnly date = DateOnly.Parse("2026/11/16");
         int mealId1 = 42;
         int mealId2 = 32;
         var expected1 = CreateMeal(mealId1, "Test Meal1", userId);
         var expected2 = CreateMeal(mealId2, "Test Meal2", userId);
-
         var expectedMeals = new[] { expected1, expected2 };
 
-        mockRepository.Setup(r => r.GetAllByUserAndDateAsync(userId, date))
-            .ReturnsAsync(expectedMeals);
-
-        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId1))
-            .ReturnsAsync([]);
-
-        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId2))
-            .ReturnsAsync([]);
+        mockRepository.Setup(r => r.GetAllByUserAndDateAsync(userId, date, date)).ReturnsAsync(expectedMeals);
+        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId1)).ReturnsAsync([]);
+        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId2)).ReturnsAsync([]);
 
         //Act
-        var result = await controller.TeacherGetUserMeals(date, userId);
+        var result = await controller.TeacherGetUserMeals(date, date, userId);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -126,7 +111,7 @@ public class MealsTests
         });
 
         mockAuthService.Verify(a => a.RetrieveIdFromJwtToken(It.IsAny<string>()), Times.Never);
-        mockRepository.Verify(r => r.GetAllByUserAndDateAsync(userId, date), Times.Once);
+        mockRepository.Verify(r => r.GetAllByUserAndDateAsync(userId, date, date), Times.Once);
         mockPackedRepository.Verify(r => r.GetAllByMealIdAsync(mealId1), Times.Once);
         mockPackedRepository.Verify(r => r.GetAllByMealIdAsync(mealId2), Times.Once);
         mockIngredientsRepository.Verify(r => r.GetByIdAsync(It.IsAny<int>()), Times.Never);
@@ -141,11 +126,8 @@ public class MealsTests
         int mealId = 42;
         var expected = CreateMeal(mealId, "Test Meal1", userId);
 
-        mockRepository.Setup(r => r.GetByIdAsync(mealId))
-            .ReturnsAsync(expected);
-
-        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId))
-            .ReturnsAsync([]);
+        mockRepository.Setup(r => r.GetByIdAsync(mealId)).ReturnsAsync(expected);
+        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId)).ReturnsAsync([]);
 
         //Act
         var result = await controller.Get(mealId);
@@ -168,12 +150,8 @@ public class MealsTests
         //Arrange
         int userId = 12345;
         string token = "Bearer test-token";
-        mockAuthService.Setup(a => a.RetrieveIdFromJwtToken(token))
-            .Returns(userId.ToString());
-
         int generatedId = 42;
-        string date = "2026-11-16";
-
+        DateOnly date = DateOnly.Parse("2026/11/16");
         var mealToCreate = new MealCreateDTO
         {
             Name = "Test Meal",
@@ -184,12 +162,10 @@ public class MealsTests
 
         var expected = CreateMeal(generatedId, "Test Meal", userId);
 
-        mockRepository.Setup(r => r.InsertAsync(mealToCreate, userId))
-            .ReturnsAsync(generatedId);
-        mockRepository.Setup(r => r.GetByIdAsync(generatedId))
-            .ReturnsAsync(expected);
-        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(generatedId))
-            .ReturnsAsync([]);
+        mockAuthService.Setup(a => a.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
+        mockRepository.Setup(r => r.InsertAsync(mealToCreate, userId)).ReturnsAsync(generatedId);
+        mockRepository.Setup(r => r.GetByIdAsync(generatedId)).ReturnsAsync(expected);
+        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(generatedId)).ReturnsAsync([]);
 
         //Act
         var result = await controller.Create(token,mealToCreate);
@@ -217,19 +193,13 @@ public class MealsTests
         //Arrange
         int userId = 12345;
         string token = "Bearer test-token";
-        mockAuthService.Setup(a => a.RetrieveIdFromJwtToken(token))
-            .Returns(userId.ToString());
-        
         int mealId = 42;
         var updated = CreateMeal(mealId, "Updated Meal", userId);
 
-        mockRepository.Setup(r => r.UpdateAsync(updated))
-            .ReturnsAsync(1);
-        mockRepository.Setup(r => r.GetByIdAsync(mealId))
-            .ReturnsAsync(updated);
-
-        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId))
-            .ReturnsAsync([]);
+        mockAuthService.Setup(a => a.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
+        mockRepository.Setup(r => r.UpdateAsync(updated)).ReturnsAsync(1);
+        mockRepository.Setup(r => r.GetByIdAsync(mealId)).ReturnsAsync(updated);
+        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId)).ReturnsAsync([]);
 
         //Act
         var result = await controller.Update(token, updated);
@@ -255,12 +225,9 @@ public class MealsTests
         int mealId = 42;
         var deleted = CreateMeal(mealId, "Deleted Meal", userId);
 
-        mockRepository.Setup(r => r.DeleteAsync(mealId))
-            .ReturnsAsync(1);
-        mockRepository.Setup(r => r.GetByIdAsync(mealId))
-            .ReturnsAsync(deleted);
-        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId))
-            .ReturnsAsync([]);
+        mockRepository.Setup(r => r.DeleteAsync(mealId)).ReturnsAsync(1);
+        mockRepository.Setup(r => r.GetByIdAsync(mealId)).ReturnsAsync(deleted);
+        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId)).ReturnsAsync([]);
 
         //Act
         var result = await controller.Delete(mealId);
@@ -285,23 +252,16 @@ public class MealsTests
         //Arrange
         int userId = 12345;
         string token = "Bearer test-token";
-        mockAuthService.Setup(a => a.RetrieveIdFromJwtToken(token))
-            .Returns(userId.ToString());
         int mealId1 = 42;
         int mealId2 = 32;
         var expected1 = CreateMeal(mealId1, "Test Meal1", userId, true);
         var expected2 = CreateMeal(mealId2, "Test Meal2", userId, true);
-
         var expectedMeals = new[] { expected1, expected2 };
 
-        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId1))
-            .ReturnsAsync([]);
-
-        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId2))
-            .ReturnsAsync([]);
-
-        mockRepository.Setup(r => r.GetAllTemplatesByUserAsync(userId))
-            .ReturnsAsync(expectedMeals);
+        mockAuthService.Setup(a => a.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
+        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId1)).ReturnsAsync([]);
+        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId2)).ReturnsAsync([]);
+        mockRepository.Setup(r => r.GetAllTemplatesByUserAsync(userId)).ReturnsAsync(expectedMeals);
 
         //Act
         var result = await controller.GetAllTemplates(token);
@@ -315,7 +275,6 @@ public class MealsTests
         Assert.Equal(expected1.Name, meals[0].Name);
         Assert.Equal(expected2.Id, meals[1].Id);
         Assert.Equal(expected2.Name, meals[1].Name);
-
         Assert.All(meals, meal =>
         {
             Assert.Equal(userId, meal.User_id);
@@ -333,29 +292,20 @@ public class MealsTests
         int mealId = 42;
         string token = "Bearer test-token";
         bool template = true;
-
         var original = CreateMeal(mealId, "Test Meal", userId, false);
 
-        mockAuthService.Setup(a => a.RetrieveIdFromJwtToken(token))
-            .Returns(userId.ToString());
-
-        mockRepository.Setup(r => r.GetByIdAsync(mealId))
-            .ReturnsAsync(original);
-
-        mockRepository.Setup(r => r.UpdateTemplateStatusAsync(mealId, template))
-            .ReturnsAsync(1);
+        mockAuthService.Setup(a => a.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
+        mockRepository.Setup(r => r.GetByIdAsync(mealId)).ReturnsAsync(original);
+        mockRepository.Setup(r => r.UpdateTemplateStatusAsync(mealId, template)).ReturnsAsync(1);
 
         // Act
         var result = await controller.UpdateTemplateStatus(token, mealId, template);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-
         Assert.NotNull(okResult.Value);
 
-        var message = okResult.Value.GetType()
-            .GetProperty("Message")?.GetValue(okResult.Value);
-
+        var message = okResult.Value.GetType().GetProperty("Message")?.GetValue(okResult.Value);
         Assert.Equal("Template status updated successfully", message);
 
         mockAuthService.Verify(a => a.RetrieveIdFromJwtToken(token), Times.Once);
@@ -370,15 +320,11 @@ public class MealsTests
         // Arrange
         int userId = 12345;
         string token = "Bearer test-token";
-
         int mealId1 = 42;
         int mealId2 = 32;
-
         var meal1 = CreateMeal(mealId1, "Test Meal1", userId);
         var meal2 = CreateMeal(mealId2, "Test Meal2", userId);
-
         var mealIds = new List<int> { mealId1, mealId2 };
-
         var ingredient1 = new Ingredient
         {
             Id = 1,
@@ -386,7 +332,6 @@ public class MealsTests
             User_id = userId,
             Image_id = null
         };
-
         var ingredient2 = new Ingredient
         {
             Id = 2,
@@ -394,7 +339,6 @@ public class MealsTests
             User_id = userId,
             Image_id = null
         };
-
         var ingredient3 = new Ingredient
         {
             Id = 3,
@@ -402,42 +346,25 @@ public class MealsTests
             User_id = userId,
             Image_id = null
         };
-
         var packedMeal1 = new[]
         {
             new Packed { Meal_id = mealId1, Ingredient_id = 1, order_no = 1 },
             new Packed { Meal_id = mealId1, Ingredient_id = 2, order_no = 2 }
         };
-
         var packedMeal2 = new[]
         {
             new Packed { Meal_id = mealId2, Ingredient_id = 2, order_no = 1 },
             new Packed { Meal_id = mealId2, Ingredient_id = 3, order_no = 2 }
         };
 
-        mockAuthService.Setup(a => a.RetrieveIdFromJwtToken(token))
-            .Returns(userId.ToString());
-
-        mockRepository.Setup(r => r.GetByIdAsync(mealId1))
-            .ReturnsAsync(meal1);
-
-        mockRepository.Setup(r => r.GetByIdAsync(mealId2))
-            .ReturnsAsync(meal2);
-
-        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId1))
-            .ReturnsAsync(packedMeal1);
-
-        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId2))
-            .ReturnsAsync(packedMeal2);
-
-        mockIngredientsRepository.Setup(r => r.GetByIdAsync(1))
-            .ReturnsAsync(ingredient1);
-
-        mockIngredientsRepository.Setup(r => r.GetByIdAsync(2))
-            .ReturnsAsync(ingredient2);
-
-        mockIngredientsRepository.Setup(r => r.GetByIdAsync(3))
-            .ReturnsAsync(ingredient3);
+        mockAuthService.Setup(a => a.RetrieveIdFromJwtToken(token)).Returns(userId.ToString());
+        mockRepository.Setup(r => r.GetByIdAsync(mealId1)).ReturnsAsync(meal1);
+        mockRepository.Setup(r => r.GetByIdAsync(mealId2)).ReturnsAsync(meal2);
+        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId1)).ReturnsAsync(packedMeal1);
+        mockPackedRepository.Setup(r => r.GetAllByMealIdAsync(mealId2)).ReturnsAsync(packedMeal2);
+        mockIngredientsRepository.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(ingredient1);
+        mockIngredientsRepository.Setup(r => r.GetByIdAsync(2)).ReturnsAsync(ingredient2);
+        mockIngredientsRepository.Setup(r => r.GetByIdAsync(3)).ReturnsAsync(ingredient3);
 
         // Act
         var result = await controller.GetUniqueIngredientsFromMeals(token, mealIds);
@@ -447,22 +374,16 @@ public class MealsTests
         var ingredients = Assert.IsAssignableFrom<IEnumerable<Ingredient>>(okResult.Value).ToList();
 
         Assert.Equal(3, ingredients.Count);
-
         Assert.Contains(ingredients, i => i.Id == ingredient1.Id && i.Name == ingredient1.Name);
         Assert.Contains(ingredients, i => i.Id == ingredient2.Id && i.Name == ingredient2.Name);
         Assert.Contains(ingredients, i => i.Id == ingredient3.Id && i.Name == ingredient3.Name);
-
-        Assert.All(ingredients, ingredient =>
-            Assert.Equal(userId, ingredient.User_id));
+        Assert.All(ingredients, ingredient => Assert.Equal(userId, ingredient.User_id));
 
         mockAuthService.Verify(a => a.RetrieveIdFromJwtToken(token), Times.Once);
-
         mockRepository.Verify(r => r.GetByIdAsync(mealId1), Times.Once);
         mockRepository.Verify(r => r.GetByIdAsync(mealId2), Times.Once);
-
         mockPackedRepository.Verify(r => r.GetAllByMealIdAsync(mealId1), Times.Once);
         mockPackedRepository.Verify(r => r.GetAllByMealIdAsync(mealId2), Times.Once);
-
         mockIngredientsRepository.Verify(r => r.GetByIdAsync(1), Times.Once);
         mockIngredientsRepository.Verify(r => r.GetByIdAsync(2), Times.Exactly(2));
         mockIngredientsRepository.Verify(r => r.GetByIdAsync(3), Times.Once);
@@ -475,7 +396,7 @@ public class MealsTests
             Id = id,
             Name = name,
             User_id = userId,
-            Date = "2026-11-16",
+            Date = DateOnly.Parse("2026/11/16"),
             Template = template,
             Image_id = null
         };

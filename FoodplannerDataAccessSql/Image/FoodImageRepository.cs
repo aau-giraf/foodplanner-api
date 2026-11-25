@@ -51,4 +51,56 @@ public class FoodImageRepository : IFoodImageRepository
             return affected; 
         }
     }
+
+    // IFoodImageRepository specific methods (extended from IGenericRepository class)
+    // Asynchronously runs GetAllSync from this class 
+    public async Task<IEnumerable<FoodImage>> GetAllImagesAsync()
+    {
+        using var connection = _connectionFactory.Create();
+        connection.Open();
+
+        const string sql = "SELECT * FROM food_image";
+        return await connection.QueryAsync<FoodImage>(sql);
+    }
+
+    // Asynchronously use the GetById method from this class 
+    // And throw an exception if ID is not found 
+    public async Task<FoodImage> GetImageByIdAsync(int foodImageId)
+    {
+        var result = await GetByIdAsync(foodImageId);
+        return result ?? throw new KeyNotFoundException($"FoodImage with id {foodImageId} not found");
+    }
+
+    // Given attributes, create a new food image entity 
+    // Asynchronously add the new food image entry to database 
+    public async Task<int> InsertImageAsync(byte[] imageData, int userid, string imageName, string imageType, long imageStreamLength)
+    {
+        var entity = new FoodImage
+        {
+            ImageData = imageData,
+            UserId = userid,
+            ImageName = imageName,
+            ImageFileType = imageType,
+            Size = imageStreamLength
+        };
+        return await InsertAsync(entity);
+    }
+
+    // Asynchronously remove food image entry from database using DeleteAsync method from this class
+    public async Task DeleteImageAsync(int imageId)
+    {
+        await DeleteAsync(imageId);
+    }
+
+    // Asynchronously get all food images, where is_stock_image is true 
+    public async Task<IEnumerable<FoodImage>> GetAllStockImagesAsync()
+    {
+        const string sql = "SELECT * FROM food_image WHERE is_stock_image = true";
+        await using (var connection = _connectionFactory.Create())
+        {
+            connection.Open();
+            var result = await connection.QueryAsync<FoodImage>(sql);
+            return result; 
+        }
+    }
 }

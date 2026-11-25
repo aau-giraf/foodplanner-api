@@ -26,7 +26,7 @@ public class SubIngredientsController(SubIngredientService subIngredientService,
     }
 
     // URL: api/SubIngredients/Create
-    // Creates a new subingredient from SubIngredientDTO under user associated with authorization token
+    // Creates a new subingredient from SubIngredient under user associated with authorization token
     [HttpPost]
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(SubIngredient), StatusCodes.Status200OK)]
@@ -79,9 +79,9 @@ public class SubIngredientsController(SubIngredientService subIngredientService,
     [Authorize(Roles = "Child, Parent")]
     [ProducesResponseType(typeof(SubIngredient), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Delete([FromBody] SubIngredient subingredientDTO)
+    public async Task<IActionResult> Delete([FromBody] SubIngredient subIngredient)
     {
-        var result = await subIngredientService.DeleteSubIngredientAsync(subingredientDTO);
+        var result = await subIngredientService.DeleteSubIngredientAsync(subIngredient);
         if (result > 0)
         {
             return Ok(result);
