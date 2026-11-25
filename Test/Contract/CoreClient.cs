@@ -19,7 +19,7 @@ public class CoreClient(HttpClient httpClient)
         return classrooms ?? [];
     }
 
-    public async Task DeleteClassroomAsyncTest(int id)
+    public async Task DeleteClassroomTestAsync(int id)
     {
         await httpClient.DeleteAsync(DeleteClassroomPath + id);
     }

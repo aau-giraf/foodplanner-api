@@ -78,7 +78,7 @@ public class CoreClassroomPactTests
             using HttpClient http = new HttpClient { BaseAddress = context.MockServerUri };
             CoreClient client = new CoreClient(http);
 
-            await client.DeleteClassroomAsyncTest(1);
+            await client.DeleteClassroomTestAsync(1);
         });
     }
 }
