@@ -64,6 +64,33 @@
         "status": 200
       },
       "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a request to delete a classroom",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "that classroom exists"
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "path": "/legacy/foodplanner/api/Classrooms/Delete/1"
+      },
+      "response": {
+        "body": {
+          "content": 1,
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
     }
   ],
   "metadata": {
