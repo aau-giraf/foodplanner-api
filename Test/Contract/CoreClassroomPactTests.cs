@@ -70,7 +70,8 @@ public class CoreClassroomPactTests
             .Given("that classroom exists")
             .WithRequest(HttpMethod.Delete, "/legacy/foodplanner/api/Classrooms/Delete/1")
             .WillRespond()
-            .WithStatus(HttpStatusCode.OK);
+            .WithStatus(HttpStatusCode.OK)
+            .WithJsonBody(1); // 1 = success, has nothing to do with id of classroom
 
         await _pact.VerifyAsync(async context =>
         {

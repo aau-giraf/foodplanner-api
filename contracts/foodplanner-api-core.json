@@ -78,6 +78,16 @@
         "path": "/legacy/foodplanner/api/Classrooms/Delete/1"
       },
       "response": {
+        "body": {
+          "content": 1,
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
         "status": 200
       },
       "type": "Synchronous/HTTP"
