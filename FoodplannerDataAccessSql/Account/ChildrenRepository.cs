@@ -124,7 +124,8 @@ public class ChildrenRepository : IChildrenRepository
     {
         var sql = @"SELECT c.* FROM children c
                     JOIN child_relation cr ON c.child_id = cr.child_id
-                    WHERE cr.user_id = @TeacherId AND cr.role = 'Teacher'";
+                    JOIN users u ON cr.user_id = u.id
+                    WHERE cr.user_id = @TeacherId AND u.role = 'Teacher'";
         using (var connection = _connectionFactory.Create())
         {
             connection.Open();

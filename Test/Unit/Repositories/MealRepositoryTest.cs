@@ -2,7 +2,6 @@ using FoodplannerDataAccessSql;
 using FoodplannerDataAccessSql.Lunchbox;
 using FoodplannerModels.Lunchbox;
 using Moq;
-using Xunit;
 
 namespace Test.Unit.RepositoryTests;
 
@@ -35,26 +34,28 @@ public class MealsRepositoryTests
     {
         // Arrange
         int userId = 1;
-        string date = "18/11/2022";
+        DateOnly startDate = DateOnly.Parse("2022/11/18");
+		DateOnly endDate = DateOnly.Parse("2022/11/25");
 
         var meals = new List<Meal>
         {
-            new() { Id = 1, Name = "Pizza", User_id = userId, Date = date, Template = false },
-            new() { Id = 2, Name = "Pasta", User_id = userId, Date = date, Template = false }
+            new() { Id = 1, Name = "Pizza", User_id = userId, Date = startDate, Template = false },
+            new() { Id = 2, Name = "Pasta", User_id = userId, Date = endDate, Template = false }
         };
 
-        const string sql = "SELECT * FROM meals WHERE user_id = @UserId AND date = @Date";
+        const string sql = "SELECT * FROM meals WHERE user_id = @UserId AND date BETWEEN @start AND @end";
 
         mockExecutor
             .Setup(e => e.QueryAsync<Meal>(
                 sql,
                 It.Is<object?>(p =>
                     HasParameter(p, "UserId", userId) &&
-                    HasParameter(p, "Date", date))))
+                    HasParameter(p, "start", startDate) &&
+                    HasParameter(p, "end", endDate))))
             .ReturnsAsync(meals);
 
         // Act
-        var result = (await repository.GetAllByUserAndDateAsync(userId, date)).ToList();
+        var result = (await repository.GetAllByUserAndDateAsync(userId, startDate, endDate)).ToList();
 
         // Assert
         Assert.Equal(2, result.Count);
@@ -62,18 +63,19 @@ public class MealsRepositoryTests
         Assert.Equal(1, result[0].Id);
         Assert.Equal("Pizza", result[0].Name);
         Assert.Equal(userId, result[0].User_id);
-        Assert.Equal(date, result[0].Date);
+        Assert.Equal(startDate, result[0].Date);
 
         Assert.Equal(2, result[1].Id);
         Assert.Equal("Pasta", result[1].Name);
         Assert.Equal(userId, result[1].User_id);
-        Assert.Equal(date, result[1].Date);
+        Assert.Equal(endDate, result[1].Date);
 
         mockExecutor.Verify(e => e.QueryAsync<Meal>(
             sql,
             It.Is<object?>(p =>
                 HasParameter(p, "UserId", userId) &&
-                HasParameter(p, "Date", date))),
+                HasParameter(p, "start", startDate) &&
+                HasParameter(p, "end", endDate))),
             Times.Once);
     }
 
@@ -89,7 +91,7 @@ public class MealsRepositoryTests
             Id = id,
             Name = "Pizza",
             User_id = 3,
-            Date = "18/11/2022",
+            Date = DateOnly.Parse("2022/11/18"),
             Template = false
         };
 
@@ -109,7 +111,7 @@ public class MealsRepositoryTests
         Assert.Equal(id, result.Id);
         Assert.Equal("Pizza", result.Name);
         Assert.Equal(3, result.User_id);
-        Assert.Equal("18/11/2022", result.Date);
+        Assert.Equal(DateOnly.Parse("2022/11/18"), result.Date);
 
         mockExecutor.Verify(e => e.QuerySingleOrDefaultAsync<Meal>(
             sql,
@@ -154,7 +156,7 @@ public class MealsRepositoryTests
         var meal = new MealCreateDTO
         {
             Name = "Pizza",
-            Date = "18/11/2022",
+            Date = DateOnly.Parse("2022/11/18"),
             Template = false,
             Image_id = null
         };
@@ -194,7 +196,7 @@ public class MealsRepositoryTests
             Id = 1,
             Name = "Updated Pizza",
             User_id = 2,
-            Date = "19/11/2022",
+            Date = DateOnly.Parse("2022/11/19"),
             Template = true,
             Image_id = null
         };
@@ -257,8 +259,8 @@ public class MealsRepositoryTests
 
         var meals = new List<Meal>
         {
-            new() { Id = 1, Name = "Pizza", User_id = userId, Date = "18/11/2022", Template = true },
-            new() { Id = 2, Name = "Pasta", User_id = userId, Date = "19/11/2022", Template = true }
+            new() { Id = 1, Name = "Pizza", User_id = userId, Date = DateOnly.Parse("2022/11/18"), Template = true },
+            new() { Id = 2, Name = "Pasta", User_id = userId, Date = DateOnly.Parse("2022/11/19"), Template = true }
         };
 
         const string sql = "SELECT * FROM meals WHERE template = true AND user_id = @UserId";

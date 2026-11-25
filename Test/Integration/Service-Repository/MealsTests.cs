@@ -3,7 +3,6 @@ using FoodplannerDataAccessSql.Lunchbox;
 using FoodplannerModels.Lunchbox;
 using FoodplannerServices.Lunchbox;
 using Moq;
-using Xunit;
 
 namespace Test.Integration.Services;
 
@@ -27,19 +26,22 @@ public class MealsServiceTests
     {
         // Arrange
         const int userId = 12345;
-        const string date = "2026-11-02";
+        DateOnly date = DateOnly.Parse("2026/11/02");
         var meal = CreateMeal(3, "Matching Meal", userId, date);
         var ingredient = CreateIngredient(30, "Matching Ingredient", userId);
 
         mockExecutor.Setup(e => e.QueryAsync<Meal>(
-                "SELECT * FROM meals WHERE user_id = @UserId AND date = @Date",
-                It.Is<object?>(p => HasParameter(p, "UserId", userId) && HasParameter(p, "Date", date))))
+                "SELECT * FROM meals WHERE user_id = @UserId AND date BETWEEN @start AND @end",
+                It.Is<object?>(p =>
+                HasParameter(p, "UserId", userId) &&
+                HasParameter(p, "start", date) &&
+                HasParameter(p, "end", date))))
             .ReturnsAsync(new[] { meal });
         SetupPackedForMeal(meal.Id, CreatePacked(meal.Id, ingredient.Id, 1));
         SetupIngredientById(ingredient);
 
         // Act
-        var result = (await service.GetAllMealsByUserAndDateAsync(userId, date)).ToList();
+        var result = (await service.GetAllMealsByUserAndDateAsync(userId, date, date)).ToList();
 
         // Assert
         var actualMeal = Assert.Single(result);
@@ -47,9 +49,11 @@ public class MealsServiceTests
         Assert.Equal(userId, actualMeal.User_id);
         Assert.Equal(date, actualMeal.Date);
         Assert.Equal(ingredient.Id, Assert.Single(actualMeal.Ingredients).Id);
-        mockExecutor.Verify(e => e.QueryAsync<Meal>(
-            "SELECT * FROM meals WHERE user_id = @UserId AND date = @Date",
-            It.Is<object?>(p => HasParameter(p, "UserId", userId) && HasParameter(p, "Date", date))),
+        mockExecutor.Verify(e => e.QueryAsync<Meal>( "SELECT * FROM meals WHERE user_id = @UserId AND date BETWEEN @start AND @end",
+            It.Is<object?>(p => 
+                HasParameter(p, "UserId", userId) &&
+                HasParameter(p, "start", date) &&
+                HasParameter(p, "end", date))),
             Times.Once);
     }
 
@@ -58,7 +62,7 @@ public class MealsServiceTests
     public async Task GetMealByIdAsync_ShouldReturnMealWithIngredients()
     {
         // Arrange
-        var meal = CreateMeal(4, "Specific Meal", 12345);
+        var meal = CreateMeal(4, "Specific Meal", 12345, DateOnly.Parse("2026/01/01"));
         var ingredient = CreateIngredient(40, "Specific Ingredient", 12345);
         SetupMealById(meal);
         SetupPackedForMeal(meal.Id, CreatePacked(meal.Id, ingredient.Id, 1));
@@ -104,7 +108,7 @@ public class MealsServiceTests
         var meal = new MealCreateDTO
         {
             Name = "New Meal",
-            Date = "2026-11-02",
+            Date = DateOnly.Parse("2026/11/02"),
             Template = false,
             Image_id = null
         };
@@ -133,7 +137,7 @@ public class MealsServiceTests
     public async Task UpdateMealAsync_ShouldReturnAffectedRows()
     {
         // Arrange
-        var updated = CreateMeal(5, "Updated Meal", 67890, "2026-11-03", true);
+        var updated = CreateMeal(5, "Updated Meal", 67890, DateOnly.Parse("2026/11/03"), true);
 
         mockExecutor.Setup(e => e.ExecuteAsync(
                 "UPDATE meals SET name = @Name, user_id = @UserId, image_id = @ImageId, date = @Date, template = @Template WHERE id = @Id",
@@ -182,7 +186,7 @@ public class MealsServiceTests
     {
         // Arrange
         const int userId = 12345;
-        var template = CreateMeal(7, "User Template", userId, template: true);
+        var template = CreateMeal(7, "User Template", userId, DateOnly.Parse("2026/01/01"), template: true);
         var ingredient = CreateIngredient(70, "Template Ingredient", userId);
 
         mockExecutor.Setup(e => e.QueryAsync<Meal>(
@@ -212,7 +216,7 @@ public class MealsServiceTests
     {
         // Arrange
         const int userId = 12345;
-        var meal = CreateMeal(8, "Owned Meal", userId);
+        var meal = CreateMeal(8, "Owned Meal", userId, DateOnly.Parse("2026/01/01"));
         SetupMealById(meal);
         mockExecutor.Setup(e => e.ExecuteAsync(
                 "UPDATE meals SET template = @template WHERE id = @Id",
@@ -238,7 +242,7 @@ public class MealsServiceTests
     public async Task UpdateTemplateStatusAsync_ShouldRejectDifferentUser()
     {
         // Arrange
-        var meal = CreateMeal(9, "Someone Else's Meal", 12345);
+        var meal = CreateMeal(9, "Someone Else's Meal", 12345, DateOnly.Parse("2026/01/01"));
         SetupMealById(meal);
 
         // Act
@@ -277,8 +281,8 @@ public class MealsServiceTests
     {
         // Arrange
         const int userId = 12345;
-        var firstMeal = CreateMeal(11, "First Meal", userId);
-        var secondMeal = CreateMeal(12, "Second Meal", userId);
+        var firstMeal = CreateMeal(11, "First Meal", userId, DateOnly.Parse("2026/01/01"));
+        var secondMeal = CreateMeal(12, "Second Meal", userId, DateOnly.Parse("2026/01/01"));
         var sharedIngredient = CreateIngredient(101, "Shared Ingredient", userId);
         var otherIngredient = CreateIngredient(102, "Other Ingredient", userId);
 
@@ -310,8 +314,8 @@ public class MealsServiceTests
     {
         // Arrange
         const int userId = 12345;
-        var owned = CreateMeal(13, "Owned Meal", userId);
-        var other = CreateMeal(14, "Other User Meal", 67890);
+        var owned = CreateMeal(13, "Owned Meal", userId, DateOnly.Parse("2026/01/01"));
+        var other = CreateMeal(14, "Other User Meal", 67890, DateOnly.Parse("2026/01/01"));
         SetupMealById(owned);
         SetupMealById(other);
 
@@ -379,8 +383,7 @@ public class MealsServiceTests
             .ReturnsAsync(packed);
     }
 
-    private static Meal CreateMeal(
-        int id, string name, int userId, string date = "2026-11-02", bool template = false)
+    private static Meal CreateMeal(int id, string name, int userId, DateOnly date, bool template = false)
     {
         return new Meal
         {
