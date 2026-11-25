@@ -24,9 +24,8 @@ public class CoreUserPactTests
 
     [Fact]
     [Trait("Category", "Integration")]
-    public async Task GetCurrentUser_satisfies_the_contract_with_core() // doesnt test properly atm as auth has yet to be implemented in core v2
+    public async Task GetCurrentUser_satisfies_the_contract_with_core()
     {
-    
         _pact
             .UponReceiving("a request for the current user")
             .Given("a user is logged in")
@@ -35,7 +34,7 @@ public class CoreUserPactTests
             .WithStatus(HttpStatusCode.OK)
             .WithHeader("Content-Type", "application/json; charset=utf-8")
             .WithJsonBody(new
-            {
+            { // these fields have to be lower case because of some JSON (de)serialization weirdness
                 id = Match.Integer(1), 
                 firstName = Match.Regex("Hans", @"[a-zA-Z]+"),
                 lastName = Match.Regex("Hansen", @"[a-zA-Z]+"),
@@ -48,7 +47,6 @@ public class CoreUserPactTests
 
         await _pact.VerifyAsync(async context =>
         {
-          
             using HttpClient http = new HttpClient { BaseAddress = context.MockServerUri };
             CoreClient client = new CoreClient(http);
 
@@ -59,6 +57,9 @@ public class CoreUserPactTests
             Assert.Equal("Hans", user.FirstName);
             Assert.Equal("Hansen", user.LastName);
             Assert.Equal("hans.hansen@mail.com", user.Email);
+            Assert.Equal(UserRole.Admin, user.Role);
+            Assert.True(user.RoleApproved);
+            Assert.True(user.Archived);
         });
     }
 }
