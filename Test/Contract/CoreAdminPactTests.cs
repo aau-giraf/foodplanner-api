@@ -59,4 +59,24 @@ public class CoreAdminPactTests
             Assert.True(user.RoleApproved);
         });
     }
+
+    [Fact]
+    [Trait("Category", "Integration")]
+    public async Task DeleteUserByIdAsync_satisfies_the_contract_with_core()
+    {
+        _pact
+            .UponReceiving("a request to delete a user")
+            .Given("that user exists")
+            .WithRequest(HttpMethod.Delete, "/legacy/foodplanner/api/Admin/Delete/1")
+            .WillRespond()
+            .WithStatus(HttpStatusCode.NoContent);
+
+        await _pact.VerifyAsync(async context =>
+        {
+            using HttpClient http = new HttpClient { BaseAddress = context.MockServerUri };
+            CoreClient client = new CoreClient(http);
+
+            await client.DeleteUserByIdTestAsync(1);
+        });
+    }
 }

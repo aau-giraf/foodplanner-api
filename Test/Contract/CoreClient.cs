@@ -12,6 +12,8 @@ public class CoreClient(HttpClient httpClient)
 
     private const string GetUserByIdPath = "/legacy/foodplanner/api/Admin/Get/";
 
+    private const string DeleteUserByIdPath = "/legacy/foodplanner/api/Admin/Delete/";
+
     // add a new method here when writing a new Pact test for an endpoint
     // replace the request type with the desired one. 
     public async Task<IEnumerable<Classroom>> GetAllClassroomsAsync()
@@ -24,5 +26,10 @@ public class CoreClient(HttpClient httpClient)
     {
         UserDTO? user = await httpClient.GetFromJsonAsync<UserDTO>(GetUserByIdPath + id);
         return user;
+    }
+
+    public async Task DeleteUserByIdTestAsync(int id)
+    {
+        await httpClient.DeleteAsync(DeleteUserByIdPath + id);
     }
 }
