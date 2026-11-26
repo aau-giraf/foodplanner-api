@@ -35,7 +35,11 @@ public class CoreAdminPactTests
             .WithHeader("Content-Type", "application/json; charset=utf-8")
             .WithJsonBody(new
             {
-
+                firstName = Match.Regex("Hans", "^[A-Za-z]+$"),
+                lastName = Match.Regex("Hansen", "^[A-Za-z]+$"),
+                email = Match.Regex("hans.hansen@email.com", "^[A-Za-z0-9._+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"),
+                role = Match.Integer(1),
+                roleApproved = Match.Type(true)
             });
 
         await _pact.VerifyAsync(async context =>
@@ -47,6 +51,11 @@ public class CoreAdminPactTests
 
             Assert.NotNull(user);
             Assert.Equal(1, user.Id);
+            Assert.Equal("Hans", user.FirstName);
+            Assert.Equal("Hansen", user.LastName);
+            Assert.Equal("hans.hansen@email.com", user.Email);
+            Assert.Equal(UserRole.Admin, user.Role);
+            Assert.True(user.RoleApproved);
         });
     }
 }
