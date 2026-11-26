@@ -23,7 +23,7 @@ public class CoreAdminPactTests
     }
 
     [Fact]
-    [Trait("Category", "Integration")]
+    [Trait("Category", "Admin")]
     public async Task GetUserByIdAsync_satisfies_the_contract_with_core()
     {
         _pact
@@ -35,11 +35,13 @@ public class CoreAdminPactTests
             .WithHeader("Content-Type", "application/json; charset=utf-8")
             .WithJsonBody(new
             {
+                id = Match.Integer(1),
                 firstName = Match.Regex("Hans", "^[A-Za-z]+$"),
                 lastName = Match.Regex("Hansen", "^[A-Za-z]+$"),
                 email = Match.Regex("hans.hansen@email.com", "^[A-Za-z0-9._+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"),
-                role = Match.Integer(1),
-                roleApproved = Match.Type(true)
+                role = Match.Integer((int)UserRole.Parent),
+                roleApproved = Match.Type(true),
+                archived = Match.Type(false)
             });
 
         await _pact.VerifyAsync(async context =>
@@ -54,8 +56,9 @@ public class CoreAdminPactTests
             Assert.Equal("Hans", user.FirstName);
             Assert.Equal("Hansen", user.LastName);
             Assert.Equal("hans.hansen@email.com", user.Email);
-            Assert.Equal(UserRole.Admin, user.Role);
+            Assert.Equal(UserRole.Parent, user.Role);
             Assert.True(user.RoleApproved);
+            Assert.False(user.Archived);
         });
     }
 }

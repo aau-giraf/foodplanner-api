@@ -4,6 +4,104 @@
   },
   "interactions": [
     {
+      "description": "a request for a specific user",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "that user exists"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/legacy/foodplanner/api/Admin/Get/1"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "archived": false,
+            "email": "hans.hansen@email.com",
+            "firstName": "Hans",
+            "id": 1,
+            "lastName": "Hansen",
+            "role": 8,
+            "roleApproved": true
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.archived": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.email": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z0-9._+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
+                }
+              ]
+            },
+            "$.firstName": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z]+$"
+                }
+              ]
+            },
+            "$.id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.lastName": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "^[A-Za-z]+$"
+                }
+              ]
+            },
+            "$.role": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.roleApproved": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
       "description": "a request for all classes",
       "pending": false,
       "providerStates": [
