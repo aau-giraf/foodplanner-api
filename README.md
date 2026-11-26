@@ -306,7 +306,9 @@ This will run the bash script once every minute and write the output to `docker-
        "JWT_SECRET": "local-development-secret-key-123",
        "BACKEND_PORT": "8080",
        "PIXABAY_API_KEY": "<PixaBayApiKey>", // Get the Pixabay API key from https://pixabay.com/api/docs/
-       "PIXABAY_API_URL": "https://pixabay.com/api/"
+       "PIXABAY_API_URL": "https://pixabay.com/api/",
+       "AI_BASE_URL": "<AI's IP-address>",
+       "CORE_BASE_URL": "<CORE's IP-address>"
    }
    ...
    ```
