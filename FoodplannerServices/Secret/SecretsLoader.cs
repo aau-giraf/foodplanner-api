@@ -13,6 +13,7 @@ public class SecretsLoader : ISecretLoader
 
     private record Configuration(string environmentSlug, string workspaceId, InfisicalClient Client);
     private readonly Configuration _configuration;
+    private readonly bool _isTesting;
 
     /// Method <c>Configure</c> initialises the SecretsLoader. It reads from appsettings.{environment}.json,
     /// but will fall back to environment variables. <br />
@@ -20,6 +21,7 @@ public class SecretsLoader : ISecretLoader
     public SecretsLoader(IConfiguration config, string environment)
     {
         _localConfiguration = config;
+        _isTesting = environment == "Testing";
 
         var clientId = config.GetValue<string>("Infisical:ClientId") ?? Environment.GetEnvironmentVariable("CLIENT_ID");
         var clientSecret = config.GetValue<string>("Infisical:ClientSecret") ?? Environment.GetEnvironmentVariable("CLIENT_SECRET");
@@ -54,6 +56,13 @@ public class SecretsLoader : ISecretLoader
         if (overwriteValue != null)
         {
             return overwriteValue;
+        }
+
+        // Prevent tests from retrieving secrets from Infisical
+        if (_isTesting)
+        {
+            throw new InvalidOperationException(
+                $"Missing test configuration for secret: {secretName}");
         }
 
         if (!_authenticated)

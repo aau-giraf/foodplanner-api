@@ -5,7 +5,7 @@ using FluentMigrator.Runner.Initialization;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 
-namespace Test.Integration;
+namespace Test;
 
 public class DatabaseFixture
 {

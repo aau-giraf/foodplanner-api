@@ -50,7 +50,30 @@ Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
 // Add environment variables to the builder for Infisical and setup SecretsLoader
 builder.Configuration.AddEnvironmentVariables(prefix: "INFISICAL_");
+
+// Load test configuration when running tests
+if (builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Configuration.AddJsonFile(
+        Path.Combine(AppContext.BaseDirectory, "appsettings.Testing.json"),
+        optional: false);
+}
+
+// Initialize SecretsLoader
 var secretsLoader = new SecretsLoader(builder.Configuration, builder.Environment.EnvironmentName);
+
+// Ensure that tests only use the test database
+if (builder.Environment.IsEnvironment("Testing"))
+{
+    if (secretsLoader.GetSecret("DB_NAME") != "giraf_test" ||
+        secretsLoader.GetSecret("DB_PORT") != "7656" ||
+        secretsLoader.GetSecret("DB_HOST") != "localhost")
+    {
+        throw new InvalidOperationException(
+            "E2E tests require the local giraf_test database on port 7656.");
+    }
+}
+
 
 // Add CORS policy
 builder.Services.AddCors(options =>
@@ -293,82 +316,88 @@ using (var scope = app.Services.CreateScope())
     }
 }
 */
-// Run Foodplanner migrations up to version 15
-using (var scope = app.Services.CreateScope())
+
+// Database migrations are handled by DatabaseFixture during testing
+if (!app.Environment.IsEnvironment("Testing"))
 {
-    var runner = scope.ServiceProvider
-        .GetRequiredService<IMigrationRunner>();
-
-    runner.MigrateUp(15);
-}
-
-
-// Only initialize CoreMock in development
-if (app.Environment.IsDevelopment())
-{
-    var connectionBuilder = new NpgsqlConnectionStringBuilder
+    // Run Foodplanner migrations up to version 15
+    using (var scope = app.Services.CreateScope())
     {
-        Host = secretsLoader.GetSecret("CORE_DB_HOST"),
-        Port = int.Parse(secretsLoader.GetSecret("CORE_DB_PORT")), // CoreMock's separate PostgreSQL container
-        Username = secretsLoader.GetSecret("CORE_DB_USER"),
-        Password = secretsLoader.GetSecret("CORE_DB_PASS"),
-        Database = "core-postgres"
-    };
+        var runner = scope.ServiceProvider
+            .GetRequiredService<IMigrationRunner>();
 
-    // Configure CoreMock connection
-    connectionBuilder.Database = "giraf_core_mock";
+        runner.MigrateUp(15);
+    }
 
-    // Connection to the original Foodplanner database
-    var sourceConnection = new NpgsqlConnectionStringBuilder
+
+    // Only initialize CoreMock in development
+    if (app.Environment.IsDevelopment())
     {
-        Host = secretsLoader.GetSecret("DB_HOST"),
-        Port = int.Parse(secretsLoader.GetSecret("DB_PORT")),
-        Database = secretsLoader.GetSecret("DB_NAME"),
-        Username = secretsLoader.GetSecret("DB_USER"),
-        Password = secretsLoader.GetSecret("DB_PASS")
-    }.ConnectionString;
-
-    // Run CoreMock migrations separately
-    #pragma warning disable ASP0000
-    using var serviceProvider = new ServiceCollection()
-        .AddSingleton(new DataMigrationSource(sourceConnection))
-        .AddFluentMigratorCore()
-        .ConfigureRunner(rb => rb
-            .AddPostgres()
-            .WithGlobalConnectionString(connectionBuilder.ConnectionString)
-            .ScanIn(typeof(CreateCoreMockDatabase).Assembly)
-            .For.Migrations())
-        .Configure<RunnerOptions>(options =>
+        var connectionBuilder = new NpgsqlConnectionStringBuilder
         {
-            // Only run migrations tagged for the CoreMock database.
-            options.Tags = new[] { "CoreMock" };
-            // Exclude migrations without tags to prevent unintended execution.
-            options.IncludeUntaggedMigrations = false;
-        })
-        .AddLogging(lb => lb.AddFluentMigratorConsole())
-        .BuildServiceProvider();
-    #pragma warning restore ASP0000
-    
-    using var scope = serviceProvider.CreateScope();
+            Host = secretsLoader.GetSecret("CORE_DB_HOST"),
+            Port = int.Parse(secretsLoader.GetSecret("CORE_DB_PORT")), // CoreMock's separate PostgreSQL container
+            Username = secretsLoader.GetSecret("CORE_DB_USER"),
+            Password = secretsLoader.GetSecret("CORE_DB_PASS"),
+            Database = "core-postgres"
+        };
 
-    var runner = scope.ServiceProvider
-        .GetRequiredService<IMigrationRunner>();
+        // Configure CoreMock connection
+        connectionBuilder.Database = "giraf_core_mock";
 
-    if (runner.HasMigrationsToApplyUp())
+        // Connection to the original Foodplanner database
+        var sourceConnection = new NpgsqlConnectionStringBuilder
+        {
+            Host = secretsLoader.GetSecret("DB_HOST"),
+            Port = int.Parse(secretsLoader.GetSecret("DB_PORT")),
+            Database = secretsLoader.GetSecret("DB_NAME"),
+            Username = secretsLoader.GetSecret("DB_USER"),
+            Password = secretsLoader.GetSecret("DB_PASS")
+        }.ConnectionString;
+
+        // Run CoreMock migrations separately
+        #pragma warning disable ASP0000
+        using var serviceProvider = new ServiceCollection()
+            .AddSingleton(new DataMigrationSource(sourceConnection))
+            .AddFluentMigratorCore()
+            .ConfigureRunner(rb => rb
+                .AddPostgres()
+                .WithGlobalConnectionString(connectionBuilder.ConnectionString)
+                .ScanIn(typeof(CreateCoreMockDatabase).Assembly)
+                .For.Migrations())
+            .Configure<RunnerOptions>(options =>
+            {
+                // Only run migrations tagged for the CoreMock database.
+                options.Tags = new[] { "CoreMock" };
+                // Exclude migrations without tags to prevent unintended execution.
+                options.IncludeUntaggedMigrations = false;
+            })
+            .AddLogging(lb => lb.AddFluentMigratorConsole())
+            .BuildServiceProvider();
+        #pragma warning restore ASP0000
+        
+        using var scope = serviceProvider.CreateScope();
+
+        var runner = scope.ServiceProvider
+            .GetRequiredService<IMigrationRunner>();
+
+        if (runner.HasMigrationsToApplyUp())
+        {
+            runner.ListMigrations();
+            runner.MigrateUp();
+        }
+    }
+
+    // Run remaining Foodplanner migrations after data migration
+    using (var scope = app.Services.CreateScope())
     {
-        runner.ListMigrations();
+        var runner = scope.ServiceProvider
+            .GetRequiredService<IMigrationRunner>();
+
         runner.MigrateUp();
     }
 }
 
-// Run remaining Foodplanner migrations after data migration
-using (var scope = app.Services.CreateScope())
-{
-    var runner = scope.ServiceProvider
-        .GetRequiredService<IMigrationRunner>();
-
-    runner.MigrateUp();
-}
 
 // Generates swagger page if the application is in development mode
 if (app.Environment.IsDevelopment())
@@ -430,5 +459,5 @@ app.Urls.Add($"http://0.0.0.0:{backendPort}");
 // Runs the finalized application
 app.Run();
 
-
-
+//  E2E test functionality
+public partial class Program { }
