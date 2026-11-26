@@ -460,4 +460,4 @@ app.Urls.Add($"http://0.0.0.0:{backendPort}");
 app.Run();
 
 //  E2E test functionality
-public partial class Program { }
+public class ProgramTest { }
