@@ -187,6 +187,7 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
     // URL: api/Images/DeleteAiImage
     // Deletes an image previously generated through GIRAF AI
     [HttpDelete]
+    [Authorize(Roles = "Admin, Parent")]
     public async Task<string> DeleteAiImage([FromBody] DeleteImageDTO deleteImageDTO)
     {
         return await foodImageService.DeleteAiImage(deleteImageDTO);
