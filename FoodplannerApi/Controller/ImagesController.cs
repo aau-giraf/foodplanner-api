@@ -182,4 +182,26 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
         var images = await foodImageService.GetAllStockImagesAsync();
         return Ok(images);
     }
+
+	// URL: api/Images/CreateAiImage
+	// Creates an AI-generated image based on a prompt. Returns 200 OK with the image
+	[HttpPost]
+	[Authorize(Roles = "Admin, Teacher,Parent")]
+	[ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+	public async Task<IActionResult> CreateAiImage([FromHeader(Name = "Authorization")] string token, [FromBody] CreateAiImageDTO req)
+	{
+		// Retrieve UserId from the JWT token
+		var idString = authService.RetrieveIdFromJwtToken(token);
+		if (!int.TryParse(idString, out int userId))
+		{
+			return BadRequest(new ErrorResponseDTO {Message = ["Invalid user ID"]});
+		}
+		var image = await foodImageService.CreateAiImage(userId, req.Prompt);
+		if (image == null)
+		{
+			return BadRequest(new ErrorResponseDTO {Message = ["Image creation failed"]});
+		}
+		return Ok(image);
+	}
+
 }
