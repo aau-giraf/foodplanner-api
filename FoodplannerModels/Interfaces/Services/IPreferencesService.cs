@@ -1,7 +1,9 @@
 using FoodplannerModels.Account;
 public interface IPreferencesService
 {
-  Task<int> CreatePreferences(PreferencesDTO createPreferences); 
+  Task<int> CreatePreferencesAsync(PreferenceDTO createPreferences); 
 
-  Task<int> UpdatePreferences(PreferencesDTO updatePreferences);
+  Task<int> UpdatePreferencesAsync(PreferenceDTO updatePreferences);
+
+  Task<IEnumerable<PreferenceDTO>> GetPreferencesByChildIdAsync(int id);
 }

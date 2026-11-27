@@ -9,9 +9,9 @@ public class PreferenceService(IPreferencesRepository preferencesRepository) : I
 {
     // Method for creating a preference
     // Returns a preference with an ID
-    public async Task<int> CreatePreferences(PreferencesDTO createPreferences)
+    public async Task<int> CreatePreferencesAsync(PreferenceDTO createPreferences)
     {
-        var preferences = new Preferences
+        var preferences = new Preference
         {
            Child_id = createPreferences.Child_id,
            Rating = createPreferences.Rating,
@@ -22,6 +22,15 @@ public class PreferenceService(IPreferencesRepository preferencesRepository) : I
 
         return await preferencesRepository.InsertAsync(preferences);
     
+    }
+
+    // Method for updating preferences 
+    // Returns updated preferences with preference ID
+    public async Task<int> UpdatePreferencesAsync(PreferenceDTO updatePreferences)
+    {
+        var preferences = new Preference{Id = updatePreferences.Id, Rating = updatePreferences.Rating, Food_name = updatePreferences.Food_name, Date = updatePreferences.Date, Food_image_id = updatePreferences.Food_image_id};
+
+        return await preferencesRepository.UpdateAsync(preferences);
     }
 
     // Retrieves a list of preferences from child id 
@@ -37,12 +46,5 @@ public class PreferenceService(IPreferencesRepository preferencesRepository) : I
             throw new Exception($"Error retrieving preferences with child ID {id}: {exception.Message}", exception);
         }
     }
-    // Method for updating preferences 
-    // Returns updated preferences with preference ID
-    public async Task<int> UpdatePreferences(PreferencesDTO updatePreferences)
-    {
-        var preferences = new Preferences{Id = updatePreferences.Id, Rating = updatePreferences.Rating, Food_name = updatePreferences.Food_name, Date = updatePreferences.Date, Food_image_id = updatePreferences.Food_image_id};
-
-        return await preferencesRepository.UpdateAsync(preferences);
-    }
+    
 }

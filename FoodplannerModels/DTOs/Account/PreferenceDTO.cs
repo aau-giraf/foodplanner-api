@@ -1,7 +1,7 @@
 namespace FoodplannerModels.Account;
 
 // DTO for a child's Preference 
-public class PreferencesDTO
+public class PreferenceDTO
 {
     public required int Id { get; set; }
     public required int Child_id { get; set; }

@@ -12,9 +12,9 @@ public class PreferencesController(IPreferencesService preferencesService) : Bas
     // Creates a new preference from PreferenceDTO
     // When success returns 201, when failed returns 400
     [HttpPost]
-    [ProducesResponseType(typeof(PreferencesDTO), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(PreferenceDTO), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreatePreferences ([FromBody] PreferencesDTO createPreference)
+    public async Task<IActionResult> CreatePreferencesAsync ([FromBody] PreferenceDTO createPreference)
     {
         // Validate the model state to ensure the incoming data is valid
         if (!ModelState.IsValid)
@@ -22,7 +22,7 @@ public class PreferencesController(IPreferencesService preferencesService) : Bas
             return BadRequest(ModelState);
         }
 
-        var id = await preferencesService.CreatePreferences(createPreference);
+        var id = await preferencesService.CreatePreferencesAsync(createPreference);
         if (id > 0)
         {
             return Created(string.Empty, id);
@@ -39,7 +39,7 @@ public class PreferencesController(IPreferencesService preferencesService) : Bas
     [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetPreferencesByChildId(int id)
     {
-        var preferences = await preferenceService.GetPreferencesByChildIdAsync(id);
+        var preferences = await preferencesService.GetPreferencesByChildIdAsync(id);
         return Ok(preferences);
     }
 }
