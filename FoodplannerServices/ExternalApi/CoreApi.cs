@@ -5,22 +5,13 @@ using FoodplannerModels.DTOs.ExternalApi.Ai;
 
 namespace FoodplannerServices.ExternalApi;
 
-public class CoreApi : ICoreApi
+public class CoreApi(HttpClient httpClient, IConfiguration configuration) : ICoreApi
 {
-	private readonly string BASE_URL;
-	private readonly HttpClient httpClient;
-	private readonly IConfiguration configuration;
+	private readonly string BASE_URL = configuration["Infisical:CORE_BASE_URL"]
+		?? throw new InvalidOperationException("CORE base URL is missing.");
 
-	public CoreApi(HttpClient httpClient, IConfiguration configuration)
-	{
-		BASE_URL = configuration["Infisical:CORE_BASE_URL"]
-			?? throw new InvalidOperationException("CORE base URL is missing.");
-		this.httpClient = httpClient;
-		this.configuration = configuration;
-	}
-
-	public async Task<string> GetImages(List<string> imageIds) {
-		return "string of images";
+	public async Task<List<string>> GetImages(List<string> imageIds) {
+		return new List<string> {"hello"};
 	}
 
 	public async Task<string> DeleteImage(DeleteImageDTO deleteImageDTO) {
