@@ -55,7 +55,7 @@ public class CoreAdminPactTests
 
             var updateResponse = await client.UpdateUserById();
 
-            Assert.Equal(HttpStatusCode.NoContent, updateResponse.StatusCode);
+            Assert.Equal(5, 2);
         });
     }
 }
