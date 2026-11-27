@@ -24,9 +24,11 @@ public class PreferenceService(IPreferencesRepository preferencesRepository) : I
     
     }
 
+    // Method for updating preferences 
+    // Returns updated preferences with preference ID
     public async Task<int> UpdatePreferences(PreferencesDTO updatePreferences)
     {
-        var preferences = new Preferences{Id = updatePreferences.Id, Rating = updatePreferences.Rating, Food_name = updatePreferences.Food_name, Date = entity.Date, Food_image_id = entity.Food_image_id};
+        var preferences = new Preferences{Id = updatePreferences.Id, Rating = updatePreferences.Rating, Food_name = updatePreferences.Food_name, Date = updatePreferences.Date, Food_image_id = updatePreferences.Food_image_id};
 
         return await preferencesRepository.UpdateAsync(preferences);
     }
