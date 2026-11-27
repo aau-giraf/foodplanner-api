@@ -2,6 +2,7 @@ using FoodplannerModels.Account;
 using FoodplannerModels.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using FoodplannerModels.Preferences;
 
 namespace FoodplannerApi.Controller;
 
@@ -28,5 +29,24 @@ public class PreferencesController(IPreferencesService preferencesService) : Bas
             return Created(string.Empty, id);
         }
         return BadRequest();
+    }
+
+
+    // URL: api/Preference/RecommendRetry/{childId}
+    // Retrieves previously disliked foods that can be recommended again
+    [HttpGet("{childId}")]
+    [Authorize]
+    [ProducesResponseType(typeof(IEnumerable<Preference>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> RecommendRetry(int childId)
+    {
+        if (childId <= 0)
+        {
+            return BadRequest();
+        }
+
+        var preferences = await preferenceService.RecommendRetryAsync(childId);
+
+        return Ok(preferences);
     }
 }
