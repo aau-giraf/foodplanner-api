@@ -61,4 +61,23 @@ public class PreferencesController(IPreferencesService preferencesService) : Bas
 
         return Ok(preferences);
     }
+
+    // URL: api/Preferences/UpdatePreferencesAsync
+    // Updates an existing preference
+    // Returns 200 OK when successful, or 400 Bad Request if the input is invalid
+    [HttpPut]
+    [Authorize(Roles = "Parent, Teacher")]
+    [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdatePreferencesAsync([FromBody] PreferenceDTO updatePreferences)
+    {
+        if (!ModelState.IsValid || updatePreferences.Id <= 0)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var id = await preferencesService.UpdatePreferencesAsync(updatePreferences);
+
+        return Ok(id);
+    }
 }
