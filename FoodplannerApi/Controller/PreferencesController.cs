@@ -42,4 +42,6 @@ public class PreferencesController(IPreferencesService preferencesService) : Bas
         var preferences = await preferencesService.GetPreferencesByChildIdAsync(id);
         return Ok(preferences);
     }
+
+    
 }
