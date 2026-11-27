@@ -31,6 +31,12 @@ public class PreferencesRepository(IDapperExecutor executor) : IPreferencesRepos
         var sql = "SELECT * FROM preferences WHERE child_id = @Id"; 
         return await executor.QueryAsync<PreferenceDTO>(sql, new {Id = id}); 
     }
+
+    public async Task<IEnumerable<PreferenceDTO>> GetPreferencesFromRatingAsync(string rating)
+    {
+        var sql = "SELECT * FROM preferences WHERE rating = @Rating";
+        return await executor.QueryAsync<PreferenceDTO>(sql, new {Rating = rating});
+    }
     
     
 }

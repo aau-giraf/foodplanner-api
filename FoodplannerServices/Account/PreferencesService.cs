@@ -46,5 +46,19 @@ public class PreferenceService(IPreferencesRepository preferencesRepository) : I
             throw new Exception($"Error retrieving preferences with child ID {id}: {exception.Message}", exception);
         }
     }
+
+    // Retrieves a flist of preferences from a rating string 
+    public async Task<IEnumerable<PreferenceDTO>> GetPreferencesFromRatingAsync(string rating)
+    {
+        try
+        {
+            var preferences = await preferencesRepository.GetPreferencesFromRatingAsync(rating);
+            return preferences;
+        }
+        catch (Exception exception)
+        {
+            throw new Exception($"Error retrieving preferences with rating \"{rating}\": {exception.Message}", exception);
+        }
+    }
     
 }
