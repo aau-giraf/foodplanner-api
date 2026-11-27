@@ -1,4 +1,7 @@
 using System.Net;
+using FoodplannerModels.Account;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using PactNet;
 using PactNet.Matchers;
 
@@ -27,19 +30,19 @@ public class CoreAdminPactTests
     public async Task UpdateUserById_satisfies_the_contract_with_core()
     {
         _pact
-            // The body below requires at least one classroom. The provider state tells core to seed one before verifying.
+            // The provider state tells core to seed the user before verifying.
             .UponReceiving("a request for updating a user") // is the description of the interaction
             .Given("the user belonging to the id exists")
             .WithRequest(HttpMethod.Put, "/legacy/foodplanner/api/admin/UpdateUser/1")
-            .WithJsonBody(new
+            .WithJsonBody(new UserUpdateDTO
             {
-                firstName = "string",
-                lastName = "string",
-                email = "user@example.com"
+                FirstName = "string",
+                LastName = "string",
+                Email = "user@example.com",
+                Password = "string"
             })
             .WillRespond() // indicator that the next information is the response
-            .WithStatus(HttpStatusCode.NoContent)
-            .WithHeader("Content-Type", "application/json; charset=utf-8");
+            .WithStatus(HttpStatusCode.NoContent);
 
         // VerifyAsync starts the mock server, runs the code below against it, and stops it again.
         // When the test passes, what is written to the contracts directory is the
@@ -50,10 +53,9 @@ public class CoreAdminPactTests
             using var http = new HttpClient { BaseAddress = context.MockServerUri }; // context.MockServerUri is the mock server provided by Pact
             var client = new CoreClient(http);
 
-            var classroom = Assert.Single(await client.GetAllClassroomsAsync());
+            var updateResponse = await client.UpdateUserById();
 
-            Assert.Equal(1, classroom.ClassId);
-            Assert.Equal("1.Y", classroom.ClassName);
+            Assert.Equal(HttpStatusCode.NoContent, updateResponse.StatusCode);
         });
     }
 }
