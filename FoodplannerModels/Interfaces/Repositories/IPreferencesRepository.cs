@@ -4,4 +4,6 @@ using FoodplannerModels.Preferences;
 public interface IPreferencesRepository
 {
     Task<int> InsertAsync(Preferences entity);
+
+    Task<int> UpdateAsync(Preferences entity);
 }

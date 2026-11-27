@@ -1,3 +1,4 @@
+using System.Data.Common;
 using FoodplannerDataAccessSql.Account;
 using FoodplannerModels.Account;
 using FoodplannerModels.Preferences;
@@ -8,20 +9,25 @@ public class PreferenceService(IPreferencesRepository preferencesRepository) : I
 {
     // Method for creating a preference
     // Returns a preference with an ID
-    public async Task<int> CreatePreference(PreferencesDTO createPreference)
+    public async Task<int> CreatePreferences(PreferencesDTO createPreferences)
     {
-        var preference = new Preferences
+        var preferences = new Preferences
         {
-           Child_id = createPreference.Child_id,
-           Rating = createPreference.Rating,
-           Food_name = createPreference.Food_name,
-           Date = createPreference.Date, 
-           Food_image_id = createPreference.Food_image_id
+           Child_id = createPreferences.Child_id,
+           Rating = createPreferences.Rating,
+           Food_name = createPreferences.Food_name,
+           Date = createPreferences.Date, 
+           Food_image_id = createPreferences.Food_image_id
         };
 
-        return await preferencesRepository.InsertAsync(preference);
+        return await preferencesRepository.InsertAsync(preferences);
     
     }
 
-    public async Task<int> UpdatePreference(PreferencesDTO entity)
+    public async Task<int> UpdatePreferences(PreferencesDTO updatePreferences)
+    {
+        var preferences = new Preferences{Id = updatePreferences.Id, Rating = updatePreferences.Rating, Food_name = updatePreferences.Food_name, Date = entity.Date, Food_image_id = entity.Food_image_id};
+
+        return await preferencesRepository.UpdateAsync(preferences);
+    }
 }

@@ -14,7 +14,7 @@ public class PreferencesController(IPreferencesService preferencesService) : Bas
     [HttpPost]
     [ProducesResponseType(typeof(PreferencesDTO), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreatePreference ([FromBody] PreferencesDTO createPreference)
+    public async Task<IActionResult> CreatePreferences ([FromBody] PreferencesDTO createPreference)
     {
         // Validate the model state to ensure the incoming data is valid
         if (!ModelState.IsValid)
@@ -22,7 +22,7 @@ public class PreferencesController(IPreferencesService preferencesService) : Bas
             return BadRequest(ModelState);
         }
 
-        var id = await preferencesService.CreatePreference(createPreference);
+        var id = await preferencesService.CreatePreferences(createPreference);
         if (id > 0)
         {
             return Created(string.Empty, id);
