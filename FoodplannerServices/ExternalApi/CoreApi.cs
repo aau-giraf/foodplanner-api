@@ -4,12 +4,21 @@ using FoodplannerModels.Interfaces.ExternalApi;
 
 namespace FoodplannerServices.ExternalApi;
 
-public class CoreApi(HttpClient httpClient, IConfiguration configuration) : ICoreApi
+public class CoreApi : ICoreApi
 {
-	private readonly string BASE_URL = configuration["Infisical:CORE_BASE_URL"]
-        ?? throw new InvalidOperationException("Core base URL is missing.");
+	private readonly string BASE_URL;
+	private readonly HttpClient httpClient;
+	private readonly IConfiguration configuration;
 
-	public async Task<string> GetImages() {
+	public CoreApi(HttpClient httpClient, IConfiguration configuration)
+	{
+		BASE_URL = configuration["Infisical:CORE_BASE_URL"]
+			?? throw new InvalidOperationException("CORE base URL is missing.");
+		this.httpClient = httpClient;
+		this.configuration = configuration;
+	}
+
+	public async Task<string> GetImages(List<string> imageIds) {
 		return null;
 	}
 
