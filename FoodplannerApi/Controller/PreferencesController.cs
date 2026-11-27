@@ -2,31 +2,32 @@ using FoodplannerModels.Account;
 using FoodplannerModels.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using FoodplannerModels.Preferences;
 
 namespace FoodplannerApi.Controller;
 
 public class PreferencesController(IPreferencesService preferencesService) : BaseController
 {
-
-    // URL: "api/Preference/CreatePreference"
+    // URL: api/Preferences/CreatePreferencesAsync
     // Creates a new preference from PreferenceDTO
     // When success returns 201, when failed returns 400
     [HttpPost]
     [ProducesResponseType(typeof(PreferenceDTO), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreatePreferencesAsync ([FromBody] PreferenceDTO createPreference)
+    public async Task<IActionResult> CreatePreferencesAsync([FromBody] PreferenceDTO createPreference)
     {
-        // Validate the model state to ensure the incoming data is valid
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
         var id = await preferencesService.CreatePreferencesAsync(createPreference);
+
         if (id > 0)
         {
             return Created(string.Empty, id);
         }
+
         return BadRequest();
     }
 
@@ -39,6 +40,7 @@ public class PreferencesController(IPreferencesService preferencesService) : Bas
     public async Task<IActionResult> GetPreferencesByChildId(int id)
     {
         var preferences = await preferencesService.GetPreferencesByChildIdAsync(id);
+
         return Ok(preferences);
     }
 
@@ -54,4 +56,40 @@ public class PreferencesController(IPreferencesService preferencesService) : Bas
         return Ok(preferences);
     }
 
+    // URL: api/Preferences/RecommendRetry/{childId}
+    // Retrieves previously disliked foods that can be recommended again
+    [HttpGet("{childId}")]
+    [Authorize]
+    [ProducesResponseType(typeof(IEnumerable<Preference>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> RecommendRetry(int childId)
+    {
+        if (childId <= 0)
+        {
+            return BadRequest();
+        }
+
+        var preferences = await preferencesService.RecommendRetryAsync(childId);
+
+        return Ok(preferences);
+    }
+
+    // URL: api/Preferences/UpdatePreferencesAsync
+    // Updates an existing preference
+    // Returns 200 OK when successful, or 400 Bad Request if the input is invalid
+    [HttpPut]
+    [Authorize(Roles = "Parent, Teacher")]
+    [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UpdatePreferencesAsync([FromBody] PreferenceDTO updatePreferences)
+    {
+        if (!ModelState.IsValid || updatePreferences.Id <= 0)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var id = await preferencesService.UpdatePreferencesAsync(updatePreferences);
+
+        return Ok(id);
+    }
 }
