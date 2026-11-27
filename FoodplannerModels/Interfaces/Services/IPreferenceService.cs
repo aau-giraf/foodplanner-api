@@ -1,7 +1,5 @@
 using FoodplannerModels.Account;
-using FoodplannerModels.Preferences;
-
-public interface IPreferenceService
+public interface IPreferencesService
 {
-  Task<int> CreatePreference(PreferenceDTO createPreference);  
+  Task<int> CreatePreference(PreferencesDTO createPreference);  
 }

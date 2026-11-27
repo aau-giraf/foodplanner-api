@@ -1,7 +1,7 @@
 using FoodplannerModels.Preferences;
 
 // Interface for preference repository
-public interface IPreferenceRepository
+public interface IPreferencesRepository
 {
-    Task<int> InsertAsync(Preference entity);
+    Task<int> InsertAsync(Preferences entity);
 }

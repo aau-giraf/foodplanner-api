@@ -4,13 +4,13 @@ using FoodplannerModels.Preferences;
 
 namespace FoodplannerServices.Account;
 
-public class PreferenceService(IPreferenceRepository preferenceRepository) : IPreferenceService
+public class PreferenceService(IPreferencesRepository preferencesRepository) : IPreferencesService
 {
     // Method for creating a preference
     // Returns a preference with an ID
-    public async Task<int> CreatePreference(PreferenceDTO createPreference)
+    public async Task<int> CreatePreference(PreferencesDTO createPreference)
     {
-        var preference = new Preference
+        var preference = new Preferences
         {
            Child_id = createPreference.Child_id,
            Rating = createPreference.Rating,
@@ -19,7 +19,9 @@ public class PreferenceService(IPreferenceRepository preferenceRepository) : IPr
            Food_image_id = createPreference.Food_image_id
         };
 
-        return await preferenceRepository.InsertAsync(preference);
+        return await preferencesRepository.InsertAsync(preference);
     
     }
+
+    public async Task<int> UpdatePreference(PreferencesDTO entity)
 }
