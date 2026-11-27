@@ -1,9 +1,11 @@
 using FoodplannerModels.Account;
 public interface IPreferencesService
 {
-  Task<int> CreatePreferences(PreferenceDTO createPreferences); 
+  Task<int> CreatePreferencesAsync(PreferenceDTO createPreferences); 
 
-  Task<int> UpdatePreferences(PreferenceDTO updatePreferences);
+  Task<int> UpdatePreferencesAsync(PreferenceDTO updatePreferences);
 
-  Task<int> DeletePreferences(PreferenceDTO deletePreferences)
+  Task<int> DeletePreferencesAsync(PreferenceDTO deletePreferences);
+
+  Task<IEnumerable<PreferenceDTO>> GetPreferencesByChildIdAsync(int id);
 }

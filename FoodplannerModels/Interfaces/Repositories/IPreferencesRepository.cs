@@ -1,11 +1,14 @@
 using FoodplannerModels.Preferences;
+using FoodplannerModels.Account;
 
 // Interface for preference repository
-public interface IPreferencesRepository
+public interface IPreferenceRepository
 {
-    Task<int> InsertAsync(Preferences entity);
+    Task<int> InsertAsync(Preference entity);
 
-    Task<int> UpdateAsync(Preferences entity);
+    Task<int> UpdateAsync(Preference entity);
 
-    Task<int> DeleteAsync(Preferences entity);
+    Task<int> DeleteAsync(Preference entity);
+
+    Task<IEnumerable<PreferenceDTO>> GetPreferencesByChildIdAsync(int id);
 }
