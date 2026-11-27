@@ -7,7 +7,7 @@ namespace FoodplannerApi.Controller;
 
 public class CategoryController(ICategoryService categoryService) : BaseController
 {
-    // URL : "api/Tag/CreateCategory" 
+    // URL : "api/Category/CreateCategory" 
     // Creates a new category from CreateCategoryDTO
     // When success returns 201, when failed returns 400
     [HttpPost]

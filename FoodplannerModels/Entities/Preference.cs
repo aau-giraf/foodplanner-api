@@ -1,6 +1,6 @@
 namespace FoodplannerModels.Preferences;
 
-public class Preference
+public class Preferences
 {
     public int Id { get; set; }
     public int Child_id { get; set; }

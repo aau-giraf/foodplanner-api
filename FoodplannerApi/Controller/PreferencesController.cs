@@ -5,16 +5,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FoodplannerApi.Controller;
 
-public class PreferenceController(IPreferenceService preferenceService) : BaseController
+public class PreferencesController(IPreferencesService preferencesService) : BaseController
 {
 
-    // URL: "api/Account/CreatePreference"
+    // URL: "api/Preference/CreatePreference"
     // Creates a new preference from PreferenceDTO
     // When success returns 201, when failed returns 400
     [HttpPost]
-    [ProducesResponseType(typeof(PreferenceDTO), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(PreferencesDTO), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreatePreference ([FromBody] PreferenceDTO createPreference)
+    public async Task<IActionResult> CreatePreferences ([FromBody] PreferencesDTO createPreference)
     {
         // Validate the model state to ensure the incoming data is valid
         if (!ModelState.IsValid)
@@ -22,7 +22,7 @@ public class PreferenceController(IPreferenceService preferenceService) : BaseCo
             return BadRequest(ModelState);
         }
 
-        var id = await preferenceService.CreatePreference(createPreference);
+        var id = await preferencesService.CreatePreferences(createPreference);
         if (id > 0)
         {
             return Created(string.Empty, id);
