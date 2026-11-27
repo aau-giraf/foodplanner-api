@@ -34,6 +34,8 @@ using FluentMigrator.Runner.Initialization;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 
+
+
 // Create a builder for the web application
 var builder = WebApplication.CreateBuilder(args);
 
@@ -248,6 +250,8 @@ builder.Services.AddScoped<IPackedRepository, PackedRepository>();
 builder.Services.AddScoped<ISubIngredientRepository, SubIngredientRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<IPreferenceRepository, PreferenceRepository>();
+
 
 // Add Services
 builder.Services.AddScoped<IChildrenService, ChildrenService>();
@@ -269,7 +273,7 @@ builder.Services.AddHttpClient<IPixabayApi, PixabayApi>();
 builder.Services.AddTransient<IWebClientWrapper, WebClientWrapper>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ITagService, TagService>();
-
+builder.Services.AddScoped<IPreferenceService, PreferenceService>();
 
 
 
