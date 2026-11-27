@@ -8,31 +8,43 @@ namespace FoodplannerApi.Controller;
 
 public class PreferencesController(IPreferencesService preferencesService) : BaseController
 {
-
-    // URL: "api/Preference/CreatePreference"
+    // URL: api/Preferences/CreatePreferencesAsync
     // Creates a new preference from PreferenceDTO
     // When success returns 201, when failed returns 400
     [HttpPost]
-    [ProducesResponseType(typeof(PreferencesDTO), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(PreferenceDTO), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreatePreferences ([FromBody] PreferencesDTO createPreference)
+    public async Task<IActionResult> CreatePreferencesAsync([FromBody] PreferenceDTO createPreference)
     {
-        // Validate the model state to ensure the incoming data is valid
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
 
-        var id = await preferencesService.CreatePreferences(createPreference);
+        var id = await preferencesService.CreatePreferencesAsync(createPreference);
+
         if (id > 0)
         {
             return Created(string.Empty, id);
         }
+
         return BadRequest();
     }
 
+    // URL: api/Preferences/GetPreferencesByChildId/{id}
+    // Retrieves preferences associated with a child
+    [HttpGet("{id}")]
+    [Authorize(Roles = "Child, Parent")]
+    [ProducesResponseType(typeof(PreferenceDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPreferencesByChildId(int id)
+    {
+        var preferences = await preferencesService.GetPreferencesByChildIdAsync(id);
 
-    // URL: api/Preference/RecommendRetry/{childId}
+        return Ok(preferences);
+    }
+
+    // URL: api/Preferences/RecommendRetry/{childId}
     // Retrieves previously disliked foods that can be recommended again
     [HttpGet("{childId}")]
     [Authorize]
@@ -45,7 +57,7 @@ public class PreferencesController(IPreferencesService preferencesService) : Bas
             return BadRequest();
         }
 
-        var preferences = await preferenceService.RecommendRetryAsync(childId);
+        var preferences = await preferencesService.RecommendRetryAsync(childId);
 
         return Ok(preferences);
     }

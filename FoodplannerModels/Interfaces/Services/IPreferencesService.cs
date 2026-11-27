@@ -3,9 +3,11 @@ using FoodplannerModels.Preferences;
 
 public interface IPreferencesService
 {
-    Task<int> CreatePreferences(PreferencesDTO createPreferences);
+    Task<int> CreatePreferencesAsync(PreferenceDTO createPreferences);
 
-    Task<int> UpdatePreferences(PreferencesDTO updatePreferences);
+    Task<int> UpdatePreferencesAsync(PreferenceDTO updatePreferences);
 
-    Task<IEnumerable<Preferences>> RecommendRetryAsync(int childId);
+    Task<IEnumerable<PreferenceDTO>> GetPreferencesByChildIdAsync(int id);
+
+    Task<IEnumerable<Preference>> RecommendRetryAsync(int childId);
 }
