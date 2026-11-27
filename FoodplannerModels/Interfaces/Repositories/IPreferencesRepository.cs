@@ -7,6 +7,8 @@ public interface IPreferencesRepository
 
     Task<int> UpdateAsync(Preference entity);
 
+    Task<int> DeleteAsync(Preference entity);
+
     Task<IEnumerable<PreferenceDTO>> GetPreferencesByChildIdAsync(int id);
 
     Task<IEnumerable<PreferenceDTO>> GetPreferencesFromRatingAsync(string rating);
