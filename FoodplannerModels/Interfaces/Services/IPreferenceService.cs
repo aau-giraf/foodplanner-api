@@ -4,4 +4,6 @@ using FoodplannerModels.Preferences;
 public interface IPreferenceService
 {
   Task<int> CreatePreference(PreferenceDTO createPreference);  
+
+  Task<IEnumerable<PreferenceDTO>> GetPreferencesByChildIdAsync(int id);
 }

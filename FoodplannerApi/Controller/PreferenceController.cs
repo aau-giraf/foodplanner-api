@@ -29,4 +29,17 @@ public class PreferenceController(IPreferenceService preferenceService) : BaseCo
         }
         return BadRequest();
     }
+
+    // URL: api/Preference/GetPreferencesByChildId/{id}
+    // Retrieves an ingredient by its ID.
+    // Returns 200 OK with preference, returns 404 if child not found 
+    [HttpGet("{id}")]
+    [Authorize(Roles = "Child, Parent")]
+    [ProducesResponseType(typeof(PreferenceDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponseDTO), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPreferencesByChildId(int id)
+    {
+        var preferences = await preferenceService.GetPreferencesByChildIdAsync(id);
+        return Ok(preferences);
+    }
 }

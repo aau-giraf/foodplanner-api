@@ -1,3 +1,4 @@
+using FoodplannerModels.Account;
 using FoodplannerModels.Preferences;
 
 namespace FoodplannerDataAccessSql.Account;
@@ -16,5 +17,10 @@ public class PreferenceRepository(IDapperExecutor executor) : IPreferenceReposit
     }
 
 
-    
+    // Given child id, return list of their preferences
+    public async Task<IEnumerable<PreferenceDTO>> GetPreferencesByChildIdAsync(int id)
+    {
+        var sql = "SELECT * FROM preferences WHERE child_id = @Id"; 
+        return await executor.QueryAsync<PreferenceDTO>(sql, new {Id = id}); 
+    }
 }
