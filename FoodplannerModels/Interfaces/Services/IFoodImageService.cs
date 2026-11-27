@@ -9,6 +9,7 @@ public interface IFoodImageService
     public Task<FoodImage> GetFoodImage(int foodImageId);
     public Task<string> GetFoodImageLink(int foodImageId);
     public void DeleteImage(int foodImageId);
+	public Task<string> CreateAiImage(int userId, string prompt);
 
     public Task<IEnumerable<FoodImage>> GetAllStockImagesAsync();
 }

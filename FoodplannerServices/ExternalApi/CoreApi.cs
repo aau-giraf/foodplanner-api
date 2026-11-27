@@ -18,7 +18,7 @@ public class CoreApi : ICoreApi
 		this.configuration = configuration;
 	}
 
-	public async Task<string> GetImages(List<string> imageIds) {
+	public async Task<List<string>> GetImages(List<string> imageIds) {
 		return null;
 	}
 

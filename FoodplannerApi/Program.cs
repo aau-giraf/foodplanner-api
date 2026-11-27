@@ -13,6 +13,7 @@ using FoodplannerModels.Auth;
 using FoodplannerModels.Image;
 using FoodplannerModels.Codes;
 using FoodplannerModels.Tags;
+using FoodplannerModels.Interfaces.ExternalApi;
 using FoodplannerServices.Account;
 using FoodplannerServices.Lunchbox;
 using FoodplannerServices.Image;
@@ -269,6 +270,8 @@ builder.Services.AddHttpClient<IPixabayApi, PixabayApi>();
 builder.Services.AddTransient<IWebClientWrapper, WebClientWrapper>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddHttpClient<IAiApi, AiApi>();
+builder.Services.AddHttpClient<ICoreApi, CoreApi>();
 
 
 

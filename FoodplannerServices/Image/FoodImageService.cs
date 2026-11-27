@@ -1,9 +1,10 @@
 ﻿using FoodplannerDataAccessSql.Image;
 using FoodplannerModels.Image;
+using FoodplannerModels.Interfaces.ExternalApi;
 
 namespace FoodplannerServices.Image;
 
-public class FoodImageService(IFoodImageRepository foodImageRepository) : IFoodImageService
+public class FoodImageService(IFoodImageRepository foodImageRepository, IAiApi aiApi, ICoreApi coreApi) : IFoodImageService
 {
     // Creates a new food image.
     public async Task<int> CreateFoodImage(int userid, Stream imageStream, string imageName, string imageType, long imageFileSize)
@@ -76,4 +77,41 @@ public class FoodImageService(IFoodImageRepository foodImageRepository) : IFoodI
             Size = foodImage.Size
         }).ToList();
     }
+
+	// Create an AI-generated image based on a prompt.
+	public async Task<string> CreateAiImage(int userId, string prompt)
+	{
+		// Call AI API to create an image
+		var imageId = await aiApi.CreateImage(userId, prompt);
+
+		// Wait 4 sec before calling CORE
+		await Task.Delay(4000);
+
+		// Poll CORE API for the image MAX 5 times with 1 sec delay between each call
+		List<string> coreRes = null;
+		for (int i = 0; i < 5; i++)
+		{
+			await Task.Delay(1000);
+
+			// Get image form CORE API
+			coreRes = await coreApi.GetImages(new List<string> { imageId });
+			
+			if (coreRes == null)
+			{
+				Console.WriteLine($"Image not ready yet. Attempt {i + 1}/5");
+				continue;
+			}
+
+			break;
+		}
+
+		// If the image is still not available after 5 attempts, throw an exception
+		if (coreRes == null || coreRes.Count != 1)
+		{
+			throw new InvalidOperationException("Failed to retrieve image after multiple attempts.");
+		}
+
+		return coreRes[0];
+	}
+
 }
