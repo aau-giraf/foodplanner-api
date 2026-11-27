@@ -6,19 +6,10 @@ using FoodplannerModels.DTOs.ExternalApi.Ai;
 
 namespace FoodplannerServices.ExternalApi;
 
-public class AiApi : IAiApi
+public class AiApi(HttpClient httpClient, IConfiguration configuration) : IAiApi
 {
-	private readonly string BASE_URL;
-	private readonly HttpClient httpClient;
-	private readonly IConfiguration configuration;
-	
-	AiApi(HttpClient httpClient, IConfiguration configuration)
-	{
-		BASE_URL = configuration["Infisical:AI_BASE_URL"]
-			?? throw new InvalidOperationException("AI base URL is missing.");
-		this.httpClient = httpClient;
-		this.configuration = configuration;
-	}
+	private readonly string BASE_URL = configuration["Infisical:AI_BASE_URL"]
+		?? throw new InvalidOperationException("AI base URL is missing.");
 
 	public async Task<string> CreateImage(int userId, string prompt) {
 		// Generate UUID v7 for ImgId
