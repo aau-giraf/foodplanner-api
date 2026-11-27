@@ -3,9 +3,9 @@ namespace FoodplannerModels.Preferences;
 public class Preference
 {
     public int Id { get; set; }
-    public int ChildId { get; set; }
-    public int Rating { get; set; }
-    public string FoodName { get; set; } = string.Empty;
-    public DateTime Date { get; set; }
-    public int? ImageId { get; set; }
+    public int Child_id { get; set; }
+    public string Rating { get; set; }
+    public string Food_name { get; set; } = string.Empty;
+    public DateOnly Date { get; set; }
+    public int? Food_image_id { get; set; }
 }

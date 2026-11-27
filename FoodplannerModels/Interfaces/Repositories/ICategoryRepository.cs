@@ -3,7 +3,7 @@ using FoodplannerModels.Tags;
 
 namespace FoodplannerDataAccessSql.Tags;
 
-// IGenericRepository contains generic CRUD operations
+// Interface for category repository
 public interface ICategoryRepository
 {
     Task<int> InsertAsync(Category entity);

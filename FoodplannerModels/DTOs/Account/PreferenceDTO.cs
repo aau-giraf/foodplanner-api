@@ -4,15 +4,9 @@ namespace FoodplannerModels.Account;
 public class PreferenceDTO
 {
     public required int Id { get; set; }
-
     public required int Child_id { get; set; }
-
-    public required int Food_image_id { get; set; }
-
+    public required string Rating { get; set; }
+    public required string Food_name { get; set; }
     public required DateOnly Date { get; set; }
-
-    public required string Name { get; set; }
-
-    public required int Rating { get; set; }
-
+    public required int Food_image_id { get; set; }
 }

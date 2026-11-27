@@ -3,6 +3,7 @@ using FoodplannerModels.Tags;
 
 namespace FoodplannerDataAccessSql.Tags;
 
+// Interface for Tag repository
 public interface ITagRepository
 {
     Task<int> InsertAsync(Tag entity);
