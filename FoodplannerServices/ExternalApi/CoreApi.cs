@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using FoodplannerModels.Interfaces.ExternalApi;
+using FoodplannerModels.DTOs.ExternalApi.Ai;
 
 namespace FoodplannerServices.ExternalApi;
 
@@ -19,10 +20,10 @@ public class CoreApi : ICoreApi
 	}
 
 	public async Task<string> GetImages(List<string> imageIds) {
-		return null;
+		return "string of images";
 	}
 
-	public async Task<string> DeleteImage() {
-		return null;
+	public async Task<string> DeleteImage(DeleteImageDTO deleteImageDTO) {
+		return "deleted image";
 	}
 }

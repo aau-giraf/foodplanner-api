@@ -1,9 +1,11 @@
 ﻿using FoodplannerDataAccessSql.Image;
+using FoodplannerModels.DTOs.ExternalApi.Ai;
 using FoodplannerModels.Image;
+using FoodplannerModels.Interfaces.ExternalApi;
 
 namespace FoodplannerServices.Image;
 
-public class FoodImageService(IFoodImageRepository foodImageRepository) : IFoodImageService
+public class FoodImageService(IFoodImageRepository foodImageRepository, ICoreApi coreApi) : IFoodImageService
 {
     // Creates a new food image.
     public async Task<int> CreateFoodImage(int userid, Stream imageStream, string imageName, string imageType, long imageFileSize)
@@ -75,5 +77,10 @@ public class FoodImageService(IFoodImageRepository foodImageRepository) : IFoodI
             ImageFileType = foodImage.ImageFileType,
             Size = foodImage.Size
         }).ToList();
+    }
+
+    public async Task<string> DeleteAiImage(DeleteImageDTO deleteImageDTO)
+    {
+        return await coreApi.DeleteImage(deleteImageDTO);
     }
 }

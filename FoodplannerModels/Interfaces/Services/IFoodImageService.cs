@@ -1,5 +1,5 @@
+using FoodplannerModels.DTOs.ExternalApi.Ai;
 using FoodplannerModels.Image;
-using FoodplannerModels.Tags;
 
 namespace FoodplannerServices.Image;
 
@@ -9,6 +9,6 @@ public interface IFoodImageService
     public Task<FoodImage> GetFoodImage(int foodImageId);
     public Task<string> GetFoodImageLink(int foodImageId);
     public void DeleteImage(int foodImageId);
-
     public Task<IEnumerable<FoodImage>> GetAllStockImagesAsync();
+    public Task<string> DeleteAiImage(DeleteImageDTO deleteImageDTO);
 }

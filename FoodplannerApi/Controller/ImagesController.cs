@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using FoodplannerModels.Auth;
+using FoodplannerModels.DTOs.ExternalApi.Ai;
 
 // Adds the ImagesController to the FoodPlannerApi.controller namespace
 namespace FoodplannerApi.Controller;
@@ -181,5 +182,13 @@ public class ImagesController(IFoodImageService foodImageService, IAuthService a
     {
         var images = await foodImageService.GetAllStockImagesAsync();
         return Ok(images);
+    }
+
+    // URL: api/Images/DeleteAiImage
+    // Deletes an image previously generated through GIRAF AI
+    [HttpDelete]
+    public async Task<string> DeleteAiImage([FromBody] DeleteImageDTO deleteImageDTO)
+    {
+        return await foodImageService.DeleteAiImage(deleteImageDTO);
     }
 }
