@@ -22,12 +22,12 @@ public class CoreClient(HttpClient httpClient)
 
     public async Task<HttpResponseMessage> UpdateUserById()
     {
-        HttpContent content = JsonContent.Create(new
+        HttpContent content = JsonContent.Create(new UserUpdateDTO
         {
-            firstName = "string",
-            lastName = "string",
-            email = "user@example.com",
-            password = "string"
+            FirstName = "string",
+            LastName = "string",
+            Email = "user@example.com",
+            Password = "string"
         });
         return await httpClient.PutAsync(UpdateUserByIdPath, content);
     }
