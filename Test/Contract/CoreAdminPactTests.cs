@@ -34,12 +34,12 @@ public class CoreAdminPactTests
             .UponReceiving("a request for updating a user") // is the description of the interaction
             .Given("the user belonging to the id exists")
             .WithRequest(HttpMethod.Put, "/legacy/foodplanner/api/admin/UpdateUser/1")
-            .WithJsonBody(new UserUpdateDTO
+            .WithJsonBody(new
             {
-                FirstName = "string",
-                LastName = "string",
-                Email = "user@example.com",
-                Password = "string"
+                firstName = "string",
+                lastName = "string",
+                email = "user@example.com",
+                password = "string"
             })
             .WillRespond() // indicator that the next information is the response
             .WithStatus(HttpStatusCode.NoContent);
@@ -55,7 +55,7 @@ public class CoreAdminPactTests
 
             var updateResponse = await client.UpdateUserById();
 
-            Assert.Equal(1,1);//HttpStatusCode.NoContent, updateResponse.StatusCode);
+            Assert.Equal(HttpStatusCode.NoContent, updateResponse.StatusCode);
         });
     }
 }

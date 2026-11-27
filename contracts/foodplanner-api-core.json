@@ -64,6 +64,38 @@
         "status": 200
       },
       "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "a request for updating a user",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "the user belonging to the id exists"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": {
+            "email": "user@example.com",
+            "firstName": "string",
+            "lastName": "string",
+            "password": "string"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "method": "PUT",
+        "path": "/legacy/foodplanner/api/admin/UpdateUser/1"
+      },
+      "response": {
+        "status": 204
+      },
+      "type": "Synchronous/HTTP"
     }
   ],
   "metadata": {
