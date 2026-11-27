@@ -15,7 +15,7 @@ public static class TestAuthentication
         var authService = factory.Services.GetRequiredService<IAuthService>();
 
         //Test user info
-        string firstName = "Test";
+        string firstName = "Tester";
         string lastName = "Testington";
         string email = "test@tester.com";
         string password = "1234";
@@ -44,8 +44,7 @@ public static class TestAuthentication
             });
 
         // Add the JWT to the authorization header
-        client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         return client;
     }
